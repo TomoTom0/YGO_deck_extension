@@ -1,0 +1,15 @@
+{
+  "name": "遊戯王デッキインポート/エクスポート",
+  "description": "公式カードデータベースのデッキを.ydkファイルとしてエクスポート、および.ydkファイルをインポートすることができます。",
+  "version": "0.1",
+  "manifest_version": 2,
+  "content_scripts": [{
+    "matches": ["https://www.db.yugioh-card.com/yugiohdb/*"],
+    "js": ["jquery-3.5.1.min.js", "ChEx.js", "content_script.js", "dataframe.min.js", "async.min.js"]
+  }],
+  "options_page": "options.html",
+  "permissions": [
+    "https://www.db.yugioh-card.com/yugiohdb/*",
+    "storage"
+  ]
+}
