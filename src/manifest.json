@@ -1,16 +1,17 @@
 {
-  "name": "遊戯王デッキインポート/エクスポート",
-  "description": "公式カードデータベースのデッキを.ydkファイルとしてエクスポート、および.ydkファイルをインポートすることができます。",
-  "version": "0.1",
+  "name": "遊戯王デッキサポート(インポート/エクスポート)",
+  "author":"TomoTomo",
+  "version": "0.2",
   "manifest_version": 2,
+  "icons":{
+    "16":"img/icon-16.png",
+    "48":"img/icon-48.png",
+    "128":"img/icon-128.png"
+  },
   "content_scripts": [{
     "matches": ["https://www.db.yugioh-card.com/yugiohdb/*"],
     "js": ["jquery-3.5.1.min.js", "ChEx.js","async.min.js", "content_script.js"]
   }],
-  "web_accessible_resources":["data/ygo_db_simple.csv", "data/btn_black.png"],
-  "options_page": "options.html",
-  "permissions": [
-    "https://www.db.yugioh-card.com/yugiohdb/*",
-    "storage"
-  ]
+  "web_accessible_resources":["data/ygo_db_simple.csv"],
+  "description": "このアプリは公式カードデータベースのデッキ表示画面にエクスポートボタン、インポートボタンを追加します。デッキの内容が表示されている画面でエクスポートボタンを押すと、.ydkファイル(ADSのデッキ形式)としてダウンロードします。デッキ編集画面でインポートボタンを押して.ydkファイルを選択すると、その内容が自動で入力されます。発表直後のカードや国内未販売のカードについては対応していない場合があります。"
 }

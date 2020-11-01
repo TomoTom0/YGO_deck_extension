@@ -1,6 +1,5 @@
 ﻿//----------------------
 const db_path="data/ygo_db_simple.csv";
-const btn_img_path="data/btn_black.png";
 let GLOBAL_df;
 
 
@@ -145,6 +144,11 @@ async function importFromYdk(){
     main_total.empty();
     const main_total_num=[0,1,2].reduce((acc, cur)=> acc+Number($(`.main_count:eq(${cur})`).text()), 0);
     main_total.append(main_total_num);
+    if (exceptions.length>0){
+        const error_message="一部のカードが変換できませんでした。\n"+exceptions.join(", ");
+        alert(error_message);
+    }
+
 }
 
 $(async function () {
@@ -152,7 +156,7 @@ $(async function () {
     if (url_now.indexOf("ope=2&")!=-1){
         const area=$("#header_box .save");
         const label=$("<label>", {for:"button_importFromYdk_input"});
-        const button=$("<a>", {class:"black_btn",type:"button" ,id:"button_importFromYdk", style:"position: relative;"})
+        const button=$("<a>", {class:"black_btn red",type:"button" ,id:"button_importFromYdk", style:"position: relative;"})
         .append("<b>インポート</b>");
         const input_button=$("<input>", {type:"file", accpet: "text/*.ydk", style:"display: none;" ,id:"button_importFromYdk_input"});
         button.append(input_button);
@@ -161,7 +165,7 @@ $(async function () {
     }
     else if (/ope=1&|deck\.action\?cgid/.test(url_now) ){
         const area=$("#header_box #button_place_edit");
-        const button=$("<a>", {class:"black_btn", id:"button_exportAsYdk", style:"position: relative;"})
+        const button=$("<a>", {class:"black_btn red", id:"button_exportAsYdk", style:"position: relative;"})
         .append("<b>エクスポート</b>");
         area.append(button);
     }
