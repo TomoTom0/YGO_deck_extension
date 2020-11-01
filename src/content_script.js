@@ -42,24 +42,39 @@ function df_filter(df, col_out, array_in){
 
     return Array.from(new Set(indexes_in)).map(d=>df[col_out][d]);
 }
-function exportAsYdk(){
-    const tables=$(".image_table");
-    if (tables==null) return -1;
-    const keys=["#main", "#extra", "!side"];
-    let card_names=[];
-    for (tab_ind=0;tab_ind<tables.length;tab_ind++){
-        const card_length=$(`#deck_image .image_table:eq(${tab_ind}) img`).length;
-        card_names[tab_ind]=[...Array(card_length).keys()].map(d=>
-            $(`#deck_image .image_table:eq(${tab_ind}) img:eq(${d})`).attr("title"));
-    }
+function exportAs(form="id"){
+    const rows_num=$("#deck_text [id$='_list']").length;
+    const row_names=[...Array(rows_num).keys()].map(row_ind=>$(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
+    .match(/^\S*(?=_list)/)[0]);
+
+    const row_results=[...Array(rows_num).keys()].map(row_ind=>{
+        const card_length=$(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`).length;
+        return {names :[...Array(card_length).keys()]
+            .map(d=> $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`).text()),
+            nums: [...Array(card_length).keys()]
+            .map(d=>$(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`).text().match(/\d/)[0])};
+    })
     const df=GLOBAL_df;
+    const keys=["#main", "#extra", "!side"];
     let exceptions=[];
-    const card_ids=card_names.map(d=>d.map(dd=>{
-        const trans_id=df_filter(df, "id", ["Jap", dd])[0]
-        if (!trans_id) exceptions.push(dd);
-        return trans_id;
-    }));
-    const content=card_ids.map((id,ind)=>keys[ind]+"\n"+id.join("\n")).join("\n");
+    let result_outputs=keys.map(_=>[]);
+    row_results.forEach((row_result, row_ind)=>{
+        let out_ind=row_ind-2
+        if (row_ind < 3) out_ind=0;
+        row_result.names.forEach((d, ind)=>{
+            let output_comp="";
+            if (form=="Jap") output_comp=`${d}\t${row_names[row_ind]}`;
+            else if (form=="id") {
+                output_comp=df_filter(df, "id", ["Jap", d])[0];
+                if (!output_comp) {
+                    exceptions.push(d);
+                    output_comp=`${d}\t${row_names[row_ind]}`;
+                };
+            }
+            result_outputs[out_ind].push(...Array(row_result.nums[ind]).fill(output_comp))
+        })
+    })
+    const content=result_outputs.map((id,ind)=>keys[ind]+"\n"+id.join("\n")).join("\n");
 
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
     const blob = new Blob([bom, content], { type: "text/plain" });
@@ -71,8 +86,8 @@ function exportAsYdk(){
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    if (exceptions.length>0){
-        alert("一部のカードが変換できませんでした。\n"+exceptions.join(" "));
+    if (exceptions.length>0 && form=="id"){
+        alert("一部のカードが変換できませんでした。 "+exceptions.join(", "));
     }
 }
 
@@ -99,31 +114,35 @@ async function importFromYdk(){
     let exceptions=[];
     imported_ids.forEach((ids, ind)=>{
         for (const id of Array.from(new Set(ids))){
-            if (!id) continue;
-            const name_tmp=df_filter(df, "Jap", ["id", id])[0];
-            const num_tmp=ids.filter(d=>d==id).length;
+            let name_tmp="";
             let types_tmp;
-            let main_row;
-            if (ind==0){
-                types_tmp=df_filter(df, "type", ["id", id])[0];
-                main_row=["monster", "spell", "trap"].map(d=>d.toUpperCase());
+            let form="id";
+            if (!/^\d+$/.test(id) && !id) name_tmp="";
+            else if (!/^\d+$/.test(id) && /\t/.test(id)) {
+                name_tmp=id.split(" __")[0];
+                types_tmp=id.split(" __")[1];
+                form="Jap";
             }
+            else if (/^\d+$/.test(id)) name_tmp=df_filter(df, "Jap", ["id", id])[0];
+
+            const num_tmp=ids.map(d=>d.split("\t")[0]).filter(d=>d==id).length;
+
             if (!name_tmp) exceptions.push(id, name_tmp);
             else {
                 let row_index=ind+2;
-                if (ind==0){
+                if (ind==0 && form=="id"){
+                    types_tmp=df_filter(df, "type", ["id", id])[0];
+                    const main_row=["monster", "spell", "trap"].map(d=>d.toUpperCase());
                     const row_type=main_row.filter(d=>types_tmp.split(" ").some(dd=>dd==d))[0];
                     row_index=row_names.indexOf(row_type.toLowerCase());
-                }
+                } if (ind==0 && form=="Jap") row_index=row_names.indexOf(row_type.toLowerCase());
+
                 row_results[row_index].names.push(name_tmp);
                 row_results[row_index].nums.push(num_tmp);
             }
         }
-    })
-
-    // deck_name
+    }) // deck_name
     $("#dnm").val(import_file.name.replace(/\.ydk$/, ""));
-
     for(const tab_ind of [...Array(5).keys()]){
         const row_name=row_names[tab_ind];
         const row_short_name=row_name.slice(0,2);
@@ -173,7 +192,10 @@ $(async function () {
     else if (/ope=1&|deck\.action\?cgid/.test(url_now) ){
         const area=$("#header_box #button_place_edit");
         const button=$("<a>", {class:"black_btn red", id:"button_exportAsYdk", style:"position: relative;"})
-        .append("<b>エクスポート</b>");
+        .append("<b>エクスポート(id)</b>");
+        const button2=$("<a>", {class:"black_btn red", id:"button_exportAsJap", style:"position: relative;"})
+        .append("<b>エクスポート(日本語)</b>");
+        area.append(button2);
         area.append(button);
     }
     const data=await fetch(chrome.runtime.getURL(db_path), {method: "GET"})
@@ -182,7 +204,10 @@ $(async function () {
     GLOBAL_df=CSV2Dic(data);
 
     $("#button_exportAsYdk").on("click", function(){
-        exportAsYdk();
+        exportAs("id");
+    })
+    $("#button_exportAsJap").on("click", function(){
+        exportAs("Jap");
     })
     $("#button_importFromYdk").on("change", async function(){
         await importFromYdk();
