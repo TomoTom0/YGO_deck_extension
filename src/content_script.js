@@ -71,7 +71,14 @@ function exportAsYdk(){
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    alert("一部のカードが変換できませんでした。\n"+exceptions.join(" "));
+    if (exceptions.length>0){
+        alert("一部のカードが変換できませんでした。\n"+exceptions.join(" "));
+    }
+}
+
+function split_data(data){
+    const split_sep="__SPLIT__";
+    return data.replace(/\r\n|\r|\n/g, split_sep).split(split_sep);
 }
 
 function obtain_deck_splited(data_array) {
@@ -83,7 +90,7 @@ function obtain_deck_splited(data_array) {
 async function importFromYdk(){
     const import_file=$("#button_importFromYdk_input").prop("files")[0];
     const data_tmp=await import_file.text();
-    const data_array=data_tmp.split("\n");
+    const data_array=split_data(data_tmp);
     const imported_ids=obtain_deck_splited(data_array);
 
     const row_names=["monster", "spell", "trap", "extra", "side"];
@@ -113,12 +120,11 @@ async function importFromYdk(){
             }
         }
     })
-    console.log(row_results, exceptions);
 
     // deck_name
     $("#dnm").val(import_file.name.replace(/\.ydk$/, ""));
 
-    for(const tab_ind of [...Array(4).keys()]){
+    for(const tab_ind of [...Array(5).keys()]){
         const row_name=row_names[tab_ind];
         const row_short_name=row_name.slice(0,2);
         // reset
@@ -126,6 +132,7 @@ async function importFromYdk(){
             $(`#${row_name}_list #${row_short_name}nm_${ind2+1}`).val("");
             $(`#${row_name}_list #${row_short_name}num_${ind2+1}`).val("");
         })
+        console.log(row_results[tab_ind]);
         if (row_results[tab_ind].names.length==0) continue;
         const card_names=row_results[tab_ind].names;
         const card_nums=row_results[tab_ind].nums;
@@ -171,13 +178,12 @@ $(async function () {
     }
     const data=await fetch(chrome.runtime.getURL(db_path), {method: "GET"})
     .then(res=>res.text() )
-    .then(data_tmp=>data_tmp.split("\n"))
+    .then(data_tmp=>split_data(data_tmp));
     GLOBAL_df=CSV2Dic(data);
 
     $("#button_exportAsYdk").on("click", function(){
         exportAsYdk();
     })
-    
     $("#button_importFromYdk").on("change", async function(){
         await importFromYdk();
     })
