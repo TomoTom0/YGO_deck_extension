@@ -1,5 +1,5 @@
 ﻿//----------------------
-const db_path="data/ygo_db_simple.csv";
+const db_path="data/ygo_db_simple.tsv";
 let GLOBAL_df;
 
 
@@ -24,6 +24,22 @@ function CSV2Dic(csv_data){
     for(csv_row of csv_data.slice(1)){
         if (csv_row.length!=headers.length) {continue;}
         csv_row.forEach((d, ind)=>{
+            data_array[ind].push(d);
+        });
+    }
+    let result_data={};
+    headers.forEach((d, ind) =>result_data[d]=data_array[ind]);
+    return result_data;
+}
+
+function TSV2Dic(tsv_data){
+    tsv_data=tsv_line.split("\t");
+
+    const headers=tsv_data[0];
+    let data_array=new Array(headers.length).fill().map(_=>[]);
+    for(tsv_row of tsv_data.slice(1)){
+        if (tsv_row.length!=headers.length) {continue;}
+        tsv_row.forEach((d, ind)=>{
             data_array[ind].push(d);
         });
     }
@@ -63,11 +79,12 @@ function exportAs(form="id"){
         if (row_ind < 3) out_ind=0;
         row_result.names.forEach((d, ind)=>{
             let output_comp="";
-            if (form=="Jap") output_comp=`${d}\t${row_names[row_ind]}`;
+            if (form=="Jap") output_comp=`${d}`;
             else if (form=="id") {
                 output_comp=df_filter(df, "id", ["Jap", d])[0];
                 if (!output_comp) {
                     exceptions.push(d);
+                    // form=id and db has error => Japanese name and type wil be outputed with tab-separation
                     output_comp=`${d}\t${row_names[row_ind]}`;
                 };
             }
@@ -87,7 +104,7 @@ function exportAs(form="id"){
     a.remove();
     URL.revokeObjectURL(url);
     if (exceptions.length>0 && form=="id"){
-        alert("一部のカードが変換できませんでした。 "+exceptions.join(", "));
+        alert("一部のカードが変換できませんでした。\t"+exceptions.join(", "));
     }
 }
 
@@ -115,30 +132,31 @@ async function importFromYdk(){
     imported_ids.forEach((ids, ind)=>{
         for (const id of Array.from(new Set(ids))){
             let name_tmp="";
-            let types_tmp;
-            let form="id";
+            let types_tmp="";
             if (!/^\d+$/.test(id) && !id) name_tmp="";
-            else if (!/^\d+$/.test(id) && /\t/.test(id)) {
-                name_tmp=id.split(" __")[0];
-                types_tmp=id.split(" __")[1];
-                form="Jap";
+            else if (!/^\d+$/.test(id)) {
+                name_tmp=id.split("\t")[0];
+                types_tmp=id.split("\t")[1];
             }
             else if (/^\d+$/.test(id)) name_tmp=df_filter(df, "Jap", ["id", id])[0];
 
             const num_tmp=ids.map(d=>d.split("\t")[0]).filter(d=>d==id).length;
-
-            if (!name_tmp) exceptions.push(id, name_tmp);
+            if (!name_tmp) exceptions.push(`${id} ${name_tmp}`);
             else {
                 let row_index=ind+2;
-                if (ind==0 && form=="id"){
-                    types_tmp=df_filter(df, "type", ["id", id])[0];
-                    const main_row=["monster", "spell", "trap"].map(d=>d.toUpperCase());
-                    const row_type=main_row.filter(d=>types_tmp.split(" ").some(dd=>dd==d))[0];
-                    row_index=row_names.indexOf(row_type.toLowerCase());
-                } if (ind==0 && form=="Jap") row_index=row_names.indexOf(row_type.toLowerCase());
-
+                if (ind==0){
+                    if (types_tmp=="") types_tmp=df_filter(df, "type", ["id", id])[0];
+                    try{
+                        const main_row=["monster", "spell", "trap"].map(d=>d.toUpperCase());
+                        const row_type=main_row.filter(d=>types_tmp.split(" ").some(dd=>dd==d))[0];
+                        row_index=row_names.indexOf(row_type.toLowerCase());
+                    } catch {
+                        exceptions.push(`${id} ${name_tmp}`);
+                        continue;
+                    }
                 row_results[row_index].names.push(name_tmp);
                 row_results[row_index].nums.push(num_tmp);
+                }
             }
         }
     }) // deck_name
@@ -155,10 +173,12 @@ async function importFromYdk(){
         if (row_results[tab_ind].names.length==0) continue;
         const card_names=row_results[tab_ind].names;
         const card_nums=row_results[tab_ind].nums;
+        //input name and number
         card_names.forEach((name, ind2)=>{
             $(`#${row_name}_list #${row_short_name}nm_${ind2+1}`).val(name);
             $(`#${row_name}_list #${row_short_name}num_${ind2+1}`).val(card_nums[ind2]);
         })
+        //input count
         const sum_num=card_nums.reduce((acc,cur)=>acc+cur, 0);
         [0,1].forEach(d=>{
             const total_count=$(`.${row_name}_total:eq(${d})`);
@@ -166,6 +186,7 @@ async function importFromYdk(){
             total_count.append(sum_num);
         })
     }
+    //input main_total
     const main_total=$(".main_total");
     main_total.empty();
     const main_total_num=[0,1,2].reduce((acc, cur)=> acc+Number($(`.main_count:eq(${cur})`).text()), 0);
