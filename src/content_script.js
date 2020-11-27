@@ -3,7 +3,7 @@ const db_path="data/ygo_db_simple.tsv";
 let GLOBAL_df;
 
 
-function CSV2Dic(csv_data){
+/*function CSV2Dic(csv_data){
     const escape_sets=[{escaped:',',original: ",", re:"__COMMA__"}, {escaped:'""', original:'"', re:"__WQ__"}];
     csv_data=csv_data.map(csv_line=>{
         if (/^"|,"|""/.test(csv_line)){
@@ -30,14 +30,14 @@ function CSV2Dic(csv_data){
     let result_data={};
     headers.forEach((d, ind) =>result_data[d]=data_array[ind]);
     return result_data;
-}
+}*/
 
 function TSV2Dic(tsv_data){
-    tsv_data=tsv_line.split("\t");
+    tsv_line=tsv_data.map(d=>d.split("\t"));
 
-    const headers=tsv_data[0];
+    const headers=tsv_line[0];
     let data_array=new Array(headers.length).fill().map(_=>[]);
-    for(tsv_row of tsv_data.slice(1)){
+    for(tsv_row of tsv_line.slice(1)){
         if (tsv_row.length!=headers.length) {continue;}
         tsv_row.forEach((d, ind)=>{
             data_array[ind].push(d);
@@ -222,7 +222,7 @@ $(async function () {
     const data=await fetch(chrome.runtime.getURL(db_path), {method: "GET"})
     .then(res=>res.text() )
     .then(data_tmp=>split_data(data_tmp));
-    GLOBAL_df=CSV2Dic(data);
+    GLOBAL_df=TSV2Dic(data);
 
     $("#button_exportAsYdk").on("click", function(){
         exportAs("id");
