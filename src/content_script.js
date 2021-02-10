@@ -62,18 +62,33 @@ function df_filter(df, col_out, array_in){
 
     return Array.from(new Set(indexes_in)).map(d=>df[col_out][d]);
 }
-function exportAs(form="id"){
+async function exportAs(form="id"){
     const rows_num=$("#deck_text [id$='_list']").length;
     const row_names=[...Array(rows_num).keys()].map(row_ind=>$(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
     .match(/^\S*(?=_list)/)[0]);
 
-    const row_results=[...Array(rows_num).keys()].map(row_ind=>{
+    let row_results_tmp={Jap:[], Eng:[]};
+    row_results_tmp.Jap=[...Array(rows_num).keys()].map(row_ind=>{
         const card_length=$(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`).length;
         return {names :[...Array(card_length).keys()]
             .map(d=> $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`).text()),
             nums: [...Array(card_length).keys()]
             .map(d=>$(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`).text().match(/\d/)[0])};
     })
+    if (form=="id") {
+        const url_Eng=location.href.replace(/&request_locale=\S\S/g, "") + "&request_locale=en";
+        const res_Eng=await fetch(url_Eng).then(d=>d.body)
+            .then(d=>d.getReader()).then(reader=>reader.read());
+        const content=new TextDecoder("utf-8").decode(res_Eng.value)
+        row_results_tmp.Eng=[...Array(rows_num).keys()].map(row_ind=>{
+            const card_length=$(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`, content).length;
+            return {names :[...Array(card_length).keys()]
+                .map(d=> $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`, content).text()),
+                nums: [...Array(card_length).keys()]
+                .map(d=>$(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`, content).text().match(/\d/)[0])};
+    })}
+    const row_results= (form=="Jap") ? row_results_tmp.Jap : row_results_tmp.Eng;
+
     const df=GLOBAL_df;
     const keys=["#main", "#extra", "!side"];
     let exceptions=[];
@@ -85,11 +100,12 @@ function exportAs(form="id"){
             let output_comp="";
             if (form=="Jap") output_comp=`${d}`;
             else if (form=="id") {
-                output_comp=df_filter(df, "id", ["Jap", d])[0];
+                output_comp=df_filter(df, "id", ["Eng", d])[0];
                 if (!output_comp) {
-                    exceptions.push(d);
+                    const name_Jap=row_results_tmp.Jap[row_ind].names[ind];
+                    exceptions.push(name_Jap);
                     // form=id and db has error => Japanese name and type wil be outputed with tab-separation
-                    output_comp=`${d}\t${row_names[row_ind]}`;
+                    output_comp=`${name_Jap}\t${row_names[row_ind]}`;
                 };
             }
             result_outputs[out_ind].push(...Array(row_result.nums[ind]).fill(output_comp))
@@ -108,7 +124,9 @@ function exportAs(form="id"){
     a.remove();
     URL.revokeObjectURL(url);
     if (exceptions.length>0 && form=="id"){
-        alert("一部のカードが変換できませんでした。\t"+exceptions.join(", "));
+        const error_message="一部のカードが変換できませんでした。\t"+exceptions.join(", ");
+        console.log(error_message);
+        alert(error_message);
     }
 }
 
@@ -312,15 +330,14 @@ $(async function () {
             GLOBAL_df=TSV2Dic(data)
         }
         else GLOBAL_df=df;
-        console.log(df, Date.now() - storage.lastModifiedDate);
         if (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000) await updateDB();
     })
 
-    $("#button_exportAsYdk").on("click", function(){
-        exportAs("id");
+    $("#button_exportAsYdk").on("click", async function(){
+        await exportAs("id");
     })
-    $("#button_exportAsJap").on("click", function(){
-        exportAs("Jap");
+    $("#button_exportAsJap").on("click", async function(){
+        await exportAs("Jap");
     })
     $("#button_importFromYdk").on("change", async function(){
         await importFromYdk();
