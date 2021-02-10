@@ -1,5 +1,6 @@
 ﻿//----------------------
 const db_path="data/ygo_db_simple.tsv";
+const fromConstant_path="data/fromConstant.tsv";
 let GLOBAL_df;
 
 
@@ -40,6 +41,9 @@ function TSV2Dic(tsv_data){
     for(tsv_row of tsv_line.slice(1)){
         if (tsv_row.length!=headers.length) {continue;}
         tsv_row.forEach((d, ind)=>{
+            if (/^".*"$/.test(d)) {
+                d= d.slice(1,-1).replace(/""/g,'"');
+            }
             data_array[ind].push(d);
         });
     }
@@ -51,10 +55,10 @@ function TSV2Dic(tsv_data){
 function df_filter(df, col_out, array_in){
     const key=array_in[0];
     const val=array_in[1];
-    const indexes_in=df[key].map((d,ind)=>{
-        if (d==val) return ind;
-        else return false;
-    }).filter(d=>d!=false);
+    const indexes_in=df[key].reduce((acc,cur,ind)=>{
+        if (cur==val) return acc.concat([ind]);
+        else return acc;
+    }, []);
 
     return Array.from(new Set(indexes_in)).map(d=>df[col_out][d]);
 }
@@ -129,16 +133,31 @@ async function importFromYdk(){
     const row_results=Array(5).fill({}).map(_ =>{ return {"names":[], "nums":[]}});
     const df=GLOBAL_df;
     let exceptions=[];
+    // guess file type => id, Jap, Eng
+    /*const encoder=new TextEncoder("utf8");
+    const data_type_judges={
+        includeJap: data_array.filter(d=>!/^#|^!/.test(d))
+            .some(data=>Array.from(data).some(d=>{
+                const bytes=encoder.encode(d);
+                const isKana= (bytes[0]==227 && bytes[1]>=129 && bytes[1]<=131);
+                const isZenAlphabet= (bytes[0]==239 && bytes[1]>=188 && bytes[1]<=190);
+                return isKana || isZenAlphabet;
+        })),
+        onlyNumbers: data_array.filter(d=>!/^#|^!/.test(d)).every(data=>isFinite(data))}
+    const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
     imported_ids.forEach((ids, ind)=>{
         for (const id of Array.from(new Set(ids))){
             let name_tmp="";
             let types_tmp="";
+            // empty
             if (!/^\d+$/.test(id) && !id) name_tmp="";
+            // id
+            else if (/^\d+$/.test(id)) name_tmp=df_filter(df, "Eng", ["id", id])[0];
+            // Jap or Eng name
             else if (!/^\d+$/.test(id)) {
                 name_tmp=id.split("\t")[0];
                 types_tmp=id.split("\t")[1];
             }
-            else if (/^\d+$/.test(id)) name_tmp=df_filter(df, "Jap", ["id", id])[0];
 
             const num_tmp=ids.map(d=>d.split("\t")[0]).filter(d=>d==id).length;
             if (!name_tmp) exceptions.push(`${id} ${name_tmp}`);
@@ -147,7 +166,7 @@ async function importFromYdk(){
                 if (ind==0){
                     if (types_tmp=="") types_tmp=df_filter(df, "type", ["id", id])[0];
                     try{
-                        const main_row=["monster", "spell", "trap"].map(d=>d.toUpperCase());
+                        const main_row=["monster", "spell", "trap"].map(d=>d.slice(0,1).toUpperCase()+d.slice(1));
                         const row_type=main_row.filter(d=>types_tmp.split(" ").some(dd=>dd==d))[0];
                         row_index=row_names.indexOf(row_type.toLowerCase());
                     } catch {
@@ -161,6 +180,7 @@ async function importFromYdk(){
         }
     }) // deck_name
     $("#dnm").val(import_file.name.replace(/\.ydk$/, ""));
+
     for(const tab_ind of [...Array(5).keys()]){
         const row_name=row_names[tab_ind];
         const row_short_name=row_name.slice(0,2);
@@ -191,6 +211,7 @@ async function importFromYdk(){
     main_total.empty();
     const main_total_num=[0,1,2].reduce((acc, cur)=> acc+Number($(`.main_count:eq(${cur})`).text()), 0);
     main_total.append(main_total_num);
+
     if (exceptions.length>0 && !exceptions.every(d=>/^\s*$/.test(d))){
         const error_message="一部のカードが変換できませんでした。\n"+exceptions.join(", ");
         console.log(error_message);
@@ -201,7 +222,62 @@ async function importFromYdk(){
 
 // DB update
 async function updateDB(){
-    
+    const db_pulled=await pullCDB();
+    const datas=db_pulled.datas;
+    const texts=db_pulled.texts;
+    const const_data=await fetch(chrome.runtime.getURL(fromConstant_path), {method: "GET"})
+    .then(res=>res.text() )
+    .then(data_tmp=>split_data(data_tmp));
+    const const_data_dict=const_data.filter(d=>!/^#/.test(d))
+        .map(d=>d.split(/\t/g)).map(d=>[parseInt(d[0], 16).toString(2).length-1, d[1].replace(/\s*$/, "")]);
+
+    const card_ids=Array.from(new Set(datas.id));
+    const card_names_Eng=card_ids.map(id=>df_filter(texts, "name", ["id", id])[0]);
+    const card_types_raw=card_ids.map(id=>df_filter(datas, "type", ["id", id])[0]);
+    const card_types=card_types_raw.map(num=>(num-0).toString("2")
+        .split("").reverse()
+        .reduce((acc, cur, ind)=>{
+            if (cur==1) {
+                return acc.concat([const_data_dict.filter(d=>d[0]==ind)[0][1]]);}
+            else return acc;
+        }, []).join(" "));
+    const df_new={id: card_ids, Eng: card_names_Eng, type:card_types};
+    console.log("Database has been updated.");
+    chrome.storage.local.set({df:JSON.stringify(df_new), lastModifiedDate:Date.now()})
+}
+
+// download from GitHub
+async function pullCDB(){
+    // init SQL
+    const SQL = await initSqlJs({locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.4.0/dist/${file}`});
+
+    //search cdb list
+    const GitHubName="ProjectIgnis"
+    const GitHubRepo="BabelCDB"
+    const q="filename:*.cdb -filename:*-rush*.cdb -filename:*-skills*.cdb -filename:*unofficial*.cdb -filename:*goat*.cdb"
+    const git_search_url=`https://api.github.com/search/code`;
+    const search_query=`q=${q}+repo:${GitHubName}/${GitHubRepo}`;
+    const header_auth={"Accept":"application/vnd.github.v3+json"};
+    const res_search=await fetch(git_search_url+"?"+search_query, { method:"GET", headers: header_auth}).then(d=>d.json());
+    // pull CDB and merge
+    let values={datas:[], texts:[]};
+    let datas_tmp={}; 
+    let texts_tmp={};
+    for (const item of res_search.items){
+        const cdb_data = await fetch(item.git_url).then(d=>d.json());
+        const db_tmp=new SQL.Database(atob(cdb_data.content));
+
+        datas_tmp=await db_tmp.exec("select * from datas")[0];
+        texts_tmp=await db_tmp.exec("select * from texts")[0];
+        values.datas.push(datas_tmp.values);
+        values.texts.push(texts_tmp.values);
+    }
+    // remake into dict
+    const values_merged=["datas", "texts"].map(tab=>values[tab].reduce((acc, cur)=>acc.concat(cur), []));
+    const datas_merged=datas_tmp.columns.reduce((acc, cur, ind)=> Object.assign(acc, {[cur]:values_merged[0].map(d=>d[ind])}), {});
+    const texts_merged=texts_tmp.columns.reduce((acc, cur, ind)=> Object.assign(acc, {[cur]:values_merged[1].map(d=>d[ind])}), {});
+
+    return {datas:datas_merged, texts:texts_merged};
 }
 
 // on page load
@@ -226,10 +302,19 @@ $(async function () {
         area.append(button2);
         area.append(button);
     }
-    const data=await fetch(chrome.runtime.getURL(db_path), {method: "GET"})
-    .then(res=>res.text() )
-    .then(data_tmp=>split_data(data_tmp));
-    GLOBAL_df=TSV2Dic(data);
+
+    chrome.storage.local.get({df:JSON.stringify({}), lastModifiedDate:0}, async storage=>{
+        const df=JSON.parse(storage.df);
+        if (df=={}) {
+            const data=await fetch(chrome.runtime.getURL(db_path), {method: "GET"})
+                .then(res=>res.text())
+                .then(data_tmp=>split_data(data_tmp));
+            GLOBAL_df=TSV2Dic(data)
+        }
+        else GLOBAL_df=df;
+        console.log(df, Date.now() - storage.lastModifiedDate);
+        if (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000) await updateDB();
+    })
 
     $("#button_exportAsYdk").on("click", function(){
         exportAs("id");
