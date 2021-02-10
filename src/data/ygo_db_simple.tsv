@@ -11198,230 +11198,435 @@ Toon Bookmark	Toon Bookmark	SPELL	91500017
 Chaos Space	Chaos Space	SPELL	99266988
 人造人間－サイコ・レイヤー	Jinzo - Layered	EFFECT XYZ MONSTER	99666430
 魔救の奇縁	Adamancipator Friends	SPELL	99927991
-宮廷のしきたり	Imperial Custom	CONTINUOUS TRAP	9995767
---CAN'T_FIND_c36996508.lua--	Dark Magician	NORMAL MONSTER	36996508
-双天将 密迹	Dual Avatar - Empowered Mi-Gyo	EFFECT MONSTER FUSION	284224
-灰燼竜バスタード	Splind the Steelexpress Dragon	EFFECT MONSTER FUSION	1906812
-ワイトベイキング	Wight Baking	EFFECT MONSTER	6128460
-魔轟神アンドレイス	Fabled Andraith	EFFECT SYNCHRO MONSTER	9061682
-神樹獣ハイペリュトン	Divine Treebeast High Peryton	EFFECT XYZ MONSTER	9349094
- パラメタルフォーゼ・メルキャスター	Parametalfoes Melcaster	EFFECT MONSTER PENDULUM	10024317
-スプリガンズ・ブラスト！	Sprigguns Blast!	TRAP	10584050
-風の天翼ミラドーラ	Miradora, Skywing of the Whirlwind	EFFECT MONSTER	17063599
-ダイカミナリ・ジャイクロプス	Daikaminari Gyclops	TUNER EFFECT MONSTER PENDULUM	17241941
-E．M．R．	Electro-Magnetic Railgun	TRAP	17427333
-夢魔鏡の使徒－ネイロイ	Oneiroi, the Dream Mirror Emissary	EFFECT MONSTER	18189187
-電脳堺門－玄武	Virtual World Gate - Zhuangwoo	CONTINUOUS TRAP	18249921
-電子光虫－レジストライダー	Digital Bug Resistrider	EFFECT MONSTER	19301729
-氷風のリフレイン	Ice Wind's Refrain	TRAP	19362568
-ツッパリーチ	Bluffreach	SPELL FIELD	20216608
-WW－フリーズ・ベル	Windwitch - Freeze Bell	EFFECT MONSTER	20246864
-スプリガンズ・ロッキー	Sprigguns Rocky	EFFECT MONSTER	20424878
-S－Force グラビティーノ	Security Force Gravitino	EFFECT MONSTER	21368442
-デーモンの杖	Archfiend Staff of Despair	SPELL EQUIP	21438286
-アームド・ドラゴン・サンダー LV5	Armed Dragon Thunder LV5	EFFECT MONSTER	21546416
-S－Force 乱破小夜丸	Security Force Rappa Chiyomaru	EFFECT MONSTER	22180094
-魔轟神界の階	Stairway to the Fabled World	SPELL FIELD	22555834
-S-Force ブリッジヘッド	Security Force Bridgehead	SPELL FIELD	23377425
-スプリガンズ・ウォッチ	Sprigguns Watch	SPELL	23499963
-スプリガンズ・キャプテン サルガス	Sprigguns Captain Sargus	EFFECT MONSTER	29601381
-武装竜の霹靂	Armed Dragon Flash	SPELL QUICKPLAY	34611551
-S－Force ジャスティファイ	Security Force Justify	EFFECT MONSTER LINK	35334193
-ドラグニティナイト－ゴルムファバル	Dragunity Knight - Gormfabal	EFFECT SYNCHRO MONSTER	36556781
-Parametalfoes Azothles 	Parametalfoes Azothles	EFFECT MONSTER FUSION PENDULUM	37491810
-夢魔鏡の魘魔－ネイロス	Oneiros, the Dream Mirror Faeking	EFFECT MONSTER FUSION	37678339
-ジャマ・ピンク	Ojama Pink	EFFECT MONSTER	42517468
-天孔邪鬼	Amanokujaki	TUNER EFFECT MONSTER	43739056
-妖精弓士イングナル	Fairy Archer Ingunar	EFFECT MONSTER	44451698
-双天の転身	Dual Avatar Turning	TRAP	44644529
-碑像の天使－アズルーン	Angel Statue - Azurune	CONTINUOUS TRAP	44822037
-マシンナーズ・アンクラスペア	Machina Unclasspare	EFFECT MONSTER	45674286
-光天のマハー・ヴァイロ	Lightsky Maha Vailo	EFFECT MONSTER	45796834
-弑逆の魔轟神	Fabled Regicide	TRAP	55766177
-鉄獣戦線 キット	Tri-Brigade Kit	EFFECT MONSTER	56196385
-メタルフォーゼ・バニッシャー	Metalfoes Vanisher	EFFECT MONSTER PENDULUM	56518311
-ドラグマ・ジェネシス	Dogmatika Genesis	TRAP	56588755
-スプリガンズ・ピード	Sprigguns Pede	EFFECT MONSTER	56818977
-アームド・ドラゴン・サンダー LV3	Armed Dragon Thunder LV3	EFFECT MONSTER	57030525
-武装竜の万雷	Armed Dragon Thunderbolt	TRAP	57605303
-魔轟神マルコシア	Fabled Marchosia	EFFECT MONSTER	57630503
-アームド・ドラゴン・サンダー LV10	Armed Dragon Thunder LV10	EFFECT MONSTER	58153103
-S－Force プラ＝ティナ	Security Force Platina	EFFECT MONSTER	58363151
-混錬装融合	Parametalfoes Fusion	SPELL	58549532
-S－Force プロフェッサーϜ	Security Force Professor Digamma	EFFECT MONSTER	58589739
-鎧竜降臨	Armored Dragon Ritual	SPELL RITUAL	58827995
-大砂海ゴールド・ゴルゴンダ	Vast Desert Gold Golgonda	SPELL FIELD	60884672
-武装竜の襲雷	Armed Dragon Blitz	SPELL	61606250
-ヘビーメタルフォーゼ・アマルガム	Heavymetalfoes Amalgam	EFFECT MONSTER LINK	61728808
-スプリガンズ・シップ エクスブロウラー	Sprigguns Ship Exblower	EFFECT XYZ MONSTER	62941499
-S－Force ショウダウン	Security Force Showdown	SPELL QUICKPLAY	69761020
-契珖のヴルーレセンス	Fluorescent Vluorescence	EFFECT MONSTER	70856343
-壱時砲固定式	Stationary One-o'-Clock Linear Accelerator	TRAP	70916046
-WW－ダイヤモンド・ベル	Windwitch - Diamond Bell	EFFECT SYNCHRO MONSTER	73667937
-黄金狂エルドリッチ	El Rey Conquista Eldlich	EFFECT MONSTER FUSION	74889525
-鎧竜の聖騎士	Paladin of Armored Dragon	EFFECT MONSTER RITUAL	75901113
-黄紡鮄デュオニギス	Yellow Gurnard Duonigis	EFFECT MONSTER	79724755
-夢魔鏡の夢語らい	Dream Mirror Dreamtelling	CONTINUOUS TRAP	81038234
-Live☆Twin リィラ・トリート	Live☆Twin Lilla Treat	EFFECT MONSTER	81078880
-戦華史略－大丈夫之義	Ancient Warriors Saga - A Man's Honor	CONTINUOUS TRAP	82255872
-戦華史略－大丈夫之義	Ancient Warriors Dragoon Token	NORMAL TOKEN MONSTER	82255873
-戦華の叛－呂奉	Ancient Warriors - Rebellious Lu Feng	EFFECT SPSUMMON MONSTER	82791472
-セイクリッド・カドケウス	Constellar Caduceus	EFFECT MONSTER	82913020
-S－Force スペシメン	Security Force Specimen	TRAP	82977464
-魔轟神獣アバンク	The Fabled Afanc	TUNER EFFECT MONSTER	83039608
-スプリガンズ・コール！	Sprigguns Call!	TRAP	83199011
-スプリガンズ・バンガー	Sprigguns Banger	EFFECT MONSTER	83203672
-金満で謙虚な壺	Pot of Disparity	SPELL	84211599
-アームド・ドラゴン LV10-ホワイト	Armed Dragon LV10 - White	EFFECT MONSTER	84425220
-WW－ブリザード・ベル	Windwitch - Blizzard Bell	TUNER EFFECT MONSTER	84851250
-アームド・ドラゴン・サンダー LV7	Armed Dragon Thunder LV7	EFFECT MONSTER	94141712
-黄金郷の七摩天	Seven Realms of the Golden Land	CONTINUOUS SPELL	95034141
-S－Force オリフィス	Security Force Orifice	EFFECT MONSTER	95974848
-WWの鈴音	Chime of the Windwitch	SPELL	96156729
-鉄獣の邂逅	Tri-Brigade Rendezvous	SPELL QUICKPLAY	96378317
-武装竜の震霆	Armed Dragon Lightning	CONTINUOUS SPELL	97091969
-閉ザサレシ世界ノ冥神	Saros Eresh Kurnugias	EFFECT MONSTER LINK	98127546
---CAN'T_FIND_c101104101.lua--	ZW - Pegasus Twin Saber 	EFFECT MONSTER	101104101
---CAN'T_FIND_c101104102.lua--	ZS - Arms Sage	EFFECT MONSTER	101104102
---CAN'T_FIND_c101104103.lua--	ZS - Ascend Sage	EFFECT MONSTER	101104103
---CAN'T_FIND_c101104104.lua--	Dragonic Utopia Ray	EFFECT XYZ MONSTER	101104104
---CAN'T_FIND_c101104105.lua--	ZW - Dragonic Halberd	EFFECT XYZ MONSTER	101104105
+宮廷のしきたり	Imperial Custom	TRAP CONTINUOUS	9995767
+--CAN'T_FIND_c36996508.lua--	Dark Magician	MONSTER NORMAL	36996508
+絶火の祆現	Magistus Vritra	SPELL	327051
+--CAN'T_FIND_c5043020.lua--	Firewall Dragon (Pre-Errata)	MONSTER EFFECT LINK	5043020
+大いなる魔導	Magistus Theurgy	QUICKPLAY SPELL	7548747
+Live☆Twin エントランス	Live☆Twin Home	QUICKPLAY SPELL	8083925
+結晶の女神ニンアルル	Ninaruru, the Magistus Glass Goddess	MONSTER XYZ EFFECT	8660395
+Evil★Twin キスキル	Evil★Twin Ki-sikil	MONSTER EFFECT LINK	9205573
+聖魔の大賢者エンディミオン	Endymion, the Magistus of Mastery	MONSTER EFFECT	9482987
+法典の大賢者クロウリー	Crowley, the Magistus of Grimoires	MONSTER EFFECT	9505425
+宮廷のしきたり	Imperial Custom	TRAP CONTINUOUS	9995767
+--CAN'T_FIND_c9995776.lua--	Imperial Custom (Pre-Errata)	TRAP CONTINUOUS	9995776
+喰光の竜輝巧	Drytron Eclipse	SPELL	21576077
+--CAN'T_FIND_c21593987.lua--	Makyura the Destructor  (Pre-Errata)	MONSTER EFFECT	21593987
+流星輝巧群	Meteonis Drytron	RITUAL SPELL	22398665
+竜輝巧－ルタδ	Drytron Delta Altais	MONSTER SPSUMMON EFFECT	22420202
+JP name	Destined Rivals	TRAP	22634473
+竜儀巧－ラスβ	Drytron Beta Rastaban	MONSTER SPSUMMON EFFECT	33543890
+Evil★Twin イージーゲーム	Evil★Twin GG EZ	TRAP CONTINUOUS	34365442
+ダーク・アリゲーター	Alligator Token	MONSTER TOKEN NORMAL	34479659
+聖魔の乙女アルテミス	Artemis, the Magistus Moon Maiden	MONSTER EFFECT LINK	34755994
+聖なる法典	Magistus Invocation	SPELL	34933456
+Live☆Twin チャンネル	Live☆Twin Channel	FIELD SPELL	35487920
+法典の守護者アイワス	Aiwass, the Magistus Spell Spirit	FUSION MONSTER EFFECT	35877582
+絶火の大賢者ゾロア	Zoroa, the Magistus of Flame	MONSTER TUNER EFFECT	36099130
+Live☆Twin キスキル	Live☆Twin Ki-sikil	MONSTER EFFECT	36326160
+Evil★Twin リィラ	Evil★Twin Lil-la	MONSTER EFFECT LINK	36609518
+レイダーズ・ウィング	Raiders' Wing	MONSTER EFFECT	52159691
+星彩の竜輝巧	Drytron Asterism	QUICKPLAY SPELL	57970721
+竜輝巧－ファフニール	Drytron Fafnir	FIELD SPELL	58793369
+竜輝巧－エルγ	Drytron Gamma Eltanin	MONSTER SPSUMMON EFFECT	60037599
+Evil★Twin Present	Evil★Twin Present	TRAP	60759087
+三賢者の書	Trismagistus	CONTINUOUS SPELL	61159609
+絶火の竜神ヴァフラム	Vahram, the Magistus Divinity Dragon	MONSTER SYNCHRO EFFECT	61272280
+シークレット・パスフレーズ	Secret Password	SPELL	61976639
+Evil★Twins キスキル・リィラ	Evil★Twins Ki-sikil & Lil-la	MONSTER SPSUMMON EFFECT	62098216
+ビッグ・シールド・ガードナー	Big Shield Gardna (Pre-Errata)	MONSTER EFFECT	65240394
+JP name	Successor Soul	QUICKPLAY SPELL	69145169
+竜儀巧－メテオニス＝DRA	Drytron Meteonis Draconids	MONSTER RITUAL EFFECT	69815951
+--CAN'T_FIND_c70583996.lua--	Dewloren, Tiger King of the Ice Barrier (Pre-E...	MONSTER SYNCHRO EFFECT	70583996
+結晶の大賢者サンドリヨン	Rilliona, the Magistus of Verre	MONSTER EFFECT	72498838
+Live☆Twin リィラ	Live☆Twin Lil-la	MONSTER EFFECT	73810864
+ドライトロン流星群	Drytron Meteor Shower	TRAP COUNTER	84965420
+レッドアイズ・ダークネスメタルドラゴン	Red-Eyes Darkness Metal Dragon (Pre-Errata)	MONSTER EFFECT	88264988
+極超の竜輝巧	Drytron Nova	SPELL	94187078
+竜儀巧－メテオニス＝QUA	Drytron Meteonis Quadrantids	MONSTER RITUAL EFFECT	95209656
+竜儀巧－アルζ	Drytron Zeta Aldhibah	MONSTER SPSUMMON EFFECT	96026108
+JP name	Strength in Unity	CONTINUOUS SPELL	96239878
+竜輝巧－バンα	Drytron Alpha Thuban	MONSTER SPSUMMON EFFECT	97148796
+Evil★Twin チャレンジ	Evil★Twin Challenge	TRAP	98360333
+--CAN'T_FIND_c101103000.lua--	War Rock Mountain	FIELD SPELL	101103000
+--CAN'T_FIND_c101103081.lua--	Materiactor Gigadra	MONSTER EFFECT	101103081
+--CAN'T_FIND_c101103082.lua--	Raging Storm Dragon - Beaufort IX	MONSTER RITUAL EFFECT	101103082
+--CAN'T_FIND_c101103083.lua--	Triphasic Dealmon Coordius	FUSION MONSTER EFFECT	101103083
+--CAN'T_FIND_c101103084.lua--	Materiactor Gigaboros	MONSTER XYZ EFFECT	101103084
+--CAN'T_FIND_c101103085.lua--	Steel Star Regulator	MONSTER EFFECT LINK	101103085
+--CAN'T_FIND_c101103086.lua--	Breath of Acclamation	RITUAL SPELL	101103086
+--CAN'T_FIND_c101103087.lua--	Greater Polymerization	SPELL	101103087
+--CAN'T_FIND_c101103088.lua--	Reinforcement of the Army's Troops	CONTINUOUS SPELL	101103088
+--CAN'T_FIND_c101103089.lua--	Psychic Eraser Laser	SPELL	101103089
+--CAN'T_FIND_c101103090.lua--	Synchro Transmission	TRAP	101103090
+--CAN'T_FIND_c101103091.lua--	Pendulum Encore	TRAP	101103091
+--CAN'T_FIND_c101103092.lua--	Underdog	TRAP CONTINUOUS	101103092
+--CAN'T_FIND_c101103093.lua--	War Rock Fortia	MONSTER EFFECT	101103093
+--CAN'T_FIND_c101103094.lua--	War Rock Gactos	MONSTER EFFECT	101103094
+--CAN'T_FIND_c101103095.lua--	War Rock Orpis	MONSTER EFFECT	101103095
+--CAN'T_FIND_c101103096.lua--	War Rock Skyler	MONSTER EFFECT	101103096
+--CAN'T_FIND_c101103097.lua--	War Rock Bashileos	MONSTER EFFECT	101103097
+--CAN'T_FIND_c101103098.lua--	War Rock Ordeal	CONTINUOUS SPELL	101103098
+--CAN'T_FIND_c100416027.lua--	Ursarctic Micpola	MONSTER EFFECT	100416027
+--CAN'T_FIND_c100416028.lua--	Ursarctic Mictanus	MONSTER EFFECT	100416028
+--CAN'T_FIND_c100416029.lua--	Ursarctic Micbilis	MONSTER EFFECT	100416029
+--CAN'T_FIND_c100416030.lua--	Ursarctic Megapola	MONSTER TUNER EFFECT	100416030
+--CAN'T_FIND_c100416031.lua--	Ursarctic Megatanus	MONSTER TUNER EFFECT	100416031
+--CAN'T_FIND_c100416032.lua--	Ursarctic Megabilis	MONSTER TUNER EFFECT	100416032
+--CAN'T_FIND_c100416033.lua--	Ursarctic Polari	MONSTER SYNCHRO EFFECT	100416033
+--CAN'T_FIND_c100416034.lua--	Ursarctic Septentrion	MONSTER SYNCHRO EFFECT	100416034
+--CAN'T_FIND_c100416035.lua--	Ursarctic Grand Chariot	MONSTER SYNCHRO EFFECT	100416035
+--CAN'T_FIND_c100416037.lua--	Ursarctic Slider	QUICKPLAY SPELL	100416037
+--CAN'T_FIND_c100416038.lua--	Ursarctic Big Dipper	FIELD SPELL	100416038
+--CAN'T_FIND_c100416039.lua--	Ursarctic Quint Charge	TRAP CONTINUOUS	100416039
+--CAN'T_FIND_c100275001.lua--	Amabie-San	MONSTER EFFECT	100275001
+--CAN'T_FIND_c101104004.lua--	Supreme Archserpent Golgonda	MONSTER EFFECT	101104004
+--CAN'T_FIND_c101104005.lua--	Sprigguns Brothers	MONSTER EFFECT	101104005
+--CAN'T_FIND_c101104006.lua--	Amazement Administrator <Ɐrlechino>	MONSTER EFFECT	101104006
+--CAN'T_FIND_c101104007.lua--	Amazement Ambassador <Bufo>	MONSTER EFFECT	101104007
+--CAN'T_FIND_c101104008.lua--	Amazement Attendant <Comica>	MONSTER EFFECT	101104008
+--CAN'T_FIND_c101104012.lua--	Bujin Mahitotsu	MONSTER EFFECT	101104012
+--CAN'T_FIND_c101104013.lua--	Bujin Torifune	MONSTER EFFECT	101104013
+--CAN'T_FIND_c101104016.lua--	Traptrix Ginalloa	MONSTER EFFECT	101104016
+--CAN'T_FIND_c101104020.lua--	Mirror Judge of the Ice Barrier	MONSTER EFFECT	101104020
+--CAN'T_FIND_c101104032.lua--	Dogmatika Albaz Knight	MONSTER RITUAL EFFECT	101104032
+--CAN'T_FIND_c101104033.lua--	Albion the Stigmata Dragon	FUSION MONSTER EFFECT	101104033
+--CAN'T_FIND_c101104041.lua--	Sprigguns Merry-Maker	MONSTER XYZ EFFECT	101104041
+--CAN'T_FIND_c101104044.lua--	Tri-Brigade Bearbloom the Solid Assault	MONSTER EFFECT LINK	101104044
+--CAN'T_FIND_c101104046.lua--	Traptrix Utricularia	MONSTER EFFECT LINK	101104046
+--CAN'T_FIND_c101104053.lua--	Dogmatikas	RITUAL SPELL	101104053
+--CAN'T_FIND_c101104054.lua--	Sprigguns Booty	CONTINUOUS SPELL	101104054
+--CAN'T_FIND_c101104055.lua--	Stigmata of White	SPELL	101104055
+--CAN'T_FIND_c101104056.lua--	Amazing Time Ticket	QUICKPLAY SPELL	101104056
+--CAN'T_FIND_c101104057.lua--	Amazement Special Show	QUICKPLAY SPELL	101104057
+--CAN'T_FIND_c101104058.lua--	Amazement Precious Park	FIELD SPELL	101104058
+--CAN'T_FIND_c101104062.lua--	Bujintersection	CONTINUOUS SPELL	101104062
+--CAN'T_FIND_c101104068.lua--	Stigmata Ominous Cry	TRAP	101104068
+--CAN'T_FIND_c101104069.lua--	Judgment of Stigmata	TRAP	101104069
+--CAN'T_FIND_c101104070.lua--	Amazement Family Face	TRAP	101104070
+--CAN'T_FIND_c101104071.lua--	Amaze Ɐttraction Cyclone Coaster	TRAP	101104071
+--CAN'T_FIND_c101104072.lua--	Amaze Ɐttraction Wonder Wheel	TRAP	101104072
+--CAN'T_FIND_c101104073.lua--	Amaze Ɐttraction Majestic Menage	TRAP	101104073
+--CAN'T_FIND_c101104074.lua--	Amaze Ɐttraction Rapid Racing	TRAP	101104074
+--CAN'T_FIND_c101104075.lua--	Amaze Ɐttraction Horror House	TRAP	101104075
+--CAN'T_FIND_c101104101.lua--	ZW - Pegasus Twin Saber 	MONSTER EFFECT	101104101
+--CAN'T_FIND_c101104102.lua--	ZS - Arms Sage	MONSTER EFFECT	101104102
+--CAN'T_FIND_c101104103.lua--	ZS - Ascend Sage	MONSTER EFFECT	101104103
+--CAN'T_FIND_c101104104.lua--	Dragonic Utopia Ray	MONSTER XYZ EFFECT	101104104
+--CAN'T_FIND_c101104105.lua--	ZW - Dragonic Halberd	MONSTER XYZ EFFECT	101104105
 --CAN'T_FIND_c101104106.lua--	Rank-Up-Magic ZEXAL Force	SPELL	101104106
 --CAN'T_FIND_c101104107.lua--	ZEXAL Construction	SPELL	101104107
 --CAN'T_FIND_c101104108.lua--	ZEXAL Entrust	SPELL	101104108
 --CAN'T_FIND_c101104109.lua--	ZEXAL Alliance	TRAP	101104109
---CAN'T_FIND_c100273001.lua--	Thunderforce Attack	SPELL QUICKPLAY	100273001
---CAN'T_FIND_c100273002.lua--	Fist of Fate	SPELL QUICKPLAY	100273002
---CAN'T_FIND_c100273003.lua--	Exchanging Souls	SPELL QUICKPLAY	100273003
---CAN'T_FIND_c100273005.lua--	Golden Idol	EFFECT MONSTER	100273005
---CAN'T_FIND_c100272008.lua--	Hieratic Heavenly Dragon Overlord of Heliopolis	EFFECT XYZ MONSTER	100272008
---CAN'T_FIND_c100272009.lua--	Hieratic Seal of Creation	SPELL	100272009
---CAN'T_FIND_c100272014.lua--	Nekroz of Areadbhair	EFFECT MONSTER RITUAL	100272014
---CAN'T_FIND_c100272018.lua--	Fairy Tail - Rochka	EFFECT MONSTER	100272018
---CAN'T_FIND_c100272019.lua--	Fairy Tail	CONTINUOUS SPELL	100272019
---CAN'T_FIND_c100272024.lua--	Time Thief Doublebarrel	EFFECT XYZ MONSTER	100272024
---CAN'T_FIND_c100272041.lua--	Radiant Seiyaryu	EFFECT MONSTER	100272041
---CAN'T_FIND_c100272042.lua--	Holy Night Rayel	EFFECT MONSTER	100272042
---CAN'T_FIND_c100272043.lua--	Holy Night Astel	EFFECT MONSTER	100272043
---CAN'T_FIND_c100272044.lua--	Holy Night Flamel	EFFECT MONSTER	100272044
---CAN'T_FIND_c100272045.lua--	Holy Night Bellfire	SPELL	100272045
---CAN'T_FIND_c100272046.lua--	Holy Night Sky	SPELL FIELD	100272046
---CAN'T_FIND_c100272047.lua--	Holy Night Nativity	CONTINUOUS SPELL	100272047
---CAN'T_FIND_c100272048.lua--	Holy Night Advent	CONTINUOUS TRAP	100272048
---CAN'T_FIND_c100272049.lua--	Holy Night Blast	TRAP	100272049
---CAN'T_FIND_c100272101.lua--	Nephshaddoll Genius	EFFECT FLIP MONSTER	100272101
---CAN'T_FIND_c100272102.lua--	Hellshaddoll Void	EFFECT FLIP MONSTER	100272102
---CAN'T_FIND_c100272103.lua--	Galaxy-Eyes Cipher Ex Dragon	EFFECT XYZ MONSTER	100272103
---CAN'T_FIND_c100272104.lua--	Laval Archer	EFFECT MONSTER	100272104
---CAN'T_FIND_c100272105.lua--	Lavalval Salamander	EFFECT SYNCHRO MONSTER	100272105
---CAN'T_FIND_c100272106.lua--	Sunseed Genius Loci	NORMAL MONSTER	100272106
---CAN'T_FIND_c100272107.lua--	Sunvine Maiden	EFFECT MONSTER	100272107
---CAN'T_FIND_c100272108.lua--	Sunseed Shadow	EFFECT MONSTER	100272108
---CAN'T_FIND_c100272109.lua--	Sunseed Twin	EFFECT MONSTER	100272109
---CAN'T_FIND_c100272110.lua--	Sunavalon Dryas	EFFECT MONSTER LINK	100272110
---CAN'T_FIND_c100272111.lua--	Sunavalon Dryades	EFFECT MONSTER LINK	100272111
---CAN'T_FIND_c100272112.lua--	Sunavalon Dryanome	EFFECT MONSTER LINK	100272112
---CAN'T_FIND_c100272113.lua--	Sunavalon Dryatrentiay	EFFECT MONSTER LINK	100272113
---CAN'T_FIND_c100272114.lua--	Sunvine Gardna	EFFECT MONSTER LINK	100272114
---CAN'T_FIND_c100272115.lua--	Sunvine Healer	EFFECT MONSTER LINK	100272115
---CAN'T_FIND_c100272116.lua--	Sunvine Thrasher	EFFECT MONSTER LINK	100272116
---CAN'T_FIND_c100272117.lua--	Sunvine Shrine	CONTINUOUS SPELL	100272117
---CAN'T_FIND_c100272118.lua--	Sunavalon Bloom	CONTINUOUS TRAP	100272118
---CAN'T_FIND_c100275101.lua--	Number C1000: Numeronius	EFFECT XYZ MONSTER	100275101
---CAN'T_FIND_c100275102.lua--	Number iC1000: Numeronius Numeronia	EFFECT XYZ MONSTER	100275102
+--CAN'T_FIND_c101104004.lua--	Supreme Archserpent Golgonda	MONSTER EFFECT	101104004
+--CAN'T_FIND_c101104005.lua--	Sprigguns Brothers	MONSTER EFFECT	101104005
+--CAN'T_FIND_c101104006.lua--	Amazement Administrator <Ɐrlechino>	MONSTER EFFECT	101104006
+--CAN'T_FIND_c101104007.lua--	Amazement Ambassador <Bufo>	MONSTER EFFECT	101104007
+--CAN'T_FIND_c101104008.lua--	Amazement Attendant <Comica>	MONSTER EFFECT	101104008
+--CAN'T_FIND_c101104012.lua--	Bujin Mahitotsu	MONSTER EFFECT	101104012
+--CAN'T_FIND_c101104013.lua--	Bujin Torifune	MONSTER EFFECT	101104013
+--CAN'T_FIND_c101104016.lua--	Traptrix Ginalloa	MONSTER EFFECT	101104016
+--CAN'T_FIND_c101104020.lua--	Mirror Judge of the Ice Barrier	MONSTER EFFECT	101104020
+--CAN'T_FIND_c101104032.lua--	Dogmatika Albaz Knight	MONSTER RITUAL EFFECT	101104032
+--CAN'T_FIND_c101104033.lua--	Albion the Stigmata Dragon	FUSION MONSTER EFFECT	101104033
+--CAN'T_FIND_c101104041.lua--	Sprigguns Merry-Maker	MONSTER XYZ EFFECT	101104041
+--CAN'T_FIND_c101104044.lua--	Tri-Brigade Bearbloom the Solid Assault	MONSTER EFFECT LINK	101104044
+--CAN'T_FIND_c101104046.lua--	Traptrix Utricularia	MONSTER EFFECT LINK	101104046
+--CAN'T_FIND_c101104053.lua--	Dogmatikas	RITUAL SPELL	101104053
+--CAN'T_FIND_c101104054.lua--	Sprigguns Booty	CONTINUOUS SPELL	101104054
+--CAN'T_FIND_c101104055.lua--	Stigmata of White	SPELL	101104055
+--CAN'T_FIND_c101104056.lua--	Amazing Time Ticket	QUICKPLAY SPELL	101104056
+--CAN'T_FIND_c101104057.lua--	Amazement Special Show	QUICKPLAY SPELL	101104057
+--CAN'T_FIND_c101104058.lua--	Amazement Precious Park	FIELD SPELL	101104058
+--CAN'T_FIND_c101104062.lua--	Bujintersection	CONTINUOUS SPELL	101104062
+--CAN'T_FIND_c101104068.lua--	Stigmata Ominous Cry	TRAP	101104068
+--CAN'T_FIND_c101104069.lua--	Judgment of Stigmata	TRAP	101104069
+--CAN'T_FIND_c101104070.lua--	Amazement Family Face	TRAP	101104070
+--CAN'T_FIND_c101104071.lua--	Amaze Ɐttraction Cyclone Coaster	TRAP	101104071
+--CAN'T_FIND_c101104072.lua--	Amaze Ɐttraction Wonder Wheel	TRAP	101104072
+--CAN'T_FIND_c101104073.lua--	Amaze Ɐttraction Majestic Menage	TRAP	101104073
+--CAN'T_FIND_c101104074.lua--	Amaze Ɐttraction Rapid Racing	TRAP	101104074
+--CAN'T_FIND_c101104075.lua--	Amaze Ɐttraction Horror House	TRAP	101104075
+--CAN'T_FIND_c101104101.lua--	ZW - Pegasus Twin Saber 	MONSTER EFFECT	101104101
+--CAN'T_FIND_c101104102.lua--	ZS - Arms Sage	MONSTER EFFECT	101104102
+--CAN'T_FIND_c101104103.lua--	ZS - Ascend Sage	MONSTER EFFECT	101104103
+--CAN'T_FIND_c101104104.lua--	Dragonic Utopia Ray	MONSTER XYZ EFFECT	101104104
+--CAN'T_FIND_c101104105.lua--	ZW - Dragonic Halberd	MONSTER XYZ EFFECT	101104105
+--CAN'T_FIND_c101104106.lua--	Rank-Up-Magic ZEXAL Force	SPELL	101104106
+--CAN'T_FIND_c101104107.lua--	ZEXAL Construction	SPELL	101104107
+--CAN'T_FIND_c101104108.lua--	ZEXAL Entrust	SPELL	101104108
+--CAN'T_FIND_c101104109.lua--	ZEXAL Alliance	TRAP	101104109
+--CAN'T_FIND_c100275101.lua--	Number C1000: Numeronius	MONSTER XYZ EFFECT	100275101
+--CAN'T_FIND_c100275102.lua--	Number iC1000: Numeronius Numeronia	MONSTER XYZ EFFECT	100275102
 --CAN'T_FIND_c100275103.lua--	Numeron Chaos Ritual	SPELL	100275103
---CAN'T_FIND_c100274001.lua--	Angel O1	EFFECT MONSTER	100274001
---CAN'T_FIND_c100274002.lua--	Tellus the Little Angel	EFFECT MONSTER	100274002
---CAN'T_FIND_c100274004.lua--	Level Resist Wall	TRAP	100274004
---CAN'T_FIND_c100274006.lua--	Shell Knight	EFFECT MONSTER	100274006
---CAN'T_FIND_c100274007.lua--	Fossil Machine Skull Convoy	EFFECT MONSTER FUSION	100274007
---CAN'T_FIND_c100274008.lua--	Fossil Machine Skull Wagon	EFFECT MONSTER FUSION	100274008
---CAN'T_FIND_c100274009.lua--	Fossil Machine Skull Buggy	EFFECT MONSTER FUSION	100274009
---CAN'T_FIND_c100274010.lua--	Infernity Sage	TUNER EFFECT MONSTER	100274010
---CAN'T_FIND_c100274011.lua--	Infernity Pawn	EFFECT MONSTER	100274011
---CAN'T_FIND_c100274012.lua--	Contract With the Void	SPELL	100274012
---CAN'T_FIND_c100274102.lua--	Tellus Wing Token	NORMAL TOKEN MONSTER	100274102
-絶火の祆現	Vritra Magistus	SPELL	327051
-大いなる魔導	Theologia Magistus	SPELL QUICKPLAY	7548747
-Live☆Twin エントランス	Live☆Twin Entrance	SPELL QUICKPLAY	8083925
-結晶の女神ニンアルル	Magistus Goddess Ninaruru	EFFECT XYZ MONSTER	8660395
-Evil★Twin キスキル	Evil★Twin Kisikil	EFFECT MONSTER LINK	9205573
-聖魔の大賢者エンディミオン	Magistus Master Endymion	EFFECT MONSTER	9482987
-法典の大賢者クロウリー	Magistus Grimoire Crowley	EFFECT MONSTER	9505425
-喰光の竜輝巧	Draitron Eclipse	SPELL	21576077
-流星輝巧群	Meteornis Draitron	SPELL RITUAL	22398665
-竜輝巧－ルタδ	Draitron Lta-Delta	EFFECT SPSUMMON MONSTER	22420202
-竜儀巧－ラスβ	Draitron Ras-Beta	EFFECT SPSUMMON MONSTER	33543890
-Evil★Twin イージーゲーム	Evil★Twin Easy Game	CONTINUOUS TRAP	34365442
-聖魔の乙女アルテミス	Magistus Maiden Artemis	EFFECT MONSTER LINK	34755994
-聖なる法典	Magistus Invocation	SPELL	34933456
-Live☆Twin チャンネル	Live☆Twin Channel	SPELL FIELD	35487920
-法典の守護者アイワス	Magistus Saint Aiwass	EFFECT MONSTER FUSION	35877582
-絶火の大賢者ゾロア	Magistus Flame Zoroa	TUNER EFFECT MONSTER	36099130
-Live☆Twin キスキル	Live☆Twin Kisikil	EFFECT MONSTER	36326160
-Evil★Twin リィラ	Evil★Twin Lilla	EFFECT MONSTER LINK	36609518
-星彩の竜輝巧	Draitron Asterism	SPELL QUICKPLAY	57970721
-竜輝巧－ファフニール	Draitron Fafnir	SPELL FIELD	58793369
-竜輝巧－エルγ	Draitron El-Gamma	EFFECT SPSUMMON MONSTER	60037599
-Evil★Twin Present	Evil★Twin Present	TRAP	60759087
-三賢者の書	Tris Magistus	CONTINUOUS SPELL	61159609
-絶火の竜神ヴァフラム	Magistus Dragon Vafram	EFFECT SYNCHRO MONSTER	61272280
-シークレット・パスフレーズ	Secret Passphrase	SPELL	61976639
-Evil★Twins キスキル・リィラ	Evil★Twins Kisikil-Lilla	EFFECT SPSUMMON MONSTER	62098216
-竜儀巧－メテオニス＝DRA	Draitron Meteornis=DRA	EFFECT MONSTER RITUAL	69815951
-結晶の大賢者サンドリヨン	Magistus Verre Cendrillon	EFFECT MONSTER	72498838
-Live☆Twin リィラ	Live☆Twin Lilla	EFFECT MONSTER	73810864
-ドライトロン流星群	Draitron Meteor Shower	TRAP COUNTER	84965420
-極超の竜輝巧	Draitron Nova	SPELL	94187078
-竜儀巧－メテオニス＝QUA	Draitron Meteornis=QUA	EFFECT MONSTER RITUAL	95209656
-竜儀巧－アルζ	Draitron Al-Zeta	EFFECT SPSUMMON MONSTER	96026108
-竜輝巧－バンα	Draitron Ban-Alpha	EFFECT SPSUMMON MONSTER	97148796
-Evil★Twin チャレンジ	Evil★Twin Challenge	TRAP	98360333
-	Mahaama the Fairy Dragon	TUNER EFFECT MONSTER	545781
-JP name	Myutant Clash	CONTINUOUS TRAP	5466615
-	Myutant Ultimus	EFFECT MONSTER FUSION	6182103
-JP name	Myutant Arsenal	EFFECT MONSTER	7574904
-	Myutant ST-46	EFFECT MONSTER	8200556
-JP name	Myutant Cry	TRAP	31855260
-	Myutant Evolution Lab	SPELL FIELD	34572613
-	Myutant Beast	EFFECT MONSTER	34695290
-	Jabbing Panda	EFFECT MONSTER	36539330
-	Myutant Fusion	SPELL	42577802
-	Myutant GB-88	EFFECT MONSTER	43709490
-レイダーズ・ウィング	Raiders' Wing	EFFECT MONSTER	52159691
-JP name	Myutant Expansion	CONTINUOUS TRAP	60967717
-JP name	Myutant Mist	EFFECT MONSTER	61089209
-	Myutant M-05	EFFECT MONSTER	62201847
-	Periallis, Empress of Blossoms	EFFECT SYNCHRO MONSTER	72924435
-	Myutant Blast	SPELL EQUIP	79072916
-JP name	Myutant Synthesis	EFFECT MONSTER FUSION	79194594
+--CAN'T_FIND_c100200193.lua--	Staysailor Romaryne	MONSTER TUNER EFFECT	100200193
+--CAN'T_FIND_c100262003.lua--	Time Thief Tempwhaler	MONSTER EFFECT	100262003
+カオス・グレファー	Chaos Grepher	MONSTER EFFECT	18859369
+電脳堺嫦－兎々	Virtual World Rabbit - Tutu	MONSTER EFFECT	20799347
+輪廻竜サンサーラ	Samsara Dragon	MONSTER EFFECT	33750025
+ダーク・アリゲーター	Dark Alligator	MONSTER EFFECT	34479658
+アイスバリアのアテンダント	Attendant of the Ice Barrier	MONSTER EFFECT	43256007
+迅雷の暴君 グローザー	Grozer the Thunderclap Tyrant	MONSTER SYNCHRO EFFECT	45420955
+ドラグニティ－ギザーム	Dragunity Guisarme	MONSTER TUNER EFFECT	69975751
+レプティア・エッグ	Reptia Egg	MONSTER EFFECT	81782101
+超重禽属コカトリウム	Cockathorium, the Superheavy Shining Soarer	MONSTER EFFECT	94395649
+双天将 密迹	Dual Avatar - Empowered Mi-Gyo	FUSION MONSTER EFFECT	284224
+	Mahaama the Fairy Dragon	MONSTER TUNER EFFECT	545781
+--CAN'T_FIND_c952523.lua--	Traptrix Utricularia	MONSTER EFFECT LINK	952523
+--CAN'T_FIND_c1174075.lua--	Drytron Mu-Beta Fafnir	MONSTER XYZ EFFECT	1174075
+灰燼竜バスタード	Splind the Steelexpress Dragon	FUSION MONSTER EFFECT	1906812
+--CAN'T_FIND_c2896663.lua--	ZW - Dragonic Halberd	MONSTER XYZ EFFECT	2896663
+聖刻天龍－エネアード	Hieratic Heavenly Dragon Overlord of Heliopolis	MONSTER XYZ EFFECT	3292267
+--CAN'T_FIND_c4017398.lua--	ZEXAL Entrust	SPELL	4017398
+--CAN'T_FIND_c4647954.lua--	ZS - Ascend Sage	MONSTER EFFECT	4647954
+竜血公ヴァンパイア	Draculea Vampire	MONSTER EFFECT	4918855
+--CAN'T_FIND_c5130393.lua--	Millennium Seeker	MONSTER EFFECT	5130393
+--CAN'T_FIND_c5253985.lua--	Exchanging Souls	QUICKPLAY SPELL	5253985
+--CAN'T_FIND_c5439384.lua--	Explosive Birth of the Flame Champion	SPELL	5439384
+JP name	Myutant Clash	TRAP CONTINUOUS	5466615
 トリシューラの鼓動	Pulse of Trishula	TRAP	6075533
+ワイトベイキング	Wight Baking	MONSTER EFFECT	6128460
+	Myutant Ultimus	FUSION MONSTER EFFECT	6182103
+--CAN'T_FIND_c6374519.lua--	Amazement Special Show	QUICKPLAY SPELL	6374519
+--CAN'T_FIND_c6552971.lua--	When A.I. First Met You	SPELL	6552971
+--CAN'T_FIND_c7373632.lua--	Divine Evolution	SPELL	7373632
+--CAN'T_FIND_c7496001.lua--	Sprigguns Booty	CONTINUOUS SPELL	7496001
+JP name	Myutant Arsenal	MONSTER EFFECT	7574904
+--CAN'T_FIND_c7984540.lua--	Sunavalon Daphne	MONSTER EFFECT LINK	7984540
+	Myutant ST-46	MONSTER EFFECT	8200556
+魔轟神アンドレイス	Fabled Andraith	MONSTER SYNCHRO EFFECT	9061682
+神樹獣ハイペリュトン	Divine Treebeast High Peryton	MONSTER XYZ EFFECT	9349094
+--CAN'T_FIND_c9839945.lua--	Lyna the Light Charmer, Shining	MONSTER EFFECT LINK	9839945
+ パラメタルフォーゼ・メルキャスター	Parametalfoes Melcaster	MONSTER EFFECT PENDULUM	10024317
+--CAN'T_FIND_c10040267.lua--	Fossil Machine Skull Buggy	FUSION MONSTER EFFECT	10040267
+--CAN'T_FIND_c10163855.lua--	Shell Knight	MONSTER EFFECT	10163855
+スプリガンズ・ブラスト！	Sprigguns Blast!	TRAP	10584050
+--CAN'T_FIND_c12018201.lua--	Lavalval Exlord	MONSTER SYNCHRO EFFECT	12018201
+--CAN'T_FIND_c13735899.lua--	Dracrown of Mysterion	FUSION MONSTER EFFECT	13735899
+--CAN'T_FIND_c14957440.lua--	Otoshidamashii	MONSTER TUNER EFFECT	14957440
+--CAN'T_FIND_c14957441.lua--	Otoshidamashii Token	MONSTER TOKEN NORMAL	14957441
+--CAN'T_FIND_c15079028.lua--	Chikyuujin - Carbon	MONSTER EFFECT	15079028
+--CAN'T_FIND_c15792576.lua--	Sky Scourge Sidherz	MONSTER EFFECT	15792576
+--CAN'T_FIND_c16684346.lua--	Proxy Horse	MONSTER EFFECT	16684346
+風の天翼ミラドーラ	Miradora, Skywing of the Whirlwind	MONSTER EFFECT	17063599
 氷結界に至る晴嵐	The Calm After the Ice Barrier's Storm	SPELL	17197110
-氷結界の照魔師	Mirror Master of the Ice Barrier	EFFECT MONSTER	18319762
-氷結界の晶壁	Clear Wall of the Ice Barrier	CONTINUOUS SPELL	43582229
-氷結界の依巫	Vessel Miko of the Ice Barrier	EFFECT MONSTER	44308317
-氷結界の依巫	Ice Barrier Token	NORMAL TOKEN MONSTER	44308318
-氷結界の霜精	Frost Spirit of the Ice Barrier	TUNER EFFECT MONSTER	70703416
-氷結界の還零龍 トリシューラ	Trishula, Subzero Dragon of the Ice Barrier	EFFECT SYNCHRO MONSTER	70980824
-氷結界の虎将 ウェイン	General Wayne of the Ice Barrier	EFFECT MONSTER	81825063
+ダイカミナリ・ジャイクロプス	Daikaminari Gyclops	MONSTER TUNER EFFECT PENDULUM	17241941
+E．M．R．	Electro-Magnetic Railgun	TRAP	17427333
+--CAN'T_FIND_c18106132.lua--	Doll Monster Bear-Bear	MONSTER NORMAL	18106132
+夢魔鏡の使徒－ネイロイ	Oneiroi, the Dream Mirror Emissary	MONSTER EFFECT	18189187
+電脳堺門－玄武	Virtual World Gate - Zhuangwoo	TRAP CONTINUOUS	18249921
+氷結界の照魔師	Mirror Master of the Ice Barrier	MONSTER EFFECT	18319762
+--CAN'T_FIND_c19280589.lua--	Tellus the Little Angel	MONSTER EFFECT	19280589
+--CAN'T_FIND_c19280590.lua--	Tellus Wing Token	MONSTER TOKEN NORMAL	19280590
+電子光虫－レジストライダー	Digital Bug Resistrider	MONSTER EFFECT	19301729
+氷風のリフレイン	Ice Wind's Refrain	TRAP	19362568
+--CAN'T_FIND_c19828680.lua--	Contract With the Void	SPELL	19828680
+ツッパリーチ	Bluffreach	FIELD SPELL	20216608
+WW－フリーズ・ベル	Windwitch - Freeze Bell	MONSTER EFFECT	20246864
+スプリガンズ・ロッキー	Sprigguns Rocky	MONSTER EFFECT	20424878
+--CAN'T_FIND_c20989253.lua--	Amazement Family Face	TRAP	20989253
+S－Force グラビティーノ	Security Force Gravitino	MONSTER EFFECT	21368442
+デーモンの杖	Archfiend Staff of Despair	EQUIP SPELL	21438286
+アームド・ドラゴン・サンダー LV5	Armed Dragon Thunder LV5	MONSTER EFFECT	21546416
+聖夜の降臨	Holy Night Advent	TRAP CONTINUOUS	21985407
+聖なる篝火	Holy Night Bellfire	SPELL	22007085
+S－Force 乱破小夜丸	Security Force Rappa Chiyomaru	MONSTER EFFECT	22180094
+魔轟神界の階	Stairway to the Fabled World	FIELD SPELL	22555834
+ホーリーナイツ・レイエル	Holy Night Rayel	MONSTER EFFECT	23220533
+S-Force ブリッジヘッド	Security Force Bridgehead	FIELD SPELL	23377425
+スプリガンズ・ウォッチ	Sprigguns Watch	SPELL	23499963
 ドラグニティ・グロー	Dragunity Glow	SPELL	25845518
-ドラグニティーレムス	Dragunity Remus	TUNER EFFECT MONSTER	26577155
+ドラグニティーレムス	Dragunity Remus	MONSTER TUNER EFFECT	26577155
+--CAN'T_FIND_c26914168.lua--	Dark Honest	MONSTER EFFECT	26914168
+--CAN'T_FIND_c27036706.lua--	Holy Night Ciel	MONSTER EFFECT	27036706
+--CAN'T_FIND_c27520594.lua--	Sunseed Genius Loci	MONSTER NORMAL	27520594
+--CAN'T_FIND_c27923575.lua--	Booby Game	TRAP	27923575
+聖蔓の社	Sunvine Shrine	CONTINUOUS SPELL	27946124
+聖蔓の守護者	Sunvine Gardna	MONSTER EFFECT LINK	28168762
+銀河眼の極光波竜	Galaxy-Eyes Cipher Ex Dragon	MONSTER XYZ EFFECT	28346136
+--CAN'T_FIND_c28645123.lua--	Mano A.I. Mano	TRAP CONTINUOUS	28645123
+--CAN'T_FIND_c28868394.lua--	Traptrix Ginalloa	MONSTER EFFECT	28868394
+--CAN'T_FIND_c29107423.lua--	Witch of the Blood Rose	MONSTER TUNER EFFECT	29107423
+スプリガンズ・キャプテン サルガス	Sprigguns Captain Sargus	MONSTER EFFECT	29601381
+--CAN'T_FIND_c29867611.lua--	Amaze Ɐttraction Majestic Menage	TRAP	29867611
+--CAN'T_FIND_c29981935.lua--	Bujin Torifune	MONSTER EFFECT	29981935
+聖種の影芽	Sunseed Shadow	MONSTER EFFECT	30013902
+ラヴァル・アーチャー	Laval Archer	MONSTER EFFECT	30303854
+--CAN'T_FIND_c30829071.lua--	Amazement Ambassador <Bufo>	MONSTER EFFECT	30829071
+--CAN'T_FIND_c31002402.lua--	Dogmatikas	RITUAL SPELL	31002402
+--CAN'T_FIND_c31042659.lua--	Supreme Archserpent Golgonda	MONSTER EFFECT	31042659
+--CAN'T_FIND_c31525442.lua--	Zolga the Prophet	MONSTER EFFECT	31525442
+--CAN'T_FIND_c31712840.lua--	ZEXAL Alliance	TRAP	31712840
+--CAN'T_FIND_c31834488.lua--	Book of Lunar Eclipse	QUICKPLAY SPELL	31834488
+JP name	Myutant Cry	TRAP	31855260
+--CAN'T_FIND_c32056070.lua--	You & A.I.	CONTINUOUS SPELL	32056070
+--CAN'T_FIND_c32164201.lua--	ZW - Pegasus Twin Saber	MONSTER EFFECT	32164201
+--CAN'T_FIND_c32247099.lua--	The Absolute Divine Beast	TRAP CONTINUOUS	32247099
+--CAN'T_FIND_c33773528.lua--	Amazement Precious Park	FIELD SPELL	33773528
+	Myutant Evolution Lab	FIELD SPELL	34572613
+武装竜の霹靂	Armed Dragon Flash	QUICKPLAY SPELL	34611551
+	Myutant Beast	MONSTER EFFECT	34695290
+--CAN'T_FIND_c34995106.lua--	Stigmata of White	SPELL	34995106
+S－Force ジャスティファイ	Security Force Justify	MONSTER EFFECT LINK	35334193
+--CAN'T_FIND_c36224040.lua--	Rank-Up-Magic ZEXAL Force	SPELL	36224040
+--CAN'T_FIND_c36346532.lua--	Paleozoic Cambroraster	MONSTER EFFECT LINK	36346532
+	Jabbing Panda	MONSTER EFFECT	36539330
+ドラグニティナイト－ゴルムファバル	Dragunity Knight - Gormfabal	MONSTER SYNCHRO EFFECT	36556781
+Parametalfoes Azothles 	Parametalfoes Azothles	FUSION MONSTER EFFECT PENDULUM	37491810
+夢魔鏡の魘魔－ネイロス	Oneiros, the Dream Mirror Faeking	FUSION MONSTER EFFECT	37678339
+ドラグニティナイトの影霊衣	Nekroz of Areadbhair	MONSTER RITUAL EFFECT	39468724
+創造の聖刻印	Hieratic Seal of Creation	SPELL	39680372
+聖天樹の精霊	Sunavalon Dryades	MONSTER EFFECT LINK	39880350
+--CAN'T_FIND_c40139997.lua--	Blood Rose Dragon	MONSTER SYNCHRO EFFECT	40139997
+--CAN'T_FIND_c40352445.lua--	Dogmatika Albaz Knight	MONSTER RITUAL EFFECT	40352445
+--CAN'T_FIND_c42469671.lua--	Thunderforce Attack	QUICKPLAY SPELL	42469671
+ジャマ・ピンク	Ojama Pink	MONSTER EFFECT	42517468
+	Myutant Fusion	SPELL	42577802
+氷結界の晶壁	Clear Wall of the Ice Barrier	CONTINUOUS SPELL	43582229
+	Myutant GB-88	MONSTER EFFECT	43709490
+天孔邪鬼	Amanokujaki	MONSTER TUNER EFFECT	43739056
+--CAN'T_FIND_c44190146.lua--	Grandpa Demetto	MONSTER EFFECT	44190146
+氷結界の依巫	Vessel Miko of the Ice Barrier	MONSTER EFFECT	44308317
+氷結界の依巫	Ice Barrier Token	MONSTER TOKEN NORMAL	44308318
+妖精弓士イングナル	Fairy Archer Ingunar	MONSTER EFFECT	44451698
+--CAN'T_FIND_c44478599.lua--	Sunavalon Melias	MONSTER EFFECT LINK	44478599
+双天の転身	Dual Avatar Turning	TRAP	44644529
+碑像の天使－アズルーン	Angel Statue - Azurune	TRAP CONTINUOUS	44822037
+--CAN'T_FIND_c45313724.lua--	Void Cauldron	TRAP CONTINUOUS	45313724
+マシンナーズ・アンクラスペア	Machina Unclasspare	MONSTER EFFECT	45674286
+光天のマハー・ヴァイロ	Lightsky Maha Vailo	MONSTER EFFECT	45796834
+--CAN'T_FIND_c46435376.lua--	Infernity Sage	MONSTER TUNER EFFECT	46435376
+--CAN'T_FIND_c47163170.lua--	Tri-Brigade Bearbloom the Solid Assault	MONSTER EFFECT LINK	47163170
+--CAN'T_FIND_c48285768.lua--	Sprigguns Merry-Maker	MONSTER XYZ EFFECT	48285768
+--CAN'T_FIND_c49407319.lua--	Star Mine	MONSTER SYNCHRO EFFECT	49407319
+--CAN'T_FIND_c51474037.lua--	Yamoimori	MONSTER EFFECT	51474037
 ドラグニティ・ヴォイド	Dragunity Purgatory	TRAP COUNTER	51849216
+--CAN'T_FIND_c52296675.lua--	Uncamouflight	MONSTER SPSUMMON EFFECT PENDULUM	52296675
 ドラグニティ・ドラフト	Dragunity Draft	CONTINUOUS SPELL	52962804
-ドラグニティアームズ－グラム	Dragunity Arma Gram	EFFECT MONSTER	53184342
-ドラグニティナイト－アラドヴァル	Dragunity Knight - Areadbhair	EFFECT SYNCHRO MONSTER	88234821
-ドラグニティーレガトゥス	Dragunity Legatus	EFFECT MONSTER	89172051
-疾風のドラグニティ	Dragunity of the Hurricane	SPELL QUICKPLAY	89450409
-カオス・グレファー	Chaos Grepher	EFFECT MONSTER	18859369
-電脳堺嫦－兎々	Virtual World Rabbit - Tutu	EFFECT MONSTER	20799347
-JP name	Destined Rivals	TRAP	22634473
-輪廻竜サンサーラ	Samsara Dragon	EFFECT MONSTER	33750025
-ダーク・アリゲーター	Dark Alligator	EFFECT MONSTER	34479658
-ダーク・アリゲーター	Alligator Token	NORMAL TOKEN MONSTER	34479659
-アイスバリアのアテンダント	Attendant of the Ice Barrier	EFFECT MONSTER	43256007
-迅雷の暴君 グローザー	Grozer the Thunderclap Tyrant	EFFECT SYNCHRO MONSTER	45420955
-JP name	Successor Soul	SPELL QUICKPLAY	69145169
-ドラグニティ－ギザーム	Dragunity Guisarme	TUNER EFFECT MONSTER	69975751
-レプティア・エッグ	Reptia Egg	EFFECT MONSTER	81782101
-超重禽属コカトリウム	Cockathorium, the Superheavy Shining Soarer	EFFECT MONSTER	94395649
-JP name	Strength in Unity	CONTINUOUS SPELL	96239878
+ドラグニティアームズ－グラム	Dragunity Arma Gram	MONSTER EFFECT	53184342
+--CAN'T_FIND_c53318263.lua--	Bahartiya, Skypiercer of the Light	MONSTER EFFECT	53318263
+--CAN'T_FIND_c53535814.lua--	Mirror Judge of the Ice Barrier	MONSTER EFFECT	53535814
+聖蔓の乙女	Sunvine Maiden	MONSTER EFFECT	53618293
+--CAN'T_FIND_c54257392.lua--	Live☆Twin Ki-sikil Frost	MONSTER EFFECT	54257392
+聖天樹の開花	Sunavalon Bloom	TRAP CONTINUOUS	54340229
+--CAN'T_FIND_c54927180.lua--	Fukubiki	TRAP	54927180
+--CAN'T_FIND_c55049722.lua--	Security Force Chase	TRAP	55049722
+--CAN'T_FIND_c55262310.lua--	Amaze Ɐttraction Rapid Racing	TRAP	55262310
+弑逆の魔轟神	Fabled Regicide	TRAP	55766177
+鉄獣戦線 キット	Tri-Brigade Kit	MONSTER EFFECT	56196385
+メタルフォーゼ・バニッシャー	Metalfoes Vanisher	MONSTER EFFECT PENDULUM	56518311
+ドラグマ・ジェネシス	Dogmatika Genesis	TRAP	56588755
+スプリガンズ・ピード	Sprigguns Pede	MONSTER EFFECT	56818977
+アームド・ドラゴン・サンダー LV3	Armed Dragon Thunder LV3	MONSTER EFFECT	57030525
+--CAN'T_FIND_c57157964.lua--	Fossil Machine Skull Convoy	FUSION MONSTER EFFECT	57157964
+武装竜の万雷	Armed Dragon Thunderbolt	TRAP	57605303
+魔轟神マルコシア	Fabled Marchosia	MONSTER EFFECT	57630503
+アームド・ドラゴン・サンダー LV10	Armed Dragon Thunder LV10	MONSTER EFFECT	58153103
+S－Force プラ＝ティナ	Security Force Platina	MONSTER EFFECT	58363151
+聖なる煌炎	Holy Night Blast	TRAP	58374502
+煌めく聖夜	Holy Night Sky	FIELD SPELL	58406094
+混錬装融合	Parametalfoes Fusion	SPELL	58549532
+S－Force プロフェッサーϜ	Security Force Professor Digamma	MONSTER EFFECT	58589739
+鎧竜降臨	Armored Dragon Ritual	RITUAL SPELL	58827995
+ホーリーナイツ・アステル	Holy Night Astel	MONSTER EFFECT	59228631
+大砂海ゴールド・ゴルゴンダ	Vast Desert Gold Golgonda	FIELD SPELL	60884672
+JP name	Myutant Expansion	TRAP CONTINUOUS	60967717
+JP name	Myutant Mist	MONSTER EFFECT	61089209
+武装竜の襲雷	Armed Dragon Blitz	SPELL	61606250
+ヘビーメタルフォーゼ・アマルガム	Heavymetalfoes Amalgam	MONSTER EFFECT LINK	61728808
+	Myutant M-05	MONSTER EFFECT	62201847
+--CAN'T_FIND_c62623659.lua--	ZEXAL Construction	SPELL	62623659
+スプリガンズ・シップ エクスブロウラー	Sprigguns Ship Exblower	MONSTER XYZ EFFECT	62941499
+クロノダイバー・アジャスター	Time Thief Adjuster	MONSTER EFFECT	64730881
+聖天樹の大精霊	Sunavalon Dryanome	MONSTER EFFECT LINK	65285459
+--CAN'T_FIND_c65479980.lua--	Security Force Dog Tag	MONSTER EFFECT	65479980
+聖蔓の癒し手	Sunvine Healer	MONSTER EFFECT LINK	65563871
+妖精伝姫－ラチカ	Fairy Tail - Rochka	MONSTER EFFECT	65953423
+--CAN'T_FIND_c66192538.lua--	Danmari @Ignister	MONSTER EFFECT	66192538
+聖種の天双芽	Sunseed Twin	MONSTER EFFECT	66407907
+星なる影 ゲニウス	Nephshaddoll Genius	MONSTER FLIP EFFECT	66675911
+--CAN'T_FIND_c66984907.lua--	Amaze Ɐttraction Cyclone Coaster	TRAP	66984907
+--CAN'T_FIND_c67100549.lua--	Stigmata Ominous Cry	TRAP	67100549
+--CAN'T_FIND_c67314110.lua--	Amazement Attendant <Comica>	MONSTER EFFECT	67314110
+--CAN'T_FIND_c67436768.lua--	Sprigguns Brothers	MONSTER EFFECT	67436768
+ラヴァルバル・サラマンダー	Lavalval Salamander	MONSTER SYNCHRO EFFECT	67797569
+--CAN'T_FIND_c68045685.lua--	Bujintersection	CONTINUOUS SPELL	68045685
+--CAN'T_FIND_c68223137.lua--	One-Kuri-Way	SPELL	68223137
+--CAN'T_FIND_c68258355.lua--	ZS - Arms Sage	MONSTER EFFECT	68258355
+--CAN'T_FIND_c69167267.lua--	Basal Rose Shoot	QUICKPLAY SPELL	69167267
+S－Force ショウダウン	Security Force Showdown	QUICKPLAY SPELL	69761020
+--CAN'T_FIND_c70389815.lua--	Amazing Time Ticket	QUICKPLAY SPELL	70389815
+--CAN'T_FIND_c70473293.lua--	Sunvine Cross Breed	CONTINUOUS SPELL	70473293
+氷結界の霜精	Frost Spirit of the Ice Barrier	MONSTER TUNER EFFECT	70703416
+契珖のヴルーレセンス	Fluorescent Vluorescence	MONSTER EFFECT	70856343
+壱時砲固定式	Stationary One-o'-Clock Linear Accelerator	TRAP	70916046
+氷結界の還零龍 トリシューラ	Trishula, Subzero Dragon of the Ice Barrier	MONSTER SYNCHRO EFFECT	70980824
+--CAN'T_FIND_c71595845.lua--	Doll Happiness	CONTINUOUS SPELL	71595845
+--CAN'T_FIND_c72717433.lua--	Doll Monster Miss Mädchen	MONSTER NORMAL	72717433
+	Periallis, Empress of Blossoms	MONSTER SYNCHRO EFFECT	72924435
+--CAN'T_FIND_c73345237.lua--	Benghalances of the Samsaric Cycle	MONSTER EFFECT LINK	73345237
+WW－ダイヤモンド・ベル	Windwitch - Diamond Bell	MONSTER SYNCHRO EFFECT	73667937
+--CAN'T_FIND_c74567889.lua--	Dark Infant @Ignister	MONSTER EFFECT LINK	74567889
+--CAN'T_FIND_c74689476.lua--	Rilliona, the Magistus Glass Witch	MONSTER XYZ EFFECT	74689476
+黄金狂エルドリッチ	El Rey Conquista Eldlich	FUSION MONSTER EFFECT	74889525
+--CAN'T_FIND_c75402014.lua--	Dragonic Utopia Ray	MONSTER XYZ EFFECT	75402014
+鎧竜の聖騎士	Paladin of Armored Dragon	MONSTER RITUAL EFFECT	75901113
+--CAN'T_FIND_c76524506.lua--	Garden Rose Flora	MONSTER TUNER SYNCHRO EFFECT	76524506
+--CAN'T_FIND_c78642798.lua--	Golden Idol	MONSTER EFFECT	78642798
+	Myutant Blast	EQUIP SPELL	79072916
+JP name	Myutant Synthesis	FUSION MONSTER EFFECT	79194594
+黄紡鮄デュオニギス	Yellow Gurnard Duonigis	MONSTER EFFECT	79724755
+--CAN'T_FIND_c79868386.lua--	Fist of Fate	QUICKPLAY SPELL	79868386
+--CAN'T_FIND_c80529459.lua--	Scrap Raptor	MONSTER TUNER EFFECT	80529459
+夢魔鏡の夢語らい	Dream Mirror Dreamtelling	TRAP CONTINUOUS	81038234
+Live☆Twin リィラ・トリート	Live☆Twin Lil-la Treat	MONSTER EFFECT	81078880
+氷結界の虎将 ウェイン	General Wayne of the Ice Barrier	MONSTER EFFECT	81825063
+--CAN'T_FIND_c82243738.lua--	Angel O1	MONSTER EFFECT	82243738
+戦華史略－大丈夫之義	Ancient Warriors Saga - A Man's Honor	TRAP CONTINUOUS	82255872
+戦華史略－大丈夫之義	Ancient Warriors Dragoon Token	MONSTER TOKEN NORMAL	82255873
+--CAN'T_FIND_c82434071.lua--	Infernity Pawn	MONSTER EFFECT	82434071
+戦華の叛－呂奉	Ancient Warriors - Rebellious Lu Feng	MONSTER SPSUMMON EFFECT	82791472
+セイクリッド・カドケウス	Constellar Caduceus	MONSTER EFFECT	82913020
+S－Force スペシメン	Security Force Specimen	TRAP	82977464
+魔轟神獣アバンク	The Fabled Afanc	MONSTER TUNER EFFECT	83039608
+スプリガンズ・コール！	Sprigguns Call!	TRAP	83199011
+スプリガンズ・バンガー	Sprigguns Banger	MONSTER EFFECT	83203672
+--CAN'T_FIND_c83656563.lua--	Fossil Machine Skull Wagon	FUSION MONSTER EFFECT	83656563
+金満で謙虚な壺	Pot of Disparity	SPELL	84211599
+アームド・ドラゴン LV10-ホワイト	Armed Dragon LV10 - White	MONSTER SPSUMMON EFFECT	84425220
+--CAN'T_FIND_c84778110.lua--	Flint Cragger	MONSTER EFFECT	84778110
+WW－ブリザード・ベル	Windwitch - Blizzard Bell	MONSTER TUNER EFFECT	84851250
+聖なる降誕	Holy Night Nativity	CONTINUOUS SPELL	85590798
+--CAN'T_FIND_c86133013.lua--	Level Resist Wall	TRAP	86133013
+ホーリーナイツ・フラムエル	Holy Night Flamel	MONSTER EFFECT	86613346
+--CAN'T_FIND_c87468732.lua--	Hendou Kikou Clockark	MONSTER EFFECT PENDULUM	87468732
+--CAN'T_FIND_c87746184.lua--	Albion the Stigmata Dragon	FUSION MONSTER EFFECT	87746184
+ドラグニティナイト－アラドヴァル	Dragunity Knight - Areadbhair	MONSTER SYNCHRO EFFECT	88234821
+--CAN'T_FIND_c88685329.lua--	Dark-Eye Nightmare	MONSTER EFFECT	88685329
+ドラグニティーレガトゥス	Dragunity Legatus	MONSTER EFFECT	89172051
+疾風のドラグニティ	Dragunity of the Hurricane	QUICKPLAY SPELL	89450409
+--CAN'T_FIND_c89707961.lua--	Pharaonic Guardian Sphinx	MONSTER EFFECT	89707961
+聖夜に煌めく竜	Radiant Seiyaryu	MONSTER EFFECT	90835938
+クロノダイバー・ダブルバレル	Time Thief Doublebarrel	MONSTER XYZ EFFECT	91135480
+--CAN'T_FIND_c91534476.lua--	One by One	TRAP	91534476
+聖蔓の剣士	Sunvine Thrasher	MONSTER EFFECT LINK	91557476
+--CAN'T_FIND_c91642007.lua--	Ravenwing, the Plunder Patroll Pilot	MONSTER EFFECT	91642007
+--CAN'T_FIND_c91864689.lua--	Security Force Edge Laser	MONSTER EFFECT	91864689
+妖精の伝姫	Fairy Tail	CONTINUOUS SPELL	91957038
+影依の炎核 ヴォイド	Hellshaddoll Void	MONSTER FLIP EFFECT	92079625
+--CAN'T_FIND_c92586237.lua--	Bujin Mahitotsu	MONSTER EFFECT	92586237
+--CAN'T_FIND_c92650018.lua--	Amaze Ɐttraction Horror House	TRAP	92650018
+聖天樹の大母神	Sunavalon Dryatrentiay	MONSTER EFFECT LINK	92770064
+--CAN'T_FIND_c93473606.lua--	Amaze Ɐttraction Wonder Wheel	TRAP	93473606
+--CAN'T_FIND_c93595154.lua--	Judgment of Stigmata	TRAP	93595154
+--CAN'T_FIND_c93708824.lua--	Roxrose Dragon	MONSTER TUNER EFFECT	93708824
+聖天樹の幼精	Sunavalon Dryas	MONSTER EFFECT LINK	93896655
+アームド・ドラゴン・サンダー LV7	Armed Dragon Thunder LV7	MONSTER EFFECT	94141712
+--CAN'T_FIND_c94317736.lua--	Secret Hot Springs of the Far East	FIELD SPELL	94317736
+--CAN'T_FIND_c94821366.lua--	Amazement Administrator <Ɐrlechino>	MONSTER EFFECT	94821366
+黄金郷の七摩天	Seven Realms of the Golden Land	CONTINUOUS SPELL	95034141
+S－Force オリフィス	Security Force Orifice	MONSTER EFFECT	95974848
+WWの鈴音	Chime of the Windwitch	SPELL	96156729
+鉄獣の邂逅	Tri-Brigade Rendezvous	QUICKPLAY SPELL	96378317
+武装竜の震霆	Armed Dragon Lightning	CONTINUOUS SPELL	97091969
+閉ザサレシ世界ノ冥神	Saros Eresh Kurnugias	MONSTER EFFECT LINK	98127546

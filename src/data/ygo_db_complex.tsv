@@ -13671,57 +13671,386 @@ And,type,include,MONSTER__And,attack,>,0__And,defense,>,0"
 99927991	魔救の奇縁	 ,type,include,MONSTER__And,race,==,ROCK__And,level,<,lv
 9995767	宮廷のしきたり	
 36996508	--CAN'T_FIND_c36996508.lua--	
+327051	絶火の祆現	" ,cat_Eng,include,Magistus__And,level,<,4
+ ,cat_Eng,include,Magistus"
+5043020	--CAN'T_FIND_c5043020.lua--	
+7548747	大いなる魔導	" ,cat_Eng,include,Magistus
+ ,type,not include,MONSTER
+ ,type,include,MONSTER__And,cat_Eng,include,Magistus__And,type,include,typ"
+8083925	Ｌｉｖｅ☆Ｔｗｉｎ エントランス	 ,(,1,.__ ,cat_Eng,include,Ki-sikil__Or,cat_Eng,include,Lil-la__.,),1,.
+8660395	結晶の女神ニンアルル	 ,race,==,SPELLCASTER__And,level,>,4
+9205573	Ｅｖｉｌ★Ｔｗｉｎ キスキル	 ,cat_Eng,include,Lil-la
+9482987	聖魔の大賢者エンディミオン	" ,cat_Eng,include,Magistus
+ ,type,include,SPELL"
+9505425	法典の大賢者クロウリー	 ,cat_Eng,include,Magistus__And,level,!=,4__And,type,include,MONSTER
+9995767	宮廷のしきたり	
+9995776	--CAN'T_FIND_c9995776.lua--	
+21576077	喰光の竜輝巧	 ,type,include,MONSTER__And,cat_Eng,include,Drytron
+21593987	--CAN'T_FIND_c21593987.lua--	
+22398665	流星輝巧群	" ,race,==,MACHINE
+ ,cat_Eng,include,Drytron"
+22420202	竜輝巧－ルタδ	 ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Drytron__And,type,include,MONSTER__.,),2,.__.,),2,.
+22634473	JP name	 ,(,1,.__ ,id,==,89631139__ ,id,==,46986414
+33543890	竜儀巧－ラスβ	" ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Drytron__And,type,include,MONSTER__.,),2,.__.,),2,.
+ ,cat_Eng,include,Drytron__And,type,include,MONSTER"
+34365442	Ｅｖｉｌ★Ｔｗｉｎ イージーゲーム	" ,(,1,.__ ,cat_Eng,include,Ki-sikil__Or,cat_Eng,include,Lil-la__.,),1,.
+ ,(,1,.__ ,cat_Eng,include,Ki-sikil__Or,cat_Eng,include,Lil-la__.,),1,.
+ ,(,1,.__ ,cat_Eng,include,Ki-sikil__Or,cat_Eng,include,Lil-la__.,),1,.__And,type,include,MONSTER"
+34479659	ダーク・アリゲーター	" ,race,==,REPTILE
+ ,race,==,REPTILE"
+34755994	聖魔の乙女アルテミス	" ,level,<,4__ ,race,==,SPELLCASTER,lc,sumtype,tp
+ ,cat_Eng,include,Magistus
+ ,cat_Eng,include,Magistus__And,type,include,MONSTER"
+34933456	聖なる法典	
+35487920	Ｌｉｖｅ☆Ｔｗｉｎ チャンネル	" ,(,1,.__ ,cat_Eng,include,Ki-sikil__Or,cat_Eng,include,Lil-la__.,),1,.__And,type,include,MONSTER
+ ,(,1,.__ ,cat_Eng,include,Ki-sikil__Or,cat_Eng,include,Lil-la__.,),1,.__And,type,include,MONSTER"
+35877582	法典の守護者アイワス	
+36099130	絶火の大賢者ゾロア	" ,cat_Eng,include,Magistus
+ ,cat_Eng,include,Magistus
+ ,race,==,SPELLCASTER__And,level,==,4"
+36326160	Ｌｉｖｅ☆Ｔｗｉｎ キスキル	 ,cat_Eng,include,Lil-la
+36609518	Evil★Twin リィラ	 ,cat_Eng,include,Ki-sikil
+52159691	レイダーズ・ウィング	 ,type,include,XYZ__And,attribute,==,DARK
+57970721	星彩の竜輝巧	 ,(,1,.__ ,cat_Eng,include,Drytron__.,),1,.
+58793369	竜輝巧－ファフニール	" ,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.__And,cat_Eng,include,Drytron
+ ,level,>,2__ ,attack,>,1000"
+60037599	竜輝巧－エルγ	" ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Drytron__And,type,include,MONSTER__.,),2,.__.,),2,.
+ ,cat_Eng,include,Drytron__And,type,include,MONSTER__And,attack,==,2000"
+60759087	Evil★Twin Present	" ,(,1,.__ ,cat_Eng,include,Ki-sikil__Or,cat_Eng,include,Lil-la__.,),1,.
+ ,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,."
+61159609	三賢者の書	" ,cat_Eng,include,Magistus
+ ,race,==,SPELLCASTER__And,level,==,4
+ ,cat_Eng,include,Magistus"
+61272280	絶火の竜神ヴァフラム	
+61976639	シークレット・パスフレーズ	
+62098216	Ｅｖｉｌ★Ｔｗｉｎｓ キスキル・リィラ	 ,type,include,LINK
+65240394	ビッグ・シールド・ガードナー	
+69145169	JP name	" ,type,include,EFFECT
+ ,type,include,MONSTER__And,type,include,EFFECT
+ ,type,include,NORMAL__And,level,>,7"
+69815951	竜儀巧－メテオニス＝ＤＲＡ	 ,type,include,MONSTER
+70583996	--CAN'T_FIND_c70583996.lua--	
+72498838	結晶の大賢者サンドリヨン	" ,cat_Eng,include,Magistus__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.
+ ,race,==,SPELLCASTER__And,level,<,4
+ ,cat_Eng,include,Magistus__And,level,!=,4__And,type,include,MONSTER"
+73810864	Ｌｉｖｅ☆Ｔｗｉｎ リィラ	 ,cat_Eng,include,Ki-sikil
+84965420	ドライトロン流星群	
+88264988	レッドアイズ・ダークネスメタルドラゴン	 ,race,==,DRAGON
+94187078	極超の竜輝巧	 ,cat_Eng,include,Drytron__And,type,include,MONSTER
+95209656	竜儀巧－メテオニス＝ＱＵＡ	 ,cat_Eng,include,Drytron
+96026108	竜儀巧－アルζ	 ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Drytron__And,type,include,MONSTER__.,),2,.__.,),2,.
+96239878	JP name	 ,type,include,NORMAL__And,level,>,7
+97148796	竜輝巧－バンα	 ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Drytron__And,type,include,MONSTER__.,),2,.__.,),2,.
+98360333	Ｅｖｉｌ★Ｔｗｉｎ チャレンジ	" ,(,1,.__ ,cat_Eng,include,Ki-sikil__Or,cat_Eng,include,Lil-la__.,),1,.
+ ,cat_Eng,include,Evil★Twin"
+101103000	--CAN'T_FIND_c101103000.lua--	
+101103081	--CAN'T_FIND_c101103081.lua--	
+101103082	--CAN'T_FIND_c101103082.lua--	
+101103083	--CAN'T_FIND_c101103083.lua--	
+101103084	--CAN'T_FIND_c101103084.lua--	
+101103085	--CAN'T_FIND_c101103085.lua--	
+101103086	--CAN'T_FIND_c101103086.lua--	
+101103087	--CAN'T_FIND_c101103087.lua--	
+101103088	--CAN'T_FIND_c101103088.lua--	
+101103089	--CAN'T_FIND_c101103089.lua--	
+101103090	--CAN'T_FIND_c101103090.lua--	
+101103091	--CAN'T_FIND_c101103091.lua--	
+101103092	--CAN'T_FIND_c101103092.lua--	
+101103093	--CAN'T_FIND_c101103093.lua--	
+101103094	--CAN'T_FIND_c101103094.lua--	
+101103095	--CAN'T_FIND_c101103095.lua--	
+101103096	--CAN'T_FIND_c101103096.lua--	
+101103097	--CAN'T_FIND_c101103097.lua--	
+101103098	--CAN'T_FIND_c101103098.lua--	
+100416027	--CAN'T_FIND_c100416027.lua--	
+100416028	--CAN'T_FIND_c100416028.lua--	
+100416029	--CAN'T_FIND_c100416029.lua--	
+100416030	--CAN'T_FIND_c100416030.lua--	
+100416031	--CAN'T_FIND_c100416031.lua--	
+100416032	--CAN'T_FIND_c100416032.lua--	
+100416033	--CAN'T_FIND_c100416033.lua--	
+100416034	--CAN'T_FIND_c100416034.lua--	
+100416035	--CAN'T_FIND_c100416035.lua--	
+100416037	--CAN'T_FIND_c100416037.lua--	
+100416038	--CAN'T_FIND_c100416038.lua--	
+100416039	--CAN'T_FIND_c100416039.lua--	
+100275001	--CAN'T_FIND_c100275001.lua--	
+101104004	--CAN'T_FIND_c101104004.lua--	
+101104005	--CAN'T_FIND_c101104005.lua--	
+101104006	--CAN'T_FIND_c101104006.lua--	
+101104007	--CAN'T_FIND_c101104007.lua--	
+101104008	--CAN'T_FIND_c101104008.lua--	
+101104012	--CAN'T_FIND_c101104012.lua--	
+101104013	--CAN'T_FIND_c101104013.lua--	
+101104016	--CAN'T_FIND_c101104016.lua--	
+101104020	--CAN'T_FIND_c101104020.lua--	
+101104032	--CAN'T_FIND_c101104032.lua--	
+101104033	--CAN'T_FIND_c101104033.lua--	
+101104041	--CAN'T_FIND_c101104041.lua--	
+101104044	--CAN'T_FIND_c101104044.lua--	
+101104046	--CAN'T_FIND_c101104046.lua--	
+101104053	--CAN'T_FIND_c101104053.lua--	
+101104054	--CAN'T_FIND_c101104054.lua--	
+101104055	--CAN'T_FIND_c101104055.lua--	
+101104056	--CAN'T_FIND_c101104056.lua--	
+101104057	--CAN'T_FIND_c101104057.lua--	
+101104058	--CAN'T_FIND_c101104058.lua--	
+101104062	--CAN'T_FIND_c101104062.lua--	
+101104068	--CAN'T_FIND_c101104068.lua--	
+101104069	--CAN'T_FIND_c101104069.lua--	
+101104070	--CAN'T_FIND_c101104070.lua--	
+101104071	--CAN'T_FIND_c101104071.lua--	
+101104072	--CAN'T_FIND_c101104072.lua--	
+101104073	--CAN'T_FIND_c101104073.lua--	
+101104074	--CAN'T_FIND_c101104074.lua--	
+101104075	--CAN'T_FIND_c101104075.lua--	
+101104101	--CAN'T_FIND_c101104101.lua--	
+101104102	--CAN'T_FIND_c101104102.lua--	
+101104103	--CAN'T_FIND_c101104103.lua--	
+101104104	--CAN'T_FIND_c101104104.lua--	
+101104105	--CAN'T_FIND_c101104105.lua--	
+101104106	--CAN'T_FIND_c101104106.lua--	
+101104107	--CAN'T_FIND_c101104107.lua--	
+101104108	--CAN'T_FIND_c101104108.lua--	
+101104109	--CAN'T_FIND_c101104109.lua--	
+101104004	--CAN'T_FIND_c101104004.lua--	
+101104005	--CAN'T_FIND_c101104005.lua--	
+101104006	--CAN'T_FIND_c101104006.lua--	
+101104007	--CAN'T_FIND_c101104007.lua--	
+101104008	--CAN'T_FIND_c101104008.lua--	
+101104012	--CAN'T_FIND_c101104012.lua--	
+101104013	--CAN'T_FIND_c101104013.lua--	
+101104016	--CAN'T_FIND_c101104016.lua--	
+101104020	--CAN'T_FIND_c101104020.lua--	
+101104032	--CAN'T_FIND_c101104032.lua--	
+101104033	--CAN'T_FIND_c101104033.lua--	
+101104041	--CAN'T_FIND_c101104041.lua--	
+101104044	--CAN'T_FIND_c101104044.lua--	
+101104046	--CAN'T_FIND_c101104046.lua--	
+101104053	--CAN'T_FIND_c101104053.lua--	
+101104054	--CAN'T_FIND_c101104054.lua--	
+101104055	--CAN'T_FIND_c101104055.lua--	
+101104056	--CAN'T_FIND_c101104056.lua--	
+101104057	--CAN'T_FIND_c101104057.lua--	
+101104058	--CAN'T_FIND_c101104058.lua--	
+101104062	--CAN'T_FIND_c101104062.lua--	
+101104068	--CAN'T_FIND_c101104068.lua--	
+101104069	--CAN'T_FIND_c101104069.lua--	
+101104070	--CAN'T_FIND_c101104070.lua--	
+101104071	--CAN'T_FIND_c101104071.lua--	
+101104072	--CAN'T_FIND_c101104072.lua--	
+101104073	--CAN'T_FIND_c101104073.lua--	
+101104074	--CAN'T_FIND_c101104074.lua--	
+101104075	--CAN'T_FIND_c101104075.lua--	
+101104101	--CAN'T_FIND_c101104101.lua--	
+101104102	--CAN'T_FIND_c101104102.lua--	
+101104103	--CAN'T_FIND_c101104103.lua--	
+101104104	--CAN'T_FIND_c101104104.lua--	
+101104105	--CAN'T_FIND_c101104105.lua--	
+101104106	--CAN'T_FIND_c101104106.lua--	
+101104107	--CAN'T_FIND_c101104107.lua--	
+101104108	--CAN'T_FIND_c101104108.lua--	
+101104109	--CAN'T_FIND_c101104109.lua--	
+100275101	--CAN'T_FIND_c100275101.lua--	
+100275102	--CAN'T_FIND_c100275102.lua--	
+100275103	--CAN'T_FIND_c100275103.lua--	
+100200193	--CAN'T_FIND_c100200193.lua--	
+100262003	--CAN'T_FIND_c100262003.lua--	
+18859369	カオス・グレファー	" ,type,include,MONSTER__And,attribute,==,DARK
+ ,type,include,MONSTER__And,attribute,==,DARK__And,attribute,!=,att
+ ,attribute,==,DARK"
+20799347	電脳堺嫦－兎々	" ,(,1,.__ ,race,==,PSYCHIC__Or,race,==,WYRM__.,),1,.
+ ,type,include,MONSTER__And,(,1,.__ ,race,==,PSYCHIC__Or,race,==,WYRM__.,),1,."
+33750025	輪廻竜サンサーラ	 ,race,==,DRAGON__And,level,>,5
+34479658	ダーク・アリゲーター	" ,race,==,REPTILE
+ ,race,==,REPTILE"
+43256007	アイスバリアのアテンダント	" ,cat_Jap,include,氷結界__And,level,>,5
+ ,level,>,3__ ,attribute,==,WATER"
+45420955	迅雷の暴君 グローザー	" ,type,include,EFFECT
+ ,type,include,MONSTER
+ ,type,include,MONSTER__And,race,==,FIEND"
+69975751	ドラグニティ－ギザーム	 ,attribute,==,WIND__And,race,==,DRAGON__And,level,<,4
+81782101	レプティア・エッグ	 ,level,<,4__ ,race,==,ROCK
+94395649	超重禽属コカトリウム	" ,type,include,MONSTER__And,race,==,RACES_BEAST_BWARRIOR_WINGB
+ ,type,include,MONSTER"
 284224	双天将 密迹	 ,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.
+545781		
+952523	--CAN'T_FIND_c952523.lua--	
+1174075	--CAN'T_FIND_c1174075.lua--	
 1906812	灰燼竜バスタード	" ,type,include,EFFECT
  ,type,include,MONSTER__And,(,1,.__ ,cat_Eng,include,Sprigguns__Or,id,==,68468459__.,),1,."
+2896663	--CAN'T_FIND_c2896663.lua--	
+3292267	聖刻天龍－エネアード	
+4017398	--CAN'T_FIND_c4017398.lua--	
+4647954	--CAN'T_FIND_c4647954.lua--	
+4918855	竜血公ヴァンパイア	
+5130393	--CAN'T_FIND_c5130393.lua--	
+5253985	--CAN'T_FIND_c5253985.lua--	
+5439384	--CAN'T_FIND_c5439384.lua--	
+5466615	JP name	 ,type,include,MONSTER__And,cat_Eng,include,Myutant
+6075533	トリシューラの鼓動	
 6128460	ワイトベイキング	" ,race,==,ZOMBIE__And,level,<,3
  ,(,1,.__ ,id,==,32274490__Or,(,2,.__ ,type,include,MONSTER__.,),2,.__.,),2,."
+6182103		" ,level,>,8__ ,cat_Eng,include,Myutant
+ ,cat_Eng,include,Myutant__ ,type,include,rtype
+ ,cat_Eng,include,Myutant"
+6374519	--CAN'T_FIND_c6374519.lua--	
+6552971	--CAN'T_FIND_c6552971.lua--	
+7373632	--CAN'T_FIND_c7373632.lua--	
+7496001	--CAN'T_FIND_c7496001.lua--	
+7574904	JP name	 ,cat_Eng,include,Myutant__And,type,include,SPELL
+7984540	--CAN'T_FIND_c7984540.lua--	
+8200556		" ,cat_Eng,include,Myutant__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.
+ ,id,==,..."
 9061682	魔轟神アンドレイス	" ,cat_Jap,include,魔轟神
  ,type,include,MONSTER"
 9349094	神樹獣ハイペリュトン	
+9839945	--CAN'T_FIND_c9839945.lua--	
 10024317	 パラメタルフォーゼ・メルキャスター	" ,cat_Jap,include,メタルフォーゼ__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.
  ,cat_Jap,include,メタルフォーゼ__And,type,include,MONSTER"
+10040267	--CAN'T_FIND_c10040267.lua--	
+10163855	--CAN'T_FIND_c10163855.lua--	
 10584050	スプリガンズ・ブラスト！	 ,type,include,FUSION
+12018201	--CAN'T_FIND_c12018201.lua--	
+13735899	--CAN'T_FIND_c13735899.lua--	
+14957440	--CAN'T_FIND_c14957440.lua--	
+14957441	--CAN'T_FIND_c14957441.lua--	
+15079028	--CAN'T_FIND_c15079028.lua--	
+15792576	--CAN'T_FIND_c15792576.lua--	
+16684346	--CAN'T_FIND_c16684346.lua--	
 17063599	風の天翼ミラドーラ	 ,attack,>,2000
+17197110	氷結界に至る晴嵐	" ,cat_Jap,include,氷結界__And,type,include,MONSTER__And,level,<,4
+ ,cat_Jap,include,氷結界__And,type,include,MONSTER"
 17241941	ダイカミナリ・ジャイクロプス	" ,type,include,PENDULUM
  ,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,."
 17427333	Ｅ．Ｍ．Ｒ．	 ,race,==,MACHINE
+18106132	--CAN'T_FIND_c18106132.lua--	
 18189187	夢魔鏡の使徒－ネイロイ	" ,id,==,code
  ,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,."
 18249921	電脳堺門－玄武	 ,cat_Eng,include,Virtual World
+18319762	氷結界の照魔師	 ,cat_Jap,include,氷結界__And,type,include,TUNER
+19280589	--CAN'T_FIND_c19280589.lua--	
+19280590	--CAN'T_FIND_c19280590.lua--	
 19301729	電子光虫－レジストライダー	 ,race,==,INSECT
 19362568	氷風のリフレイン	 ,type,include,MONSTER__And,cat_Jap,include,WW
+19828680	--CAN'T_FIND_c19828680.lua--	
 20216608	ツッパリーチ	
 20246864	ＷＷ－フリーズ・ベル	 ,cat_Jap,not include,WW
 20424878	スプリガンズ・ロッキー	" ,cat_Eng,include,Sprigguns__And,type,include,XYZ
  ,(,1,.__ ,(,2,.__ ,type,include,MONSTER__And,cat_Eng,include,Sprigguns__.,),2,.__.,),2,."
+20989253	--CAN'T_FIND_c20989253.lua--	
 21368442	Ｓ－Ｆｏｒｃｅ グラビティーノ	 ,cat_Eng,include,Security Force
 21438286	デーモンの杖	
 21546416	アームド・ドラゴン・サンダー LV5	" ,type,include,MONSTER
  ,cat_Jap,include,アームド・ドラゴン__And,level,<,7
  ,type,include,MONSTER__And,race,==,DRAGON__And,attribute,==,WIND"
+21985407	聖夜の降臨	 ,attribute,==,LIGHT__And,race,==,DRAGON__And,level,==,7
+22007085	聖なる篝火	" ,attribute,==,LIGHT__And,race,==,DRAGON__And,level,==,7
+ ,attribute,==,DARK"
 22180094	Ｓ－Ｆｏｒｃｅ 乱破小夜丸	" ,cat_Eng,include,Security Force
  ,cat_Eng,include,Security Force"
 22555834	魔轟神界の階	" ,type,include,MONSTER__And,cat_Jap,include,魔轟神
  ,type,include,MONSTER__And,cat_Jap,include,魔轟神"
+23220533	ホーリーナイツ・レイエル	" ,cat_Eng,include,Holy Night__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.
+ ,cat_Eng,include,Holy Night"
 23377425	S-Force ブリッジヘッド	 ,type,include,MONSTER__And,cat_Eng,include,Security Force
 23499963	スプリガンズ・ウォッチ	" ,type,include,MONSTER__And,cat_Eng,include,Sprigguns
  ,type,include,MONSTER__And,cat_Eng,include,Sprigguns"
+25845518	ドラグニティ・グロー	 ,level,>,5__ ,cat_Jap,include,ドラグニティ
+26577155	ドラグニティーレムス	
+26914168	--CAN'T_FIND_c26914168.lua--	
+27036706	--CAN'T_FIND_c27036706.lua--	
+27520594	--CAN'T_FIND_c27520594.lua--	
+27923575	--CAN'T_FIND_c27923575.lua--	
+27946124	聖蔓の社	" ,cat_Eng,include,Sunavalon__And,type,include,LINK
+ ,level,<,4__ ,race,==,PLANT__And,type,include,NORMAL"
+28168762	聖蔓の守護者	" ,race,==,PLANT,lc,st,tp__And,type,include,NORMAL,lc,st,tp
+ ,cat_Eng,include,Sunavalon__And,type,include,LINK
+ ,cat_Eng,include,Sunavalon__And,type,include,LINK"
+28346136	銀河眼の極光波竜	 ,race,==,DRAGON__And,type,include,XYZ
+28645123	--CAN'T_FIND_c28645123.lua--	
+28868394	--CAN'T_FIND_c28868394.lua--	
+29107423	--CAN'T_FIND_c29107423.lua--	
 29601381	スプリガンズ・キャプテン サルガス	 ,cat_Eng,include,Sprigguns__And,type,include,XYZ
+29867611	--CAN'T_FIND_c29867611.lua--	
+29981935	--CAN'T_FIND_c29981935.lua--	
+30013902	聖種の影芽	" ,type,include,NORMAL__And,race,==,PLANT
+ ,(,1,.__ ,cat_Eng,include,Sunavalon__Or,cat_Eng,include,Sunvine__.,),1,.
+ ,id,==,code"
+30303854	ラヴァル・アーチャー	
+30829071	--CAN'T_FIND_c30829071.lua--	
+31002402	--CAN'T_FIND_c31002402.lua--	
+31042659	--CAN'T_FIND_c31042659.lua--	
+31525442	--CAN'T_FIND_c31525442.lua--	
+31712840	--CAN'T_FIND_c31712840.lua--	
+31834488	--CAN'T_FIND_c31834488.lua--	
+31855260	JP name	
+32056070	--CAN'T_FIND_c32056070.lua--	
+32164201	--CAN'T_FIND_c32164201.lua--	
+32247099	--CAN'T_FIND_c32247099.lua--	
+33773528	--CAN'T_FIND_c33773528.lua--	
+34572613		" ,cat_Eng,include,Myutant
+ ,cat_Eng,include,Myutant
+ ,cat_Eng,include,Myutant__And,type,include,MONSTER"
 34611551	武装竜の霹靂	 ,level,==,3__ ,cat_Jap,include,アームド・ドラゴン
+34695290		 ,type,include,TRAP__And,cat_Eng,include,Myutant
+34995106	--CAN'T_FIND_c34995106.lua--	
 35334193	Ｓ－Ｆｏｒｃｅ ジャスティファイ	
+36224040	--CAN'T_FIND_c36224040.lua--	
+36346532	--CAN'T_FIND_c36346532.lua--	
+36539330		
 36556781	ドラグニティナイト－ゴルムファバル	 ,cat_Jap,include,ドラグニティ__And,type,include,MONSTER__And,type,include,TUNER
 37491810	Parametalfoes Azothles 	 ,type,include,PENDULUM
 37678339	夢魔鏡の魘魔－ネイロス	" ,cat_Jap,include,夢魔鏡
  ,id,==,code"
+39468724	ドラグニティナイトの影霊衣	" ,cat_Jap,include,影霊衣__And,type,include,MONSTER
+ ,cat_Jap,include,影霊衣"
+39680372	創造の聖刻印	" ,type,include,XYZ,c,SUMMON_XYZ,tp__And,type,include,XYZ__And,cat_Jap,include,聖刻
+ ,cat_Jap,include,聖刻"
+39880350	聖天樹の精霊	" ,cat_Eng,include,Sunavalon__And,type,include,LINK,lc,sumtype,tp
+ ,cat_Eng,include,Sunvine"
+40139997	--CAN'T_FIND_c40139997.lua--	
+40352445	--CAN'T_FIND_c40352445.lua--	
+42469671	--CAN'T_FIND_c42469671.lua--	
 42517468	ジャマ・ピンク	
+42577802		
+43582229	氷結界の晶壁	" ,cat_Jap,include,氷結界__And,level,<,4
+ ,cat_Jap,include,氷結界"
+43709490		 ,cat_Eng,include,Myutant__And,level,==,8
 43739056	天孔邪鬼	
+44190146	--CAN'T_FIND_c44190146.lua--	
+44308317	氷結界の依巫	" ,type,include,MONSTER__And,cat_Jap,include,氷結界
+ ,type,include,MONSTER__And,cat_Jap,include,氷結界"
+44308318	氷結界の依巫	" ,type,include,MONSTER__And,cat_Jap,include,氷結界
+ ,type,include,MONSTER__And,cat_Jap,include,氷結界"
 44451698	妖精弓士イングナル	 ,race,==,PLANT__And,level,>,6
+44478599	--CAN'T_FIND_c44478599.lua--	
 44644529	双天の転身	" ,cat_Jap,include,電脳堺__And,level,>,1
  ,type,include,MONSTER__And,cat_Jap,include,電脳堺"
 44822037	碑像の天使－アズルーン	 ,(,1,.__ ,type,include,TRAP__Or,type,include,CONTINUOUS__.,),1,.
+45313724	--CAN'T_FIND_c45313724.lua--	
 45674286	マシンナーズ・アンクラスペア	 ,type,include,MONSTER__And,cat_Jap,include,マシンナーズ
 45796834	光天のマハー・ヴァイロ	 ,type,include,EQUIP
+46435376	--CAN'T_FIND_c46435376.lua--	
+47163170	--CAN'T_FIND_c47163170.lua--	
+48285768	--CAN'T_FIND_c48285768.lua--	
+49407319	--CAN'T_FIND_c49407319.lua--	
+51474037	--CAN'T_FIND_c51474037.lua--	
+51849216	ドラグニティ・ヴォイド	" ,type,include,SYNCHRO__And,cat_Jap,include,ドラグニティ
+ ,cat_Jap,include,ドラグニティ__And,level,==,10"
+52296675	--CAN'T_FIND_c52296675.lua--	
+52962804	ドラグニティ・ドラフト	 ,cat_Jap,include,ドラグニティ__And,type,include,MONSTER__And,level,<,4
+53184342	ドラグニティアームズ－グラム	 ,race,==,WINGEDBEAST
+53318263	--CAN'T_FIND_c53318263.lua--	
+53535814	--CAN'T_FIND_c53535814.lua--	
+53618293	聖蔓の乙女	 ,race,==,PLANT
+54257392	--CAN'T_FIND_c54257392.lua--	
+54340229	聖天樹の開花	" ,type,include,LINK__And,race,==,PLANT
+ ,type,include,EFFECT
+ ,race,==,PLANT__And,type,include,LINK"
+54927180	--CAN'T_FIND_c54927180.lua--	
+55049722	--CAN'T_FIND_c55049722.lua--	
+55262310	--CAN'T_FIND_c55262310.lua--	
 55766177	弑逆の魔轟神	 ,type,include,MONSTER__And,cat_Jap,include,魔轟神
 56196385	鉄獣戦線 キット	" ,race,==,RACES_BEAST_BWARRIOR_WINGB
  ,race,==,RACES_BEAST_BWARRIOR_WINGB__And,type,include,LINK
@@ -13733,6 +14062,7 @@ And,type,include,MONSTER__And,attack,>,0__And,defense,>,0"
  ,cat_Eng,include,Sprigguns"
 57030525	アームド・ドラゴン・サンダー LV3	" ,type,include,MONSTER
  ,cat_Jap,include,アームド・ドラゴン__And,level,<,5"
+57157964	--CAN'T_FIND_c57157964.lua--	
 57605303	武装竜の万雷	" ,cat_Jap,include,アームド・ドラゴン__And,level,<,lv
  ,cat_Jap,include,アームド・ドラゴン__And,type,include,MONSTER
  ,type,include,SPELL__And,cat_Jap,include,アームド・ドラゴン"
@@ -13740,30 +14070,89 @@ And,type,include,MONSTER__And,attack,>,0__And,defense,>,0"
  ,cat_Jap,include,魔轟神__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,."
 58153103	アームド・ドラゴン・サンダー LV10	
 58363151	Ｓ－Ｆｏｒｃｅ プラ＝ティナ	And,cat_Eng,include,Security Force
+58374502	聖なる煌炎	 ,race,==,DRAGON__And,attribute,==,LIGHT
+58406094	煌めく聖夜	 ,attribute,==,LIGHT__And,race,==,DRAGON__And,level,==,7
 58549532	混錬装融合	
 58589739	Ｓ－Ｆｏｒｃｅ プロフェッサーϜ	
 58827995	鎧竜降臨	 ,type,include,MONSTER
+59228631	ホーリーナイツ・アステル	" ,attribute,==,LIGHT__And,race,==,DRAGON__And,level,==,7
+ ,attribute,==,LIGHT"
 60884672	大砂海ゴールド・ゴルゴンダ	" ,cat_Eng,include,Sprigguns__And,type,include,XYZ
  ,cat_Eng,include,Sprigguns
  ,cat_Eng,include,Sprigguns__And,type,include,XYZ
  ,type,include,XYZ"
+60967717	JP name	" ,type,include,MONSTER__And,cat_Eng,include,Myutant__And,level,<,4
+ ,cat_Eng,include,Myutant__And,level,>,8"
+61089209	JP name	 ,cat_Eng,include,Myutant__And,type,include,MONSTER
 61606250	武装竜の襲雷	" ,cat_Jap,include,アームド・ドラゴン__And,id,==,code
  ,cat_Jap,include,アームド・ドラゴン"
 61728808	ヘビーメタルフォーゼ・アマルガム	
+62201847		" ,cat_Eng,include,Myutant__And,type,include,MONSTER
+ ,id,==,..."
+62623659	--CAN'T_FIND_c62623659.lua--	
 62941499	スプリガンズ・シップ エクスブロウラー	
+64730881	クロノダイバー・アジャスター	" ,cat_Jap,include,クロノダイバー
+ ,cat_Jap,include,クロノダイバー"
+65285459	聖天樹の大精霊	 ,cat_Eng,include,Sunvine
+65479980	--CAN'T_FIND_c65479980.lua--	
+65563871	聖蔓の癒し手	" ,race,==,PLANT__And,type,include,NORMAL
+ ,cat_Eng,include,Sunavalon__And,type,include,LINK
+ ,cat_Eng,include,Sunavalon__And,type,include,LINK
+ ,type,include,LINK__And,race,==,PLANT"
+65953423	妖精伝姫－ラチカ	
+66192538	--CAN'T_FIND_c66192538.lua--	
+66407907	聖種の天双芽	" ,type,include,LINK__And,cat_Eng,include,Sunavalon
+ ,race,==,PLANT__And,type,include,NORMAL__And,level,<,4
+ ,race,==,PLANT__And,type,include,LINK
+ ,type,include,LINK"
+66675911	星なる影 ゲニウス	 ,cat_Jap,include,シャドール
+66984907	--CAN'T_FIND_c66984907.lua--	
+67100549	--CAN'T_FIND_c67100549.lua--	
+67314110	--CAN'T_FIND_c67314110.lua--	
+67436768	--CAN'T_FIND_c67436768.lua--	
+67797569	ラヴァルバル・サラマンダー	" ,attribute,==,FIRE
+ ,cat_Jap,include,ラヴァル"
+68045685	--CAN'T_FIND_c68045685.lua--	
+68223137	--CAN'T_FIND_c68223137.lua--	
+68258355	--CAN'T_FIND_c68258355.lua--	
+69167267	--CAN'T_FIND_c69167267.lua--	
 69761020	Ｓ－Ｆｏｒｃｅ ショウダウン	" ,cat_Eng,include,Security Force
  ,cat_Eng,include,Security Force__And,type,include,MONSTER"
+70389815	--CAN'T_FIND_c70389815.lua--	
+70473293	--CAN'T_FIND_c70473293.lua--	
+70703416	氷結界の霜精	" ,cat_Jap,include,氷結界__And,type,include,MONSTER
+ ,level,<,3__ ,cat_Jap,include,氷結界__And,level,!=,lv"
 70856343	契珖のヴルーレセンス	
 70916046	壱時砲固定式	 ,type,include,EFFECT
+70980824	氷結界の還零龍 トリシューラ	
+71595845	--CAN'T_FIND_c71595845.lua--	
+72717433	--CAN'T_FIND_c72717433.lua--	
+72924435		 ,race,==,PLANT
+73345237	--CAN'T_FIND_c73345237.lua--	
 73667937	ＷＷ－ダイヤモンド・ベル	
+74567889	--CAN'T_FIND_c74567889.lua--	
+74689476	--CAN'T_FIND_c74689476.lua--	
 74889525	黄金狂エルドリッチ	 ,race,==,ZOMBIE,fc,sumtype,tp__And,level,>,5
+75402014	--CAN'T_FIND_c75402014.lua--	
 75901113	鎧竜の聖騎士	 ,race,==,DRAGON__And,attribute,==,WIND__And,level,>,5
+76524506	--CAN'T_FIND_c76524506.lua--	
+78642798	--CAN'T_FIND_c78642798.lua--	
+79072916		" ,cat_Eng,include,Myutant__And,level,>,8
+ ,cat_Eng,include,Myutant__And,level,==,8"
+79194594	JP name	" ,cat_Eng,include,Myutant
+ ,cat_Eng,include,Myutant"
 79724755	黄紡鮄デュオニギス	 ,level,<,4__ ,attribute,==,WATER
+79868386	--CAN'T_FIND_c79868386.lua--	
+80529459	--CAN'T_FIND_c80529459.lua--	
 81038234	夢魔鏡の夢語らい	" ,type,include,FIELD__And,(,1,.__And,id,==,74665651__And,id,==,1050355
  ,type,include,MONSTER"
 81078880	Ｌｉｖｅ☆Ｔｗｉｎ リィラ・トリート	
+81825063	氷結界の虎将 ウェイン	" ,cat_Jap,include,氷結界
+ ,cat_Jap,include,氷結界__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,."
+82243738	--CAN'T_FIND_c82243738.lua--	
 82255872	戦華史略－大丈夫之義	 ,cat_Jap,include,戦華
 82255873	戦華史略－大丈夫之義	 ,cat_Jap,include,戦華
+82434071	--CAN'T_FIND_c82434071.lua--	
 82791472	戦華の叛－呂奉	 ,(,1,.__ ,cat_Jap,not include,戦華__.,),1,.
 82913020	セイクリッド・カドケウス	" ,cat_Jap,include,セイクリッド
  ,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.__And,cat_Jap,include,セイクリッド"
@@ -13776,13 +14165,51 @@ And,type,include,MONSTER__And,attack,>,0__And,defense,>,0"
 83203672	スプリガンズ・バンガー	" ,cat_Eng,include,Sprigguns__And,type,include,XYZ
  ,(,1,.__ ,type,include,MONSTER__And,cat_Eng,include,Sprigguns__.,),1,.
  ,cat_Eng,include,Sprigguns"
+83656563	--CAN'T_FIND_c83656563.lua--	
 84211599	金満で謙虚な壺	
 84425220	アームド・ドラゴン LV10-ホワイト	 ,cat_Jap,include,アームド・ドラゴン
+84778110	--CAN'T_FIND_c84778110.lua--	
 84851250	ＷＷ－ブリザード・ベル	" ,cat_Jap,not include,WW
  ,cat_Jap,include,WW"
+85590798	聖なる降誕	" ,race,==,FAIRY__And,attribute,==,LIGHT
+ ,attribute,==,LIGHT__And,race,==,DRAGON__And,level,==,7"
+86133013	--CAN'T_FIND_c86133013.lua--	
+86613346	ホーリーナイツ・フラムエル	 ,attribute,==,LIGHT__And,race,==,DRAGON__And,level,==,7
+87468732	--CAN'T_FIND_c87468732.lua--	
+87746184	--CAN'T_FIND_c87746184.lua--	
+88234821	ドラグニティナイト－アラドヴァル	 ,cat_Jap,include,ドラグニティ__And,type,include,MONSTER
+88685329	--CAN'T_FIND_c88685329.lua--	
+89172051	ドラグニティーレガトゥス	" ,(,1,.__ ,(,2,.__ ,type,include,MONSTER__And,cat_Jap,include,ドラグニティ__.,),2,.__.,),2,.
+ ,cat_Jap,include,ドラグニティ"
+89450409	疾風のドラグニティ	" ,cat_Jap,include,ドラグニティ__And,type,include,TUNER
+ ,cat_Jap,include,ドラグニティ__And,race,==,WINGEDBEAST
+ ,race,==,DRAGON"
+89707961	--CAN'T_FIND_c89707961.lua--	
+90835938	聖夜に煌めく竜	
+91135480	クロノダイバー・ダブルバレル	
+91534476	--CAN'T_FIND_c91534476.lua--	
+91557476	聖蔓の剣士	" ,race,==,PLANT,lc,st,tp__And,type,include,NORMAL,lc,st,tp
+ ,cat_Eng,include,Sunavalon__And,type,include,LINK
+ ,cat_Eng,include,Sunavalon__And,type,include,LINK"
+91642007	--CAN'T_FIND_c91642007.lua--	
+91864689	--CAN'T_FIND_c91864689.lua--	
+91957038	妖精の伝姫	" ,attack,==,1850__ ,race,==,SPELLCASTER
+ ,race,==,SPELLCASTER"
+92079625	影依の炎核 ヴォイド	 ,cat_Jap,include,シャドール__And,attribute,==,att
+92586237	--CAN'T_FIND_c92586237.lua--	
+92650018	--CAN'T_FIND_c92650018.lua--	
+92770064	聖天樹の大母神	 ,(,1,.__ ,cat_Eng,include,Sunavalon__And,(,2,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),2,.__.,),2,.
+93473606	--CAN'T_FIND_c93473606.lua--	
+93595154	--CAN'T_FIND_c93595154.lua--	
+93708824	--CAN'T_FIND_c93708824.lua--	
+93896655	聖天樹の幼精	" ,race,==,PLANT__And,level,<,4
+ ,cat_Eng,include,Sunvine__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.
+ ,cat_Eng,include,Sunvine"
 94141712	アームド・ドラゴン・サンダー LV7	" ,type,include,MONSTER
  ,cat_Jap,include,アームド・ドラゴン__And,level,<,10
  ,cat_Jap,include,アームド・ドラゴン"
+94317736	--CAN'T_FIND_c94317736.lua--	
+94821366	--CAN'T_FIND_c94821366.lua--	
 95034141	黄金郷の七摩天	 ,race,==,ZOMBIE
 95974848	Ｓ－Ｆｏｒｃｅ オリフィス	 ,cat_Eng,include,Security Force
 96156729	WWの鈴音	" ,attribute,==,WIND
@@ -13793,198 +14220,3 @@ And,type,include,MONSTER__And,attack,>,0__And,defense,>,0"
 97091969	武装竜の震霆	" ,cat_Jap,include,アームド・ドラゴン
  ,cat_Jap,include,アームド・ドラゴン__And,type,include,MONSTER__And,level,<,lvl"
 98127546	閉ザサレシ世界ノ冥神	
-101104101	--CAN'T_FIND_c101104101.lua--	
-101104102	--CAN'T_FIND_c101104102.lua--	
-101104103	--CAN'T_FIND_c101104103.lua--	
-101104104	--CAN'T_FIND_c101104104.lua--	
-101104105	--CAN'T_FIND_c101104105.lua--	
-101104106	--CAN'T_FIND_c101104106.lua--	
-101104107	--CAN'T_FIND_c101104107.lua--	
-101104108	--CAN'T_FIND_c101104108.lua--	
-101104109	--CAN'T_FIND_c101104109.lua--	
-100273001	--CAN'T_FIND_c100273001.lua--	
-100273002	--CAN'T_FIND_c100273002.lua--	
-100273003	--CAN'T_FIND_c100273003.lua--	
-100273005	--CAN'T_FIND_c100273005.lua--	
-100272008	--CAN'T_FIND_c100272008.lua--	
-100272009	--CAN'T_FIND_c100272009.lua--	
-100272014	--CAN'T_FIND_c100272014.lua--	
-100272018	--CAN'T_FIND_c100272018.lua--	
-100272019	--CAN'T_FIND_c100272019.lua--	
-100272024	--CAN'T_FIND_c100272024.lua--	
-100272041	--CAN'T_FIND_c100272041.lua--	
-100272042	--CAN'T_FIND_c100272042.lua--	
-100272043	--CAN'T_FIND_c100272043.lua--	
-100272044	--CAN'T_FIND_c100272044.lua--	
-100272045	--CAN'T_FIND_c100272045.lua--	
-100272046	--CAN'T_FIND_c100272046.lua--	
-100272047	--CAN'T_FIND_c100272047.lua--	
-100272048	--CAN'T_FIND_c100272048.lua--	
-100272049	--CAN'T_FIND_c100272049.lua--	
-100272101	--CAN'T_FIND_c100272101.lua--	
-100272102	--CAN'T_FIND_c100272102.lua--	
-100272103	--CAN'T_FIND_c100272103.lua--	
-100272104	--CAN'T_FIND_c100272104.lua--	
-100272105	--CAN'T_FIND_c100272105.lua--	
-100272106	--CAN'T_FIND_c100272106.lua--	
-100272107	--CAN'T_FIND_c100272107.lua--	
-100272108	--CAN'T_FIND_c100272108.lua--	
-100272109	--CAN'T_FIND_c100272109.lua--	
-100272110	--CAN'T_FIND_c100272110.lua--	
-100272111	--CAN'T_FIND_c100272111.lua--	
-100272112	--CAN'T_FIND_c100272112.lua--	
-100272113	--CAN'T_FIND_c100272113.lua--	
-100272114	--CAN'T_FIND_c100272114.lua--	
-100272115	--CAN'T_FIND_c100272115.lua--	
-100272116	--CAN'T_FIND_c100272116.lua--	
-100272117	--CAN'T_FIND_c100272117.lua--	
-100272118	--CAN'T_FIND_c100272118.lua--	
-100275101	--CAN'T_FIND_c100275101.lua--	
-100275102	--CAN'T_FIND_c100275102.lua--	
-100275103	--CAN'T_FIND_c100275103.lua--	
-100274001	--CAN'T_FIND_c100274001.lua--	
-100274002	--CAN'T_FIND_c100274002.lua--	
-100274004	--CAN'T_FIND_c100274004.lua--	
-100274006	--CAN'T_FIND_c100274006.lua--	
-100274007	--CAN'T_FIND_c100274007.lua--	
-100274008	--CAN'T_FIND_c100274008.lua--	
-100274009	--CAN'T_FIND_c100274009.lua--	
-100274010	--CAN'T_FIND_c100274010.lua--	
-100274011	--CAN'T_FIND_c100274011.lua--	
-100274012	--CAN'T_FIND_c100274012.lua--	
-100274102	--CAN'T_FIND_c100274102.lua--	
-327051	絶火の祆現	" ,cat_Eng,include,Magistus__And,level,<,4
- ,cat_Eng,include,Magistus"
-7548747	大いなる魔導	" ,cat_Eng,include,Magistus
- ,type,not include,MONSTER
- ,type,include,MONSTER__And,cat_Eng,include,Magistus__And,type,include,typ"
-8083925	Ｌｉｖｅ☆Ｔｗｉｎ エントランス	 ,(,1,.__ ,cat_Eng,include,Kisikil__Or,cat_Eng,include,Lilla__.,),1,.
-8660395	結晶の女神ニンアルル	 ,race,==,SPELLCASTER__And,level,>,4
-9205573	Ｅｖｉｌ★Ｔｗｉｎ キスキル	 ,cat_Eng,include,Lilla
-9482987	聖魔の大賢者エンディミオン	" ,cat_Eng,include,Magistus
- ,type,include,SPELL"
-9505425	法典の大賢者クロウリー	 ,cat_Eng,include,Magistus__And,level,!=,4__And,type,include,MONSTER
-21576077	喰光の竜輝巧	 ,type,include,MONSTER__And,cat_Eng,include,Draitron
-22398665	流星輝巧群	" ,race,==,MACHINE
- ,cat_Eng,include,Draitron"
-22420202	竜輝巧－ルタδ	 ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Draitron__And,type,include,MONSTER__.,),2,.__.,),2,.
-33543890	竜儀巧－ラスβ	" ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Draitron__And,type,include,MONSTER__.,),2,.__.,),2,.
- ,cat_Eng,include,Draitron__And,type,include,MONSTER"
-34365442	Ｅｖｉｌ★Ｔｗｉｎ イージーゲーム	" ,(,1,.__ ,cat_Eng,include,Kisikil__Or,cat_Eng,include,Lilla__.,),1,.
- ,(,1,.__ ,cat_Eng,include,Kisikil__Or,cat_Eng,include,Lilla__.,),1,.
- ,(,1,.__ ,cat_Eng,include,Kisikil__Or,cat_Eng,include,Lilla__.,),1,.__And,type,include,MONSTER"
-34755994	聖魔の乙女アルテミス	" ,level,<,4__ ,race,==,SPELLCASTER,lc,sumtype,tp
- ,cat_Eng,include,Magistus
- ,cat_Eng,include,Magistus__And,type,include,MONSTER"
-34933456	聖なる法典	
-35487920	Ｌｉｖｅ☆Ｔｗｉｎ チャンネル	" ,(,1,.__ ,cat_Eng,include,Kisikil__Or,cat_Eng,include,Lilla__.,),1,.__And,type,include,MONSTER
- ,(,1,.__ ,cat_Eng,include,Kisikil__Or,cat_Eng,include,Lilla__.,),1,.__And,type,include,MONSTER"
-35877582	法典の守護者アイワス	
-36099130	絶火の大賢者ゾロア	" ,cat_Eng,include,Magistus
- ,cat_Eng,include,Magistus
- ,race,==,SPELLCASTER__And,level,==,4"
-36326160	Ｌｉｖｅ☆Ｔｗｉｎ キスキル	 ,cat_Eng,include,Lilla
-36609518	Evil★Twin リィラ	 ,cat_Eng,include,Kisikil
-57970721	星彩の竜輝巧	 ,(,1,.__ ,cat_Eng,include,Draitron__.,),1,.
-58793369	竜輝巧－ファフニール	" ,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.__And,cat_Eng,include,Draitron
- ,level,>,2__ ,attack,>,1000"
-60037599	竜輝巧－エルγ	" ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Draitron__And,type,include,MONSTER__.,),2,.__.,),2,.
- ,cat_Eng,include,Draitron__And,type,include,MONSTER__And,attack,==,2000"
-60759087	Evil★Twin Present	" ,(,1,.__ ,cat_Eng,include,Kisikil__Or,cat_Eng,include,Lilla__.,),1,.
- ,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,."
-61159609	三賢者の書	" ,cat_Eng,include,Magistus
- ,race,==,SPELLCASTER__And,level,==,4
- ,cat_Eng,include,Magistus"
-61272280	絶火の竜神ヴァフラム	
-61976639	シークレット・パスフレーズ	
-62098216	Ｅｖｉｌ★Ｔｗｉｎｓ キスキル・リィラ	 ,type,include,LINK
-69815951	竜儀巧－メテオニス＝ＤＲＡ	 ,type,include,MONSTER
-72498838	結晶の大賢者サンドリヨン	" ,cat_Eng,include,Magistus__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.
- ,race,==,SPELLCASTER__And,level,<,4
- ,cat_Eng,include,Magistus__And,level,!=,4__And,type,include,MONSTER"
-73810864	Ｌｉｖｅ☆Ｔｗｉｎ リィラ	 ,cat_Eng,include,Kisikil
-84965420	ドライトロン流星群	
-94187078	極超の竜輝巧	 ,cat_Eng,include,Draitron__And,type,include,MONSTER
-95209656	竜儀巧－メテオニス＝ＱＵＡ	 ,cat_Eng,include,Draitron
-96026108	竜儀巧－アルζ	 ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Draitron__And,type,include,MONSTER__.,),2,.__.,),2,.
-97148796	竜輝巧－バンα	 ,(,1,.__ ,(,2,.__ ,cat_Eng,include,Draitron__And,type,include,MONSTER__.,),2,.__.,),2,.
-98360333	Ｅｖｉｌ★Ｔｗｉｎ チャレンジ	" ,(,1,.__ ,cat_Eng,include,Kisikil__Or,cat_Eng,include,Lilla__.,),1,.
- ,cat_Eng,include,Evil★Twin"
-545781		
-5466615	JP name	 ,type,include,MONSTER__And,cat_Eng,include,Myutant
-6182103		" ,level,>,8__ ,cat_Eng,include,Myutant
- ,cat_Eng,include,Myutant__ ,type,include,rtype
- ,cat_Eng,include,Myutant"
-7574904	JP name	 ,cat_Eng,include,Myutant__And,type,include,SPELL
-8200556		" ,cat_Eng,include,Myutant__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,.
- ,id,==,..."
-31855260	JP name	
-34572613		" ,cat_Eng,include,Myutant
- ,cat_Eng,include,Myutant
- ,cat_Eng,include,Myutant__And,type,include,MONSTER"
-34695290		 ,type,include,TRAP__And,cat_Eng,include,Myutant
-36539330		
-42577802		
-43709490		 ,cat_Eng,include,Myutant__And,level,==,8
-52159691	レイダーズ・ウィング	 ,type,include,XYZ__And,attribute,==,DARK
-60967717	JP name	" ,type,include,MONSTER__And,cat_Eng,include,Myutant__And,level,<,4
- ,cat_Eng,include,Myutant__And,level,>,8"
-61089209	JP name	 ,cat_Eng,include,Myutant__And,type,include,MONSTER
-62201847		" ,cat_Eng,include,Myutant__And,type,include,MONSTER
- ,id,==,..."
-72924435		 ,race,==,PLANT
-79072916		" ,cat_Eng,include,Myutant__And,level,>,8
- ,cat_Eng,include,Myutant__And,level,==,8"
-79194594	JP name	" ,cat_Eng,include,Myutant
- ,cat_Eng,include,Myutant"
-6075533	トリシューラの鼓動	
-17197110	氷結界に至る晴嵐	" ,cat_Jap,include,氷結界__And,type,include,MONSTER__And,level,<,4
- ,cat_Jap,include,氷結界__And,type,include,MONSTER"
-18319762	氷結界の照魔師	 ,cat_Jap,include,氷結界__And,type,include,TUNER
-43582229	氷結界の晶壁	" ,cat_Jap,include,氷結界__And,level,<,4
- ,cat_Jap,include,氷結界"
-44308317	氷結界の依巫	" ,type,include,MONSTER__And,cat_Jap,include,氷結界
- ,type,include,MONSTER__And,cat_Jap,include,氷結界"
-44308318	氷結界の依巫	" ,type,include,MONSTER__And,cat_Jap,include,氷結界
- ,type,include,MONSTER__And,cat_Jap,include,氷結界"
-70703416	氷結界の霜精	" ,cat_Jap,include,氷結界__And,type,include,MONSTER
- ,level,<,3__ ,cat_Jap,include,氷結界__And,level,!=,lv"
-70980824	氷結界の還零龍 トリシューラ	
-81825063	氷結界の虎将 ウェイン	" ,cat_Jap,include,氷結界
- ,cat_Jap,include,氷結界__And,(,1,.__ ,type,include,SPELL__Or,type,include,TRAP__.,),1,."
-25845518	ドラグニティ・グロー	 ,level,>,5__ ,cat_Jap,include,ドラグニティ
-26577155	ドラグニティーレムス	
-51849216	ドラグニティ・ヴォイド	" ,type,include,SYNCHRO__And,cat_Jap,include,ドラグニティ
- ,cat_Jap,include,ドラグニティ__And,level,==,10"
-52962804	ドラグニティ・ドラフト	 ,cat_Jap,include,ドラグニティ__And,type,include,MONSTER__And,level,<,4
-53184342	ドラグニティアームズ－グラム	 ,race,==,WINGEDBEAST
-88234821	ドラグニティナイト－アラドヴァル	 ,cat_Jap,include,ドラグニティ__And,type,include,MONSTER
-89172051	ドラグニティーレガトゥス	" ,(,1,.__ ,(,2,.__ ,type,include,MONSTER__And,cat_Jap,include,ドラグニティ__.,),2,.__.,),2,.
- ,cat_Jap,include,ドラグニティ"
-89450409	疾風のドラグニティ	" ,cat_Jap,include,ドラグニティ__And,type,include,TUNER
- ,cat_Jap,include,ドラグニティ__And,race,==,WINGEDBEAST
- ,race,==,DRAGON"
-18859369	カオス・グレファー	" ,type,include,MONSTER__And,attribute,==,DARK
- ,type,include,MONSTER__And,attribute,==,DARK__And,attribute,!=,att
- ,attribute,==,DARK"
-20799347	電脳堺嫦－兎々	" ,(,1,.__ ,race,==,PSYCHIC__Or,race,==,WYRM__.,),1,.
- ,type,include,MONSTER__And,(,1,.__ ,race,==,PSYCHIC__Or,race,==,WYRM__.,),1,."
-22634473	JP name	 ,(,1,.__ ,id,==,89631139__ ,id,==,46986414
-33750025	輪廻竜サンサーラ	 ,race,==,DRAGON__And,level,>,5
-34479658	ダーク・アリゲーター	" ,race,==,REPTILE
- ,race,==,REPTILE"
-34479659	ダーク・アリゲーター	" ,race,==,REPTILE
- ,race,==,REPTILE"
-43256007	アイスバリアのアテンダント	" ,cat_Jap,include,氷結界__And,level,>,5
- ,level,>,3__ ,attribute,==,WATER"
-45420955	迅雷の暴君 グローザー	" ,type,include,EFFECT
- ,type,include,MONSTER
- ,type,include,MONSTER__And,race,==,FIEND"
-69145169	JP name	" ,type,include,EFFECT
- ,type,include,MONSTER__And,type,include,EFFECT
- ,type,include,NORMAL__And,level,>,7"
-69975751	ドラグニティ－ギザーム	 ,attribute,==,WIND__And,race,==,DRAGON__And,level,<,4
-81782101	レプティア・エッグ	 ,level,<,4__ ,race,==,ROCK
-94395649	超重禽属コカトリウム	" ,type,include,MONSTER__And,race,==,RACES_BEAST_BWARRIOR_WINGB
- ,type,include,MONSTER"
-96239878	JP name	 ,type,include,NORMAL__And,level,>,7

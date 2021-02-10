@@ -154,9 +154,9 @@ async function importFromYdk(){
                         exceptions.push(`${id} ${name_tmp}`);
                         continue;
                     }
+                }
                 row_results[row_index].names.push(name_tmp);
                 row_results[row_index].nums.push(num_tmp);
-                }
             }
         }
     }) // deck_name
@@ -169,7 +169,7 @@ async function importFromYdk(){
             $(`#${row_name}_list #${row_short_name}nm_${ind2+1}`).val("");
             $(`#${row_name}_list #${row_short_name}num_${ind2+1}`).val("");
         })
-        console.log(row_results[tab_ind]);
+        console.log(row_name, row_results[tab_ind]);
         if (row_results[tab_ind].names.length==0) continue;
         const card_names=row_results[tab_ind].names;
         const card_nums=row_results[tab_ind].nums;
@@ -191,13 +191,20 @@ async function importFromYdk(){
     main_total.empty();
     const main_total_num=[0,1,2].reduce((acc, cur)=> acc+Number($(`.main_count:eq(${cur})`).text()), 0);
     main_total.append(main_total_num);
-    if (exceptions.length>0){
+    if (exceptions.length>0 && !exceptions.every(d=>/^\s*$/.test(d))){
         const error_message="一部のカードが変換できませんでした。\n"+exceptions.join(", ");
+        console.log(error_message);
         alert(error_message);
     }
 
 }
 
+// DB update
+async function updateDB(){
+    
+}
+
+// on page load
 $(async function () {
     const url_now=location.href;
     if (url_now.indexOf("ope=2&")!=-1){
