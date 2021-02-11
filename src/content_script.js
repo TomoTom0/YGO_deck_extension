@@ -261,7 +261,8 @@ async function updateDB(){
         }, []).join(" "));
     const df_new={id: card_ids, Eng: card_names_Eng, type:card_types};
     console.log("Database has been updated.");
-    chrome.storage.local.set({df:JSON.stringify(df_new), lastModifiedDate:Date.now()})
+    chrome.storage.local.set({df:JSON.stringify(df_new), lastModifiedDate:Date.now()});
+    return df_new;
 }
 
 // download from GitHub
@@ -323,14 +324,15 @@ $(async function () {
 
     chrome.storage.local.get({df:JSON.stringify({}), lastModifiedDate:0}, async storage=>{
         const df=JSON.parse(storage.df);
-        if (df=={}) {
+        if (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000) {
+            GLOBAL_df=await updateDB();
+        }else if (df=={}) {
             const data=await fetch(chrome.runtime.getURL(db_path), {method: "GET"})
                 .then(res=>res.text())
                 .then(data_tmp=>split_data(data_tmp));
-            GLOBAL_df=TSV2Dic(data)
+            GLOBAL_df=TSV2Dic(data);
         }
         else GLOBAL_df=df;
-        if (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000) await updateDB();
     })
 
     $("#button_exportAsYdk").on("click", async function(){
