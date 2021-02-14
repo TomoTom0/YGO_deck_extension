@@ -1,9 +1,10 @@
 ﻿//----------------------
 //const db_path = "data/ygo_db_simple.tsv";
 //const fromConstant_path = "data/fromConstant.tsv";
-let GLOBAL_df;
+let GLOBAL_df={};
 const defaultSettings={autoUpdateDB:true, changeCDBRepo:false};
 const defaultString=JSON.stringify(defaultSettings);
+let GLOBAL_settings=defaultSettings;
 
 /*function CSV2Dic(csv_data){
     const escape_sets=[{escaped:',',original: ",", re:"__COMMA__"}, {escaped:'""', original:'"', re:"__WQ__"}];
@@ -261,7 +262,7 @@ $(async function () {
         const df = JSON.parse(storage.df);
         const settings=JSON.parse(storage.settings);
         if ( settings.autoUpdateDB && (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000)) {
-            GLOBAL_df = await updateDB();
+            GLOBAL_df = await {updateDB({display:"", settings:GLOBAL_settings});
         } else GLOBAL_df = df;
     })
 

@@ -44,7 +44,7 @@
                     <div class="well bs-component">
                         <form class="form-horizontal">
                             <div class="form-group divDB">
-                                <span class="h4 displayDB">...</span>
+                                <span class="h4 displayUpdateDB" id="displayUpdateDB_0">...</span>
                                 <div class="col-lg-10 col-lg-offset-2">
                                     <button type="button" class="btnUpdateDB btn btn-primary">Update DB Right Now</button>
                                     <button type="button" class="btnShowDB btn btn-primary">Show DB on Console</button>
@@ -55,19 +55,59 @@
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_autoUpdateDB">
                                     <label class="custom-control-label">Auto Update DB</label>
                                 </div>
-                                
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_changeCDBRepo">
+                                    <label class="custom-control-label">Change the Repository for CDB</label>
+                                    <div class="col-lg-10 col-lg-offset-2 changeCDBRepo">
+                                        <input type="text" placeholder="User" style="width:150px" class="inputChangeUser"/>
+                                        <input type="text" placeholder="Repo" style="width:150px" class="inputChangeRepo"/>
+                                        <input type="text" placeholder="path of directory" style="width:150px" class="inputChangePath"/>
+                                        <button type="button" class="btnSave_changeCDBRepo btnSave_changeRepo btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_changeConsantLuaRepo">
+                                    <label class="custom-control-label">Change the Repository for constant.lua (including attribute, race, type)</label>
+                                    <div class="col-lg-10 col-lg-offset-2 changeConstantLuaRepo">
+                                        <input type="text" placeholder="User" style="width:150px" class="inputChangeUser"/>
+                                        <input type="text" placeholder="Repo" style="width:150px" class="inputChangeRepo"/>
+                                        <input type="text" placeholder="path of file" style="width:150px" class="inputChangePath"/>
+                                        <button type="button" class="btnSave_changeConstantLuaRepo btnSave_changeRepo btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_changeStringsConfRepo">
+                                    <label class="custom-control-label">Change the Repository for strings.conf (including set)</label>
+                                    <div class="col-lg-10 col-lg-offset-2 changeStringsConfRepo">
+                                        <input type="text" placeholder="User" style="width:150px" class="inputChangeUser"/>
+                                        <input type="text" placeholder="Repo" style="width:150px" class="inputChangeRepo"/>
+                                        <input type="text" placeholder="path of file" style="width:150px" class="inputChangePath"/>
+                                        <button type="button" class="btnSave_changeStringsConfRepo btnSave_changeRepo btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+
                             </div>
+                            <!--
+                            <hr>
+                            <h3>Remake DB from Local .cdb file</h3>
+                            <div class="form-group divLocalDB">
+                                <span class="h4 displayLocalDB">...</span>
+                                <div class="col-lg-10 col-lg-offset-2">
+                                    <input type="file" accept="*.cdb" multiple />
+                                    <button type="button" class="btnRemakeFromLocalDB btn btn-primary">Remake DB from Local</button>
+                                </div>
+                            </div>-->
 
                         </form>
                     </div>
                     <h2 class="searchCardDBSection">Search Card DataBase</h2>
                     <div class="well bs-component">
                         <form class="form-horizontal">
-                            <div class="form-group divDB">
+                            <div class="form-group divSearchDB">
                                 <div class="col-lg-10 col-lg-offset-2">
                                     <span class="spanSearchKV">
                                         <select type="text" style="width:80px;" class="selectSearchKey"></select>
-                                        <input type="number" placeholder="search words" style="width:200px;" class="inputSearchVal" list="selectSearchList_0"></input>
+                                        <input type="number" placeholder="a word or value" style="width:200px;" class="inputSearchVal" list="selectSearchList_0"></input>
                                         <datalist id="selectSearchList_0"></datalist>
                                     </span>
                                     <button type="button" class="btnSearchClear btn btn-primary">Clear</button>
@@ -76,7 +116,9 @@
                                 </div>
                             </div>
                         </form>
-                        <div class="searchResultArea"></div>
+                        <form class="form-horizontal" style="width:1000px;min-height:200px;">
+                            <div id="searchResultArea"></div>
+                        </form>
                     </div>
                 </div>
             </div>
