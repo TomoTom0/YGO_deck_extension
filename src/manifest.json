@@ -1,7 +1,7 @@
 {
   "name": "遊戯王デッキサポート(インポート/エクスポート)",
   "author":"TomoTomo",
-  "version": "0.3.0.0",
+  "version": "0.4.0.0",
   "manifest_version": 2,
   "icons":{
     "16":"img/icon-16.png",
@@ -10,9 +10,14 @@
   },
   "content_scripts": [{
     "matches": ["https://www.db.yugioh-card.com/yugiohdb/*"],
-    "js": ["js/jquery-3.5.1.min.js", "js/async.min.js", "content_script.js", "js/sql-wasm.min.js"]
+    "js": ["js/jquery-3.5.1.min.js", "js/async.min.js", "script/content_script.js", "js/sql-wasm.min.js", "script/db_functions.js"]
   }],
   "permissions":["storage", "unlimitedStorage"],
-  "web_accessible_resources":["data/ygo_db_simple.tsv", "data/fromConstant.tsv"],
+  "web_accessible_resources":["data/ygo_db_simple.tsv"],
+  "options_ui": {
+    "page": "script/options.html",
+    "open_in_tab": true
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "description": "公式カードデータベースのデッキ表示画面にエクスポート・インポートボタンを追加します。"
 }
