@@ -72,7 +72,7 @@ async function combineDf(args = { display: "", settings: defaultSettings, repoIn
     if (display) $(display).text(defaultDisplay + `\t3/3`);
     //console.log(stringsConf, constantLua)
 
-    const card_ids = datas.id;
+    const card_ids = datas.id.map(id=>id-0);
     const card_names = texts.name;
     const card_keys = { complex: ["attribute", "race","type"], others: ["atk", "def"] };
     const card_values = {

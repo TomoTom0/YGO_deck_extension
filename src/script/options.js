@@ -77,7 +77,7 @@ $(async function () {
         display.text("DB has been updated.");
     })
     $(".btnShowDB").on("click", async function () {
-        console.log(df);
+        console.log(GLOBAL_df);
     })
 
     const limitedKey = ["race", "type", "attribute", "set", "LMarker"];

@@ -1,10 +1,10 @@
 ﻿//----------------------
 //const db_path = "data/ygo_db_simple.tsv";
 //const fromConstant_path = "data/fromConstant.tsv";
-let GLOBAL_df={};
-const defaultSettings={autoUpdateDB:true, changeCDBRepo:false};
-const defaultString=JSON.stringify(defaultSettings);
-let GLOBAL_settings=defaultSettings;
+let GLOBAL_df = {};
+const defaultSettings = { autoUpdateDB: true, changeCDBRepo: false };
+const defaultString = JSON.stringify(defaultSettings);
+let GLOBAL_settings = defaultSettings;
 
 /*function CSV2Dic(csv_data){
     const escape_sets=[{escaped:',',original: ",", re:"__COMMA__"}, {escaped:'""', original:'"', re:"__WQ__"}];
@@ -97,7 +97,7 @@ async function exportAs(form = "id") {
             let output_comp = "";
             if (form == "Jap") output_comp = `${d}`;
             else if (form == "id") {
-                output_comp = df_filter(df, "id", ["Eng", d])[0];
+                output_comp = df_filter(df, "id", ["name", d])[0];
                 if (!output_comp) {
                     const name_Jap = row_results_tmp.Jap[row_ind].names[ind];
                     exceptions.push(name_Jap);
@@ -161,18 +161,22 @@ async function importFromYdk() {
         onlyNumbers: data_array.filter(d=>!/^#|^!/.test(d)).every(data=>isFinite(data))}
     const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
     imported_ids.forEach((ids, ind) => {
-        for (const id of Array.from(new Set(ids))) {
+        for (const id_tmp of Array.from(new Set(ids)).filter(d => d.length > 0)) {
+            const id = (isFinite(id_tmp)) ? id_tmp - 0 : id_tmp;
             let name_tmp = "";
             let types_tmp = "";
             // empty
             if (!/^\d+$/.test(id) && !id) name_tmp = "";
             // id
-            else if (/^\d+$/.test(id)) name_tmp = df_filter(df, "Eng", ["id", id])[0];
+            else if (/^\d+$/.test(id) && id) {
+                name_tmp = df_filter(df, "name", ["id", id])[0];
+            }
             // Jap or Eng name
-            else if (!/^\d+$/.test(id)) {
+            else if (!/^\d+$/.test(id) && id) {
                 name_tmp = id.split("\t")[0];
                 types_tmp = id.split("\t")[1];
             }
+            //console.log(id,id_tmp, name_tmp, ids.map(d => d.split("\t")[0]).filter(d => d == id), ids.map(d => d.split("\t")[0]).filter(d => d == id_tmp));
 
             const num_tmp = ids.map(d => d.split("\t")[0]).filter(d => d == id).length;
             if (!name_tmp) exceptions.push(`${id} ${name_tmp}`);
@@ -181,7 +185,7 @@ async function importFromYdk() {
                 if (ind == 0) {
                     if (types_tmp == "") types_tmp = df_filter(df, "type", ["id", id])[0];
                     try {
-                        const main_row = ["monster", "spell", "trap"].map(d => d.slice(0, 1).toUpperCase() + d.slice(1));
+                        const main_row = ["monster", "spell", "trap"].map(d => d.toUpperCase());
                         const row_type = main_row.filter(d => types_tmp.split(",").some(dd => dd == d))[0];
                         row_index = row_names.indexOf(row_type.toLowerCase());
                     } catch {
@@ -260,9 +264,9 @@ $(async function () {
 
     chrome.storage.local.get({ df: JSON.stringify({}), lastModifiedDate: 0, settings: defaultString }, async storage => {
         const df = JSON.parse(storage.df);
-        const settings=JSON.parse(storage.settings);
-        if ( settings.autoUpdateDB && (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000)) {
-            GLOBAL_df = await {updateDB({display:"", settings:GLOBAL_settings});
+        const settings = JSON.parse(storage.settings);
+        if (settings.autoUpdateDB && (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000)) {
+            GLOBAL_df = await updateDB({ display: "", settings: GLOBAL_settings });
         } else GLOBAL_df = df;
     })
 
