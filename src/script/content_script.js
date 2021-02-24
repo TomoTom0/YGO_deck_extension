@@ -253,13 +253,15 @@ $(async function () {
         area.append(label);
     }
     else if (/ope=1&|deck\.action\?cgid/.test(url_now)) {
-        const area = $("#header_box #button_place_edit");
+        const edit_area = $("#header_box #button_place_edit");
+        const area = (edit_area.length>0) ? edit_area : $("<span>", {id:"button_place_edit"}).appendTo($("#header_box"));
+        //console.log(area)
         const button = $("<a>", { class: "black_btn red", id: "button_exportAsYdk", style: "position: relative;" })
             .append("<b>エクスポート(id)</b>");
         const button2 = $("<a>", { class: "black_btn red", id: "button_exportAsJap", style: "position: relative;" })
             .append("<b>エクスポート(日本語)</b>");
-        area.append(button2);
-        area.append(button);
+        $(area).append(button2);
+        $(area).append(button);
     }
 
     chrome.storage.local.get({ df: JSON.stringify({}), lastModifiedDate: 0, settings: defaultString }, async storage => {
