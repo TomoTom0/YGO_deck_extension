@@ -85,6 +85,7 @@ async function exportAs(form = "id") {
         })
     }
     const row_results = (form == "Jap") ? row_results_tmp.Jap : row_results_tmp.Eng;
+    console.log(row_results)
 
     const df = GLOBAL_df;
     const keys = ["#main", "#extra", "!side"];
@@ -105,7 +106,7 @@ async function exportAs(form = "id") {
                     output_comp = `${name_Jap}\t${row_names[row_ind]}`;
                 };
             }
-            result_outputs[out_ind].push(...Array(row_result.nums[ind]).fill(output_comp))
+            result_outputs[out_ind].push(...Array(row_result.nums[ind]-0).fill(output_comp))
         })
     })
     const content = result_outputs.map((id, ind) => keys[ind] + "\n" + id.join("\n")).join("\n");
