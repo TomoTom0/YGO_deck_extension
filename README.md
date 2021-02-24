@@ -23,8 +23,8 @@ Chrome Storeの[遊戯王デッキサポート](https://chrome.google.com/websto
 
 ### GitHub
 GitHubから本拡張機能をインストールする場合、以下の手順になります。
-1. [zip形式などでダウンロード](https://github.com/TomoTom0/YGO_deck_extension/archive/main.zip)する。
-2. Chromeの拡張機能管理画面に移動して「**パッケージ化されていない拡張機能を読み込む**」
+1. [zip形式などでダウンロード](https://github.com/TomoTom0/YGO_deck_extension/archive/main.zip)し、解凍する。
+2. Chromeの拡張機能管理画面に移動して「**パッケージ化されていない拡張機能を読み込む**」から、解凍したファイルのうちsrcフォルダを選択する。
 
 ## Caution
 
