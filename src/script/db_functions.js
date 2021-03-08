@@ -1,17 +1,37 @@
+"use strict";
 
+// -----------------------------
+//           # initial
 const repoInfoEmpty = { user: "", repo: "", path: "" }
-const defaultEmptyRepoInfo = Object.assign(...["CDB", "ConstantLua", "StringsConf"]
+const defaultEmptyRepoInfo = Object.assign(...["CDB", "ConstantLua", "StringsConf", "CardScripts"]
     .map(d => { return { [d]: repoInfoEmpty } }));
 const defaultRepoStrings = JSON.stringify(defaultEmptyRepoInfo);
-
 
 const defaultRepoInfo = {
     CDB: { user: "ProjectIgnis", repo: "BabelCDB", path: "" },
     ConstantLua: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/constant.lua" },
-    StringsConf: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/strings.conf" }
+    StringsConf: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/strings.conf" },
+    CardScripts: { user: "ProjectIgnis", repo: "CardScripts", path: "" }
 }
 
+const getSyncStorage = (key = null) => new Promise(resolve => {
+    chrome.storage.sync.get(key, resolve);
+});
 
+const setSyncStorage = (key = null) => new Promise(resolve => {
+    chrome.storage.sync.set(key, resolve);
+});
+
+const operateStorage=(key = null, storageKey="sync", operate="get") => new Promise(resolve => {
+    chrome.storage[storageKey][operate](key, resolve);
+});
+
+const obtainDF=async ()=>{
+    return await operateStorage({df:JSON.stringify({})}, "local").then(items=>JSON.parse(items.df));
+}
+
+// -----------------------------
+//           # parse text
 function split_data(data) {
     const split_sep = "__SPLIT__";
     return data.replace(/\r\n|\r|\n/g, split_sep).split(split_sep);
@@ -44,17 +64,17 @@ function remake_df(df) {
     }))
 }
 
-// DB update
+// -----------------------------
+//           # DB update
 async function updateDB(args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
     //const display=args.display;
     const df_new = await combineDf(args);
     console.log("Database has been updated.");
-    chrome.storage.local.set({ df: JSON.stringify(df_new), lastModifiedDate: Date.now() });
+    await operateStorage({ df: JSON.stringify(df_new), lastModifiedDate: Date.now() }, "local", "set");
     console.log(df_new);
-
     return df_new;
 }
-
+//           ## combine DF
 async function combineDf(args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
     const display = args.display;
     const defaultDisplay = (!display) ? "" : $(display).text();
@@ -65,15 +85,22 @@ async function combineDf(args = { display: "", settings: defaultSettings, repoIn
     const datas = remake_df(datas_tmp);
     const texts = remake_df(texts_tmp);
 
-
     const constantLua = await readConstantLua(args);
     if (display) $(display).text(defaultDisplay + `\t2/3`);
     const stringsConf = await readStringsConf(args);
     if (display) $(display).text(defaultDisplay + `\t3/3`);
     //console.log(stringsConf, constantLua)
 
+    const ot_array=["OCG", "TCG", "OCG/TCCG", "ANIME"]
     const card_ids = datas.id.map(id=>id-0);
-    const card_names = texts.name;
+    const card_ots = datas.ot.map(ot=>ot_array[ot-1]);
+    const card_names = texts.name
+    /*const card_ids_onlyOCG=card_ots.map((ot, ind)=>[ot, card_ids[ind]]).filter(d=>d[0]==1).map(d=>d[1]);
+    const card_names_onlyOCG=await obtainCardNameFromScript(card_ids_onlyOCG);
+    const card_names = texts.name.map((nameTmp, ind)=>{
+        if (card_ots[ind]==3) return card_names_onlyOCG[card_ids[ind]];
+        else return nameTmp;
+    });*/
     const card_keys = { complex: ["attribute", "race","type"], others: ["atk", "def"] };
     const card_values = {
         complex: Object.assign(...card_keys.complex.map(key => convertCDBData(key, datas, constantLua))),
@@ -107,12 +134,14 @@ async function combineDf(args = { display: "", settings: defaultSettings, repoIn
         else return "NaN";
     });;
 
-    const df_tmp = [{ level: card_levels, name: card_names}, card_values.complex, {atk: card_values.others.atk, def: card_def, set: card_sets, PS: card_PS, LMarker: card_LMarker, id: card_ids }];
+    const df_tmp = [{ level: card_levels, name: card_names}, card_values.complex,
+         {atk: card_values.others.atk, def: card_def, set: card_sets, PS: card_PS, LMarker: card_LMarker, ot: card_ots ,id: card_ids }];
     const df_new = Object.assign(...df_tmp);
 
     return df_new;
 }
 
+// ## DB sub functions
 function convertCDBData(key, datas, cardinfo, keyInfo = "") {
     if (!keyInfo) keyInfo = key;
     const card_values = datas[key].map(num => {
@@ -150,8 +179,9 @@ function convertSetcode(key, datas, cardinfo, keyInfo = "") {
     return { [keyInfo]: card_values };
 }
 
-
-// download from GitHub
+// -------------------------------------------
+//           # download from GitHub
+//           ## pull CDB
 async function pullCDB(args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
     const repoInfo = (!args.settings.changeCDBRepo) ? defaultRepoInfo.CDB : args.repoInfos.CDB;
     const display = args.display;
@@ -170,7 +200,6 @@ async function pullCDB(args = { display: "", settings: defaultSettings, repoInfo
             const repoInfo2 = defaultRepoInfo.CDB;
             const search_query = `q=${q}+repo:${repoInfo2.user}/${repoInfo2.repo}` + (repoInfo2.path == "" ? "" : `${repoInfo2.path} in:path`);
             return await fetch(git_search_url + "?" + search_query, { method: "GET", headers: header_auth }).then(d => d.json())
-
         });
     // pull CDB and merge
     let values = { datas: [], texts: [] };
@@ -258,3 +287,46 @@ async function readStringsConf(args = { display: "", settings: defaultSettings, 
     }, Object.assign(...obtainKeys.map(d => Object({ [d]: {} }))));
     return cardinfo;
 }
+
+// ## obtain card Name from script
+async function obtainCardNameFromScript(cardIds=[], args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
+    if (cardIds.length==0) return [];
+    //const repoInfo = (!args.settings.changeStringsConfRepo) ? defaultRepoInfo.StringsConf : args.repoInfos.StringsConf;
+    const repoInfo = defaultRepoInfo.CardScripts;
+
+    const obtainSearchResult=async (ids)=>{
+        const q = ids.map(id=>`filename:c${id}.lua`).join(" ");
+        const git_search_url = `https://api.github.com/search/code`;
+        const header_auth = { "Accept": "application/vnd.github.v3+json" };
+        const search_query = `q=${q}+repo:${repoInfo.user}/${repoInfo.repo}` + (repoInfo.path == "" ? "" : `${repoInfo.path} in:path`);
+        return await fetch(git_search_url + "?" + search_query, { method: "GET", headers: header_auth })
+            .then(d => d.json()).then(async res => {
+                if (res.status && res.total_count > 0) return res;
+                const repoInfo2 = defaultRepoInfo.CardScripts;
+                const search_query = `q=${q}+repo:${repoInfo2.user}/${repoInfo2.repo}` + (repoInfo2.path == "" ? "" : `${repoInfo2.path} in:path`);
+                return await fetch(git_search_url + "?" + search_query, { method: "GET", headers: header_auth }).then(d => d.json());
+            });
+    }
+    const cycleNum=Math.floor(cardIds.length/5)+1;
+    const cardIdsSplited=[...Array(cycleNum).keys()].map(cycle=>cardIds.slice(cycle*5, (cycle+1)*5));
+    const res_search=await Promise.all(cardIdsSplited.map(async cardIdsTmp=>await obtainSearchResult(cardIdsTmp))).then(dics=>Object.assign(...dics.concat({})));
+    console.log(res_search)
+
+    const cardNames = await Promise.all(res_search.items
+        .map(async item=>{
+            const cardId=item.name.match(/(?<=c)\d+(?=\.lua)/);
+            const data = await fetch(item.git_url).then(d => d.json()).then(res=>atob(res.content));
+            if (!data || !cardId) return "";
+            else {
+                const cardNameTmp=split_data(data)[0].replace(/^[-\s]*/, "");
+                return {[cardId - 0] :decodeURI(escape(cardNameTmp))};
+            };
+        }))
+    console.log(cardNames)
+    return Object.assign(...cardNames.concat({}));
+}
+
+
+$(async function(){
+    await operateStorage({df:JSON.stringify({})}, "sync", "set");
+})

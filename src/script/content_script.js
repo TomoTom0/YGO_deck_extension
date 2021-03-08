@@ -1,10 +1,15 @@
-﻿//----------------------
+﻿"use strict";
+
+//--------------------------
+//         # initial
 //const db_path = "data/ygo_db_simple.tsv";
 //const fromConstant_path = "data/fromConstant.tsv";
-let GLOBAL_df = {};
+//let GLOBAL_df = {};
 const defaultSettings = { autoUpdateDB: true, changeCDBRepo: false };
 const defaultString = JSON.stringify(defaultSettings);
-let GLOBAL_settings = defaultSettings;
+
+// ----------------------------------
+//       # parse text funtions
 
 /*function CSV2Dic(csv_data){
     const escape_sets=[{escaped:',',original: ",", re:"__COMMA__"}, {escaped:'""', original:'"', re:"__WQ__"}];
@@ -54,13 +59,29 @@ function TSV2Dic(tsv_data) {
     return result_data;
 }
 
+function split_data(data) {
+    const split_sep = "__SPLIT__";
+    return data.replace(/\r\n|\r|\n/g, split_sep).split(split_sep);
+}
+
+function obtain_deck_splited(data_array) {
+    const indexes = ["#main", "#extra", "!side"].map(d => data_array.indexOf(d))
+        .concat([data_array.length]);
+    return [0, 1, 2].map(d => data_array.slice(indexes[d] + 1, indexes[d + 1]));
+};
+
+
+//---------------------------------
+//         # export
+
 async function exportAs(form = "id") {
     const rows_num = $("#deck_text [id$='_list']").length;
     const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
         .match(/^\S*(?=_list)/)[0]);
 
-    let row_results_tmp = { Jap: [], Eng: [] };
-    row_results_tmp.Jap = [...Array(rows_num).keys()].map(row_ind => {
+    const obtainRowResults = { 
+        Jap: () =>{
+    return [...Array(rows_num).keys()].map(row_ind => {
         const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`).length;
         return {
             names: [...Array(card_length).keys()]
@@ -68,13 +89,13 @@ async function exportAs(form = "id") {
             nums: [...Array(card_length).keys()]
                 .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`).text().match(/\d/)[0])
         };
-    })
-    if (form == "id") {
+    })},
+     id:async () => {
         const url_Eng = location.href.replace(/&request_locale=\S\S/g, "") + "&request_locale=en";
         const res_Eng = await fetch(url_Eng).then(d => d.body)
             .then(d => d.getReader()).then(reader => reader.read());
         const content = new TextDecoder("utf-8").decode(res_Eng.value);
-        row_results_tmp.Eng = [...Array(rows_num).keys()].map(row_ind => {
+        return  [...Array(rows_num).keys()].map(row_ind => {
             const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`, content).length;
             return {
                 names: [...Array(card_length).keys()]
@@ -83,11 +104,11 @@ async function exportAs(form = "id") {
                     .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`, content).text().match(/\d/)[0])
             };
         })
-    }
-    const row_results = (form == "Jap") ? row_results_tmp.Jap : row_results_tmp.Eng;
+    }}
+    const row_results = obtainRowResults[form]();
     console.log(row_results)
 
-    const df = GLOBAL_df;
+    const df = await obtainDF();
     const keys = ["#main", "#extra", "!side"];
     let exceptions = [];
     let result_outputs = keys.map(_ => []);
@@ -128,16 +149,8 @@ async function exportAs(form = "id") {
     }
 }
 
-function split_data(data) {
-    const split_sep = "__SPLIT__";
-    return data.replace(/\r\n|\r|\n/g, split_sep).split(split_sep);
-}
-
-function obtain_deck_splited(data_array) {
-    const indexes = ["#main", "#extra", "!side"].map(d => data_array.indexOf(d))
-        .concat([data_array.length]);
-    return [0, 1, 2].map(d => data_array.slice(indexes[d] + 1, indexes[d + 1]));
-};
+//--------------------------
+//         # import
 
 async function importFromYdk() {
     const import_file = $("#button_importFromYdk_input").prop("files")[0];
@@ -147,7 +160,7 @@ async function importFromYdk() {
 
     const row_names = ["monster", "spell", "trap", "extra", "side"];
     const row_results = Array(5).fill({}).map(_ => { return { "names": [], "nums": [] } });
-    const df = GLOBAL_df;
+    const df = await obtainDF();
     let exceptions = [];
     // guess file type => id, Jap, Eng
     /*const encoder=new TextEncoder("utf8");
@@ -161,7 +174,9 @@ async function importFromYdk() {
         })),
         onlyNumbers: data_array.filter(d=>!/^#|^!/.test(d)).every(data=>isFinite(data))}
     const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
-    imported_ids.forEach((ids, ind) => {
+    for(const kv_tmp of Object.entries(imported_ids)) {
+        const ind=kv_tmp[0]
+        const ids=kv_tmp[1]
         for (const id_tmp of Array.from(new Set(ids)).filter(d => d.length > 0)) {
             const id = (isFinite(id_tmp)) ? id_tmp - 0 : id_tmp;
             let name_tmp = "";
@@ -171,6 +186,10 @@ async function importFromYdk() {
             // id
             else if (/^\d+$/.test(id) && id) {
                 name_tmp = df_filter(df, "name", ["id", id])[0];
+                /*
+                const ot_tmp=df_filter(df, "ot", ["id", id])[0];
+                if (ot_tmp=="OCG") name_tmp=await obtainCardNameFromScript([id])[id];
+                console.log(name_tmp)*/
             }
             // Jap or Eng name
             else if (!/^\d+$/.test(id) && id) {
@@ -198,7 +217,7 @@ async function importFromYdk() {
                 row_results[row_index].nums.push(num_tmp);
             }
         }
-    }) // deck_name
+    } // deck_name
     $("#dnm").val(import_file.name.replace(/\.ydk$/, ""));
 
     for (const tab_ind of [...Array(5).keys()]) {
@@ -239,8 +258,9 @@ async function importFromYdk() {
     }
 }
 
+//------------------------------------
+//         #  on loading
 
-// on page load
 $(async function () {
     const url_now = location.href;
     if (url_now.indexOf("ope=2&") != -1) {
@@ -257,27 +277,27 @@ $(async function () {
         const edit_area = $("#header_box #button_place_edit");
         const area = (edit_area.length>0) ? edit_area : $("<span>", {id:"button_place_edit"}).appendTo($("#header_box"));
         //console.log(area)
-        const button = $("<a>", { class: "black_btn red", id: "button_exportAsYdk", style: "position: relative;" })
+        const button = $("<a>", { class: "black_btn red button_export", id: "button_export_id", style: "position: relative;" })
             .append("<b>エクスポート(id)</b>");
-        const button2 = $("<a>", { class: "black_btn red", id: "button_exportAsJap", style: "position: relative;" })
+        const button2 = $("<a>", { class: "black_btn red button_export", id: "button_export_Jap", style: "position: relative;" })
             .append("<b>エクスポート(日本語)</b>");
         $(area).append(button2);
         $(area).append(button);
     }
 
-    chrome.storage.local.get({ df: JSON.stringify({}), lastModifiedDate: 0, settings: defaultString }, async storage => {
-        const df = JSON.parse(storage.df);
+    const lastModifiedDate=await operateStorage({ lastModifiedDate: 0}, "local").then(items=>items.lastModifiedDate);
+    await getSyncStorage({settings: defaultString }).then(async storage=>{
+        //const df = JSON.parse(storage.df);
         const settings = JSON.parse(storage.settings);
-        if (settings.autoUpdateDB && (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000)) {
-            GLOBAL_df = await updateDB({ display: "", settings: GLOBAL_settings });
-        } else GLOBAL_df = df;
+        console.log(Date.now() - lastModifiedDate);
+        /*if (settings.autoUpdateDB && (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000)) {
+            await updateDB({ display: "", settings: settings });
+        }*/
     })
 
-    $("#button_exportAsYdk").on("click", async function () {
-        await exportAs("id");
-    })
-    $("#button_exportAsJap").on("click", async function () {
-        await exportAs("Jap");
+    $("a.button_export").on("click", async function (e) {
+        const form=$(e.target).match(/(?<=button_export_)\S+/)[0];
+        await exportAs(form);
     })
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
