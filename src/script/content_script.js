@@ -370,7 +370,7 @@ $(async function () {
     $("#button_color").on("click", async function (e) {
         let settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
         settings.showColor=!settings.showColor;
-        $(e.target).html(`<b>色を表示${settings.showColor ? "しないる" : "する"}</b>`);
+        $(e.target).html(`<b>色を表示${settings.showColor ? "しない" : "する"}</b>`);
         $(e.target).toggleClass("show");
         await showValidCards(settings.showColor);
         await setSyncStorage({settings: JSON.stringify(settings)});
