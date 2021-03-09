@@ -70,6 +70,53 @@ function obtain_deck_splited(data_array) {
     return [0, 1, 2].map(d => data_array.slice(indexes[d] + 1, indexes[d + 1]));
 };
 
+// ## check valid
+
+const obtainValidCids=async ()=>{
+    const url_Eng = location.href.replace(/&request_locale=\S\S/g, "") + "&request_locale=en";
+    const res_Eng = await fetch(url_Eng).then(d => d.body)
+                .then(d => d.getReader()).then(reader => reader.read());
+    const content = new TextDecoder("utf-8").decode(res_Eng.value);
+    return $(`#deck_text [id$='_list']`, content).map((_, row) => {
+        return  $(`input.link_value`, $(row)).map((ind,obj)=>{
+            const cid=$(obj).val().match(/(?<=cid=)\d+/);
+            return cid ? cid[0] : "";
+        }).toArray();
+    }).toArray().flat();
+}
+
+async function showValidCards(){
+    const validCids=await obtainValidCids();
+    $(`#deck_text [id$='_list']`).each((_, row) => {
+        $(`input.link_value`, $(row)).each((ind,obj)=>{
+            const cid=$(obj).val().match(/(?<=cid=)\d+/);
+            if (cid && validCids.indexOf(cid[0])==-1){
+                const parent=$(obj).parents("tr.row");
+                $("td div.num", parent).css({background:"rgba(255,0,0,.3)"});
+            }
+        });
+    });
+    $(`#deck_image table.image_table`).each((_, row) => {
+        $(`tbody tr td>a`, $(row)).each((ind,obj)=>{
+            const cid=$(obj).prop("href").match(/(?<=cid=)\d+/);
+            if (cid && validCids.indexOf(cid[0])==-1){
+                $(obj).parents("td").css({background:"red"}) // linear-gradient(135deg, red 20%, 20%, transparent)
+                $("span img", $(obj)).css({opacity:0.8});
+            }
+        });
+    });
+    $(`#deck_detailtext table`).each((_, row) => {
+        $(`input.link_value`, $(row)).each((ind,obj)=>{
+            const cid=$(obj).val().match(/(?<=cid=)\d+/);
+            console.log(cid)
+            if (cid && validCids.indexOf(cid[0])==-1){
+                const parent=$(obj).parents("tr.row");
+                console.log(parent)
+                $("td.NofS div.num", parent).css({background:"rgba(255,0,0,.3)"});
+            }
+        });
+    });
+}
 
 //---------------------------------
 //         # export
@@ -159,7 +206,7 @@ async function importFromYdk() {
     const imported_ids = obtain_deck_splited(data_array);
 
     const row_names = ["monster", "spell", "trap", "extra", "side"];
-    const row_results = Array(5).fill({}).map(_ => { return { "names": [], "nums": [] } });
+    let row_results = Array(5).fill({}).map(_ => { return { names: [], nums: [], ots:[] } });
     const df = await obtainDF();
     let exceptions = [];
     // guess file type => id, Jap, Eng
@@ -181,15 +228,13 @@ async function importFromYdk() {
             const id = (isFinite(id_tmp)) ? id_tmp - 0 : id_tmp;
             let name_tmp = "";
             let types_tmp = "";
+            let ot_tmp="";
             // empty
             if (!/^\d+$/.test(id) && !id) name_tmp = "";
             // id
             else if (/^\d+$/.test(id) && id) {
                 name_tmp = df_filter(df, "name", ["id", id])[0];
-                /*
-                const ot_tmp=df_filter(df, "ot", ["id", id])[0];
-                if (ot_tmp=="OCG") name_tmp=await obtainCardNameFromScript([id])[id];
-                console.log(name_tmp)*/
+                ot_tmp = df_filter(df, "ot", ["id", id])[0];
             }
             // Jap or Eng name
             else if (!/^\d+$/.test(id) && id) {
@@ -215,9 +260,24 @@ async function importFromYdk() {
                 }
                 row_results[row_index].names.push(name_tmp);
                 row_results[row_index].nums.push(num_tmp);
+                row_results[row_index].ots.push([ot_tmp, id]);
             }
         }
-    } // deck_name
+    }
+    /*const newIds=Object.assign(...row_results.map(row_result=>
+        row_result.ots.filter(d=>d[0]==="OCG").map(d=>({[d[1]]:d[1]}))).flat().concat({})
+    );
+    console.log(newIds);
+    const newNames=await obtainFromOCGcard({form:"id", input:newIds});
+    console.log(newNames);*/
+    /* for(const [row_ind, row_result] of Object.entries(row_results)){
+        for (const [ind, ot] of Object.entries(row_result.ots)){
+            if (ot[0]!=="OCG") continue;
+            const id=ot[1];
+            row_results[row_ind].names[ind]=newNames[id];
+        }
+    }*/
+    // deck_name
     $("#dnm").val(import_file.name.replace(/\.ydk$/, ""));
 
     for (const tab_ind of [...Array(5).keys()]) {
@@ -283,6 +343,7 @@ $(async function () {
             .append("<b>エクスポート(日本語)</b>");
         $(area).append(button2);
         $(area).append(button);
+        await showValidCards();
     }
 
     const lastModifiedDate=await operateStorage({ lastModifiedDate: 0}, "local").then(items=>items.lastModifiedDate);

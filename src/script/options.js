@@ -132,6 +132,8 @@ $(".btnSearchAdd").on("click", async function (e) {
     const divCol = $("<div>", { class: "col-lg-10 col-lg-offset-2" })
     $(divDB).append(divCol.append("<br>").append(span).append(clearButton).append(deleteButton));
 })
+
+// # addEventListener
 document.addEventListener("click", async function (e) {
     if ($(e.target).attr("class") && $(e.target).attr("class").indexOf("btnSearchDelete") != -1) {
         const divCol = $(e.target).parent();
