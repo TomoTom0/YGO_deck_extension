@@ -5,7 +5,7 @@
 //const db_path = "data/ygo_db_simple.tsv";
 //const fromConstant_path = "data/fromConstant.tsv";
 //let GLOBAL_df = {};
-const defaultSettings = { autoUpdateDB: true, changeCDBRepo: false };
+const defaultSettings = { autoUpdateDB: true, changeCDBRepo: false, showColor: true };
 const defaultString = JSON.stringify(defaultSettings);
 
 // ----------------------------------
@@ -85,14 +85,14 @@ const obtainValidCids=async ()=>{
     }).toArray().flat();
 }
 
-async function showValidCards(){
+async function showValidCards(IsColored=true){
     const validCids=await obtainValidCids();
     $(`#deck_text [id$='_list']`).each((_, row) => {
         $(`input.link_value`, $(row)).each((ind,obj)=>{
             const cid=$(obj).val().match(/(?<=cid=)\d+/);
             if (cid && validCids.indexOf(cid[0])==-1){
                 const parent=$(obj).parents("tr.row");
-                $("td div.num", parent).css({background:"rgba(255,0,0,.3)"});
+                $("td div.num", parent).css({background:IsColored ? "rgba(255,0,0,.3)" : "white"});
             }
         });
     });
@@ -100,19 +100,17 @@ async function showValidCards(){
         $(`tbody tr td>a`, $(row)).each((ind,obj)=>{
             const cid=$(obj).prop("href").match(/(?<=cid=)\d+/);
             if (cid && validCids.indexOf(cid[0])==-1){
-                $(obj).parents("td").css({background:"red"}) // linear-gradient(135deg, red 20%, 20%, transparent)
-                $("span img", $(obj)).css({opacity:0.8});
+                $(obj).parents("td").css({background:IsColored ? "red" : "transparent"}) // linear-gradient(135deg, red 20%, 20%, transparent)
+                $("span img", $(obj)).css({opacity:IsColored ? 0.8: 1});
             }
         });
     });
     $(`#deck_detailtext table`).each((_, row) => {
         $(`input.link_value`, $(row)).each((ind,obj)=>{
             const cid=$(obj).val().match(/(?<=cid=)\d+/);
-            console.log(cid)
             if (cid && validCids.indexOf(cid[0])==-1){
                 const parent=$(obj).parents("tr.row");
-                console.log(parent)
-                $("td.NofS div.num", parent).css({background:"rgba(255,0,0,.3)"});
+                $("td.NofS div.num", parent).css({background:IsColored ? "rgba(255,0,0,.3)" : "white"});
             }
         });
     });
@@ -334,6 +332,8 @@ $(async function () {
         area.append(label);
     }
     else if (/ope=1&|deck\.action\?cgid/.test(url_now)) {
+        const settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
+        const IsColored=settings.showColor;
         const edit_area = $("#header_box #button_place_edit");
         const area = (edit_area.length>0) ? edit_area : $("<span>", {id:"button_place_edit"}).appendTo($("#header_box"));
         //console.log(area)
@@ -341,15 +341,19 @@ $(async function () {
             .append("<b>エクスポート(id)</b>");
         const button2 = $("<a>", { class: "black_btn red button_export", id: "button_export_Jap", style: "position: relative;" })
             .append("<b>エクスポート(日本語)</b>");
+        const btn_color = $("<a>", { class: `black_btn red btn_color ` + (IsColored ? "show" : ""), id: "button_color", style: "position: relative;" })
+            .append(`<b>色を表示${IsColored ? "しない" : "する"}</b>`);
         $(area).append(button2);
         $(area).append(button);
-        await showValidCards();
+        const reg_area=$("form.sort_set");
+        reg_area.prepend(btn_color);
+        await showValidCards(IsColored);
     }
 
     const lastModifiedDate=await operateStorage({ lastModifiedDate: 0}, "local").then(items=>items.lastModifiedDate);
     await getSyncStorage({settings: defaultString }).then(async storage=>{
         //const df = JSON.parse(storage.df);
-        const settings = JSON.parse(storage.settings);
+        //const settings = JSON.parse(storage.settings);
         console.log(Date.now() - lastModifiedDate);
         /*if (settings.autoUpdateDB && (Date.now() - storage.lastModifiedDate > 3 * 86400 * 1000)) {
             await updateDB({ display: "", settings: settings });
@@ -362,5 +366,13 @@ $(async function () {
     })
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
+    })
+    $("#button_color").on("click", async function (e) {
+        let settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
+        settings.showColor=!settings.showColor;
+        $(e.target).html(`<b>色を表示${settings.showColor ? "しないる" : "する"}</b>`);
+        $(e.target).toggleClass("show");
+        await showValidCards(settings.showColor);
+        await setSyncStorage({settings: JSON.stringify(settings)});
     })
 });
