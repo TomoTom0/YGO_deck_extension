@@ -10,8 +10,7 @@ const defaultRepoStrings = JSON.stringify(defaultEmptyRepoInfo);
 const defaultRepoInfo = {
     CDB: { user: "ProjectIgnis", repo: "BabelCDB", path: "" },
     ConstantLua: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/constant.lua" },
-    StringsConf: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/strings.conf" },
-    CardScripts: { user: "ProjectIgnis", repo: "CardScripts", path: "" }
+    StringsConf: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/strings.conf" }
 }
 
 const getSyncStorage = (key = null) => new Promise(resolve => {
