@@ -48,7 +48,7 @@ $(async function () {
         Object.entries(settings).map(kv=>{
             if (typeof(kv[1])=="boolean") {
                 const checkArea=$(`#check_${kv[0]}`);
-                checkArea.prop({"checked":kv[1]});
+                if (checkArea.lenth>0) checkArea.prop({"checked":kv[1]});
             }
         })
         //console.log(repoInfos)

@@ -10,7 +10,8 @@ const defaultRepoStrings = JSON.stringify(defaultEmptyRepoInfo);
 const defaultRepoInfo = {
     CDB: { user: "ProjectIgnis", repo: "BabelCDB", path: "" },
     ConstantLua: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/constant.lua" },
-    StringsConf: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/strings.conf" }
+    StringsConf: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/strings.conf" },
+    MyRepo: {user:"TomoTom0", repo:"ygo_db", path:"data/ygo_db.json"}
 }
 
 const getSyncStorage = (key = null) => new Promise(resolve => {
@@ -78,7 +79,7 @@ function remake_df(df) {
 
 // -----------------------------
 //           # DB update
-async function updateDB(args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
+async function updateDBOld(args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
     //const display=args.display;
     const df_new = await combineDf(args);
     console.log("Database has been updated.");
@@ -349,6 +350,23 @@ async function obtainCardNameFromScript(cardIds=[], args = { display: "", settin
         }));
     console.log(cardNameDics);
     return Object.assign(...cardNameDics.concat({}));
+}
+
+// # update DB renewal
+async function updateDB(){
+    const repoInfo=defaultRepoInfo.MyRepo;
+    const header_auth = { "Accept": "application/vnd.github.v3+json" };
+
+    const git_content_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/contents/data`;
+    const res_content = await fetch(git_content_url, { method: "GET", headers: header_auth }).then(d=>d.json());
+    const sha=res_content.filter(d=>d.path===repoInfo.path)[0].sha
+    const git_data_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/git/blobs/${sha}`;
+    const content = await fetch(git_data_url, { method: "GET", headers: header_auth }).then(d=>d.json())
+        .then(res=>atob(res.content));
+    console.log("Database has been updated.");
+    const df_new=JSON.parse(content).all;
+    await operateStorage({df:JSON.stringify(df_new), lastModifiedDate:Date.now()}, "local", "set");
+    return df_new;
 }
 
 

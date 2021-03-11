@@ -72,45 +72,46 @@ function obtain_deck_splited(data_array) {
 
 // ## check valid
 
-const obtainValidCids=async ()=>{
-    const url_Eng = location.href.replace(/&request_locale=\S\S/g, "") + "&request_locale=en";
+const obtainValidCids = async (lang = "en") => {
+    const url_now = location.href;
+    const url_Eng = url_now.replace(/&request_locale=\S\S/g, "") + `&request_locale=${lang}`;
     const res_Eng = await fetch(url_Eng).then(d => d.body)
-                .then(d => d.getReader()).then(reader => reader.read());
+        .then(d => d.getReader()).then(reader => reader.read());
     const content = new TextDecoder("utf-8").decode(res_Eng.value);
     return $(`#deck_text [id$='_list']`, content).map((_, row) => {
-        return  $(`input.link_value`, $(row)).map((ind,obj)=>{
-            const cid=$(obj).val().match(/(?<=cid=)\d+/);
+        return $(`input.link_value`, $(row)).map((ind, obj) => {
+            const cid = $(obj).val().match(/(?<=cid=)\d+/);
             return cid ? cid[0] : "";
         }).toArray();
-    }).toArray().flat();
+    }).toArray();
 }
 
-async function showValidCards(IsColored=true){
-    const validCids=await obtainValidCids();
+async function showValidCards(IsColored = true) {
+    const validCids = await obtainValidCids().then(d => d.flat());
     $(`#deck_text [id$='_list']`).each((_, row) => {
-        $(`input.link_value`, $(row)).each((ind,obj)=>{
-            const cid=$(obj).val().match(/(?<=cid=)\d+/);
-            if (cid && validCids.indexOf(cid[0])==-1){
-                const parent=$(obj).parents("tr.row");
-                $("td div.num", parent).css({background:IsColored ? "rgba(255,0,0,.3)" : "white"});
+        $(`input.link_value`, $(row)).each((ind, obj) => {
+            const cid = $(obj).val().match(/(?<=cid=)\d+/);
+            if (cid && validCids.indexOf(cid[0]) == -1) {
+                const parent = $(obj).parents("tr.row");
+                $("td div.num", parent).css({ background: IsColored ? "rgba(255,0,0,.3)" : "white" });
             }
         });
     });
     $(`#deck_image table.image_table`).each((_, row) => {
-        $(`tbody tr td>a`, $(row)).each((ind,obj)=>{
-            const cid=$(obj).prop("href").match(/(?<=cid=)\d+/);
-            if (cid && validCids.indexOf(cid[0])==-1){
-                $(obj).parents("td").css({background:IsColored ? "red" : "transparent"}) // linear-gradient(135deg, red 20%, 20%, transparent)
-                $("span img", $(obj)).css({opacity:IsColored ? 0.8: 1});
+        $(`tbody tr td>a`, $(row)).each((ind, obj) => {
+            const cid = $(obj).prop("href").match(/(?<=cid=)\d+/);
+            if (cid && validCids.indexOf(cid[0]) == -1) {
+                $(obj).parents("td").css({ background: IsColored ? "red" : "transparent" }) // linear-gradient(135deg, red 20%, 20%, transparent)
+                $("span img", $(obj)).css({ opacity: IsColored ? 0.8 : 1 });
             }
         });
     });
     $(`#deck_detailtext table`).each((_, row) => {
-        $(`input.link_value`, $(row)).each((ind,obj)=>{
-            const cid=$(obj).val().match(/(?<=cid=)\d+/);
-            if (cid && validCids.indexOf(cid[0])==-1){
-                const parent=$(obj).parents("tr.row");
-                $("td.NofS div.num", parent).css({background:IsColored ? "rgba(255,0,0,.3)" : "white"});
+        $(`input.link_value`, $(row)).each((ind, obj) => {
+            const cid = $(obj).val().match(/(?<=cid=)\d+/);
+            if (cid && validCids.indexOf(cid[0]) == -1) {
+                const parent = $(obj).parents("tr.row");
+                $("td.NofS div.num", parent).css({ background: IsColored ? "rgba(255,0,0,.3)" : "white" });
             }
         });
     });
@@ -120,62 +121,95 @@ async function showValidCards(IsColored=true){
 //         # export
 
 async function exportAs(form = "id") {
+    let exceptions = [];
+
     const rows_num = $("#deck_text [id$='_list']").length;
     const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
         .match(/^\S*(?=_list)/)[0]);
 
-    const obtainRowResults = { 
-        Jap: () =>{
-    return [...Array(rows_num).keys()].map(row_ind => {
-        const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`).length;
-        return {
-            names: [...Array(card_length).keys()]
-                .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`).text()),
-            nums: [...Array(card_length).keys()]
-                .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`).text().match(/\d/)[0])
-        };
-    })},
-     id:async () => {
-        const url_Eng = location.href.replace(/&request_locale=\S\S/g, "") + "&request_locale=en";
-        const res_Eng = await fetch(url_Eng).then(d => d.body)
-            .then(d => d.getReader()).then(reader => reader.read());
-        const content = new TextDecoder("utf-8").decode(res_Eng.value);
-        return  [...Array(rows_num).keys()].map(row_ind => {
-            const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`, content).length;
-            return {
-                names: [...Array(card_length).keys()]
-                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`, content).text()),
-                nums: [...Array(card_length).keys()]
-                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`, content).text().match(/\d/)[0])
+    const obtainRowResults = {
+        Jap: async () => {
+            return [...Array(rows_num).keys()].map(row_ind => {
+                const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`).length;
+                return {
+                    names: [...Array(card_length).keys()]
+                        .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`).text()),
+                    nums: [...Array(card_length).keys()]
+                        .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`).text().match(/\d/)[0])
+                };
+            })
+        },
+        id: async () => {
+            const cids = {
+                en: Array.from(new Set(await obtainValidCids("en")))
             };
-        })
-    }}
-    const row_results = obtainRowResults[form]();
+            // ja:Array.from(new Set(await obtainValidCids("ja")))
+            const url_now = location.href;
+            const original_lang=(url_now.match(/(?<=&request_locale=)\S\S/) || ["ja"])[0];
+            const urlAttr=url_now.match(/(?<=\/)[^\/]*$/)[0]
+            const urlAttrNew=urlAttr.replace(`&request_locale=${original_lang}`, "")+`&request_locale=${original_lang}`;
+            history.replaceState("", "", urlAttrNew)
+            const url_Eng = url_now.replace(/&request_locale=\S\S/g, "") + "&request_locale=en";
+            const res_Eng = await fetch(url_Eng).then(d => d.body)
+                .then(d => d.getReader()).then(reader => reader.read());
+            const content = new TextDecoder("utf-8").decode(res_Eng.value);
+            return [...Array(rows_num).keys()].map(row_ind => {
+                const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`).length;
+                let count = 0;
+                return [...Array(card_length).keys()]
+                    .reduce((acc, d) => {
+                        const cid_tmp = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`).parent("td").children("input.link_value").val().match(/(?<=cid=)\d+/);
+                        const IsValid = cids.en.flat().indexOf(cid_tmp[0]) != -1;
+                        const wrapper = IsValid ? content : $("body");
+                        const ind_tmp = IsValid ? count++ : d;
+                        const table = $(`#deck_text [id$='_list']:eq(${row_ind})`, wrapper)
+                        const name_tmp = $(`.card_name:eq(${ind_tmp})`, table).text().replace(/\s*\(Updated from:.*$/, "");
+                        const num_tmp = $(`.num:eq(${ind_tmp})`, table).text().match(/\d/);
+                        if (!num_tmp) {
+                            exceptions.push(name_tmp);
+                            return acc;
+                        }
+                        acc.names.push(name_tmp);
+                        acc.nums.push(num_tmp[0]);
+
+                        return acc;
+                    }, { names: [], nums: [] })
+            })
+        }
+    }
+    const row_results = await obtainRowResults[form]();
     console.log(row_results)
 
     const df = await obtainDF();
     const keys = ["#main", "#extra", "!side"];
-    let exceptions = [];
     let result_outputs = keys.map(_ => []);
-    row_results.forEach((row_result, row_ind) => {
-        let out_ind = row_ind - 2
-        if (row_ind < 3) out_ind = 0;
-        row_result.names.forEach((d, ind) => {
-            let output_comp = "";
-            if (form == "Jap") output_comp = `${d}`;
+    for (const [row_ind, row_result] of Object.entries(row_results)) {
+        const out_ind = (row_ind < 3) ? 0 : row_ind - 2;
+        for (const [ind, name_tmp] of Object.entries(row_result.names)) {
+            let output_comp = null;
+            if (form == "Jap") output_comp = `${name_tmp}`;
             else if (form == "id") {
-                output_comp = df_filter(df, "id", ["name", d])[0];
-                if (!output_comp) {
-                    const name_Jap = row_results_tmp.Jap[row_ind].names[ind];
-                    exceptions.push(name_Jap);
-                    // form=id and db has error => Japanese name and type wil be outputed with tab-separation
-                    output_comp = `${name_Jap}\t${row_names[row_ind]}`;
-                };
+                // convert id -> name /  convert cid -> name
+                output_comp = df_filter(df, "id", ["name", name_tmp])[0];
+                if (output_comp === null) {
+                    const cid_db = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${ind})`).parent("td").children("input.link_value").val().match(/(?<=cid=)\d+/)
+                    output_comp = !!(cid_db) ? df_filter(df, "id", ["cid", cid_db[0]])[0] : "";
+                }
             }
-            result_outputs[out_ind].push(...Array(row_result.nums[ind]-0).fill(output_comp))
-        })
-    })
+            if (output_comp === null) {
+                // can't convert case
+                const name_Jap = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${ind})`).text();
+                exceptions.push(name_Jap);
+                // form=id and db has error => Japanese name and type wil be outputed with tab-separation
+                output_comp = `${name_Jap}\t${row_names[row_ind]}`;
+            }
+            result_outputs[out_ind].push(...Array(row_result.nums[ind] - 0).fill(output_comp))
+        }
+    }
     const content = result_outputs.map((id, ind) => keys[ind] + "\n" + id.join("\n")).join("\n");
+
+    const convert_results_message = ["main", "extra", "side"].map((d, ind) => `${d}: ${result_outputs[ind].length}`).join("\n")
+    console.log(convert_results_message);
 
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
     const blob = new Blob([bom, content], { type: "text/plain" });
@@ -204,7 +238,7 @@ async function importFromYdk() {
     const imported_ids = obtain_deck_splited(data_array);
 
     const row_names = ["monster", "spell", "trap", "extra", "side"];
-    let row_results = Array(5).fill({}).map(_ => { return { names: [], nums: [], ots:[] } });
+    let row_results = Array(5).fill({}).map(_=>({ names: [], nums: []}));
     const df = await obtainDF();
     let exceptions = [];
     // guess file type => id, Jap, Eng
@@ -219,20 +253,16 @@ async function importFromYdk() {
         })),
         onlyNumbers: data_array.filter(d=>!/^#|^!/.test(d)).every(data=>isFinite(data))}
     const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
-    for(const kv_tmp of Object.entries(imported_ids)) {
-        const ind=kv_tmp[0]
-        const ids=kv_tmp[1]
+    for (const [ind, ids] of Object.entries(imported_ids)) {
         for (const id_tmp of Array.from(new Set(ids)).filter(d => d.length > 0)) {
             const id = (isFinite(id_tmp)) ? id_tmp - 0 : id_tmp;
             let name_tmp = "";
             let types_tmp = "";
-            let ot_tmp="";
             // empty
             if (!/^\d+$/.test(id) && !id) name_tmp = "";
             // id
             else if (/^\d+$/.test(id) && id) {
                 name_tmp = df_filter(df, "name", ["id", id])[0];
-                ot_tmp = df_filter(df, "ot", ["id", id])[0];
             }
             // Jap or Eng name
             else if (!/^\d+$/.test(id) && id) {
@@ -244,11 +274,12 @@ async function importFromYdk() {
             const num_tmp = ids.map(d => d.split("\t")[0]).filter(d => d == id).length;
             if (!name_tmp) exceptions.push(`${id} ${name_tmp}`);
             else {
-                let row_index = ind + 2;
+                let row_index = parseInt(ind) + 2;
+                console.log({row_index, ind})
                 if (ind == 0) {
                     if (types_tmp == "") types_tmp = df_filter(df, "type", ["id", id])[0];
                     try {
-                        const main_row = ["monster", "spell", "trap"].map(d => d.toUpperCase());
+                        const main_row = ["monster", "spell", "trap"].map(d => d.slice(0, 1).toUpperCase() + d.slice(1));
                         const row_type = main_row.filter(d => types_tmp.split(",").some(dd => dd == d))[0];
                         row_index = row_names.indexOf(row_type.toLowerCase());
                     } catch {
@@ -258,23 +289,9 @@ async function importFromYdk() {
                 }
                 row_results[row_index].names.push(name_tmp);
                 row_results[row_index].nums.push(num_tmp);
-                row_results[row_index].ots.push([ot_tmp, id]);
             }
         }
     }
-    /*const newIds=Object.assign(...row_results.map(row_result=>
-        row_result.ots.filter(d=>d[0]==="OCG").map(d=>({[d[1]]:d[1]}))).flat().concat({})
-    );
-    console.log(newIds);
-    const newNames=await obtainFromOCGcard({form:"id", input:newIds});
-    console.log(newNames);*/
-    /* for(const [row_ind, row_result] of Object.entries(row_results)){
-        for (const [ind, ot] of Object.entries(row_result.ots)){
-            if (ot[0]!=="OCG") continue;
-            const id=ot[1];
-            row_results[row_ind].names[ind]=newNames[id];
-        }
-    }*/
     // deck_name
     $("#dnm").val(import_file.name.replace(/\.ydk$/, ""));
 
@@ -324,7 +341,7 @@ $(async function () {
     if (url_now.indexOf("ope=2&") != -1) {
         const area = $("#header_box .save");
         const label = $("<label>", { for: "button_importFromYdk_input" });
-        const button = $("<a>", { class: "black_btn red", type: "button", id: "button_importFromYdk", style: "position: relative;" })
+        const button = $("<a>", { class: "black_btn red", type: "button", id: "button_importFromYdk", style: "position: relative;user-select: none;" })
             .append("<b>インポート</b>");
         const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
         button.append(input_button);
@@ -332,26 +349,26 @@ $(async function () {
         area.append(label);
     }
     else if (/ope=1&|deck\.action\?cgid/.test(url_now)) {
-        const settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
-        const IsColored=settings.showColor;
+        //const settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
+        //const IsColored=settings.showColor;
         const edit_area = $("#header_box #button_place_edit");
-        const area = (edit_area.length>0) ? edit_area : $("<span>", {id:"button_place_edit"}).appendTo($("#header_box"));
+        const area = (edit_area.length > 0) ? edit_area : $("<span>", { id: "button_place_edit" }).appendTo($("#header_box"));
         //console.log(area)
-        const button = $("<a>", { class: "black_btn red button_export", id: "button_export_id", style: "position: relative;" })
+        const button = $("<a>", { class: "black_btn red button_export id", style: "position: relative;user-select: none;" })
             .append("<b>エクスポート(id)</b>");
-        const button2 = $("<a>", { class: "black_btn red button_export", id: "button_export_Jap", style: "position: relative;" })
+        const button2 = $("<a>", { class: "black_btn red button_export Jap", style: "position: relative;user-select: none;" })
             .append("<b>エクスポート(日本語)</b>");
-        const btn_color = $("<a>", { class: `black_btn red btn_color ` + (IsColored ? "show" : ""), id: "button_color", style: "position: relative;" })
-            .append(`<b>色を表示${IsColored ? "しない" : "する"}</b>`);
         $(area).append(button2);
         $(area).append(button);
+        /*const btn_color = $("<a>", { class: `black_btn red btn_color ` + (IsColored ? "show" : ""), id: "button_color", style: "position: relative;" })
+            .append(`<b>色を表示${IsColored ? "しない" : "する"}</b>`);
         const reg_area=$("form.sort_set");
         reg_area.prepend(btn_color);
-        await showValidCards(IsColored);
+        await showValidCards(IsColored);*/
     }
 
-    const lastModifiedDate=await operateStorage({ lastModifiedDate: 0}, "local").then(items=>items.lastModifiedDate);
-    await getSyncStorage({settings: defaultString }).then(async storage=>{
+    const lastModifiedDate = await operateStorage({ lastModifiedDate: 0 }, "local").then(items => items.lastModifiedDate);
+    await getSyncStorage({ settings: defaultString }).then(async storage => {
         //const df = JSON.parse(storage.df);
         //const settings = JSON.parse(storage.settings);
         console.log(Date.now() - lastModifiedDate);
@@ -360,19 +377,22 @@ $(async function () {
         }*/
     })
 
-    $("a.button_export").on("click", async function (e) {
-        const form=$(e.target).match(/(?<=button_export_)\S+/)[0];
-        await exportAs(form);
+    document.addEventListener("click", async function (e) {
+        if ($(e.target).is("a.button_export, a.button_export *")) {
+            const form = ["id", "Jap"].filter(d => $(e.target).is(`.${d}, .${d} *`))[0];
+            console.log(`export with ${form}`)
+            await exportAs(form);
+        }
     })
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
     })
-    $("#button_color").on("click", async function (e) {
+    /*$("#button_color").on("click", async function (e) {
         let settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
         settings.showColor=!settings.showColor;
         $(e.target).html(`<b>色を表示${settings.showColor ? "しない" : "する"}</b>`);
         $(e.target).toggleClass("show");
         await showValidCards(settings.showColor);
         await setSyncStorage({settings: JSON.stringify(settings)});
-    })
+    })*/
 });
