@@ -3,8 +3,7 @@
 // ----------------------------------
 //            # initial
 
-const defaultSettings={autoUpdateDB:true, changeCDBRepo:false, 
-    changeConstantLuaRepo:false, changeStringsLuaRepo:false};
+const defaultSettings={autoUpdateDB:true, addDate:false}; // , changeCDBRepo:false, changeConstantLuaRepo:false, changeStringsLuaRepo:false
 const defaultString=JSON.stringify(defaultSettings);
 
 function makeTable(tableContent={},captionText=""){
@@ -33,6 +32,10 @@ function makeTable(tableContent={},captionText=""){
 $(async function () {
     const items=await getSyncStorage({settings: defaultString, repoInfos:defaultRepoStrings});
     const settings=JSON.parse(items.settings);
+    for (const [key, val] of Object.entries(settings)){
+        const checkArea=$(`#check_${key}`);
+        if (checkArea.length>0) $(checkArea).prop({checked:val});
+    }
     const repoInfos=JSON.parse(items.repoInfos);
     const items2=await operateStorage({ df: JSON.stringify({}), lastModifiedDate: 0}, "local");
     const df = (Date.now() - items2.lastModifiedDate < 3 * 86400 * 1000) ? JSON.parse(items2.df) :
@@ -88,8 +91,8 @@ $("button.btnClearStorage").on("click", async function () {
 
 })
 
-const limitedKey = ["race", "type", "attribute", "set", "LMarker"];
-const numberKey = ["atk", "def", "PS", "level", "id"];
+const limitedKey = ["race", "type", "attribute", "set", "LMarker", "cid", "ot"];
+const numberKey = ["atk", "def", "scale", "level", "id"];
 const includeKey=["type", "set"];
 
 $(".btnSearchDB").on("click", async function (e) {
@@ -186,7 +189,6 @@ document.addEventListener("change", async function (e) {
         let settings=await getSyncStorage({settings:defaultString}).then(items=>JSON.parse(items.settings));
         const checkKey=$(e.target).attr("id").replace(/check_/, "");
         settings[checkKey]=$(e.target).prop("checked");
-        console.log(settings);
         await setSyncStorage({settings:JSON.stringify(settings)});
     }
 })

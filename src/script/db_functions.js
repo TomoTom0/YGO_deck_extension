@@ -364,7 +364,8 @@ async function updateDB(){
     const content = await fetch(git_data_url, { method: "GET", headers: header_auth }).then(d=>d.json())
         .then(res=>atob(res.content));
     console.log("Database has been updated.");
-    const df_new=JSON.parse(content).all;
+    let df_new=JSON.parse(content).all;
+    df_new.id=df_new.id.map(d=>d-0)
     await operateStorage({df:JSON.stringify(df_new), lastModifiedDate:Date.now()}, "local", "set");
     return df_new;
 }

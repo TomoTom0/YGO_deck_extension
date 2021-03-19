@@ -5,7 +5,7 @@
 //const db_path = "data/ygo_db_simple.tsv";
 //const fromConstant_path = "data/fromConstant.tsv";
 //let GLOBAL_df = {};
-const defaultSettings = { autoUpdateDB: true, changeCDBRepo: false, showColor: true };
+const defaultSettings = { autoUpdateDB: true, addDate:false }; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);
 
 // ----------------------------------
@@ -253,7 +253,7 @@ async function importFromYdk() {
         })),
         onlyNumbers: data_array.filter(d=>!/^#|^!/.test(d)).every(data=>isFinite(data))}
     const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
-    for (const [ind, ids] of Object.entries(imported_ids)) {
+    for (const [ind_import, ids] of Object.entries(imported_ids)) {
         for (const id_tmp of Array.from(new Set(ids)).filter(d => d.length > 0)) {
             const id = (isFinite(id_tmp)) ? id_tmp - 0 : id_tmp;
             let name_tmp = "";
@@ -274,9 +274,8 @@ async function importFromYdk() {
             const num_tmp = ids.map(d => d.split("\t")[0]).filter(d => d == id).length;
             if (!name_tmp) exceptions.push(`${id} ${name_tmp}`);
             else {
-                let row_index = parseInt(ind) + 2;
-                console.log({row_index, ind})
-                if (ind == 0) {
+                let row_index = parseInt(ind_import) + 2;
+                if (ind_import == 0) {
                     if (types_tmp == "") types_tmp = df_filter(df, "type", ["id", id])[0];
                     try {
                         const main_row = ["monster", "spell", "trap"].map(d => d.slice(0, 1).toUpperCase() + d.slice(1));
@@ -293,7 +292,9 @@ async function importFromYdk() {
         }
     }
     // deck_name
-    $("#dnm").val(import_file.name.replace(/\.ydk$/, ""));
+    const settings_tmp=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
+    const deck_name=import_file.name.replace(/(?<=^[^(@@)]+)@@.*\.ydk$|\.ydk$/, "") + (settings_tmp.addDate ? "@@" + new Date().toLocaleDateString() : "");
+    $("#dnm").val(deck_name);
 
     for (const tab_ind of [...Array(5).keys()]) {
         const row_name = row_names[tab_ind];
@@ -326,10 +327,14 @@ async function importFromYdk() {
     const main_total_num = [0, 1, 2].reduce((acc, cur) => acc + Number($(`.main_count:eq(${cur})`).text()), 0);
     main_total.append(main_total_num);
 
+    const message_forImportedData=`main: ${main_total_num}\n`+row_results.map((row, ind)=>`${row_names[ind]}: ${row.names.length}`).join("\n");
     if (exceptions.length > 0 && !exceptions.every(d => /^\s*$/.test(d))) {
         const error_message = "一部のカードが変換できませんでした。\n" + exceptions.join(", ");
         console.log(error_message);
-        alert(error_message);
+        alert(error_message+"\n"+message_forImportedData);
+    } else {
+        console.log(message_forImportedData);
+        alert(message_forImportedData);
     }
 }
 
