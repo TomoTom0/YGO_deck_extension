@@ -78,6 +78,8 @@ $(".btnUpdateDB").on("click", async function (e) {
     display.text("Updating now...\t");
     const df = await updateDB({display, settings:settings});
     display.text("DB has been updated.");
+    const modifiedDateString = (new Date(Date.now())).toLocaleDateString();
+    $(".CardDBSection").text(`Card DataBase: Last Update@${modifiedDateString}`);
 })
 $(".btnShowDB").on("click", async function () {
     const df=await obtainDF();
