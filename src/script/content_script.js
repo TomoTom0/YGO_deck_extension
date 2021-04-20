@@ -375,7 +375,7 @@ $(async function () {
     const lastModifiedDate = await operateStorage({ lastModifiedDate: 0 }, "local").then(items => items.lastModifiedDate);
     await getSyncStorage({ settings: defaultString }).then(async storage => {
         //const df = JSON.parse(storage.df);
-        //const settings = JSON.parse(storage.settings);
+        const settings = JSON.parse(storage.settings);
         //console.log(Date.now() - lastModifiedDate);
         if (settings.autoUpdateDB && (Date.now() - lastModifiedDate > 3 * 86400 * 1000)) {
             await updateDB({ display: "", settings: settings });
