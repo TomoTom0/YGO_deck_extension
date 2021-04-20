@@ -5,7 +5,7 @@
 //const db_path = "data/ygo_db_simple.tsv";
 //const fromConstant_path = "data/fromConstant.tsv";
 //let GLOBAL_df = {};
-const defaultSettings = { autoUpdateDB: true, addDate:false }; // , changeCDBRepo: false, showColor: true
+const defaultSettings = { autoUpdateDB: true, addDate: false }; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);
 
 // ----------------------------------
@@ -145,9 +145,9 @@ async function exportAs(form = "id") {
             };
             // ja:Array.from(new Set(await obtainValidCids("ja")))
             const url_now = location.href;
-            const original_lang=(url_now.match(/(?<=&request_locale=)\S\S/) || ["ja"])[0];
-            const urlAttr=url_now.match(/(?<=\/)[^\/]*$/)[0]
-            const urlAttrNew=urlAttr.replace(`&request_locale=${original_lang}`, "")+`&request_locale=${original_lang}`;
+            const original_lang = (url_now.match(/(?<=&request_locale=)\S\S/) || ["ja"])[0];
+            const urlAttr = url_now.match(/(?<=\/)[^\/]*$/)[0]
+            const urlAttrNew = urlAttr.replace(`&request_locale=${original_lang}`, "") + `&request_locale=${original_lang}`;
             history.replaceState("", "", urlAttrNew)
             const url_Eng = url_now.replace(/&request_locale=\S\S/g, "") + "&request_locale=en";
             const res_Eng = await fetch(url_Eng).then(d => d.body)
@@ -238,7 +238,7 @@ async function importFromYdk() {
     const imported_ids = obtain_deck_splited(data_array);
 
     const row_names = ["monster", "spell", "trap", "extra", "side"];
-    let row_results = Array(5).fill({}).map(_=>({ names: [], nums: []}));
+    let row_results = Array(5).fill({}).map(_ => ({ names: [], nums: [] }));
     const df = await obtainDF();
     let exceptions = [];
     // guess file type => id, Jap, Eng
@@ -292,8 +292,8 @@ async function importFromYdk() {
         }
     }
     // deck_name
-    const settings_tmp=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
-    const deck_name=import_file.name.replace(/(?<=^[^(@@)]+)@@.*\.ydk$|\.ydk$/, "") + (settings_tmp.addDate ? "@@" + new Date().toLocaleDateString() : "");
+    const settings_tmp = await getSyncStorage({ settings: defaultString }).then(items => JSON.parse(items.settings));
+    const deck_name = import_file.name.replace(/(?<=^[^(@@)]+)@@.*\.ydk$|\.ydk$/, "") + (settings_tmp.addDate ? "@@" + new Date().toLocaleDateString() : "");
     $("#dnm").val(deck_name);
 
     for (const tab_ind of [...Array(5).keys()]) {
@@ -327,11 +327,11 @@ async function importFromYdk() {
     const main_total_num = [0, 1, 2].reduce((acc, cur) => acc + Number($(`.main_count:eq(${cur})`).text()), 0);
     main_total.append(main_total_num);
 
-    const message_forImportedData=`main: ${main_total_num}\n`+row_results.map((row, ind)=>`${row_names[ind]}: ${row.names.length}`).join("\n");
+    const message_forImportedData = `main: ${main_total_num}\n` + row_results.map((row, ind) => `${row_names[ind]}: ${row.names.length}`).join("\n");
     if (exceptions.length > 0 && !exceptions.every(d => /^\s*$/.test(d))) {
         const error_message = "一部のカードが変換できませんでした。\n" + exceptions.join(", ");
         console.log(error_message);
-        alert(error_message+"\n"+message_forImportedData);
+        alert(error_message + "\n" + message_forImportedData);
     } else {
         console.log(message_forImportedData);
         alert(message_forImportedData);
@@ -377,7 +377,10 @@ $(async function () {
         //const df = JSON.parse(storage.df);
         const settings = JSON.parse(storage.settings);
         //console.log(Date.now() - lastModifiedDate);
-        if (settings.autoUpdateDB && (Date.now() - lastModifiedDate > 3 * 86400 * 1000)) {
+        const passedTime = Date.now() - lastModifiedDate;
+        const todayDay = (new Date(Date.now())).getDay() - 1;
+        if (settings.autoUpdateDB && (passedTime > 1 * 86400 * 1000) &&
+            (todayDay % 3 == 2 || passedTime > 3 * 86400 * 1000)) {
             await updateDB({ display: "", settings: settings });
         }
     })
