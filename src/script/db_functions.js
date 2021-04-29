@@ -359,13 +359,13 @@ async function updateDB(){
 
     const git_content_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/contents/data`;
     const res_content = await fetch(git_content_url, { method: "GET", headers: header_auth }).then(d=>d.json());
-    const sha=res_content.filter(d=>d.path===repoInfo.path)[0].sha
-    const git_data_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/git/blobs/${sha}`;
+    const git_data_url = res_content.filter(d=>d.path===repoInfo.path)[0].git_url;
     const content = await fetch(git_data_url, { method: "GET", headers: header_auth }).then(d=>d.json())
         .then(res=>atob(res.content));
     console.log("Database has been updated.");
     let df_new=JSON.parse(content).all;
-    df_new.id=df_new.id.map(d=>d-0)
+    df_new.id=df_new.id.map(d=>d-0);
+    df_new.cid=df_new.cid.map(d=>d-0);
     await operateStorage({df:JSON.stringify(df_new), lastModifiedDate:Date.now()}, "local", "set");
     return df_new;
 }

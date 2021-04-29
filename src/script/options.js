@@ -66,9 +66,14 @@ $(async function () {
                 repoArea).val(val[1]);
             })
         })
-    
+
+        // enter then search
+        document.addEventListener("keydown", async function (e) {
+            if ($(e.target).is("input.inputSearchVal") && e.key == "Enter") {
+                await searchFunc();
+            }
+        })
     })
-        
 });
 
 // # button
@@ -98,6 +103,11 @@ const numberKey = ["atk", "def", "scale", "level", "id"];
 const includeKey=["type", "set"];
 
 $(".btnSearchDB").on("click", async function (e) {
+    await searchFunc();
+
+})
+
+const searchFunc = async ()=>{
     const df=await obtainDF();
     let searchKVs = [];
     $("span.spanSearchKV").map((ind, obj) => {
@@ -108,7 +118,7 @@ $(".btnSearchDB").on("click", async function (e) {
     });
     //console.log(searchKVs)
     const searcheResults = searchKVs.reduce((df_tmp, cur) => {
-        const condition = ([...includeKey, "Eng"].indexOf(cur[0])!=-1) ? "in" : "=";
+        const condition = ([...includeKey, "name"].indexOf(cur[0])!=-1) ? "in" : "=";
         const ids = df_filter(df_tmp, "id", cur, condition);
         return df_filter(df_tmp, Object.keys(df), ["id", ids])
     }, df)
@@ -117,7 +127,7 @@ $(".btnSearchDB").on("click", async function (e) {
     searchResultArea.empty();
     const table=makeTable(searcheResults, "Search Results");
     searchResultArea.append(table)
-})
+}
 
 $(".btnSearchAdd").on("click", async function (e) {
     const df=await obtainDF();

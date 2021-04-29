@@ -72,7 +72,7 @@ function obtain_deck_splited(data_array) {
 
 // ## check valid
 
-const obtainValidCids = async (lang = "en") => {
+/*const obtainValidCids = async (lang = "en") => {
     const url_now = location.href;
     const url_Eng = url_now.replace(/&request_locale=\S\S/g, "") + `&request_locale=${lang}`;
     const res_Eng = await fetch(url_Eng).then(d => d.body)
@@ -115,7 +115,7 @@ async function showValidCards(IsColored = true) {
             }
         });
     });
-}
+}*/
 
 //---------------------------------
 //         # export
@@ -127,13 +127,31 @@ async function exportAs(form = "id") {
     const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
         .match(/^\S*(?=_list)/)[0]);
 
-    const obtainRowResults = {
+    const obtainRowResults =  async () => {
+        return [...Array(rows_num).keys()].map(row_ind => {
+            const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`).length;
+            return {
+                names: [...Array(card_length).keys()]
+                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`).text()),
+                cids : [...Array(card_length).keys()]
+                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`)
+                    .parent("td").children("input.link_value").val().match(/(?<=cid=)\d+/)[0]-0),
+                nums: [...Array(card_length).keys()]
+                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`).text().match(/\d/)[0])
+            };
+        })
+    }
+
+/*  const obtainRowResults_old = {
         Jap: async () => {
             return [...Array(rows_num).keys()].map(row_ind => {
                 const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`).length;
                 return {
                     names: [...Array(card_length).keys()]
                         .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`).text()),
+                    cids : [...Array(card_length).keys()]
+                        .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`)
+                        .parent("td").children("input.link_value").val().match(/(?<=cid=)\d+/)),
                     nums: [...Array(card_length).keys()]
                         .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`).text().match(/\d/)[0])
                 };
@@ -158,7 +176,8 @@ async function exportAs(form = "id") {
                 let count = 0;
                 return [...Array(card_length).keys()]
                     .reduce((acc, d) => {
-                        const cid_tmp = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`).parent("td").children("input.link_value").val().match(/(?<=cid=)\d+/);
+                        const cid_tmp = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`)
+                            .parent("td").children("input.link_value").val().match(/(?<=cid=)\d+/);
                         const IsValid = cids.en.flat().indexOf(cid_tmp[0]) != -1;
                         const wrapper = IsValid ? content : $("body");
                         const ind_tmp = IsValid ? count++ : d;
@@ -176,39 +195,44 @@ async function exportAs(form = "id") {
                     }, { names: [], nums: [] })
             })
         }
-    }
-    const row_results = await obtainRowResults[form]();
+    }*/
+    const row_results = await obtainRowResults();
     console.log(row_results)
 
     const df = await obtainDF();
     const keys = ["#main", "#extra", "!side"];
     let result_outputs = keys.map(_ => []);
+    let result_exception_counts = keys.map(_ => 0);
     for (const [row_ind, row_result] of Object.entries(row_results)) {
         const out_ind = (row_ind < 3) ? 0 : row_ind - 2;
         for (const [ind, name_tmp] of Object.entries(row_result.names)) {
-            let output_comp = null;
+            const cid_tmp= row_result.cids[ind];
+            let output_comp = undefined;
             if (form == "Jap") output_comp = `${name_tmp}`;
             else if (form == "id") {
                 // convert id -> name /  convert cid -> name
-                output_comp = df_filter(df, "id", ["name", name_tmp])[0];
-                if (output_comp === null) {
+                output_comp = df_filter(df, "id", ["cid", cid_tmp])[0];
+                /*if (output_comp === null) {
                     const cid_db = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${ind})`).parent("td").children("input.link_value").val().match(/(?<=cid=)\d+/)
                     output_comp = !!(cid_db) ? df_filter(df, "id", ["cid", cid_db[0]])[0] : "";
-                }
+                }*/
             }
-            if (output_comp === null) {
+            if (output_comp === undefined || /^\s*$/.test(output_comp)) {
                 // can't convert case
-                const name_Jap = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${ind})`).text();
+                const name_Jap = name_tmp //$(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${ind})`).text();
                 exceptions.push(name_Jap);
                 // form=id and db has error => Japanese name and type wil be outputed with tab-separation
                 output_comp = `${name_Jap}\t${row_names[row_ind]}`;
+                result_exception_counts[row_ind]++;
             }
             result_outputs[out_ind].push(...Array(row_result.nums[ind] - 0).fill(output_comp))
         }
     }
     const content = result_outputs.map((id, ind) => keys[ind] + "\n" + id.join("\n")).join("\n");
 
-    const convert_results_message = ["main", "extra", "side"].map((d, ind) => `${d}: ${result_outputs[ind].length}`).join("\n")
+    const convert_results_message = ["main", "extra", "side"].map((d, row_ind) =>
+        `${d}: ${result_outputs[row_ind].length - result_exception_counts[row_ind]}/${result_outputs[row_ind].length}`)
+        .join("\n")
     console.log(convert_results_message);
 
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
@@ -388,7 +412,7 @@ $(async function () {
     document.addEventListener("click", async function (e) {
         if ($(e.target).is("a.button_export, a.button_export *")) {
             const form = ["id", "Jap"].filter(d => $(e.target).is(`.${d}, .${d} *`))[0];
-            console.log(`export with ${form}`)
+            console.log(`export deck as ${form}`)
             await exportAs(form);
         }
     })
