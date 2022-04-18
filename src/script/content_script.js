@@ -40,7 +40,7 @@ const defaultString = JSON.stringify(defaultSettings);
     return result_data;
 }*/
 
-function TSV2Dic(tsv_data) {
+/*function TSV2Dic(tsv_data) {
     tsv_line = tsv_data.map(d => d.split("\t"));
 
     const headers = tsv_line[0];
@@ -57,7 +57,7 @@ function TSV2Dic(tsv_data) {
     let result_data = {};
     headers.forEach((d, ind) => result_data[d] = data_array[ind]);
     return result_data;
-}
+}*/
 
 function split_data(data) {
     const split_sep = "__SPLIT__";
@@ -69,6 +69,25 @@ function obtain_deck_splited(data_array) {
         .concat([data_array.length]);
     return [0, 1, 2].map(d => data_array.slice(indexes[d] + 1, indexes[d + 1]));
 };
+
+const obtainRowResults = () => {
+    const rows_num = $("#deck_text [id$='_list']").length;
+    const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
+        .match(/^\S*(?=_list)/)[0]);
+    return [...Array(rows_num).keys()].map(row_ind => {
+        const row_name=row_names[row_ind]
+        const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) td.card_name`).length;
+        return {[row_name]:{
+            names: [...Array(card_length).keys()]
+                .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) td.card_name:eq(${d})`).text().replaceAll(/^\s*|\s*$/g, "")),
+            cids : [...Array(card_length).keys()]
+                .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) td.card_name:eq(${d})>input.link_value`)
+                .val().match(/(?<=cid=)\d+/)[0]-0),
+            nums: [...Array(card_length).keys()]
+                .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) td.num:eq(${d})`).text().match(/\d/)[0])
+        }};
+    })
+}
 
 // ## check valid
 
@@ -118,6 +137,13 @@ async function showValidCards(IsColored = true) {
 }*/
 
 //---------------------------------
+//         # sort
+
+/*async function sortDeck(){
+    const row_results = obtainRowResults();
+}*/
+
+//---------------------------------
 //         # export
 
 async function exportAs(form = "id") {
@@ -127,20 +153,7 @@ async function exportAs(form = "id") {
     const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
         .match(/^\S*(?=_list)/)[0]);
 
-    const obtainRowResults =  async () => {
-        return [...Array(rows_num).keys()].map(row_ind => {
-            const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name`).length;
-            return {
-                names: [...Array(card_length).keys()]
-                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`).text()),
-                cids : [...Array(card_length).keys()]
-                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${d})`)
-                    .parent("td").children("input.link_value").val().match(/(?<=cid=)\d+/)[0]-0),
-                nums: [...Array(card_length).keys()]
-                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) .num:eq(${d})`).text().match(/\d/)[0])
-            };
-        })
-    }
+    // const obtainRowResults
 
 /*  const obtainRowResults_old = {
         Jap: async () => {
@@ -196,7 +209,7 @@ async function exportAs(form = "id") {
             })
         }
     }*/
-    const row_results = await obtainRowResults();
+    const row_results = obtainRowResults();
     console.log(row_results)
 
     const df = await obtainDF();
@@ -239,7 +252,8 @@ async function exportAs(form = "id") {
     const blob = new Blob([bom, content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    const deck_name = $("#wrapper article:eq(0) header h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_");
+    //const deck_name = $("#wrapper article:eq(0) header h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_"); // before 2022/4/18
+    const deck_name = $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_"); // after 2022/4/18
     a.download = deck_name + ".ydk";
     a.href = url;
     a.click();
@@ -368,10 +382,12 @@ async function importFromYdk() {
 $(async function () {
     const url_now = location.href;
     if (url_now.indexOf("ope=2&") != -1) {
-        const area = $("#header_box .save");
+        //const area = $("#header_box .save"); // before// 2022/4/18
+        const area = $("#bottom_btn_set"); // after 2022/4/18
+
         const label = $("<label>", { for: "button_importFromYdk_input" });
-        const button = $("<a>", { class: "black_btn red", type: "button", id: "button_importFromYdk", style: "position: relative;user-select: none;" })
-            .append("<b>インポート</b>");
+        const button = $("<a>", { class: "btn hex red", type: "button", id: "button_importFromYdk", style: "position: relative;user-select: none;" })
+            .append("<span>インポート</span>");
         const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
         button.append(input_button);
         label.append(button);
@@ -380,13 +396,14 @@ $(async function () {
     else if (/ope=1&|deck\.action\?cgid/.test(url_now)) {
         //const settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
         //const IsColored=settings.showColor;
-        const edit_area = $("#header_box #button_place_edit");
-        const area = (edit_area.length > 0) ? edit_area : $("<span>", { id: "button_place_edit" }).appendTo($("#header_box"));
+        //const edit_area = $("#header_box #button_place_edit"); // before 2022/4/18
+        const edit_area = $("#bottom_btn_set"); // after 2022/4/18
+        const area = (edit_area.length > 0) ? edit_area : $("<span>", { id: "bottom_btn_set" }).appendTo($("#deck_header"));
         //console.log(area)
-        const button = $("<a>", { class: "black_btn red button_export id", style: "position: relative;user-select: none;" })
-            .append("<b>エクスポート(id)</b>");
-        const button2 = $("<a>", { class: "black_btn red button_export Jap", style: "position: relative;user-select: none;" })
-            .append("<b>エクスポート(日本語)</b>");
+        const button = $("<a>", { class: "btn hex red button_export id"})
+            .append("<span>エクスポート(id)</span>");
+        const button2 = $("<a>", { class: "btn hex red button_export Jap"})
+            .append("<span>エクスポート(日本語)</span>"); // , style: "position: relative;user-select: none;"
         $(area).append(button2);
         $(area).append(button);
         /*const btn_color = $("<a>", { class: `black_btn red btn_color ` + (IsColored ? "show" : ""), id: "button_color", style: "position: relative;" })
