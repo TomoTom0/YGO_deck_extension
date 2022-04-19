@@ -3,8 +3,7 @@
 // ----------------------------------
 //            # initial
 
-const defaultSettings={autoUpdateDB:true, changeCDBRepo:false, 
-    changeConstantLuaRepo:false, changeStringsLuaRepo:false};
+const defaultSettings={autoUpdateDB:true, addDate:false}; // , changeCDBRepo:false, changeConstantLuaRepo:false, changeStringsLuaRepo:false
 const defaultString=JSON.stringify(defaultSettings);
 
 function makeTable(tableContent={},captionText=""){
@@ -33,6 +32,10 @@ function makeTable(tableContent={},captionText=""){
 $(async function () {
     const items=await getSyncStorage({settings: defaultString, repoInfos:defaultRepoStrings});
     const settings=JSON.parse(items.settings);
+    for (const [key, val] of Object.entries(settings)){
+        const checkArea=$(`#check_${key}`);
+        if (checkArea.length>0) $(checkArea).prop({checked:val});
+    }
     const repoInfos=JSON.parse(items.repoInfos);
     const items2=await operateStorage({ df: JSON.stringify({}), lastModifiedDate: 0}, "local");
     const df = (Date.now() - items2.lastModifiedDate < 3 * 86400 * 1000) ? JSON.parse(items2.df) :
@@ -48,7 +51,7 @@ $(async function () {
         Object.entries(settings).map(kv=>{
             if (typeof(kv[1])=="boolean") {
                 const checkArea=$(`#check_${kv[0]}`);
-                checkArea.prop({"checked":kv[1]});
+                if (checkArea.lenth>0) checkArea.prop({"checked":kv[1]});
             }
         })
         //console.log(repoInfos)
@@ -63,9 +66,14 @@ $(async function () {
                 repoArea).val(val[1]);
             })
         })
-    
+
+        // enter then search
+        document.addEventListener("keydown", async function (e) {
+            if ($(e.target).is("input.inputSearchVal") && e.key == "Enter") {
+                await searchFunc();
+            }
+        })
     })
-        
 });
 
 // # button
@@ -75,6 +83,8 @@ $(".btnUpdateDB").on("click", async function (e) {
     display.text("Updating now...\t");
     const df = await updateDB({display, settings:settings});
     display.text("DB has been updated.");
+    const modifiedDateString = (new Date(Date.now())).toLocaleDateString();
+    $(".CardDBSection").text(`Card DataBase: Last Update@${modifiedDateString}`);
 })
 $(".btnShowDB").on("click", async function () {
     const df=await obtainDF();
@@ -88,11 +98,16 @@ $("button.btnClearStorage").on("click", async function () {
 
 })
 
-const limitedKey = ["race", "type", "attribute", "set", "LMarker"];
-const numberKey = ["atk", "def", "PS", "level", "id"];
+const limitedKey = ["race", "type", "attribute", "set", "LMarker", "cid", "ot"];
+const numberKey = ["atk", "def", "scale", "level", "id"];
 const includeKey=["type", "set"];
 
 $(".btnSearchDB").on("click", async function (e) {
+    await searchFunc();
+
+})
+
+const searchFunc = async ()=>{
     const df=await obtainDF();
     let searchKVs = [];
     $("span.spanSearchKV").map((ind, obj) => {
@@ -103,7 +118,7 @@ $(".btnSearchDB").on("click", async function (e) {
     });
     //console.log(searchKVs)
     const searcheResults = searchKVs.reduce((df_tmp, cur) => {
-        const condition = ([...includeKey, "Eng"].indexOf(cur[0])!=-1) ? "in" : "=";
+        const condition = ([...includeKey, "name"].indexOf(cur[0])!=-1) ? "in" : "=";
         const ids = df_filter(df_tmp, "id", cur, condition);
         return df_filter(df_tmp, Object.keys(df), ["id", ids])
     }, df)
@@ -112,7 +127,7 @@ $(".btnSearchDB").on("click", async function (e) {
     searchResultArea.empty();
     const table=makeTable(searcheResults, "Search Results");
     searchResultArea.append(table)
-})
+}
 
 $(".btnSearchAdd").on("click", async function (e) {
     const df=await obtainDF();
@@ -186,7 +201,6 @@ document.addEventListener("change", async function (e) {
         let settings=await getSyncStorage({settings:defaultString}).then(items=>JSON.parse(items.settings));
         const checkKey=$(e.target).attr("id").replace(/check_/, "");
         settings[checkKey]=$(e.target).prop("checked");
-        console.log(settings);
         await setSyncStorage({settings:JSON.stringify(settings)});
     }
 })

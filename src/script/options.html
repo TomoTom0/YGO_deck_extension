@@ -57,6 +57,11 @@
                                     <label class="custom-control-label">Auto Update DB</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_addDate">
+                                    <label class="custom-control-label">Add date to the name when importing a deck</label>
+                                </div>
+                                <!--
+                                <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_changeCDBRepo">
                                     <label class="custom-control-label">Change the Repository for CDB</label>
                                     <div class="col-lg-10 col-lg-offset-2 changeCDBRepo">
@@ -85,7 +90,7 @@
                                         <input type="text" placeholder="path of file" style="width:150px" class="inputChangePath"/>
                                         <button type="button" class="btnSave_changeStringsConfRepo btnSave_changeRepo btn btn-primary">Save</button>
                                     </div>
-                                </div>
+                                </div>-->
 
                             </div>
                             <!--
@@ -108,7 +113,7 @@
                                 <div class="col-lg-10 col-lg-offset-2">
                                     <span class="spanSearchKV">
                                         <select type="text" style="width:80px;" class="selectSearchKey"></select>
-                                        <input type="number" placeholder="a word or value" style="width:200px;" class="inputSearchVal" list="selectSearchList_0"></input>
+                                        <input type="text" placeholder="a word or value" style="width:200px;" class="inputSearchVal" list="selectSearchList_0"></input>
                                         <datalist id="selectSearchList_0"></datalist>
                                     </span>
                                     <button type="button" class="btnSearchClear btn btn-primary">Clear</button>
