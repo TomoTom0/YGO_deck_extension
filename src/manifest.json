@@ -1,7 +1,7 @@
 {
   "name": "遊戯王デッキサポート(インポート/エクスポート)",
   "author":"TomoTomo",
-  "version": "0.8.0.0",
+  "version": "0.8.0.2",
   "manifest_version": 3,
   "icons":{
     "16":"img/icon-16.png",
