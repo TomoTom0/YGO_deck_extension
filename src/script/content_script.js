@@ -21,6 +21,34 @@ function obtain_deck_splited(data_array) {
     return [0, 1, 2].map(d => data_array.slice(indexes[d] + 1, indexes[d + 1]));
 };
 
+const parseURL = (url_now, nullIsValid = false) => {
+    const html_parse_keys = ["cgid", "dno", "request_locale", "ope"];
+    const html_parse_dic_arr = html_parse_keys.map(key => {
+        const match_tmp = url_now.match(new RegExp(`(?<=${key}=)([^&=]+)`, "g"));
+        if (Array.isArray(match_tmp) && match_tmp.length > 0) {
+            return { [key]: match_tmp[0] };
+        } else return { [key]: null };
+    });
+    if (nullIsValid === false) {
+        return Object.assign(...html_parse_dic_arr.filter(d => Object.values(d)[0] != null));
+    } else return Object.assign(...html_parse_dic_arr);
+}
+
+const obtainMyCgid = () => {
+    const my_deck_btn = $("#header_menu>nav>div.bottom>ul.main_menu>li.my.menu_my_decks>ul>li>a:eq(0)");
+    if (my_deck_btn.length == 0) {
+        return null;
+    } else return $(my_deck_btn).prop("href").match(/cgid=([^\&=]+)/)[1];
+}
+
+const shuffleArray=(arr)=> {
+    const arr_len = arr.length;
+    for (const ind_now of [...Array(arr_len).keys()].map(d=>arr_len-1-d)){
+        const ind_rand = Math.floor(Math.random() * (ind_now+1));
+        [arr[ind_now], arr[ind_rand]]=[arr[ind_rand], arr[ind_now]];
+    }
+    return arr;
+}
 
 // # deck recipe
 
@@ -46,7 +74,7 @@ const obtainRowResults = () => {
 }
 
 // from input mode
-const obtainRowResults_Input = (df=undefined) => {
+const obtainRowResults_Input = (df = undefined) => {
     const rows_num = $("#deck_text [id$='_list']").length;
     const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
         .match(/^\S*(?=_list)/)[0]);
@@ -54,19 +82,19 @@ const obtainRowResults_Input = (df=undefined) => {
         const row_name = row_names[row_ind];
         const row_short_name = row_name.slice(0, 2);
         //const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) td.card_name`).length;
-        const card_length_max=$(`input[name='${row_short_name}nm']`).length;
-        const result_tmp=[...Array(card_length_max).keys()].map(card_ind=>{
-            const name_tmp=$(`#${row_short_name}nm_${card_ind+1}`).prop("value").replaceAll(/^\s*|\s*$/g, "");
-            const num_tmp=parseInt($(`#${row_short_name}num_${card_ind+1}`).prop("value").replaceAll(/^\s*|\s*$/g, ""));
-            if (name_tmp.length > 0 && Number.isInteger(num_tmp) && num_tmp > 0 && num_tmp < 4){
-                return {name:name_tmp, num:num_tmp};
+        const card_length_max = $(`input[name='${row_short_name}nm']`).length;
+        const result_tmp = [...Array(card_length_max).keys()].map(card_ind => {
+            const name_tmp = $(`#${row_short_name}nm_${card_ind + 1}`).prop("value").replaceAll(/^\s*|\s*$/g, "");
+            const num_tmp = parseInt($(`#${row_short_name}num_${card_ind + 1}`).prop("value").replaceAll(/^\s*|\s*$/g, ""));
+            if (name_tmp.length > 0 && Number.isInteger(num_tmp) && num_tmp > 0 && num_tmp < 4) {
+                return { name: name_tmp, num: num_tmp };
             } else return undefined;
-        }).filter(d=>d!=undefined);
+        }).filter(d => d != undefined);
         return {
             [row_name]: {
-                names: result_tmp.map(d=>d.name),
-                nums: result_tmp.map(d=>d.num),
-                cids: result_tmp.map(_=>undefined)
+                names: result_tmp.map(d => d.name),
+                nums: result_tmp.map(d => d.num),
+                cids: result_tmp.map(_ => undefined)
             }
         };
     }))
@@ -74,69 +102,71 @@ const obtainRowResults_Input = (df=undefined) => {
 
 // obtain df tmp
 
-const obtainDFDeck=()=>{
-    const obtainCardInfoFromTable=(t_row)=>{
-        const card_name=$("div.inside>div.card_name.flex_1>span.name", t_row).text().replaceAll(/^\s*|\s*$/g, "");
-        const card_type_icon=$("div.inside>div.card_name.flex_1>img.ui-draggable:eq(0)", t_row).prop("src").match(/card_icon_(\S+)\.\w+$/)[1];
-        const card_attr=$("div.inside>div.element>div.item_set>span:eq(0)>img.ui-draggable:eq(0)", t_row).prop("src").match(/attribute_icon_(\S+)\.\w+$/)[1];
-        const card_attr2=card_attr.slice(0,1).toUpperCase()+card_attr.slice(1,).toLowerCase();
+const obtainDFDeck = () => {
+    const obtainCardInfoFromTable = (t_row) => {
+        const card_name = $("div.inside>div.card_name.flex_1>span.name", t_row).text().replaceAll(/^\s*|\s*$/g, "");
+        const card_type_icon = $("div.inside>div.card_name.flex_1>img.ui-draggable:eq(0)", t_row).prop("src").match(/card_icon_(\S+)\.\w+$/)[1];
+        const card_attr = $("div.inside>div.element>div.item_set>span:eq(0)>img.ui-draggable:eq(0)", t_row).prop("src").match(/attribute_icon_(\S+)\.\w+$/)[1];
+        const card_attr2 = card_attr.slice(0, 1).toUpperCase() + card_attr.slice(1,).toLowerCase();
         //const card_num=parseInt($("div.cards_num_set>span", t_row).text().replaceAll(/^\s*|\s*$/g, ""));
-        const flex_st=$("div.inside>div.element>div.flex_3.other", t_row);
-        const flex_mon=$("div.inside>div.element>div.flex_2.other", t_row);
-        const flex_mon_stat=$("div.inside>div.element>div.num_set.flex_1", t_row);
+        const flex_st = $("div.inside>div.element>div.flex_3.other", t_row);
+        const flex_mon = $("div.inside>div.element>div.flex_2.other", t_row);
+        const flex_mon_stat = $("div.inside>div.element>div.num_set.flex_1", t_row);
 
         // optionで編集できるように?
-        const card_type_dic_dic={
-            spell:{"通常": "Normal", "速攻":"Quick-Play","永続":"Continuous", "装備":"Equip", "フィールド":"Field"},
-            trap:{"通常": "Normal", "永続":"Continuous", "カウンター":"Counter"},
-            monster:{"効果":"Effect", "通常":"Non-Effect", "チューナー":"Tuner", "ペンデュラム":"Pendulumn","融合":"Fusion", "シンクロ":"Synchro", "エクシーズ":"XYZ", "リンク":"Link"},
-            monster_race:{}}
-        const obtainCardType=(type_raw, card_type_dic, card_type_base)=>{
-            const card_type_base2=card_type_base.slice(0,1).toUpperCase()+card_type_base.slice(1,).toLowerCase();
-            let card_type_tmp=Object.entries(card_type_dic).map(kv=>{
-                const content=kv[1];
-                if (type_raw.indexOf(kv[0])!=-1 || type_raw.indexOf(kv[1])!=-1){
+        const card_type_dic_dic = {
+            spell: { "通常": "Normal", "速攻": "Quick-Play", "永続": "Continuous", "装備": "Equip", "フィールド": "Field" },
+            trap: { "通常": "Normal", "永続": "Continuous", "カウンター": "Counter" },
+            monster: { "効果": "Effect", "通常": "Non-Effect", "チューナー": "Tuner", "ペンデュラム": "Pendulumn", "融合": "Fusion", "シンクロ": "Synchro", "エクシーズ": "XYZ", "リンク": "Link" },
+            monster_race: {}
+        }
+        const obtainCardType = (type_raw, card_type_dic, card_type_base) => {
+            const card_type_base2 = card_type_base.slice(0, 1).toUpperCase() + card_type_base.slice(1,).toLowerCase();
+            let card_type_tmp = Object.entries(card_type_dic).map(kv => {
+                const content = kv[1];
+                if (type_raw.indexOf(kv[0]) != -1 || type_raw.indexOf(kv[1]) != -1) {
                     return [true, content];
                 } else {
                     return [false, content]
                 }
-            }).filter(d=>d[0]).map(d=>d[1]);
+            }).filter(d => d[0]).map(d => d[1]);
             card_type_tmp.push(card_type_base2);
             return card_type_tmp;
         }
-        const df_keys=["name", "type", "race", "atk", "def", "attribute", "scale", "level", "ot", "cid", "id"]
-        const df_base=Object.assign(...df_keys.map(d=>({[d]:null})));
-        if (flex_st.length>0){
+        const df_keys = ["name", "type", "race", "atk", "def", "attribute", "scale", "level", "ot", "cid", "id"]
+        const df_base = Object.assign(...df_keys.map(d => ({ [d]: null })));
+        if (flex_st.length > 0) {
             // spell and trap
-            const card_type_base=["spell", "trap"].filter(d=>card_type_icon.indexOf(d)!=-1)[0];
-            const card_type_dic=card_type_dic_dic[card_type_base]
-            const card_type_raw=$("span:eq(0)", flex_st).text().replaceAll(/^\s*|【\s*|\s*】|\s*$/g, "");
-            const card_type=obtainCardType(card_type_raw, card_type_dic, card_type_base);
-            const df_now={name:card_name, type:card_type.join(","), ot:"OCG+"}
+            const card_type_base = ["spell", "trap"].filter(d => card_type_icon.indexOf(d) != -1)[0];
+            const card_type_dic = card_type_dic_dic[card_type_base]
+            const card_type_raw = $("span:eq(0)", flex_st).text().replaceAll(/^\s*|【\s*|\s*】|\s*$/g, "");
+            const card_type = obtainCardType(card_type_raw, card_type_dic, card_type_base);
+            const df_now = { name: card_name, type: card_type.join(","), ot: "OCG+" }
             return Object.assign(df_base, df_now);
-        } else if (flex_mon.length>0 && flex_mon_stat.length>0) {
+        } else if (flex_mon.length > 0 && flex_mon_stat.length > 0) {
             // monster
-            const card_type_base="monster";
-            const card_type_dic=card_type_dic_dic[card_type_base]
-            const card_type_raw=$("span:eq(0)", flex_mon).text().replaceAll(/^\s*|【\s*|\s*】|\s*$/g, "");
-            const card_type=obtainCardType(card_type_raw, card_type_dic, card_type_base);
-            const card_stat_par_dic={level:"span:eq(0)", scale:"span:eq(1)", atk:"div:eq(0)>span:eq(0)", def:"div:eq(0)>span:eq(1)"}
-            const card_stat=Object.assign(...Object.entries(card_stat_par_dic).map(kv=>{
-                const par_cand=$(kv[1], flex_mon_stat).text().match(/\d+/g)
-                if (Array.isArray(par_cand)) return {[kv[0]]:par_cand[0]}
-                else return {[kv[0]]:null}
+            const card_type_base = "monster";
+            const card_type_dic = card_type_dic_dic[card_type_base]
+            const card_type_raw = $("span:eq(0)", flex_mon).text().replaceAll(/^\s*|【\s*|\s*】|\s*$/g, "");
+            const card_type = obtainCardType(card_type_raw, card_type_dic, card_type_base);
+            const card_stat_par_dic = { level: "span:eq(0)", scale: "span:eq(1)", atk: "div:eq(0)>span:eq(0)", def: "div:eq(0)>span:eq(1)" }
+            const card_stat = Object.assign(...Object.entries(card_stat_par_dic).map(kv => {
+                const par_cand = $(kv[1], flex_mon_stat).text().match(/\d+/g)
+                if (Array.isArray(par_cand)) return { [kv[0]]: par_cand[0] }
+                else return { [kv[0]]: null }
             }))
-            const df_now={
-                name:card_name, type:card_type.join(","),
-                atk:card_stat.atk, def:card_stat.def,
-                attribute:card_attr2, scale:card_stat.scale,
-                level:card_stat.level, ot:"OCG+"};
+            const df_now = {
+                name: card_name, type: card_type.join(","),
+                atk: card_stat.atk, def: card_stat.def,
+                attribute: card_attr2, scale: card_stat.scale,
+                level: card_stat.level, ot: "OCG+"
+            };
             return Object.assign(df_base, df_now);
         }
     }
-    const df_arr=Array.from($("#main_m_list>div.t_body>div.t_row.c_simple"))
-        .map(t_row=>obtainCardInfoFromTable(t_row))
-    return Object.assign(...Object.keys(df_arr[0]).map(k=>({[k]:df_arr.map(d=>d[k])})))
+    const df_arr = Array.from($("#main_m_list>div.t_body>div.t_row.c_simple"))
+        .map(t_row => obtainCardInfoFromTable(t_row))
+    return Object.assign(...Object.keys(df_arr[0]).map(k => ({ [k]: df_arr.map(d => d[k]) })))
 }
 
 // import cards
@@ -176,72 +206,83 @@ const importDeck = (row_results) => {
 
 // ## sort cards
 
-const _sortCards= (row_name, row_result, df, df_now)=>{
-    const sort_cond_base={"cid":0, "name":0}
-    const sort_cond_dic_dic={
-        "monster":{"level":-1, "atk":-1,"def":-1, "id":1},
-        "spell":{"type":["Normal", "Quick-Play", "Continuous", "Equip", "Field"], "id":1},
-        "trap":{"type":["Normal", "Continuous", "Counter"], "id":1},
-        "extra":{"type":["Fusion", "Synchro", "XYZ", "Link"]},
-        "side":{"type":["Monster", "Spell", "Trap"]}
+const _sortCards = (row_name, row_result, df, df_now) => {
+    const sort_cond_base = { "cid": 0, "name": 0 }
+    const sort_cond_dic_dic = {
+        "monster": { "level": -1, "atk": -1, "def": -1, "id": 1 },
+        "spell": { "type": ["Normal", "Quick-Play", "Continuous", "Equip", "Field"], "id": 1 },
+        "trap": { "type": ["Normal", "Continuous", "Counter"], "id": 1 },
+        "extra": { "type": ["Fusion", "Synchro", "XYZ", "Link"] },
+        "side": { "type": ["Monster", "Spell", "Trap"] }
     }
-    const sort_cond_dic=Object.assign(sort_cond_base, sort_cond_dic_dic[row_name])
+    const sort_cond_dic = Object.assign(sort_cond_base, sort_cond_dic_dic[row_name])
     const output_tmp_cid = df_filter(df, Array.from(Object.keys(sort_cond_dic)), ["cid", row_result.cids]);
     const output_tmp_jap = df_filter(df_now, Array.from(Object.keys(sort_cond_dic)), ["name", row_result.names]);
     // convert
     //console.log(Object.keys(output_tmp).map(k=>({[k]:output_tmp[k][ind]})))
     //[]
-    const output_arr = row_result.cids.map((cid, cid_ind)=>{
-        const name_tmp=row_result.names[cid_ind];
-        const ind_fromCid=output_tmp_cid.cid.indexOf(cid);
-        const ind_fromName=output_tmp_jap.name.indexOf(name_tmp);
+    const output_arr = row_result.cids.map((cid, cid_ind) => {
+        const name_tmp = row_result.names[cid_ind];
+        const ind_fromCid = output_tmp_cid.cid.indexOf(cid);
+        const ind_fromName = output_tmp_jap.name.indexOf(name_tmp);
         //console.log(ind_fromCid, ind_fromName)
         return Object.assign(
             //...Object.keys(output_tmp_cid).map(k=>({[k]:output_tmp_cid[k][ind_fromCid]}))
-            ...Object.keys(output_tmp_jap).map(k=>{
-                const val=output_tmp_jap[k][ind_fromName]
-                if(["id","cid"].indexOf(k) == -1) return {[k]:val}
-                else if (["id"].indexOf(k) != -1) return {[k]:output_tmp_cid[k][ind_fromCid]}
-                else if (["cid", "name"].indexOf(k) !=-1 ) return {[k]:null};
-            }), {cid:cid, name:name_tmp, num:row_result.nums[cid_ind]});
+            ...Object.keys(output_tmp_jap).map(k => {
+                const val = output_tmp_jap[k][ind_fromName]
+                if (["id", "cid"].indexOf(k) == -1) return { [k]: val }
+                else if (["id"].indexOf(k) != -1) return { [k]: output_tmp_cid[k][ind_fromCid] }
+                else if (["cid", "name"].indexOf(k) != -1) return { [k]: null };
+            }), { cid: cid, name: name_tmp, num: row_result.nums[cid_ind] });
     })
     //console.log(output_arr);
-    if (["extra", "side"].indexOf(row_name)!=-1){
-        const output_typed=sort_cond_dic.type.map(type_tmp=>{
-            const output_filtered=output_arr.filter(d=>d.type.indexOf(type_tmp)!=-1);
-            const output_res_tmp=Object.assign(...["cid", "name", "num"].map(k=>({[k+"s"]:output_filtered.map(d=>d[k])})));
-            const type_for_sort_dic = {extra:"monster", side:type_tmp.toLowerCase()}
+    if (["extra", "side"].indexOf(row_name) != -1) {
+        const output_typed = sort_cond_dic.type.map(type_tmp => {
+            const output_filtered = output_arr.filter(d => d.type.indexOf(type_tmp) != -1);
+            const output_res_tmp = Object.assign(...["cid", "name", "num"].map(k => ({ [k + "s"]: output_filtered.map(d => d[k]) })));
+            const type_for_sort_dic = { extra: "monster", side: type_tmp.toLowerCase() }
             const type_for_sort = type_for_sort_dic[row_name];
             return _sortCards(type_for_sort, output_res_tmp, df, df_now);
         });
-        return Object.assign(...["cid", "name", "num"].map(k=>({[k+"s"]:output_typed.map(d=>d[k+"s"]).flat()})));
+        return Object.assign(...["cid", "name", "num"].map(k => ({ [k + "s"]: output_typed.map(d => d[k + "s"]).flat() })));
     } else {
-        const arr_sorted=output_arr.sort((a,b)=>{
-            const diffs=(Object.keys(sort_cond_dic).map(k=>{
-                const sort_cond=sort_cond_dic[k];
-                if (Number.isInteger(sort_cond)){
-                    return [k, sort_cond*(parseInt(a[k])-parseInt(b[k]))];
-                } else if (Array.isArray(sort_cond)){
-                    const inds_for_sort=[a[k], b[k]].map(tmp_k=>sort_cond.map(d=>[tmp_k.indexOf(d), d]).filter(d=>d[0]!=-1).map(d=>sort_cond.indexOf(d[1])));
+        const arr_sorted = output_arr.sort((a, b) => {
+            const diffs = (Object.keys(sort_cond_dic).map(k => {
+                const sort_cond = sort_cond_dic[k];
+                if (Number.isInteger(sort_cond)) {
+                    return [k, sort_cond * (parseInt(a[k]) - parseInt(b[k]))];
+                } else if (Array.isArray(sort_cond)) {
+                    const inds_for_sort = [a[k], b[k]].map(tmp_k => sort_cond.map(d => [tmp_k.indexOf(d), d]).filter(d => d[0] != -1).map(d => sort_cond.indexOf(d[1])));
                     return [k, inds_for_sort[0] - inds_for_sort[1]];
                 } else return [k, 0];
             }));
             //console.log(diffs, a,b )
-            const diffs2=diffs.filter(d=> Number.isInteger(d[1]) && d[1]!=0 && ! Number.isNaN(d[1]));
+            const diffs2 = diffs.filter(d => Number.isInteger(d[1]) && d[1] != 0 && !Number.isNaN(d[1]));
             //console.log(diffs2[0], [...diffs2, ["",0]][0][1] ,a.name, b.name)
-            return [...diffs2, ["",0]][0][1];
+            return [...diffs2, ["", 0]][0][1];
         });
-        return Object.assign(...["cid", "name", "num"].map(k=>({[k+"s"]:arr_sorted.map(d=>d[k])})));
+        return Object.assign(...["cid", "name", "num"].map(k => ({ [k + "s"]: arr_sorted.map(d => d[k]) })));
     }
 }
 
-const sortCards = async (row_results)=>{
-    const df=await obtainDF();
-    const df_now=obtainDFDeck();
-    const row_results_new=Object.assign(...Object.entries(row_results).map(d=>({[d[0]]:_sortCards(d[0], d[1], df, df_now)})));
+const sortCards = async (row_results) => {
+    const df = await obtainDF();
+    const df_now = obtainDFDeck();
+    const row_results_new = Object.assign(...Object.entries(row_results).map(d => ({ [d[0]]: _sortCards(d[0], d[1], df, df_now) })));
     console.log("sorted", row_results_new);
     return row_results_new;
 }
+
+// ## shuffle
+
+const shuffleCards = () => {
+    const main_cards=Array.from($("#deck_image>#main>div.image_set>a"))
+    const area=Array.from($("#deck_image>#main>div.image_set"))
+
+    const shuffled_cards=shuffleArray(main_cards)
+    $(area).html(shuffled_cards.map(d=>d.outerHTML).join("\n"));
+}
+
 
 //---------------------------------
 //         # export
@@ -405,31 +446,25 @@ async function importFromYdk() {
 }
 
 // # sort
-async function sortWindow(){
-    const url_now=location.href;
-    const html_parse_keys=["cgid","dno","request_locale"];
-    const html_parse_dic=Object.assign(...html_parse_keys.map(key=>{
-        const match_tmp=url_now.match(new RegExp(`(?<=${key}=)([^&=]+)`, "g"));
-        if (Array.isArray(match_tmp) && match_tmp.length > 0){
-            return {[key]:match_tmp[0]};
-        } else return undefined;
-    }).filter(d=>d!=undefined));
+async function sortWindow() {
+    const url_now = location.href;
+    const html_parse_dic = Object.assign(parseURL(url_now), { ope: 2 });
     //console.log(html_parse_dic);
-    if (["cgid", "dno"].some(d=>Object.keys(html_parse_dic).indexOf(d)==-1) ){
+    if (["cgid", "dno"].some(d => Object.keys(html_parse_dic).indexOf(d) == -1)) {
         return;
     }
-    const url_ope2="https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2&"+
-        Object.entries(html_parse_dic).map(d=>d[0]+"="+d[1]).join("&");
+    const url_ope2 = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" +
+        Object.entries(html_parse_dic).map(d => d[0] + "=" + d[1]).join("&");
     const row_results = obtainRowResults();
-    const row_results_new=await sortCards(row_results);
-    const postMsg="trigger_sortCard_"+JSON.stringify(row_results_new);
+    const row_results_new = await sortCards(row_results);
+    const postMsg = "trigger_sortCard_" + JSON.stringify(row_results_new);
     //console.log(row_results_new);
     //console.log(postMsg);
     const win = window.open(url_ope2, "sortCard", "width=500,toolbar=yes,menubar=yes,scrollbars=yes");
     win.addEventListener("load", () => {
-        setTimeout(()=>{
+        setTimeout(() => {
             win.postMessage(postMsg, "*");
-        }, 500);
+        }, 100);
     }, false);
 }
 
@@ -439,32 +474,36 @@ async function sortWindow(){
 
 $(async function () {
     const url_now = location.href;
-    if (url_now.indexOf("ope=2&") != -1) {
+    const html_parse_dic = parseURL(url_now, true);
+    const my_cgid = obtainMyCgid();
+    if (html_parse_dic.ope == "2") {
         //const area = $("#header_box .save"); // before// 2022/4/18
         const area = $("#bottom_btn_set"); // after 2022/4/18
 
         const label = $("<label>", { for: "button_importFromYdk_input" });
         const button = $("<a>", { class: "btn hex red", type: "button", id: "button_importFromYdk", style: "position: relative;user-select: none;" })
-            .append("<span>インポート</span>");
+            .append("<span>Import</span>");
         const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
         button.append(input_button);
         label.append(button);
         area.append(label);
     }
-    else if (/ope=1&|deck\.action\?cgid/.test(url_now)) {
+    else if (["1", null].indexOf(html_parse_dic.ope)!=-1) {
         //const settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
         //const edit_area = $("#header_box #button_place_edit"); // before 2022/4/18
         const edit_area = $("#bottom_btn_set"); // after 2022/4/18
         const area = (edit_area.length > 0) ? edit_area : $("<span>", { id: "bottom_btn_set" }).appendTo($("#deck_header"));
         //console.log(area)
-        const buttons = [$("<a>", { class: "btn hex red button_export id" })
-                .append("<span>エクスポート(id)</span>"),
-            $("<a>", { class: "btn hex red button_export Jap" })
-                .append("<span>エクスポート(Name)</span>"), // , style: "position: relative;user-select: none;"
-            $("<a>", { class: "btn hex red button_sort", id:"button_sort"})
-                .append("<span>ソート</span>") // , style: "position: relative;user-select: none;"
-        ]
-        for (const button_tmp of buttons){
+        const button_dic = {export_id:$("<a>", { class: "btn hex red button_export id" })
+            .append("<span>Export (id)</span>"),
+        export_name:$("<a>", { class: "btn hex red button_export Jap" })
+            .append("<span>Export (Name)</span>"),
+        sort:$("<a>", { class: "btn hex red button_sort", id: "button_sort" })
+            .append("<span>Sort</span>"),
+        shuffle:$("<a>", { class: "btn hex red button_shuffle", id: "button_shuffle" })
+            .append("<span>Shuffle</span>")};
+        for (const [button_type, button_tmp] of Object.entries(button_dic)) {
+            if ( button_type == "sort" && (my_cgid == null || html_parse_dic.cgid != my_cgid)) continue;
             $(area).append(button_tmp);
         }
     }
@@ -496,32 +535,35 @@ $(async function () {
     $("#button_sort").on("click", async function () {
         await sortWindow();
     })
+    $("#button_shuffle").on("click", function () {
+        shuffleCards();
+    })
     // ## trigger
     window.addEventListener("message", async function (e) {
         const content = e.data;
         if (!/^trigger_/.test(content)) return;
         //console.log(content);
         if (/_sortCard/.test(content)) {
-            const json_dumped=content.replace("trigger_sortCard_", "");
-            const row_results_new=JSON.parse(json_dumped);
+            const json_dumped = content.replace("trigger_sortCard_", "");
+            const row_results_new = JSON.parse(json_dumped);
             //const row_results_new=await sortCards(row_results);
             console.log(row_results_new);
             const row_names = ["monster", "spell", "trap", "extra", "side"];
-            const row_str_new=JSON.stringify(row_names
-                .map(row_name=>({[row_name]:{names:row_results_new[row_name].names, nums:row_results_new[row_name].nums.map(d=>parseInt(d))}})))
-            const checkInputted=setInterval(()=>{
+            const row_str_new = JSON.stringify(row_names
+                .map(row_name => ({ [row_name]: { names: row_results_new[row_name].names, nums: row_results_new[row_name].nums.map(d => parseInt(d)) } })))
+            const checkInputted = setInterval(() => {
                 importDeck(row_results_new);
-                const row_results=obtainRowResults_Input();
-                const row_str=JSON.stringify(row_names
-                    .map(row_name=>({[row_name]:{names:row_results[row_name].names, nums:row_results[row_name].nums}})))
-                if (row_str == row_str_new){
+                const row_results = obtainRowResults_Input();
+                const row_str = JSON.stringify(row_names
+                    .map(row_name => ({ [row_name]: { names: row_results[row_name].names, nums: row_results[row_name].nums } })))
+                if (row_str == row_str_new) {
                     clearInterval(checkInputted);
-                    const regist_btn=$("#btn_regist>span");
-                    const save_text=regist_btn.text();
+                    const regist_btn = $("#btn_regist>span");
+                    const save_text = regist_btn.text();
                     //document.querySelector("#btn_regist").classList.remove("orn");
                     $("#btn_regist").toggleClass("orn");
                     $("#btn_regist").toggleClass("pnk");
-                    regist_btn.text(save_text+ " (CLICK HERE)")
+                    regist_btn.text(save_text + " (CLICK HERE)")
                     //console.log("Sorted. Please save and close.");
                     //console.log(window.opener);
                     //window.opener.postMessage("trigger_closeWindow", "*");
@@ -536,8 +578,8 @@ $(async function () {
             }, 500);
         }
         if (/_closeWindow/.test(content)) {
-            setTimeout(()=>{e.source.close()}, 200);
-            setTimeout(()=>{location.reload()}, 1000);
+            setTimeout(() => { e.source.close() }, 200);
+            setTimeout(() => { location.reload() }, 1000);
         }
     })
 });
