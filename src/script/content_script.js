@@ -72,6 +72,73 @@ const obtainRowResults_Input = (df=undefined) => {
     }))
 }
 
+// obtain df tmp
+
+const obtainDFDeck=()=>{
+    const obtainCardInfoFromTable=(t_row)=>{
+        const card_name=$("div.inside>div.card_name.flex_1>span.name", t_row).text().replaceAll(/^\s*|\s*$/g, "");
+        const card_type_icon=$("div.inside>div.card_name.flex_1>img.ui-draggable:eq(0)", t_row).prop("src").match(/card_icon_(\S+)\.\w+$/)[1];
+        const card_attr=$("div.inside>div.element>div.item_set>span:eq(0)>img.ui-draggable:eq(0)", t_row).prop("src").match(/attribute_icon_(\S+)\.\w+$/)[1];
+        const card_attr2=card_attr.slice(0,1).toUpperCase()+card_attr.slice(1,).toLowerCase();
+        //const card_num=parseInt($("div.cards_num_set>span", t_row).text().replaceAll(/^\s*|\s*$/g, ""));
+        const flex_st=$("div.inside>div.element>div.flex_3.other", t_row);
+        const flex_mon=$("div.inside>div.element>div.flex_2.other", t_row);
+        const flex_mon_stat=$("div.inside>div.element>div.num_set.flex_1", t_row);
+
+        // optionで編集できるように?
+        const card_type_dic_dic={
+            spell:{"通常": "Normal", "速攻":"Quick-Play","永続":"Continuous", "装備":"Equip", "フィールド":"Field"},
+            trap:{"通常": "Normal", "永続":"Continuous", "カウンター":"Counter"},
+            monster:{"効果":"Effect", "通常":"Non-Effect", "チューナー":"Tuner", "ペンデュラム":"Pendulumn","融合":"Fusion", "シンクロ":"Synchro", "エクシーズ":"XYZ", "リンク":"Link"},
+            monster_race:{}}
+        const obtainCardType=(type_raw, card_type_dic, card_type_base)=>{
+            const card_type_base2=card_type_base.slice(0,1).toUpperCase()+card_type_base.slice(1,).toLowerCase();
+            let card_type_tmp=Object.entries(card_type_dic).map(kv=>{
+                const content=kv[1];
+                if (type_raw.indexOf(kv[0])!=-1 || type_raw.indexOf(kv[1])!=-1){
+                    return [true, content];
+                } else {
+                    return [false, content]
+                }
+            }).filter(d=>d[0]).map(d=>d[1]);
+            card_type_tmp.push(card_type_base2);
+            return card_type_tmp;
+        }
+        const df_keys=["name", "type", "race", "atk", "def", "attribute", "scale", "level", "ot", "cid", "id"]
+        const df_base=Object.assign(...df_keys.map(d=>({[d]:null})));
+        if (flex_st.length>0){
+            // spell and trap
+            const card_type_base=["spell", "trap"].filter(d=>card_type_icon.indexOf(d)!=-1)[0];
+            const card_type_dic=card_type_dic_dic[card_type_base]
+            const card_type_raw=$("span:eq(0)", flex_st).text().replaceAll(/^\s*|【\s*|\s*】|\s*$/g, "");
+            const card_type=obtainCardType(card_type_raw, card_type_dic, card_type_base);
+            const df_now={name:card_name, type:card_type.join(","), ot:"OCG+"}
+            return Object.assign(df_base, df_now);
+        } else if (flex_mon.length>0 && flex_mon_stat.length>0) {
+            // monster
+            const card_type_base="monster";
+            const card_type_dic=card_type_dic_dic[card_type_base]
+            const card_type_raw=$("span:eq(0)", flex_mon).text().replaceAll(/^\s*|【\s*|\s*】|\s*$/g, "");
+            const card_type=obtainCardType(card_type_raw, card_type_dic, card_type_base);
+            const card_stat_par_dic={level:"span:eq(0)", scale:"span:eq(1)", atk:"div:eq(0)>span:eq(0)", def:"div:eq(0)>span:eq(1)"}
+            const card_stat=Object.assign(...Object.entries(card_stat_par_dic).map(kv=>{
+                const par_cand=$(kv[1], flex_mon_stat).text().match(/\d+/g)
+                if (Array.isArray(par_cand)) return {[kv[0]]:par_cand[0]}
+                else return {[kv[0]]:null}
+            }))
+            const df_now={
+                name:card_name, type:card_type.join(","),
+                atk:card_stat.atk, def:card_stat.def,
+                attribute:card_attr2, scale:card_stat.scale,
+                level:card_stat.level, ot:"OCG+"};
+            return Object.assign(df_base, df_now);
+        }
+    }
+    const df_arr=Array.from($("#main_m_list>div.t_body>div.t_row.c_simple"))
+        .map(t_row=>obtainCardInfoFromTable(t_row))
+    return Object.assign(...Object.keys(df_arr[0]).map(k=>({[k]:df_arr.map(d=>d[k])})))
+}
+
 // import cards
 const importDeck = (row_results) => {
     for (const [row_name, row_result] of Object.entries(row_results)) {
@@ -109,27 +176,41 @@ const importDeck = (row_results) => {
 
 // ## sort cards
 
-const _sortCards= (row_name, row_result, df)=>{
+const _sortCards= (row_name, row_result, df, df_now)=>{
     const sort_cond_dic={
-        "monster":{"level":-1, "atk":-1,"def":-1, "id":1, "cid":0},
-        "spell":{"type":["Normal", "Quick-Play", "Continuous", "Equip", "Field"], "id":1, "cid":0},
-        "trap":{"type":["Normal", "Continuous", "Counter"], "id":1, "cid":0},
-        "extra":{"type":["Fusion", "Synchro", "XYZ", "Link"], "cid":0},
-        "side":{"type":["Monster", "Spell", "Trap"], "cid":0}
+        "monster":{"level":-1, "atk":-1,"def":-1, "id":1, "cid":0, "name":0},
+        "spell":{"type":["Normal", "Quick-Play", "Continuous", "Equip", "Field"], "id":1, "cid":0, "name":0},
+        "trap":{"type":["Normal", "Continuous", "Counter"], "id":1, "cid":0, "name":0},
+        "extra":{"type":["Fusion", "Synchro", "XYZ", "Link"], "cid":0, "name":0},
+        "side":{"type":["Monster", "Spell", "Trap"], "cid":0, "name":0}
     }
-    const output_tmp = df_filter(df, Array.from(Object.keys(sort_cond_dic[row_name])), ["cid", row_result.cids]);
+    const output_tmp_cid = df_filter(df, Array.from(Object.keys(sort_cond_dic[row_name])), ["cid", row_result.cids]);
+    const output_tmp_jap = df_filter(df_now, Array.from(Object.keys(sort_cond_dic[row_name])), ["name", row_result.names]);
+    // convert
     //console.log(Object.keys(output_tmp).map(k=>({[k]:output_tmp[k][ind]})))
     //[]
     const output_arr = row_result.cids.map((cid, cid_ind)=>{
-        const ind_tmp=output_tmp.cid.indexOf(cid);
-        return Object.assign({cid:cid, name:row_result.names[cid_ind], num:row_result.nums[cid_ind]},
-            ...Object.keys(output_tmp).map(k=>({[k]:output_tmp[k][ind_tmp]})))
+        const name_tmp=row_result.names[cid_ind];
+        const ind_fromCid=output_tmp_cid.cid.indexOf(cid);
+        const ind_fromName=output_tmp_jap.name.indexOf(name_tmp);
+        //console.log(ind_fromCid, ind_fromName)
+        return Object.assign(
+            //...Object.keys(output_tmp_cid).map(k=>({[k]:output_tmp_cid[k][ind_fromCid]}))
+            ...Object.keys(output_tmp_jap).map(k=>{
+                const val=output_tmp_jap[k][ind_fromName]
+                if(["id","cid"].indexOf(k) == -1) return {[k]:val}
+                else if (["id"].indexOf(k) != -1) return {[k]:output_tmp_cid[k][ind_fromCid]}
+                else if (["cid", "name"].indexOf(k) !=-1 ) return {[k]:null};
+            }), {cid:cid, name:name_tmp, num:row_result.nums[cid_ind]});
     })
+    //console.log(output_arr);
     if (["extra", "side"].indexOf(row_name)!=-1){
         const output_typed=sort_cond_dic[row_name].type.map(type_tmp=>{
             const output_filtered=output_arr.filter(d=>d.type.indexOf(type_tmp)!=-1);
             const output_res_tmp=Object.assign(...["cid", "name", "num"].map(k=>({[k+"s"]:output_filtered.map(d=>d[k])})));
-            return _sortCards("monster", output_res_tmp, df);
+            const type_for_sort_dic = {extra:"monster", side:type_tmp.toLowerCase()}
+            const type_for_sort = type_for_sort_dic[row_name];
+            return _sortCards(type_for_sort, output_res_tmp, df, df_now);
         });
         return Object.assign(...["cid", "name", "num"].map(k=>({[k+"s"]:output_typed.map(d=>d[k+"s"]).flat()})));
     } else {
@@ -141,11 +222,12 @@ const _sortCards= (row_name, row_result, df)=>{
                 } else if (Array.isArray(sort_cond)){
                     const inds_for_sort=[a[k], b[k]].map(tmp_k=>sort_cond.map(d=>[tmp_k.indexOf(d), d]).filter(d=>d[0]!=-1).map(d=>sort_cond.indexOf(d[1])));
                     return [k, inds_for_sort[0] - inds_for_sort[1]];
-                } else return [k, 1];
+                } else return [k, 0];
             }));
             //console.log(diffs, a,b )
-            const diffs2=diffs.filter(d=> Number.isInteger(d[1]) && d[1]!=0);
-            return diffs2[0][1];
+            const diffs2=diffs.filter(d=> Number.isInteger(d[1]) && d[1]!=0 && ! Number.isNaN(d[1]));
+            //console.log(diffs2[0], a.name, b.name)
+            return [...diffs2[0], ["",0]][1];
         });
         return Object.assign(...["cid", "name", "num"].map(k=>({[k+"s"]:arr_sorted.map(d=>d[k])})));
     }
@@ -153,8 +235,9 @@ const _sortCards= (row_name, row_result, df)=>{
 
 const sortCards = async (row_results)=>{
     const df=await obtainDF();
-    const row_results_new=Object.assign(...Object.entries(row_results).map(d=>({[d[0]]:_sortCards(d[0], d[1], df)})));
-    console.log(row_results_new);
+    const df_now=obtainDFDeck();
+    const row_results_new=Object.assign(...Object.entries(row_results).map(d=>({[d[0]]:_sortCards(d[0], d[1], df, df_now)})));
+    console.log("sorted", row_results_new);
     return row_results_new;
 }
 
@@ -431,6 +514,7 @@ $(async function () {
                 if (row_str == row_str_new){
                     clearInterval(checkInputted);
                     console.log("Sorted. Please save and close.");
+                    // message on HTML
                     /*document.addEventListener("click", async function (e) {
                         if ($(e.target).is("#btn_regist")) {
                             window.close();
