@@ -177,15 +177,17 @@ const importDeck = (row_results) => {
 // ## sort cards
 
 const _sortCards= (row_name, row_result, df, df_now)=>{
-    const sort_cond_dic={
-        "monster":{"level":-1, "atk":-1,"def":-1, "id":1, "cid":0, "name":0},
-        "spell":{"type":["Normal", "Quick-Play", "Continuous", "Equip", "Field"], "id":1, "cid":0, "name":0},
-        "trap":{"type":["Normal", "Continuous", "Counter"], "id":1, "cid":0, "name":0},
-        "extra":{"type":["Fusion", "Synchro", "XYZ", "Link"], "cid":0, "name":0},
-        "side":{"type":["Monster", "Spell", "Trap"], "cid":0, "name":0}
+    const sort_cond_base={"cid":0, "name":0}
+    const sort_cond_dic_dic={
+        "monster":{"level":-1, "atk":-1,"def":-1, "id":1},
+        "spell":{"type":["Normal", "Quick-Play", "Continuous", "Equip", "Field"], "id":1},
+        "trap":{"type":["Normal", "Continuous", "Counter"], "id":1},
+        "extra":{"type":["Fusion", "Synchro", "XYZ", "Link"]},
+        "side":{"type":["Monster", "Spell", "Trap"]}
     }
-    const output_tmp_cid = df_filter(df, Array.from(Object.keys(sort_cond_dic[row_name])), ["cid", row_result.cids]);
-    const output_tmp_jap = df_filter(df_now, Array.from(Object.keys(sort_cond_dic[row_name])), ["name", row_result.names]);
+    const sort_cond_dic=Object.assign(sort_cond_base, sort_cond_dic_dic[row_name])
+    const output_tmp_cid = df_filter(df, Array.from(Object.keys(sort_cond_dic)), ["cid", row_result.cids]);
+    const output_tmp_jap = df_filter(df_now, Array.from(Object.keys(sort_cond_dic)), ["name", row_result.names]);
     // convert
     //console.log(Object.keys(output_tmp).map(k=>({[k]:output_tmp[k][ind]})))
     //[]
@@ -205,7 +207,7 @@ const _sortCards= (row_name, row_result, df, df_now)=>{
     })
     //console.log(output_arr);
     if (["extra", "side"].indexOf(row_name)!=-1){
-        const output_typed=sort_cond_dic[row_name].type.map(type_tmp=>{
+        const output_typed=sort_cond_dic.type.map(type_tmp=>{
             const output_filtered=output_arr.filter(d=>d.type.indexOf(type_tmp)!=-1);
             const output_res_tmp=Object.assign(...["cid", "name", "num"].map(k=>({[k+"s"]:output_filtered.map(d=>d[k])})));
             const type_for_sort_dic = {extra:"monster", side:type_tmp.toLowerCase()}
@@ -215,8 +217,8 @@ const _sortCards= (row_name, row_result, df, df_now)=>{
         return Object.assign(...["cid", "name", "num"].map(k=>({[k+"s"]:output_typed.map(d=>d[k+"s"]).flat()})));
     } else {
         const arr_sorted=output_arr.sort((a,b)=>{
-            const diffs=(Object.keys(sort_cond_dic[row_name]).map(k=>{
-                const sort_cond=sort_cond_dic[row_name][k];
+            const diffs=(Object.keys(sort_cond_dic).map(k=>{
+                const sort_cond=sort_cond_dic[k];
                 if (Number.isInteger(sort_cond)){
                     return [k, sort_cond*(parseInt(a[k])-parseInt(b[k]))];
                 } else if (Array.isArray(sort_cond)){
@@ -226,8 +228,8 @@ const _sortCards= (row_name, row_result, df, df_now)=>{
             }));
             //console.log(diffs, a,b )
             const diffs2=diffs.filter(d=> Number.isInteger(d[1]) && d[1]!=0 && ! Number.isNaN(d[1]));
-            //console.log(diffs2[0], a.name, b.name)
-            return [...diffs2[0], ["",0]][1];
+            //console.log(diffs2[0], [...diffs2, ["",0]][0][1] ,a.name, b.name)
+            return [...diffs2, ["",0]][0][1];
         });
         return Object.assign(...["cid", "name", "num"].map(k=>({[k+"s"]:arr_sorted.map(d=>d[k])})));
     }
@@ -458,7 +460,7 @@ $(async function () {
         const buttons = [$("<a>", { class: "btn hex red button_export id" })
                 .append("<span>エクスポート(id)</span>"),
             $("<a>", { class: "btn hex red button_export Jap" })
-                .append("<span>エクスポート(日本語)</span>"), // , style: "position: relative;user-select: none;"
+                .append("<span>エクスポート(Name)</span>"), // , style: "position: relative;user-select: none;"
             $("<a>", { class: "btn hex red button_sort", id:"button_sort"})
                 .append("<span>ソート</span>") // , style: "position: relative;user-select: none;"
         ]
@@ -498,6 +500,7 @@ $(async function () {
     window.addEventListener("message", async function (e) {
         const content = e.data;
         if (!/^trigger_/.test(content)) return;
+        //console.log(content);
         if (/_sortCard/.test(content)) {
             const json_dumped=content.replace("trigger_sortCard_", "");
             const row_results_new=JSON.parse(json_dumped);
@@ -513,15 +516,28 @@ $(async function () {
                     .map(row_name=>({[row_name]:{names:row_results[row_name].names, nums:row_results[row_name].nums}})))
                 if (row_str == row_str_new){
                     clearInterval(checkInputted);
-                    console.log("Sorted. Please save and close.");
+                    const regist_btn=$("#btn_regist>span");
+                    const save_text=regist_btn.text();
+                    //document.querySelector("#btn_regist").classList.remove("orn");
+                    $("#btn_regist").toggleClass("orn");
+                    $("#btn_regist").toggleClass("pnk");
+                    regist_btn.text(save_text+ " (CLICK HERE)")
+                    //console.log("Sorted. Please save and close.");
+                    //console.log(window.opener);
+                    //window.opener.postMessage("trigger_closeWindow", "*");
+                    //Regist() // function on YGO
                     // message on HTML
-                    /*document.addEventListener("click", async function (e) {
-                        if ($(e.target).is("#btn_regist")) {
-                            window.close();
+                    document.addEventListener("click", async function (e) {
+                        if ($(e.target).is("#btn_regist *")) {
+                            window.opener.postMessage("trigger_closeWindow", "*");
                         }
-                    })*/
+                    })
                 }
             }, 500);
+        }
+        if (/_closeWindow/.test(content)) {
+            setTimeout(()=>{e.source.close()}, 200);
+            setTimeout(()=>{location.reload()}, 1000);
         }
     })
 });
