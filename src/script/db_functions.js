@@ -1,17 +1,50 @@
+"use strict";
 
+// -----------------------------
+//           # initial
 const repoInfoEmpty = { user: "", repo: "", path: "" }
-const defaultEmptyRepoInfo = Object.assign(...["CDB", "ConstantLua", "StringsConf"]
+const defaultEmptyRepoInfo = Object.assign(...["CDB", "ConstantLua", "StringsConf", "CardScripts"]
     .map(d => { return { [d]: repoInfoEmpty } }));
 const defaultRepoStrings = JSON.stringify(defaultEmptyRepoInfo);
-
 
 const defaultRepoInfo = {
     CDB: { user: "ProjectIgnis", repo: "BabelCDB", path: "" },
     ConstantLua: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/constant.lua" },
-    StringsConf: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/strings.conf" }
+    StringsConf: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/strings.conf" },
+    MyRepo: {user:"TomoTom0", repo:"ygo_db", path:"data/ygo_db.json"}
 }
 
+const getSyncStorage = (key = null) => new Promise(resolve => {
+    chrome.storage.sync.get(key, resolve);
+});
 
+const setSyncStorage = (key = null) => new Promise(resolve => {
+    chrome.storage.sync.set(key, resolve);
+});
+
+const operateStorage=(key = null, storageKey="sync", operate="get") => new Promise(resolve => {
+    chrome.storage[storageKey][operate](key, resolve);
+});
+
+const obtainDF=async ()=>{
+    return await operateStorage({df:JSON.stringify({})}, "local").then(items=>JSON.parse(items.df));
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function gitFetch(url, opts={}){
+    if (!url || typeof opts!=="object") return {status:false};
+    const res=await fetch(url,opts).then(d=>d.json());
+    if (/^API rate limit/.test(res.message)){
+        await sleep(60*1000);
+        return await fetch(url, opts);
+    } else {
+        return {json:()=>res};
+    }
+}
+// -----------------------------
+//           # parse text
 function split_data(data) {
     const split_sep = "__SPLIT__";
     return data.replace(/\r\n|\r|\n/g, split_sep).split(split_sep);
@@ -44,17 +77,17 @@ function remake_df(df) {
     }))
 }
 
-// DB update
-async function updateDB(args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
+// -----------------------------
+//           # DB update
+async function updateDBOld(args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
     //const display=args.display;
     const df_new = await combineDf(args);
     console.log("Database has been updated.");
-    chrome.storage.local.set({ df: JSON.stringify(df_new), lastModifiedDate: Date.now() });
+    await operateStorage({ df: JSON.stringify(df_new), lastModifiedDate: Date.now() }, "local", "set");
     console.log(df_new);
-
     return df_new;
 }
-
+//           ## combine DF
 async function combineDf(args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
     const display = args.display;
     const defaultDisplay = (!display) ? "" : $(display).text();
@@ -65,15 +98,22 @@ async function combineDf(args = { display: "", settings: defaultSettings, repoIn
     const datas = remake_df(datas_tmp);
     const texts = remake_df(texts_tmp);
 
-
     const constantLua = await readConstantLua(args);
     if (display) $(display).text(defaultDisplay + `\t2/3`);
     const stringsConf = await readStringsConf(args);
     if (display) $(display).text(defaultDisplay + `\t3/3`);
     //console.log(stringsConf, constantLua)
 
+    const ot_array=["OCG", "TCG", "OCG/TCCG", "ANIME"]
     const card_ids = datas.id.map(id=>id-0);
-    const card_names = texts.name;
+    const card_ots = datas.ot.map(ot=>ot_array[ot-1]);
+    const card_names = texts.name
+    /*const card_ids_onlyOCG=card_ots.map((ot, ind)=>[ot, card_ids[ind]]).filter(d=>d[0]=="OCG").map(d=>d[1]);
+    const card_names_onlyOCG=await obtainCardNameFromScript(card_ids_onlyOCG);
+    const card_names = texts.name.map((nameTmp, ind)=>{
+        if (card_ots[ind]=="OCG") return card_names_onlyOCG[card_ids[ind]];
+        else return nameTmp;
+    });*/
     const card_keys = { complex: ["attribute", "race","type"], others: ["atk", "def"] };
     const card_values = {
         complex: Object.assign(...card_keys.complex.map(key => convertCDBData(key, datas, constantLua))),
@@ -107,12 +147,14 @@ async function combineDf(args = { display: "", settings: defaultSettings, repoIn
         else return "NaN";
     });;
 
-    const df_tmp = [{ level: card_levels, name: card_names}, card_values.complex, {atk: card_values.others.atk, def: card_def, set: card_sets, PS: card_PS, LMarker: card_LMarker, id: card_ids }];
+    const df_tmp = [{ level: card_levels, name: card_names}, card_values.complex,
+         {atk: card_values.others.atk, def: card_def, set: card_sets, PS: card_PS, LMarker: card_LMarker, ot: card_ots ,id: card_ids }];
     const df_new = Object.assign(...df_tmp);
 
     return df_new;
 }
 
+// ## DB sub functions
 function convertCDBData(key, datas, cardinfo, keyInfo = "") {
     if (!keyInfo) keyInfo = key;
     const card_values = datas[key].map(num => {
@@ -150,8 +192,9 @@ function convertSetcode(key, datas, cardinfo, keyInfo = "") {
     return { [keyInfo]: card_values };
 }
 
-
-// download from GitHub
+// -------------------------------------------
+//           # download from GitHub
+//           ## pull CDB
 async function pullCDB(args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
     const repoInfo = (!args.settings.changeCDBRepo) ? defaultRepoInfo.CDB : args.repoInfos.CDB;
     const display = args.display;
@@ -164,13 +207,12 @@ async function pullCDB(args = { display: "", settings: defaultSettings, repoInfo
     const git_search_url = `https://api.github.com/search/code`;
     const header_auth = { "Accept": "application/vnd.github.v3+json" };
     const search_query = `q=${q}+repo:${repoInfo.user}/${repoInfo.repo}` + (repoInfo.path == "" ? "" : `${repoInfo.path} in:path`);
-    const res_search = await fetch(git_search_url + "?" + search_query, { method: "GET", headers: header_auth })
+    const res_search = await gitFetch(git_search_url + "?" + search_query, { method: "GET", headers: header_auth })
         .then(d => d.json()).then(async res => {
             if (res.status && res.total_count > 0) return res;
             const repoInfo2 = defaultRepoInfo.CDB;
             const search_query = `q=${q}+repo:${repoInfo2.user}/${repoInfo2.repo}` + (repoInfo2.path == "" ? "" : `${repoInfo2.path} in:path`);
-            return await fetch(git_search_url + "?" + search_query, { method: "GET", headers: header_auth }).then(d => d.json())
-
+            return await gitFetch(git_search_url + "?" + search_query, { method: "GET", headers: header_auth }).then(d => d.json())
         });
     // pull CDB and merge
     let values = { datas: [], texts: [] };
@@ -181,7 +223,8 @@ async function pullCDB(args = { display: "", settings: defaultSettings, repoInfo
         if (display) $(display).text(defaultDisplay + `\t1/3 - ${ind_item} / ${res_search.items.length}`);
 
         const item = item_tmp[1];
-        const cdb_data = await fetch(item.git_url).then(d => d.json());
+        const cdb_data = await gitFetch(item.git_url).then(d => d.json());
+        console.log(cdb_data)
         const db_tmp = new SQL.Database(atob(cdb_data.content));
 
         datas_tmp = await db_tmp.exec("select * from datas")[0];
@@ -203,15 +246,15 @@ async function readConstantLua(args = { display: "", settings: defaultSettings, 
     const header_auth = { "Accept": "application/vnd.github.v3+json" };
 
     const git_content_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/contents/${repoInfo.path}`;
-    const git_url = await fetch(git_content_url, { method: "GET", headers: header_auth })
+    const git_url = await gitFetch(git_content_url, { method: "GET", headers: header_auth })
         .then(d => d.json()).then(async d => {
             if (d.git_url) return d.git_url;
             const repoInfo2 = defaultRepoInfo.ConstantLua;
             const git_content_url2 = `https://api.github.com/repos/${repoInfo2.user}/${repoInfo2.repo}/contents/${repoInfo2.path}`;
-            return await fetch(git_content_url2, { method: "GET", headers: header_auth }).then(d => d.json()).then(d => d.git_url);
+            return await gitFetch(git_content_url2, { method: "GET", headers: header_auth }).then(d => d.json()).then(d => d.git_url);
         });
     //if (!res_content.git_url) return "";
-    const contents = await fetch(git_url, { method: "GET", headers: header_auth }).then(d => d.json())
+    const contents = await gitFetch(git_url, { method: "GET", headers: header_auth }).then(d => d.json())
         .then(d => atob(d.content))
         .then(d => split_data(d));
     const obtainKeys = ["type", "race", "attribute"];
@@ -233,16 +276,16 @@ async function readStringsConf(args = { display: "", settings: defaultSettings, 
     const header_auth = { "Accept": "application/vnd.github.v3+json" };
 
     const git_content_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/contents/${repoInfo.path}`;
-    const git_url = await fetch(git_content_url, { method: "GET", headers: header_auth })
+    const git_url = await gitFetch(git_content_url, { method: "GET", headers: header_auth })
         .then(d => d.json()).then(async d => {
             if (d.git_url) return d.git_url;
             const repoInfo2 = defaultRepoInfo.StringsConf;
             const git_content_url2 = `https://api.github.com/repos/${repoInfo2.user}/${repoInfo2.repo}/contents/${repoInfo2.path}`;
-            return await fetch(git_content_url2, { method: "GET", headers: header_auth }).then(d => d.json()).then(d => d.git_url);
+            return await gitFetch(git_content_url2, { method: "GET", headers: header_auth }).then(d => d.json()).then(d => d.git_url);
 
         });
     //if (!res_content.git_url) return "";
-    const contents = await fetch(git_url, { method: "GET", headers: header_auth }).then(d => d.json())
+    const contents = await gitFetch(git_url, { method: "GET", headers: header_auth }).then(d => d.json())
         .then(d => atob(d.content))
         .then(d => split_data(d));
     const obtainKeys = ["setname"];
@@ -258,3 +301,76 @@ async function readStringsConf(args = { display: "", settings: defaultSettings, 
     }, Object.assign(...obtainKeys.map(d => Object({ [d]: {} }))));
     return cardinfo;
 }
+
+// ## obtain card info from ocg-card.com
+async function obtainFromOCGcard (args={form:"id", input:{}}){
+    const formDic={id:"pass", name:"name"};
+    const form=formDic[args.form||"id"];
+    if (typeof args.input!=="object") return {};
+    const query=Object.values(args.input).map((val, ind)=>`${form}_${ind}=${val}&${form}-op_${ind}=3`).join("&");
+    const url=`https://ocg-card.com/list/result/?${query}`;
+    const reader = await fetch(url).then(d => d.body)
+        .then(d => d.getReader());
+    const contents = await readStream(reader, []).then(d=>d.join(""))
+    const results = $("tr.status-height, tr.spell-height", $(contents)).map((ind,obj)=>{
+        const cardName = $("td:eq(1)", $(obj)).html().replace(/<div.*\/div>/, "");
+        const cardId = $("td:eq(3)", $(obj) ).html().match(/\d+/);
+        const cid_db = ($("td.card-info", $(obj)).html()||`<a href="cid=0">公式`).match(/(?<=<a href="[^"]*cid=)\d+(?=[^"]*">公式)/)[0];
+        return {id: (cardId||[""])[0], name:cardName, cid:cid_db};
+    }).toArray();
+
+    return Object.assign(...results
+        .filter(d=>form==="pass" || Object.keys(args.input).indexOf(form==="pass" ? d.id : d.cid)!=-1)
+        .map(d=>({[form==="pass" ? d.id : d.cid]:d})).concat({}) );
+}
+
+
+// ## obtain card Name from script
+async function obtainCardNameFromScript(cardIds=[], args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
+    if (cardIds.length==0) return [];
+    //const repoInfo = (!args.settings.changeStringsConfRepo) ? defaultRepoInfo.StringsConf : args.repoInfos.StringsConf;
+    const repoInfo = defaultRepoInfo.CardScripts;
+
+    const fileNames = cardIds.map(id=>`c${id}.lua`);
+    const res_gitUrls=await Promise.all(fileNames.map(async filename=>{
+        const header_auth = { "Accept": "application/vnd.github.v3+json" };
+        const git_content_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/contents/official/${filename}`;
+        return await gitFetch(git_content_url, { method: "GET", headers: header_auth }).then(d => d.json());
+    }));
+
+    const cardNameDics = await Promise.all(res_gitUrls
+        .map(async (resIn, ind)=>{
+            const data = await gitFetch(resIn.git_url).then(d => d.json()).then(res=>atob(res.content));
+            if (!data || !restIn.name) return "";
+            else {
+                const cardId=(resIn.name||fileNames[ind]).match(/(?<=c)\d+(?=\.lua)/);
+                const cardNameTmp=split_data(data)[0].replace(/^[-\s]*/, "");
+                return {[cardId - 0] :decodeURI(escape(cardNameTmp))};
+            };
+        }));
+    console.log(cardNameDics);
+    return Object.assign(...cardNameDics.concat({}));
+}
+
+// # update DB renewal
+async function updateDB(){
+    const repoInfo=defaultRepoInfo.MyRepo;
+    const header_auth = { "Accept": "application/vnd.github.v3+json" };
+
+    const git_content_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/contents/data`;
+    const res_content = await fetch(git_content_url, { method: "GET", headers: header_auth }).then(d=>d.json());
+    const git_data_url = res_content.filter(d=>d.path===repoInfo.path)[0].git_url;
+    const content = await fetch(git_data_url, { method: "GET", headers: header_auth }).then(d=>d.json())
+        .then(res=>atob(res.content));
+    console.log("Database has been updated.");
+    let df_new=JSON.parse(content).all;
+    df_new.id=df_new.id.map(d=>d-0);
+    df_new.cid=df_new.cid.map(d=>d-0);
+    await operateStorage({df:JSON.stringify(df_new), lastModifiedDate:Date.now()}, "local", "set");
+    return df_new;
+}
+
+
+$(async function(){
+    await operateStorage({df:JSON.stringify({})}, "sync", "set");
+})
