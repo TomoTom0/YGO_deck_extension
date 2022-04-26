@@ -1,7 +1,7 @@
 {
-  "name": "遊戯王デッキサポート(インポート/エクスポート/ソート)",
+  "name": "遊戯王DBデッキサポート",
   "author":"TomoTomo",
-  "version": "0.9.0.0",
+  "version": "0.9.1.0",
   "manifest_version": 3,
   "icons":{
     "16":"img/icon-16.png",
@@ -17,5 +17,5 @@
     "page": "script/options.html",
     "open_in_tab": true
   },
-  "description": "公式カードデータベースのデッキ表示画面にエクスポート・インポート・ソートボタンを追加します。"
+  "description": "公式カードデータベースのデッキ表示画面にエクスポート・インポート・ソート・シャッフルボタンを追加します。"
 }
