@@ -2,7 +2,12 @@
 
 //--------------------------
 //         # initial
-const defaultSettings = { autoUpdateDB: true, addDate: false }; // , changeCDBRepo: false, showColor: true
+const defaultSettings = {
+    autoUpdateDB: true,
+    addDate: false,
+    valid_feature_deckHeader: true,
+    default_visible_header:true
+}; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);
 
 // ----------------------------------
@@ -614,6 +619,49 @@ async function sortWindow() {
     }, false);*/
 }
 
+// # deck header show / hide
+const toggleVisible_deckHeader= (toShow_in=null)=>{
+    const html_parse_dic = parse_YGODB_URL(location.href, true);
+    if (html_parse_dic.ope != 2) return;
+    const button=$("#button_visible_header");
+    const toShow=(typeof(toShow_in) !== "boolean") ? $(button).hasClass("show") : toShow_in;
+    const showHide={true:"show", false:"hide"};
+    $(button).removeClass(showHide[toShow]);
+    $(button).addClass(showHide[!toShow]);
+    $("span", button).text("Header "+ showHide[!toShow].toUpperCase());
+    const dls=Array.from($("#deck_header>div>div>dl"));
+    for (const dl_tmp of dls){
+        if (dls.indexOf(dl_tmp)!==0 && toShow === false) {
+            $(dl_tmp).css({display:"none"});
+        } else {
+            $(dl_tmp).css({display:""}) // relativeにするとnoneで固定された
+        }
+    }
+}
+
+const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in=null)=> {
+    const arr_size_ct = [120,300,500]
+
+    const html_parse_dic = parse_YGODB_URL(location.href, true);
+    if (html_parse_dic.ope != 2) return;
+
+    const header_ids_dic={category:"dckCategoryMst", tag:"dckTagMst", comment:"biko"};
+    const ctc_now=$(`#${header_ids_dic[ctc_name]}`);
+    const ctc_ind_size_old= ctc_ind_size_old_in || ctc_now.attr("class").match(/ctc_size_(\d*)/)[1];
+    const ctc_ind_size=(1+parseInt(ctc_ind_size_old))%3;
+    ctc_now.removeClass(`ctc_size_${ctc_ind_size_old}`);
+    ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
+    const isCT= ["category", "tag"].indexOf(ctc_name)!==-1
+    if (isCT){
+        const size_now=arr_size_ct[ctc_ind_size];
+        ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
+        ctc_now.css({height: size_now});
+    } else {
+        const row_now=6*(1+ctc_ind_size%3);
+        ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
+        ctc_now.prop("rows", row_now);
+    }
+}
 
 //------------------------------------
 //         #  on loading
@@ -622,19 +670,58 @@ $(async function () {
     const url_now = location.href;
     const html_parse_dic = parse_YGODB_URL(url_now, true);
     const my_cgid = obtainMyCgid();
-    if (html_parse_dic.ope == "2") {
-        //const area = $("#header_box .save"); // before// 2022/4/18
-        const area = $("#bottom_btn_set"); // after 2022/4/18
 
+    const settings = await operateStorage({settings:JSON.stringify({})}, "sync")
+        .then(items=>Object.assign(defaultSettings, JSON.parse(items.settings)));
+    console.log(settings)
+
+
+    if (html_parse_dic.ope == "2") {
+        // ## deck edit
+        // import button
+        //const area = $("#header_box .save"); // before// 2022/4/18
+        const area_bottom = $("#bottom_btn_set"); // after 2022/4/18
         const label = $("<label>", { for: "button_importFromYdk_input" });
-        const button = $("<a>", { class: "btn hex red", type: "button", id: "button_importFromYdk", style: "position: relative;user-select: none;" })
-            .append("<span>Import</span>");
+        const button_import=$("<a>", { class: "btn hex red button_import", type: "button", id: "button_importFromYdk",
+                style: "position: relative;user-select: none;" })
+            .append("<span>Import</span>")
         const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
-        button.append(input_button);
-        label.append(button);
-        area.append(label);
+        button_import.append(input_button);
+        label.append(button_import);
+        area_bottom.append(label);
+
+        if (settings.valid_feature_deckHeader===true){
+            // other buttons for bottom
+            const button_bottom_dic = {
+                header_visible: $("<a>", { class: "btn hex red button_visible_header hide", type: "button", id: "button_visible_header", 
+                    style: "position: relative;user-select: none;" })
+                    .append("<span>Header HIDE</span>")
+            };
+            Object.values(button_bottom_dic).map(button=>{
+                area_bottom.append(button);
+            })
+            toggleVisible_deckHeader(settings.default_visible_header);
+
+            // deck header
+            const header_ids_dic={category:"dckCategoryMst", tag:"dckTagMst", comment:"biko"};
+            ["category", "tag", "comment"].map(ctc_name=>{
+                const ctc_now=$(`#${header_ids_dic[ctc_name]}`);
+                const isCT=["category", "tag"].indexOf(ctc_name)!=-1;
+                const ctc_span= $("dt>span", (isCT) ? ctc_now.parent().parent().parent() : ctc_now.parent().parent());
+                const button=$("<a>", {
+                    class: `btn hex button_size_header ${ctc_name} `+ (isCT ? " isCT" : " isComment"),
+                    type: "button", id: `button_size_header_${ctc_name}`,
+                    style: "position: relative;user-select: none;" })
+                        .append("<span>Size</span>");
+                $(ctc_span).append(button);
+                const ctc_ind_size = 0;
+                changeSize_deckHeader(ctc_name, (ctc_ind_size-1)%3)
+            })
+        }
+
     }
     else if (["1", null].indexOf(html_parse_dic.ope) != -1) {
+        // ## deck view
         //const settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
         //const edit_area = $("#header_box #button_place_edit"); // before 2022/4/18
         const edit_area = $("#bottom_btn_set"); // after 2022/4/18
@@ -675,17 +762,27 @@ $(async function () {
             const form = ["id", "Jap"].filter(d => $(e.target).is(`.${d}, .${d} *`))[0];
             console.log(`export deck as ${form}`)
             await exportAs(form);
+        } else if ($(e.target).is("a.button_size_header, a.button_size_header *")) {
+            const button=$([$(e.target).children(), e.target]
+                .filter(d=>$(d).length>0)
+                [0]).parents("a.button_size_header");
+            const ctc_name=$(button).prop("id").match("button_size_header_(.*)")[1];
+            changeSize_deckHeader(ctc_name);
+
         }
-    })
+    });
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
-    })
+    });
     $("#button_sort").on("click", async function () {
         await sortWindow();
-    })
+    });
     $("#button_shuffle").on("click", function () {
         shuffleCards();
-    })
+    });
+    $("#button_visible_header").on("click", function () {
+        toggleVisible_deckHeader();
+    });
     // ## trigger
     window.addEventListener("message", async function (e) {
         const content = e.data;

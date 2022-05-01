@@ -3,8 +3,13 @@
 // ----------------------------------
 //            # initial
 
-const defaultSettings={autoUpdateDB:true, addDate:false}; // , changeCDBRepo:false, changeConstantLuaRepo:false, changeStringsLuaRepo:false
-const defaultString=JSON.stringify(defaultSettings);
+const defaultSettings = {
+    autoUpdateDB: true,
+    addDate: false,
+    valid_feature_deckHeader: true,
+    default_visible_header:true
+}; // , changeCDBRepo: false, showColor: true
+const defaultString = JSON.stringify(defaultSettings);
 
 function makeTable(tableContent={},captionText=""){
     const table=$("<table>", {class:"part"});

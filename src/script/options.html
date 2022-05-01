@@ -60,6 +60,18 @@
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_addDate">
                                     <label class="custom-control-label">Add date to the name when importing a deck</label>
                                 </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_importExport">
+                                    <label class="custom-control-label">Valid Features about Import and Export</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_sortShuffle">
+                                    <label class="custom-control-label">Valid Features about Sort and Shuffle</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_deckHeader">
+                                    <label class="custom-control-label">Valid Features about Deck Header</label>
+                                </div>
                                 <!--
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_changeCDBRepo">
@@ -106,6 +118,32 @@
 
                         </form>
                     </div>
+
+                    <h2 class="deckHeaderSection">Deck Header in Edit Mode: </h2>
+                    <div class="well bs-component">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_default_visible_header">
+                                    <label class="custom-control-label">Show Deck Header as Default</label>
+                                </div>
+                                <!--
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_changeStringsConfRepo">
+                                    <label class="custom-control-label">Change the Repository for strings.conf (including set)</label>
+                                    <div class="col-lg-10 col-lg-offset-2 changeStringsConfRepo">
+                                        <input type="text" placeholder="User" style="width:150px" class="inputChangeUser"/>
+                                        <input type="text" placeholder="Repo" style="width:150px" class="inputChangeRepo"/>
+                                        <input type="text" placeholder="path of file" style="width:150px" class="inputChangePath"/>
+                                        <button type="button" class="btnSave_changeStringsConfRepo btnSave_changeRepo btn btn-primary">Save</button>
+                                    </div>
+                                </div>-->
+
+                            </div>
+
+                        </form>
+                    </div>
+
                     <h2 class="searchCardDBSection">Search Card DataBase</h2>
                     <div class="well bs-component">
                         <form class="form-horizontal">
