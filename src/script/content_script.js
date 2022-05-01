@@ -5,6 +5,8 @@
 const defaultSettings = {
     autoUpdateDB: true,
     addDate: false,
+    valid_feature_importExport: true,
+    valid_feature_sortShuffle: true,
     valid_feature_deckHeader: true,
     default_visible_header:true
 }; // , changeCDBRepo: false, showColor: true
@@ -640,7 +642,7 @@ const toggleVisible_deckHeader= (toShow_in=null)=>{
 }
 
 const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in=null)=> {
-    const arr_size_ct = [120,300,500]
+    const arr_size_ct = [120, 500] // [120,300,500]
 
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     if (html_parse_dic.ope != 2) return;
@@ -648,7 +650,7 @@ const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in=null)=> {
     const header_ids_dic={category:"dckCategoryMst", tag:"dckTagMst", comment:"biko"};
     const ctc_now=$(`#${header_ids_dic[ctc_name]}`);
     const ctc_ind_size_old= ctc_ind_size_old_in || ctc_now.attr("class").match(/ctc_size_(\d*)/)[1];
-    const ctc_ind_size=(1+parseInt(ctc_ind_size_old))%3;
+    const ctc_ind_size=(1+parseInt(ctc_ind_size_old))%arr_size_ct.length;
     ctc_now.removeClass(`ctc_size_${ctc_ind_size_old}`);
     ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
     const isCT= ["category", "tag"].indexOf(ctc_name)!==-1
@@ -657,7 +659,7 @@ const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in=null)=> {
         ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
         ctc_now.css({height: size_now});
     } else {
-        const row_now=6*(1+ctc_ind_size%3);
+        const row_now=6*(1+ctc_ind_size%arr_size_ct.length);
         ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
         ctc_now.prop("rows", row_now);
     }
@@ -681,14 +683,16 @@ $(async function () {
         // import button
         //const area = $("#header_box .save"); // before// 2022/4/18
         const area_bottom = $("#bottom_btn_set"); // after 2022/4/18
-        const label = $("<label>", { for: "button_importFromYdk_input" });
-        const button_import=$("<a>", { class: "btn hex red button_import", type: "button", id: "button_importFromYdk",
-                style: "position: relative;user-select: none;" })
-            .append("<span>Import</span>")
-        const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
-        button_import.append(input_button);
-        label.append(button_import);
-        area_bottom.append(label);
+        if (settings.valid_feature_importExport===true){
+            const label = $("<label>", { for: "button_importFromYdk_input" });
+            const button_import=$("<a>", { class: "btn hex red button_import", type: "button", id: "button_importFromYdk",
+                    style: "position: relative;user-select: none;" })
+                .append("<span>Import</span>")
+            const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
+            button_import.append(input_button);
+            label.append(button_import);
+            area_bottom.append(label);
+        }
 
         if (settings.valid_feature_deckHeader===true){
             // other buttons for bottom
@@ -715,7 +719,7 @@ $(async function () {
                         .append("<span>Size</span>");
                 $(ctc_span).append(button);
                 const ctc_ind_size = 0;
-                changeSize_deckHeader(ctc_name, (ctc_ind_size-1)%3)
+                changeSize_deckHeader(ctc_name, ctc_ind_size-1)
             })
         }
 
@@ -739,6 +743,8 @@ $(async function () {
         };
         for (const [button_type, button_tmp] of Object.entries(button_dic)) {
             if (button_type == "sort" && (my_cgid == null || html_parse_dic.cgid != my_cgid)) continue;
+            if (settings.valid_feature_importExport===false && ["import", "export"].indexOf(button_type)!=-1) continue;
+            if (settings.valid_feature_sortShuffle===false && ["sort", "shuffle"].indexOf(button_type)!=-1) continue;
             $(area).append(button_tmp);
         }
     }

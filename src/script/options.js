@@ -6,6 +6,8 @@
 const defaultSettings = {
     autoUpdateDB: true,
     addDate: false,
+    valid_feature_importExport: true,
+    valid_feature_sortShuffle: true,
     valid_feature_deckHeader: true,
     default_visible_header:true
 }; // , changeCDBRepo: false, showColor: true
@@ -35,8 +37,8 @@ function makeTable(tableContent={},captionText=""){
 
 // # on load
 $(async function () {
-    const items=await getSyncStorage({settings: defaultString, repoInfos:defaultRepoStrings});
-    const settings=JSON.parse(items.settings);
+    const items=await getSyncStorage({settings: JSON.stringify({}), repoInfos:defaultRepoStrings});
+    const settings=Object.assign(defaultSettings, JSON.parse(items.settings));
     for (const [key, val] of Object.entries(settings)){
         const checkArea=$(`#check_${key}`);
         if (checkArea.length>0) $(checkArea).prop({checked:val});
