@@ -8,8 +8,6 @@ const defaultString = JSON.stringify(defaultSettings);
 // ----------------------------------
 //       # parse text funtions
 
-
-
 function split_data(data) {
     const split_sep = "__SPLIT__";
     return data.replace(/\r\n|\r|\n/g, split_sep).split(split_sep);
@@ -21,19 +19,6 @@ function obtain_deck_splited(data_array) {
     return [0, 1, 2].map(d => data_array.slice(indexes[d] + 1, indexes[d + 1]));
 };
 
-const parseURL = (url_now, nullIsValid = false) => {
-    const html_parse_keys = ["cgid", "dno", "request_locale", "ope"];
-    const html_parse_dic_arr = html_parse_keys.map(key => {
-        const match_tmp = url_now.match(new RegExp(`(?<=${key}=)([^&=]+)`, "g"));
-        if (Array.isArray(match_tmp) && match_tmp.length > 0) {
-            return { [key]: match_tmp[0] };
-        } else return { [key]: null };
-    });
-    if (nullIsValid === false) {
-        return Object.assign(...html_parse_dic_arr.filter(d => Object.values(d)[0] != null));
-    } else return Object.assign(...html_parse_dic_arr);
-}
-
 const obtainMyCgid = () => {
     const my_deck_btn = $("#header_menu>nav>div.bottom>ul.main_menu>li.my.menu_my_decks>ul>li>a:eq(0)");
     if (my_deck_btn.length == 0) {
@@ -41,14 +26,15 @@ const obtainMyCgid = () => {
     } else return $(my_deck_btn).prop("href").match(/cgid=([^\&=]+)/)[1];
 }
 
-const shuffleArray=(arr)=> {
+const shuffleArray = (arr) => {
     const arr_len = arr.length;
-    for (const ind_now of [...Array(arr_len).keys()].map(d=>arr_len-1-d)){
-        const ind_rand = Math.floor(Math.random() * (ind_now+1));
-        [arr[ind_now], arr[ind_rand]]=[arr[ind_rand], arr[ind_now]];
+    for (const ind_now of [...Array(arr_len).keys()].map(d => arr_len - 1 - d)) {
+        const ind_rand = Math.floor(Math.random() * (ind_now + 1));
+        [arr[ind_now], arr[ind_rand]] = [arr[ind_rand], arr[ind_now]];
     }
     return arr;
 }
+
 
 // # deck recipe
 
@@ -98,6 +84,71 @@ const obtainRowResults_Input = (df = undefined) => {
             }
         };
     }))
+}
+
+const obtainDeckHeader_raw = async (url_deck = null) => {
+    //const term_tables=await obtainTermTables();
+    const _obtainDeckHeaderArea = async (url_deck = url_deck) => {
+        const html_parse_dic = parse_YGODB_URL(url_deck || location.href);
+        if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return [];
+        else if (url_deck !== null && url_deck !== location.href) {
+            const parsed_html = $.parseHTML(await obtainStreamBody(url_deck));
+            return $("#deck_header", parsed_html);
+        } else {
+            return $("#deck_header");
+        }
+    }
+    const header_area = await _obtainDeckHeaderArea(url_deck);
+    if (header_area.length === 0) return null;
+    return {
+        pflag: $("#broad_title>div>h1", header_area).text().match(/【 (.*) 】/)[1],
+        deck_type: Array.from($(".text_set>span:eq(0)", header_area)).text(),
+        deck_style: Array.from($(".text_set>span:eq(1)", header_area)).text(),
+        category: $(".regist_category>span", header_area).length === 0 ? [] : Array.from($(".regist_category>span", header_area)).map(d => d.textContent),
+        tag: $(".regist_tag>span", header_area).length === 0 ? [] : Array.from($(".regist_tag>span", header_area)).map(d => d.textContent),
+        comment: Array.from($(".text_set>span.biko", header_area)).text()
+    }
+}
+
+const obtainDeckHeader_edit = async (html_parse_dic) => {
+    const my_cgid = obtainMyCgid();
+    if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return null;
+    else if (html_parse_dic.cgid != my_cgid) return null;
+    const html_parse_dic_valid = Object.assign(...["cgid", "dno"].map(k => Object({ [k]: html_parse_dic[k] })), { ope: 2 });
+    const sps = new URLSearchParams(html_parse_dic_valid);
+    const url_edit = `/yugiohdb/member_deck.action?` + sps.toString();
+    const html_edit = await obtainStreamBody(url_edit);
+    const parsed_html = $.parseHTML(html_edit);
+    const serialized_obtain=$("#deck_header input, #deck_header select, #deck_header textarea", parsed_html).serialize();
+    const sps_par=new URLSearchParams(serialized_obtain);
+    ["dno", "pflg", "deck_type", "deckStyle"]
+        .map(k=>{
+            const match_res=html_edit.match(new RegExp(`\\(\'#${k}\'\\)\.val\\(\'([^\\)]*)\'\\)`) )
+            return [k, (match_res.length < 1) ? "" : match_res[1]]
+        }).map(kv=>sps_par.set(...kv));
+    return sps_par.toString();
+}
+
+const serializeRowResults = (row_results) => {
+    const row_maxLength_dic = { monster: 65, spell: 65, trap: 65, extra: 20, side: 20 }
+    return Object.entries(row_results).map(([row_name, row_result]) => {
+        const row_name_veryShort = row_name.slice(0, 2);
+        const row_maxLength = row_maxLength_dic[row_name];
+        const row_length = row_result.names.length;
+        return [...Array(row_maxLength).keys()].map(ind => {
+            if (ind + 1 > row_length) {
+                return {
+                    [row_name_veryShort + "nm"]: "",
+                    [row_name_veryShort + "num"]: ""
+                }
+            } else {
+                return {
+                    [row_name_veryShort + "nm"]: row_result.names[ind],
+                    [row_name_veryShort + "num"]: row_result.nums[ind]
+                }
+            }
+        }).map(d => (new URLSearchParams(d)).toString()).join("&");
+    }).join("&");
 }
 
 // obtain df tmp
@@ -204,6 +255,89 @@ const importDeck = (row_results) => {
     return main_total_num;
 }
 
+// ## save/regist
+
+const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = null) => {
+    const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
+    if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
+    const request_locale = html_parse_dic.request_locale !== null ? `&request_locale=` + html_parse_dic.request_locale : "";
+    if (serialized_data_in === null && $("#form_regist").length === 0) return;
+    const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
+    return await $.ajax({
+        type: 'post',
+        url: `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}${request_locale}`,
+        data: serialized_data,
+        dataType: 'json',
+        beforeSend: () => {
+            $('#btn_regist').removeAttr('href');
+            $('#message').hide().text('');
+            $('#loader').show();
+        },
+        complete: () => {
+            $('#loader').hide();
+        },
+        success: (data, dataType) => {
+            if (data.result) {
+                console.log("Registered");
+                //location.href = "/yugiohdb/member_deck.action?cgid=87999bd183514004b8aa8afa1ff1bdb9&dno=42&request_locale=ja";
+            } else {
+                if (data.error) {
+                    console.log("Register falied: ", data.error);
+                    /*var lst = [];
+                    $.each(data.error, function(index, value){
+                        lst.push($.escapeHTML(value));
+                    });
+                    console.log(lst);*/
+                    //$('#message').append('<ul><li>' + lst.join('</li><li>') + '</li></ul>').show();
+                } else console.log("Register falied: ", data);
+                //$('#btn_regist').attr('href', 'javascript:Regist();');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.log(error);
+        }
+    });
+}
+
+/*const __FetchNotWork_Regist_fromYGODB = async () => {
+    const html_parse_dic = parse_YGODB_URL(location.href, true);
+    console.log(html_parse_dic);
+    if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return;
+    const request_locale = html_parse_dic.request_locale !== null ? `&request_locale=` + html_parse_dic.request_locale : "";
+
+    $('#btn_regist').removeAttr('href');
+    $('#message').hide().text('');
+    $('#loader').show();
+    const res = await fetch(`/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}${request_locale}`, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: 'ope=3&' + $('#form_regist').serialize()
+    });
+    console.log(res)
+    //.then(d => d.body)
+    //.then(d => d.getReader())
+    //.then(reader => reader.read())
+    //.then(res => new TextDecoder("utf-8").decode(res.value));
+    //console.log(data);
+    $('#loader').hide();
+    if (res.ok) {
+        console.log("Registered")
+        //location.href = `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&dno=${html_parse_dic.dno}${request_locale}`;
+    } else {
+        if (res.error) {
+            var lst = [];
+            $.each(data.error, function (index, value) {
+                lst.push($.escapeHTML(value));
+            });
+            $('#message').append('<ul><li>' + lst.join('</li><li>') + '</li></ul>').show();
+        }
+        $('#btn_regist').attr('href', 'javascript:Regist();');
+    }
+}*/
+
 // ## sort cards
 
 const _sortCards = (row_name, row_result, df, df_now) => {
@@ -276,13 +410,12 @@ const sortCards = async (row_results) => {
 // ## shuffle
 
 const shuffleCards = () => {
-    const main_cards=Array.from($("#deck_image>#main>div.image_set>a"))
-    const area=Array.from($("#deck_image>#main>div.image_set"))
+    const main_cards = Array.from($("#deck_image>#main>div.image_set>a"))
+    const area = Array.from($("#deck_image>#main>div.image_set"))
 
-    const shuffled_cards=shuffleArray(main_cards)
-    $(area).html(shuffled_cards.map(d=>d.outerHTML).join("\n"));
+    const shuffled_cards = shuffleArray(main_cards)
+    $(area).html(shuffled_cards.map(d => d.outerHTML).join("\n"));
 }
-
 
 //---------------------------------
 //         # export
@@ -448,16 +581,29 @@ async function importFromYdk() {
 // # sort
 async function sortWindow() {
     const url_now = location.href;
-    const html_parse_dic = Object.assign(parseURL(url_now), { ope: 2 });
+    const html_parse_dic = Object.assign(parse_YGODB_URL(url_now), { ope: 2 });
     //console.log(html_parse_dic);
-    if (["cgid", "dno"].some(d => Object.keys(html_parse_dic).indexOf(d) == -1)) {
+    if (["cgid", "dno"].some(d => Object.keys(html_parse_dic).indexOf(d) === -1)) {
         return;
     }
-    const url_ope2 = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" +
-        Object.entries(html_parse_dic).map(d => d[0] + "=" + d[1]).join("&");
+    //const url_ope2 = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" +
+    //    (new URLSearchParams(html_parse_dic)).toString();
     const row_results = obtainRowResults();
     const row_results_new = await sortCards(row_results);
-    const postMsg = "trigger_sortCard_" + JSON.stringify(row_results_new);
+    const serialized_dic = {
+        ope: "ope=3",
+        header: await obtainDeckHeader_edit(html_parse_dic),
+        deck: serializeRowResults(row_results_new)
+    }
+    const serialized_data = Object.values(serialized_dic).join("&");
+    //console.log(serialized_data);
+    await _Regist_fromYGODB(html_parse_dic, serialized_data).then(async res=>{
+        //console.log(res);
+        console.log("Reload");
+        await sleep(100);
+        location.reload();
+    });
+    /*const postMsg = "trigger_sortCard_" + JSON.stringify(row_results_new);
     //console.log(row_results_new);
     //console.log(postMsg);
     const win = window.open(url_ope2, "sortCard", "width=500,toolbar=yes,menubar=yes,scrollbars=yes");
@@ -465,7 +611,7 @@ async function sortWindow() {
         setTimeout(() => {
             win.postMessage(postMsg, "*");
         }, 100);
-    }, false);
+    }, false);*/
 }
 
 
@@ -474,7 +620,7 @@ async function sortWindow() {
 
 $(async function () {
     const url_now = location.href;
-    const html_parse_dic = parseURL(url_now, true);
+    const html_parse_dic = parse_YGODB_URL(url_now, true);
     const my_cgid = obtainMyCgid();
     if (html_parse_dic.ope == "2") {
         //const area = $("#header_box .save"); // before// 2022/4/18
@@ -488,22 +634,24 @@ $(async function () {
         label.append(button);
         area.append(label);
     }
-    else if (["1", null].indexOf(html_parse_dic.ope)!=-1) {
+    else if (["1", null].indexOf(html_parse_dic.ope) != -1) {
         //const settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
         //const edit_area = $("#header_box #button_place_edit"); // before 2022/4/18
         const edit_area = $("#bottom_btn_set"); // after 2022/4/18
         const area = (edit_area.length > 0) ? edit_area : $("<span>", { id: "bottom_btn_set" }).appendTo($("#deck_header"));
         //console.log(area)
-        const button_dic = {export_id:$("<a>", { class: "btn hex red button_export id" })
-            .append("<span>Export (id)</span>"),
-        export_name:$("<a>", { class: "btn hex red button_export Jap" })
-            .append("<span>Export (Name)</span>"),
-        sort:$("<a>", { class: "btn hex red button_sort", id: "button_sort" })
-            .append("<span>Sort</span>"),
-        shuffle:$("<a>", { class: "btn hex red button_shuffle", id: "button_shuffle" })
-            .append("<span>Shuffle</span>")};
+        const button_dic = {
+            export_id: $("<a>", { class: "btn hex red button_export id" })
+                .append("<span>Export (id)</span>"),
+            export_name: $("<a>", { class: "btn hex red button_export Jap" })
+                .append("<span>Export (Name)</span>"),
+            sort: $("<a>", { class: "btn hex red button_sort", id: "button_sort" })
+                .append("<span>Sort</span>"),
+            shuffle: $("<a>", { class: "btn hex red button_shuffle", id: "button_shuffle" })
+                .append("<span>Shuffle</span>")
+        };
         for (const [button_type, button_tmp] of Object.entries(button_dic)) {
-            if ( button_type == "sort" && (my_cgid == null || html_parse_dic.cgid != my_cgid)) continue;
+            if (button_type == "sort" && (my_cgid == null || html_parse_dic.cgid != my_cgid)) continue;
             $(area).append(button_tmp);
         }
     }
@@ -547,35 +695,41 @@ $(async function () {
             const json_dumped = content.replace("trigger_sortCard_", "");
             const row_results_new = JSON.parse(json_dumped);
             //const row_results_new=await sortCards(row_results);
-            console.log(row_results_new);
+            //console.log(row_results_new);
             const row_names = ["monster", "spell", "trap", "extra", "side"];
             const row_str_new = JSON.stringify(row_names
                 .map(row_name => ({ [row_name]: { names: row_results_new[row_name].names, nums: row_results_new[row_name].nums.map(d => parseInt(d)) } })))
-            const checkInputted = setInterval(() => {
+            while (true) {
                 importDeck(row_results_new);
                 const row_results = obtainRowResults_Input();
                 const row_str = JSON.stringify(row_names
                     .map(row_name => ({ [row_name]: { names: row_results[row_name].names, nums: row_results[row_name].nums } })))
+                console.log(row_str == row_str_new);
                 if (row_str == row_str_new) {
-                    clearInterval(checkInputted);
                     const regist_btn = $("#btn_regist>span");
                     const save_text = regist_btn.text();
                     //document.querySelector("#btn_regist").classList.remove("orn");
-                    $("#btn_regist").toggleClass("orn");
-                    $("#btn_regist").toggleClass("pnk");
-                    regist_btn.text(save_text + " (CLICK HERE)")
+                    //$("#btn_regist").toggleClass("orn");
+                    //$("#btn_regist").toggleClass("pnk");
+                    //regist_btn.text(save_text + " (CLICK HERE)");
+                    await _Regist_fromYGODB().then(async _=>{
+                        await sleep(500);
+                        window.opener.postMessage("trigger_closeWindow", "*");
+                    });
                     //console.log("Sorted. Please save and close.");
                     //console.log(window.opener);
                     //window.opener.postMessage("trigger_closeWindow", "*");
                     //Regist() // function on YGO
                     // message on HTML
-                    document.addEventListener("click", async function (e) {
+                    /*document.addEventListener("click", async function (e) {
                         if ($(e.target).is("#btn_regist *")) {
                             window.opener.postMessage("trigger_closeWindow", "*");
                         }
-                    })
-                }
-            }, 500);
+                    })*/
+                    break;
+
+                } else await sleep(500);
+            };
         }
         if (/_closeWindow/.test(content)) {
             setTimeout(() => { e.source.close() }, 200);

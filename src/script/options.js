@@ -126,7 +126,7 @@ const searchFunc = async ()=>{
     const searchResultArea=$("#searchResultArea");
     searchResultArea.empty();
     const table=makeTable(searcheResults, "Search Results");
-    searchResultArea.append(table)
+    searchResultArea.append(table);
 }
 
 $(".btnSearchAdd").on("click", async function (e) {
@@ -134,7 +134,7 @@ $(".btnSearchAdd").on("click", async function (e) {
     const DateNow = `${Date.now()}`;
     const span = $("<span>", { class: "spanSearchKV" });
     const searchKey = $("<select>", { type: "text", style: "width:80px;", class: "selectSearchKey" });
-    const searchVal = $("<input>", { type: "number", placeholder: "a word or value", style: "width:200px;", class: "inputSearchVal", list: `selectSearchList_${DateNow}`});
+    const searchVal = $("<input>", { type: "text", placeholder: "a word or value", style: "width:200px;", class: "inputSearchVal", list: `selectSearchList_${DateNow}`});
     const datalist = $("<datalist>", { id: `selectSearchList_${DateNow}` });
     const clearButton = $("<button>", { type: "button", class: "btnSearchClear btn btn-primary" }).append("Clear");
     const deleteButton = $("<button>", { type: "button", class: "btnSearchDelete btn btn-primary" }).append("Delete");
