@@ -16,6 +16,8 @@ optionで推測の強さ
 neuronだと自動で入力済みなのに
 
 ## default lang: 2
+- Done
+-> langはmeta tagから取得
 
 ```html
 <ul>
@@ -36,6 +38,8 @@ neuronだと自動で入力済みなのに
 
 ## カードDB取得: 0
 
+- Done
+
 cgid, id把握済みなら遊戯王DBから取得するように (自動で全言語に対応)
 -> https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=2&sort=21&rp=200&page=1&stype=1&othercon=2&page=1
 -> カード検索のちにリンク変更で上限を自由にできる
@@ -52,6 +56,7 @@ ocg-card.comは誤入力の可能性があるので注意
 -> localにbackupもあり
 
 ## termTables: 3
+- DBが万全になったから、obtainDFDeckは使わない方向で
 term tablesをobtainDFDeckの属性、種族などに反映(自動で全言語に対応)
 
 ## デッキ編集画面 GUI: 100
@@ -63,3 +68,7 @@ term tablesをobtainDFDeckの属性、種族などに反映(自動で全言語�
 ### デッキ切り替え: 5
 デッキ名で切り替え
 サムネも表示
+
+### 所持デッキ一覧を取得
+
+

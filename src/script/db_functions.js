@@ -31,7 +31,7 @@ const obtainDF = async (lang=null) => {
         .then(items => JSON.parse(items.df))
         .then(df_tmp=>{
             const name_key=`name_${lang}`
-            if (Object.keys(df_tmp).indexOf()!==-1){
+            if (Object.keys(df_tmp).indexOf(name_key)!==-1){
                 df_tmp["name"]=df_tmp[name_key];
             }
             return df_tmp;
@@ -39,7 +39,7 @@ const obtainDF = async (lang=null) => {
     if (Object.keys(df).length === 0) {
         return await updateDB().then(df_tmp=>{
             const name_key=`name_${lang}`
-            if (Object.keys(df_tmp).indexOf()!==-1){
+            if (Object.keys(df_tmp).indexOf(name_key)!==-1){
                 df_tmp["name"]=df_tmp[name_key];
             }
             return df_tmp;
