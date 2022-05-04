@@ -8,7 +8,8 @@ const defaultSettings = {
     valid_feature_importExport: true,
     valid_feature_sortShuffle: true,
     valid_feature_deckHeader: true,
-    default_visible_header:true
+    default_visible_header:true,
+    default_lang: "ja"
 }; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);
 
@@ -31,6 +32,12 @@ const obtainMyCgid = () => {
     if (my_deck_btn.length == 0) {
         return null;
     } else return $(my_deck_btn).prop("href").match(/cgid=([^\&=]+)/)[1];
+}
+
+const obtainLang = () =>{
+    const meta_lang=$("meta[http-equiv='COntent-Language']");
+    if (meta_lang.length===0) return null;
+    else return $(meta_lang).prop("content");
 }
 
 const shuffleArray = (arr) => {
@@ -347,7 +354,7 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
 
 // ## sort cards
 
-const _sortCards = (row_name, row_result, df, df_now) => {
+const _sortCards = (row_name, row_result, df, df_now={}) => {
     const sort_cond_base = { "cid": 0, "name": 0 }
     const sort_cond_dic_dic = {
         "monster": { "level": -1, "atk": -1, "def": -1, "id": 1 },
@@ -358,23 +365,26 @@ const _sortCards = (row_name, row_result, df, df_now) => {
     }
     const sort_cond_dic = Object.assign(sort_cond_base, sort_cond_dic_dic[row_name])
     const output_tmp_cid = df_filter(df, Array.from(Object.keys(sort_cond_dic)), ["cid", row_result.cids]);
-    const output_tmp_jap = df_filter(df_now, Array.from(Object.keys(sort_cond_dic)), ["name", row_result.names]);
+    //const output_tmp_jap = df_filter(df_now, Array.from(Object.keys(sort_cond_dic)), ["name", row_result.names]);
     // convert
     //console.log(Object.keys(output_tmp).map(k=>({[k]:output_tmp[k][ind]})))
     //[]
-    const output_arr = row_result.cids.map((cid, cid_ind) => {
-        const name_tmp = row_result.names[cid_ind];
+    const output_arr = row_result.cids.map((cid, ind_cid) => {
+        const name_tmp = row_result.names[ind_cid];
         const ind_fromCid = output_tmp_cid.cid.indexOf(cid);
-        const ind_fromName = output_tmp_jap.name.indexOf(name_tmp);
+        //const ind_fromName = output_tmp_jap.name.indexOf(name_tmp);
         //console.log(ind_fromCid, ind_fromName)
         return Object.assign(
+            ...Object.keys(output_tmp_cid).map(k=>({[k]:output_tmp_cid[k][ind_fromCid]})),
+            {cid:cid, name:name_tmp, num:row_result.nums[ind_cid]})
+        /*return Object.assign(
             //...Object.keys(output_tmp_cid).map(k=>({[k]:output_tmp_cid[k][ind_fromCid]}))
             ...Object.keys(output_tmp_jap).map(k => {
                 const val = output_tmp_jap[k][ind_fromName]
                 if (["id", "cid"].indexOf(k) == -1) return { [k]: val }
                 else if (["id"].indexOf(k) != -1) return { [k]: output_tmp_cid[k][ind_fromCid] }
                 else if (["cid", "name"].indexOf(k) != -1) return { [k]: null };
-            }), { cid: cid, name: name_tmp, num: row_result.nums[cid_ind] });
+            }), { cid: cid, name: name_tmp, num: row_result.nums[ind_cid] });*/
     })
     //console.log(output_arr);
     if (["extra", "side"].indexOf(row_name) != -1) {
@@ -407,9 +417,9 @@ const _sortCards = (row_name, row_result, df, df_now) => {
 }
 
 const sortCards = async (row_results) => {
-    const df = await obtainDF();
-    const df_now = obtainDFDeck();
-    const row_results_new = Object.assign(...Object.entries(row_results).map(d => ({ [d[0]]: _sortCards(d[0], d[1], df, df_now) })));
+    const df = await obtainDF(obtainLang());
+    //const df_now = obtainDFDeck();
+    const row_results_new = Object.assign(...Object.entries(row_results).map(d => ({ [d[0]]: _sortCards(d[0], d[1], df ) })));
     console.log("sorted", row_results_new);
     return row_results_new;
 }
@@ -438,7 +448,7 @@ async function exportAs(form = "id") {
     const row_results = obtainRowResults();
     console.log(row_results);
 
-    const df = await obtainDF();
+    const df = await obtainDF(obtainLang());
     const keys = ["#main", "#extra", "!side"];
     let result_outputs = keys.map(_ => []);
     let result_exception_counts = keys.map(_ => 0);
@@ -505,7 +515,7 @@ async function importFromYdk() {
 
     const row_names = ["monster", "spell", "trap", "extra", "side"];
     let row_results = Object.assign(...row_names.map(row_name => ({ [row_name]: { names: [], nums: [], cids: [] } })));
-    const df = await obtainDF();
+    const df = await obtainDF(obtainLang());
     let exceptions = [];
     // guess file type => id, Jap, Eng
     /*const encoder=new TextEncoder("utf8");
@@ -675,7 +685,7 @@ $(async function () {
 
     const settings = await operateStorage({settings:JSON.stringify({})}, "sync")
         .then(items=>Object.assign(defaultSettings, JSON.parse(items.settings)));
-    console.log(settings)
+    //console.log(settings)
 
 
     if (html_parse_dic.ope == "2") {

@@ -9,7 +9,8 @@ const defaultSettings = {
     valid_feature_importExport: true,
     valid_feature_sortShuffle: true,
     valid_feature_deckHeader: true,
-    default_visible_header:true
+    default_visible_header:true,
+    default_lang: "ja"
 }; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);
 

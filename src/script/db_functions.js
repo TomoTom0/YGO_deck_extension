@@ -26,10 +26,25 @@ const operateStorage = (key = null, storageKey = "sync", operate = "get") => new
     chrome.storage[storageKey][operate](key, resolve);
 });
 
-const obtainDF = async () => {
-    const df = await operateStorage({ df: JSON.stringify({}) }, "local").then(items => JSON.parse(items.df));
-    if (Object.keys(df).length === 0) return await updateDB();
-    else return df;
+const obtainDF = async (lang=null) => {
+    const df = await operateStorage({ df: JSON.stringify({}) }, "local")
+        .then(items => JSON.parse(items.df))
+        .then(df_tmp=>{
+            const name_key=`name_${lang}`
+            if (Object.keys(df_tmp).indexOf()!==-1){
+                df_tmp["name"]=df_tmp[name_key];
+            }
+            return df_tmp;
+        });
+    if (Object.keys(df).length === 0) {
+        return await updateDB().then(df_tmp=>{
+            const name_key=`name_${lang}`
+            if (Object.keys(df_tmp).indexOf()!==-1){
+                df_tmp["name"]=df_tmp[name_key];
+            }
+            return df_tmp;
+        });
+    } else return df;
 }
 
 
