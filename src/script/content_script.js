@@ -8,7 +8,7 @@ const defaultSettings = {
     valid_feature_importExport: true,
     valid_feature_sortShuffle: true,
     valid_feature_deckHeader: true,
-    default_visible_header:true,
+    default_visible_header: true,
     default_lang: "ja"
 }; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);
@@ -34,9 +34,9 @@ const obtainMyCgid = () => {
     } else return $(my_deck_btn).prop("href").match(/cgid=([^\&=]+)/)[1];
 }
 
-const obtainLang = () =>{
-    const meta_lang=$("meta[http-equiv='COntent-Language']");
-    if (meta_lang.length===0) return null;
+const obtainLang = () => {
+    const meta_lang = $("meta[http-equiv='COntent-Language']");
+    if (meta_lang.length === 0) return null;
     else return $(meta_lang).prop("content");
 }
 
@@ -133,13 +133,13 @@ const obtainDeckHeader_edit = async (html_parse_dic) => {
     const url_edit = `/yugiohdb/member_deck.action?` + sps.toString();
     const html_edit = await obtainStreamBody(url_edit);
     const parsed_html = $.parseHTML(html_edit);
-    const serialized_obtain=$("#deck_header input, #deck_header select, #deck_header textarea", parsed_html).serialize();
-    const sps_par=new URLSearchParams(serialized_obtain);
+    const serialized_obtain = $("#deck_header input, #deck_header select, #deck_header textarea", parsed_html).serialize();
+    const sps_par = new URLSearchParams(serialized_obtain);
     ["dno", "pflg", "deck_type", "deckStyle"]
-        .map(k=>{
-            const match_res=html_edit.match(new RegExp(`\\(\'#${k}\'\\)\.val\\(\'([^\\)]*)\'\\)`) )
+        .map(k => {
+            const match_res = html_edit.match(new RegExp(`\\(\'#${k}\'\\)\.val\\(\'([^\\)]*)\'\\)`))
             return [k, (match_res.length < 1) ? "" : match_res[1]]
-        }).map(kv=>sps_par.set(...kv));
+        }).map(kv => sps_par.set(...kv));
     return sps_par.toString();
 }
 
@@ -167,7 +167,7 @@ const serializeRowResults = (row_results) => {
 
 // obtain df tmp
 
-const obtainDFDeck = () => {
+/*const obtainDFDeck = () => {
     const obtainCardInfoFromTable = (t_row) => {
         const card_name = $("div.inside>div.card_name.flex_1>span.name", t_row).text().replaceAll(/^\s*|\s*$/g, "");
         const card_type_icon = $("div.inside>div.card_name.flex_1>img.ui-draggable:eq(0)", t_row).prop("src").match(/card_icon_(\S+)\.\w+$/)[1];
@@ -232,7 +232,7 @@ const obtainDFDeck = () => {
     const df_arr = Array.from($("#main_m_list>div.t_body>div.t_row.c_simple"))
         .map(t_row => obtainCardInfoFromTable(t_row))
     return Object.assign(...Object.keys(df_arr[0]).map(k => ({ [k]: df_arr.map(d => d[k]) })))
-}
+}*/
 
 // import cards
 const importDeck = (row_results) => {
@@ -274,12 +274,13 @@ const importDeck = (row_results) => {
 const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = null) => {
     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
-    const request_locale = html_parse_dic.request_locale !== null ? `&request_locale=` + html_parse_dic.request_locale : "";
+    const lang = obtainLang()
+    const request_locale = lang != null ? `&request_locale=` + lang : "";
     if (serialized_data_in === null && $("#form_regist").length === 0) return;
     const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
     return await $.ajax({
         type: 'post',
-        url: `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}${request_locale}`,
+        url: `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`,
         data: serialized_data,
         dataType: 'json',
         beforeSend: () => {
@@ -354,7 +355,7 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
 
 // ## sort cards
 
-const _sortCards = (row_name, row_result, df, df_now={}) => {
+const _sortCards = (row_name, row_result, df, df_now = {}) => {
     const sort_cond_base = { "cid": 0, "name": 0 }
     const sort_cond_dic_dic = {
         "monster": { "level": -1, "atk": -1, "def": -1, "id": 1 },
@@ -375,8 +376,8 @@ const _sortCards = (row_name, row_result, df, df_now={}) => {
         //const ind_fromName = output_tmp_jap.name.indexOf(name_tmp);
         //console.log(ind_fromCid, ind_fromName)
         return Object.assign(
-            ...Object.keys(output_tmp_cid).map(k=>({[k]:output_tmp_cid[k][ind_fromCid]})),
-            {cid:cid, name:name_tmp, num:row_result.nums[ind_cid]})
+            ...Object.keys(output_tmp_cid).map(k => ({ [k]: output_tmp_cid[k][ind_fromCid] })),
+            { cid: cid, name: name_tmp, num: row_result.nums[ind_cid] })
         /*return Object.assign(
             //...Object.keys(output_tmp_cid).map(k=>({[k]:output_tmp_cid[k][ind_fromCid]}))
             ...Object.keys(output_tmp_jap).map(k => {
@@ -400,9 +401,10 @@ const _sortCards = (row_name, row_result, df, df_now={}) => {
         const arr_sorted = output_arr.sort((a, b) => {
             const diffs = (Object.keys(sort_cond_dic).map(k => {
                 const sort_cond = sort_cond_dic[k];
-                if (Number.isInteger(sort_cond)) {
+                const valIsValid = true//[a[k], b[k]].every(d => d!=null);
+                if (valIsValid && Number.isInteger(sort_cond)) {
                     return [k, sort_cond * (parseInt(a[k]) - parseInt(b[k]))];
-                } else if (Array.isArray(sort_cond)) {
+                } else if (valIsValid && Array.isArray(sort_cond)) {
                     const inds_for_sort = [a[k], b[k]].map(tmp_k => sort_cond.map(d => [tmp_k.indexOf(d), d]).filter(d => d[0] != -1).map(d => sort_cond.indexOf(d[1])));
                     return [k, inds_for_sort[0] - inds_for_sort[1]];
                 } else return [k, 0];
@@ -419,7 +421,7 @@ const _sortCards = (row_name, row_result, df, df_now={}) => {
 const sortCards = async (row_results) => {
     const df = await obtainDF(obtainLang());
     //const df_now = obtainDFDeck();
-    const row_results_new = Object.assign(...Object.entries(row_results).map(d => ({ [d[0]]: _sortCards(d[0], d[1], df ) })));
+    const row_results_new = Object.assign(...Object.entries(row_results).map(d => ({ [d[0]]: _sortCards(d[0], d[1], df) })));
     console.log("sorted", row_results_new);
     return row_results_new;
 }
@@ -596,7 +598,7 @@ async function importFromYdk() {
 }
 
 // # sort
-async function sortWindow() {
+async function sortClicked() {
     const url_now = location.href;
     const html_parse_dic = Object.assign(parse_YGODB_URL(url_now), { ope: 2 });
     //console.log(html_parse_dic);
@@ -614,11 +616,13 @@ async function sortWindow() {
     }
     const serialized_data = Object.values(serialized_dic).join("&");
     //console.log(serialized_data);
-    await _Regist_fromYGODB(html_parse_dic, serialized_data).then(async res=>{
+    console.log(serialized_data)
+    //return; // test
+    await _Regist_fromYGODB(html_parse_dic, serialized_data).then(async res => {
         //console.log(res);
         console.log("Reload");
         await sleep(100);
-        location.reload();
+        //location.reload();
     });
     /*const postMsg = "trigger_sortCard_" + JSON.stringify(row_results_new);
     //console.log(row_results_new);
@@ -632,44 +636,44 @@ async function sortWindow() {
 }
 
 // # deck header show / hide
-const toggleVisible_deckHeader= (toShow_in=null)=>{
+const toggleVisible_deckHeader = (toShow_in = null) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     if (html_parse_dic.ope != 2) return;
-    const button=$("#button_visible_header");
-    const toShow=(typeof(toShow_in) !== "boolean") ? $(button).hasClass("show") : toShow_in;
-    const showHide={true:"show", false:"hide"};
+    const button = $("#button_visible_header");
+    const toShow = (typeof (toShow_in) !== "boolean") ? $(button).hasClass("show") : toShow_in;
+    const showHide = { true: "show", false: "hide" };
     $(button).removeClass(showHide[toShow]);
     $(button).addClass(showHide[!toShow]);
-    $("span", button).text("Header "+ showHide[!toShow].toUpperCase());
-    const dls=Array.from($("#deck_header>div>div>dl"));
-    for (const dl_tmp of dls){
-        if (dls.indexOf(dl_tmp)!==0 && toShow === false) {
-            $(dl_tmp).css({display:"none"});
+    $("span", button).text("Header " + showHide[!toShow].toUpperCase());
+    const dls = Array.from($("#deck_header>div>div>dl"));
+    for (const dl_tmp of dls) {
+        if (dls.indexOf(dl_tmp) !== 0 && toShow === false) {
+            $(dl_tmp).css({ display: "none" });
         } else {
-            $(dl_tmp).css({display:""}) // relativeにするとnoneで固定された
+            $(dl_tmp).css({ display: "" }) // relativeにするとnoneで固定された
         }
     }
 }
 
-const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in=null)=> {
+const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in = null) => {
     const arr_size_ct = [120, 500] // [120,300,500]
 
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     if (html_parse_dic.ope != 2) return;
 
-    const header_ids_dic={category:"dckCategoryMst", tag:"dckTagMst", comment:"biko"};
-    const ctc_now=$(`#${header_ids_dic[ctc_name]}`);
-    const ctc_ind_size_old= ctc_ind_size_old_in || ctc_now.attr("class").match(/ctc_size_(\d*)/)[1];
-    const ctc_ind_size=(1+parseInt(ctc_ind_size_old))%arr_size_ct.length;
+    const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
+    const ctc_now = $(`#${header_ids_dic[ctc_name]}`);
+    const ctc_ind_size_old = ctc_ind_size_old_in || ctc_now.attr("class").match(/ctc_size_(\d*)/)[1];
+    const ctc_ind_size = (1 + parseInt(ctc_ind_size_old)) % arr_size_ct.length;
     ctc_now.removeClass(`ctc_size_${ctc_ind_size_old}`);
     ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
-    const isCT= ["category", "tag"].indexOf(ctc_name)!==-1
-    if (isCT){
-        const size_now=arr_size_ct[ctc_ind_size];
+    const isCT = ["category", "tag"].indexOf(ctc_name) !== -1
+    if (isCT) {
+        const size_now = arr_size_ct[ctc_ind_size];
         ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
-        ctc_now.css({height: size_now});
+        ctc_now.css({ height: size_now });
     } else {
-        const row_now=6*(1+ctc_ind_size%arr_size_ct.length);
+        const row_now = 6 * (1 + ctc_ind_size % arr_size_ct.length);
         ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
         ctc_now.prop("rows", row_now);
     }
@@ -683,8 +687,8 @@ $(async function () {
     const html_parse_dic = parse_YGODB_URL(url_now, true);
     const my_cgid = obtainMyCgid();
 
-    const settings = await operateStorage({settings:JSON.stringify({})}, "sync")
-        .then(items=>Object.assign(defaultSettings, JSON.parse(items.settings)));
+    const settings = await operateStorage({ settings: JSON.stringify({}) }, "sync")
+        .then(items => Object.assign(defaultSettings, JSON.parse(items.settings)));
     //console.log(settings)
 
 
@@ -693,10 +697,12 @@ $(async function () {
         // import button
         //const area = $("#header_box .save"); // before// 2022/4/18
         const area_bottom = $("#bottom_btn_set"); // after 2022/4/18
-        if (settings.valid_feature_importExport===true){
+        if (settings.valid_feature_importExport === true) {
             const label = $("<label>", { for: "button_importFromYdk_input" });
-            const button_import=$("<a>", { class: "btn hex red button_import", type: "button", id: "button_importFromYdk",
-                    style: "position: relative;user-select: none;" })
+            const button_import = $("<a>", {
+                class: "btn hex red button_import", type: "button", id: "button_importFromYdk",
+                style: "position: relative;user-select: none;"
+            })
                 .append("<span>Import</span>")
             const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
             button_import.append(input_button);
@@ -704,32 +710,35 @@ $(async function () {
             area_bottom.append(label);
         }
 
-        if (settings.valid_feature_deckHeader===true){
+        if (settings.valid_feature_deckHeader === true) {
             // other buttons for bottom
             const button_bottom_dic = {
-                header_visible: $("<a>", { class: "btn hex red button_visible_header hide", type: "button", id: "button_visible_header", 
-                    style: "position: relative;user-select: none;" })
+                header_visible: $("<a>", {
+                    class: "btn hex red button_visible_header hide", type: "button", id: "button_visible_header",
+                    style: "position: relative;user-select: none;"
+                })
                     .append("<span>Header HIDE</span>")
             };
-            Object.values(button_bottom_dic).map(button=>{
+            Object.values(button_bottom_dic).map(button => {
                 area_bottom.append(button);
             })
             toggleVisible_deckHeader(settings.default_visible_header);
 
             // deck header
-            const header_ids_dic={category:"dckCategoryMst", tag:"dckTagMst", comment:"biko"};
-            ["category", "tag", "comment"].map(ctc_name=>{
-                const ctc_now=$(`#${header_ids_dic[ctc_name]}`);
-                const isCT=["category", "tag"].indexOf(ctc_name)!=-1;
-                const ctc_span= $("dt>span", (isCT) ? ctc_now.parent().parent().parent() : ctc_now.parent().parent());
-                const button=$("<a>", {
-                    class: `btn hex button_size_header ${ctc_name} `+ (isCT ? " isCT" : " isComment"),
+            const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
+            ["category", "tag", "comment"].map(ctc_name => {
+                const ctc_now = $(`#${header_ids_dic[ctc_name]}`);
+                const isCT = ["category", "tag"].indexOf(ctc_name) != -1;
+                const ctc_span = $("dt>span", (isCT) ? ctc_now.parent().parent().parent() : ctc_now.parent().parent());
+                const button = $("<a>", {
+                    class: `btn hex button_size_header ${ctc_name} ` + (isCT ? " isCT" : " isComment"),
                     type: "button", id: `button_size_header_${ctc_name}`,
-                    style: "position: relative;user-select: none;" })
-                        .append("<span>Size</span>");
+                    style: "position: relative;user-select: none;"
+                })
+                    .append("<span>Size</span>");
                 $(ctc_span).append(button);
                 const ctc_ind_size = 0;
-                changeSize_deckHeader(ctc_name, ctc_ind_size-1)
+                changeSize_deckHeader(ctc_name, ctc_ind_size - 1)
             })
         }
 
@@ -747,14 +756,14 @@ $(async function () {
             export_name: $("<a>", { class: "btn hex red button_export Jap" })
                 .append("<span>Export (Name)</span>"),
             sort: $("<a>", { class: "btn hex red button_sort", id: "button_sort" })
-                .append("<span>Sort</span>"),
+                .append("<span>Sort & Save</span>"),
             shuffle: $("<a>", { class: "btn hex red button_shuffle", id: "button_shuffle" })
                 .append("<span>Shuffle</span>")
         };
         for (const [button_type, button_tmp] of Object.entries(button_dic)) {
             if (button_type == "sort" && (my_cgid == null || html_parse_dic.cgid != my_cgid)) continue;
-            if (settings.valid_feature_importExport===false && ["import", "export"].indexOf(button_type)!=-1) continue;
-            if (settings.valid_feature_sortShuffle===false && ["sort", "shuffle"].indexOf(button_type)!=-1) continue;
+            if (settings.valid_feature_importExport === false && ["import", "export"].indexOf(button_type) != -1) continue;
+            if (settings.valid_feature_sortShuffle === false && ["sort", "shuffle"].indexOf(button_type) != -1) continue;
             $(area).append(button_tmp);
         }
     }
@@ -779,10 +788,10 @@ $(async function () {
             console.log(`export deck as ${form}`)
             await exportAs(form);
         } else if ($(e.target).is("a.button_size_header, a.button_size_header *")) {
-            const button=$([$(e.target).children(), e.target]
-                .filter(d=>$(d).length>0)
-                [0]).parents("a.button_size_header");
-            const ctc_name=$(button).prop("id").match("button_size_header_(.*)")[1];
+            const button = $([$(e.target).children(), e.target]
+                .filter(d => $(d).length > 0)
+            [0]).parents("a.button_size_header");
+            const ctc_name = $(button).prop("id").match("button_size_header_(.*)")[1];
             changeSize_deckHeader(ctc_name);
 
         }
@@ -791,7 +800,7 @@ $(async function () {
         await importFromYdk();
     });
     $("#button_sort").on("click", async function () {
-        await sortWindow();
+        await sortClicked();
     });
     $("#button_shuffle").on("click", function () {
         shuffleCards();
@@ -817,7 +826,6 @@ $(async function () {
                 const row_results = obtainRowResults_Input();
                 const row_str = JSON.stringify(row_names
                     .map(row_name => ({ [row_name]: { names: row_results[row_name].names, nums: row_results[row_name].nums } })))
-                console.log(row_str == row_str_new);
                 if (row_str == row_str_new) {
                     const regist_btn = $("#btn_regist>span");
                     const save_text = regist_btn.text();
@@ -825,7 +833,7 @@ $(async function () {
                     //$("#btn_regist").toggleClass("orn");
                     //$("#btn_regist").toggleClass("pnk");
                     //regist_btn.text(save_text + " (CLICK HERE)");
-                    await _Regist_fromYGODB().then(async _=>{
+                    await _Regist_fromYGODB().then(async _ => {
                         await sleep(500);
                         window.opener.postMessage("trigger_closeWindow", "*");
                     });
