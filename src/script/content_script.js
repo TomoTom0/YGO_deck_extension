@@ -616,13 +616,12 @@ async function sortClicked() {
     }
     const serialized_data = Object.values(serialized_dic).join("&");
     //console.log(serialized_data);
-    console.log(serialized_data)
     //return; // test
     await _Regist_fromYGODB(html_parse_dic, serialized_data).then(async res => {
         //console.log(res);
         console.log("Reload");
         await sleep(100);
-        //location.reload();
+        location.reload();
     });
     /*const postMsg = "trigger_sortCard_" + JSON.stringify(row_results_new);
     //console.log(row_results_new);
