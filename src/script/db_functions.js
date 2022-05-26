@@ -149,6 +149,7 @@ function df_filter(df, col_out, array_in, condition = "=") {
 
     const indexes_in = df[key].reduce((acc, cur, ind) => {
         if (condition == "=" && val.indexOf(cur) != -1) return acc.concat([ind]);
+        else if (condition == "=" && isFinite(cur) && val.indexOf(String(cur)) != -1) return acc.concat([ind]);
         else if (condition == "in" && val.some(d => cur.indexOf(d) != -1)) return acc.concat([ind]);
         else return acc;
     }, []);

@@ -1,0 +1,7 @@
+.tablink_deckSupport li.now, .tablink_deckSupport li:active {
+    border-bottom-color: #ffba00;
+}
+
+.tablink_deckSupport li.now span {
+    color: #ffba00;
+}
