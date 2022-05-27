@@ -9,8 +9,10 @@ const defaultSettings = {
     valid_feature_sortShuffle: true,
     valid_feature_deckHeader: true,
     valid_feature_deckEditImage: true,
+    valid_feature_sideChange: true,
     default_visible_header: true,
     default_deck_edit_image: true,
+    default_sideChange_view: true,
     default_lang: "ja"
 }; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);
@@ -167,26 +169,32 @@ const serializeRowResults = (row_results) => {
         }).map(d => (new URLSearchParams(d)).toString()).join("&");
     }).join("&");
 }
-
+// ## operate recipie
 const operateRowResults = (row_results={}, cidIn=10, change=1, type_new=null, df=null)=>{
-    const row_results_new_tmp=Object.entries(row_results).map(([card_type, row_result])=>{
+    const num_all=Object.values(row_results).map((d, _ind)=>{
+        const ind_fromCid=d.cids.indexOf(cidIn);
+        if (ind_fromCid!==-1) return d.nums[ind_fromCid];
+        else return null;
+    }).filter(d=>d!==null).map(d=>parseInt(d)).concat([0]).reduce((acc,cur)=>acc+cur);
+    if (num_all+change>3) return row_results;
+    const row_results_new_tmp=Object.entries(row_results).map(([set_type, row_result])=>{
         const ind_fromCid=row_result.cids.indexOf(cidIn);
-        if (ind_fromCid===-1 && type_new !== card_type && change <= 0) return {[card_type]:row_result}
+        if ((ind_fromCid===-1 && change <= 0) || type_new !== set_type) return {[set_type]:row_result}
         const num_old= (ind_fromCid===-1) ? 0: row_result.nums[ind_fromCid];
         const num_new=Math.max(0, Math.min(3, num_old+change));
-        if (num_new===0) {
+        if (ind_fromCid!==-1 && num_new===0) {
             const row_result_tmp=Object.entries(row_result)
                 .map(([k,v])=>Object({[k]:[...v.slice(0,ind_fromCid), ...v.slice(ind_fromCid+1)]}));
-            return {[card_type]:Object.assign(...row_result_tmp)};
-        } else if (ind_fromCid === -1 && df!==null) {
-            const name_now=df_filter(df, "name", ["cid", cidIn]);
+            return {[set_type]:Object.assign(...row_result_tmp)};
+        } else if (ind_fromCid === -1 && change>0 && df!==null) {
+            const name_now=df_filter(df, "name", ["cid", cidIn])[0];
             row_result.names.push(name_now)
-            row_result.nums.push(num_new);
+            row_result.nums.push(change);
             row_result.cids.push(cidIn);
         } else if (ind_fromCid !== -1) {
             row_result.nums[ind_fromCid]=num_new;
         }
-        return {[card_type]:row_result};
+        return {[set_type]:row_result};
     })
     return Object.assign(...row_results_new_tmp);
 }
@@ -453,21 +461,23 @@ const sortCards = async (row_results) => {
     return row_results_new;
 }
 
-// ## shuffle
+// # shuffle
 
-const shuffleCards = (mode="shuffle") => {
-    const main_cards = Array.from($("#deck_image>#main>div.image_set>a"));
-    const area = Array.from($("#deck_image>#main>div.image_set"))[0];
-    const new_cards = mode==="shuffle" ? shuffleArray(main_cards): resetSortDeckImgs(main_cards);
+const shuffleCards = (mode="shuffle", set_type="main") => {
+    const cards_pre_tmp = Array.from($(`#deck_image>#${set_type}>div.image_set>a:has(span>img)`));
+    const cards_pre = cards_pre_tmp.length>0 ? cards_pre_tmp : Array.from($(`#deck_image>#${set_type}>div.image_set>span:has(img)`));
+    const area = Array.from($(`#deck_image>#${set_type}>div.image_set`));
+    if (cards_pre.length === 0 || area.length === 0) return;
+    const new_cards = mode==="shuffle" ? shuffleArray(cards_pre): resetSortDeckImgs(cards_pre);
     new_cards.map(d=>$(area).append(d));
     //$(area).html(shuffled_cards.map(d => d.outerHTML).join("\n"));
 }
 
-const resetSortDeckImgs = (main_cards) => {
+const resetSortDeckImgs = (cards_pre) => {
     //const card_class_arr=Array.from(main_cards)
     //    .map(d=>$("img", d).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/)).map(d=>Object({type:d[1], ind1:d[2], ind2:d[3]}));
-    const type_ind_dic={"monster":0, "spell":1, "trap":2}
-    return main_cards.sort((a,b)=>{
+    const type_ind_dic={"monster":0, "spell":1, "trap":2, "extra":3, "side":4};
+    return cards_pre.sort((a,b)=>{
         const class_arr=[a,b].map(d=>
             $("img", d).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/)).map(d=>Object({type:d[1], ind1:d[2], ind2:d[3]})
         );
@@ -726,23 +736,24 @@ const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in = null) => {
 }
 
 // # insert deck image
-const _generateDeckImgSpan=(df, type_card, card_name_cid={name:null, cid:null}, card_class_ind=0)=>{
+const _generateDeckImgSpan=(df, card_type, card_name_cid={name:null, cid:null}, card_class_ind=0)=>{
     const span=$("<span>", {
-        style:"max-width: 8%; padding:1px; box-sizing:border-box; display: block;"
+        style:"max-width: 6.5%; padding:1px; box-sizing:border-box; display: block;"
     });
 
-    const card_input=Object.assign(...{name:null, cid:null},...card_name_cid);
+    const card_input=Object.assign({name:null, cid:null}, card_name_cid);
     if (card_input.name == null && card_input.cid == null) return span;
     const name_now = (card_input.name == null) ? df_filter(df, "name", ["cid", card_input.cid])[0] : card_input.name;
     const cid_now = (card_input.cid == null) ? df_filter(df, "cid", ["name", card_input.name])[0] : card_input.cid;
     const encImg_now=df_filter(df, "encImg", ["cid", cid_now])[0];
     const id_now=df_filter(df, "id", ["cid", cid_now])[0];
     const img_tmp=$("<img>", {
-        class:`card_image_${type_card}_0_${card_class_ind} ui-draggable ui-draggable-handle`,
+        class:`card_image_${card_type}_${card_class_ind} ui-draggable ui-draggable-handle`,
         alt:name_now,
         title:name_now,
         card_id:id_now,
         card_cid:cid_now,
+        card_type:card_type,
         card_name:name_now,
         src:`/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid_now}&ciid=1&enc=${encImg_now}&osplang=1`,
         style:"position: relative;width: 100%;"});
@@ -752,62 +763,46 @@ const _generateDeckImgSpan=(df, type_card, card_name_cid={name:null, cid:null}, 
 }
 
 const insertDeckImg = (df, row_results, displayIsValid=true) => {
-    const div_deck_imageSet_old=$("div#deck_image_MouseUI");
+    const div_deck_imageSet_old=$("div#deck_image");
     if (div_deck_imageSet_old.length>0) $(div_deck_imageSet_old).empty();
     const dislapy_style= displayIsValid ? "block":"none";
     const div_deck_imageSet= (div_deck_imageSet_old.length>0) ? div_deck_imageSet_old : $("<div>", {
-        id:"deck_image_MouseUI",
-        style:`display:${dislapy_style}; max-width:980px;`,
+        id:"deck_image",
+        style:`display:${dislapy_style}; max-width:980px;min-height: 576px;`,
         oncontextmenu:"return false;",
         wheelClick:"return false;"
     })
-
     //const _judgeString = inputText => typeof inputText === "string" || inputText instanceof String;
-    const row_imgs_dic_tmp=["monster", "spell", "trap", "extra", "side"].map(type_card=>{
-        const row_result=row_results[type_card];
+    const row_imgs_dic_tmp=["monster", "spell", "trap", "extra", "side"].map(row_name=>{
+        const row_result=row_results[row_name];
         let count=0;
         const card_imgs=row_result.names.map((name_now, ind_card)=>{
             const cid_now=row_result.cids[ind_card];
             const num_ind=row_result.nums[ind_card];
-            const encImg_now=df_filter(df, "encImg", ["cid", cid_now])[0];
-            const id_now=df_filter(df, "id", ["cid", cid_now])[0];
             const span_imgs=[...Array(num_ind).keys()].map(ind_local=>{
                 //const a_img=$("<a>", {href:"#"});
-                const span=$("<span>", {
-                    style:"max-width: 8%; padding:1px; box-sizing:border-box; display: block;"
-                });
-                const img_tmp=$("<img>", {
-                class:`card_image_${type_card}_0_${count+ind_local+1} ui-draggable ui-draggable-handle`,
-                alt:name_now,
-                title:name_now,
-                card_id:id_now,
-                card_cid:cid_now,
-                card_name:name_now,
-                src:`/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid_now}&ciid=1&enc=${encImg_now}&osplang=1`,
-                style:"position: relative;width: 100%;"});
-                span.append(img_tmp);
-                //a_img.append(span);
-                return span; // a_img;
+                return _generateDeckImgSpan(df, row_name, {cid:cid_now, name:name_now}, `${ind_local}_1`);
             });
             count+=num_ind;
             return span_imgs;
         }).filter(d=>d!==null).flat();
-        return {[type_card]:card_imgs};
+        return {[row_name]:card_imgs};
     });
     const row_imgs_dic=Object.assign(...row_imgs_dic_tmp)
     const deck_key_dic={main:["monster", "spell", "trap"], extra:["extra"], side:["side"]}
     const deck_imgs_dic_tmp=Object.entries(deck_key_dic).map(([deck_key, card_type_arr]) => {
-        const deck_imgs_tmp=card_type_arr.map(card_type=>row_imgs_dic[card_type])
-        return Object({[deck_key]:deck_imgs_tmp.flat()})
+        const deck_imgs_tmp=card_type_arr.map(card_type=>row_imgs_dic[card_type]);
+        return {[deck_key]:deck_imgs_tmp.flat()};
     });
     const deck_imgs_dic=Object.assign(...deck_imgs_dic_tmp);
 
     const div_deck_text=$("#deck_text");
     for (const [row_name, row_imgs] of Object.entries(deck_imgs_dic)){
         const div_imageSet=$("<div>", { //(div_imageSet_old.length>0) ? div_imageSet_old : 
-            id:`image_set_${row_name}_MouseUI`,
-            class:`image_set image_set_${row_name} image_set_MouseUI MouseUI`,
-            style:`display: flex; flex-wrap: wrap; border: 2px solid #000; padding: 1px;`,
+            id:`${row_name}`,
+            class:`image_set image_set_${row_name} image_set_MouseUI image_set_deck MouseUI`,
+            set_type:row_name,
+            style:`display: flex; flex-wrap: wrap; border: 2px solid #000; padding: 1px;min-height: 95px;`,
             oncontextmenu:"return false;",
             wheelClick:"return false;"
         });
@@ -819,36 +814,156 @@ const insertDeckImg = (df, row_results, displayIsValid=true) => {
     div_deck_text.after(div_deck_imageSet)
 }
 
-const modifyDeckImg=(img_target, num_old, change=+1, card_type=null)=>{
-    const num_new=Math.max(0, Math.min(3, num_old+change));
-    if ( (num_new===0 && change<=0) || (num_new===3 && change>=0)) return;
-    if (num_old > 0 && change===-1) {
+const modifyDeckImg=(img_target, change=+1, set_type=null)=>{
+    //const num_new=Math.max(0, Math.min(3, num_old+change));
+    //if ( (num_old===0 && change<=0) || (num_old===3 && change>=0)) return;
+    if (change===-1) {
         const span_tmp=$(img_target).parents("span")[0];
-        span_tmp.remove();
-    } else if (num_old > 0 && change===+1) {
-        //const cardClassInfo_tmp=$("img", img_target)
-        //  .attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/)
-        //const cardClassInfo=Object({type:cardClassInfo_tmp[1], ind1:cardClassInfo_tmp[2], ind2:cardClassInfo_tmp[3]});
-        //const card_type_row_dic={"monster":"main","spell":"main","trap":"main","extra":"extra","side":"side"}
-
-        //const image_set_now=$(img_target).parents("image_set_MouseUI")[0];
+        $(span_tmp).addClass("del_card");
+        $(span_tmp).css({display:"none"});
+        //span_tmp.remove();
+    } else if (change===+1 && set_type === null) {
         const span_tmp=$(img_target).parents("span")[0];
-        span_tmp.after(span_tmp.clone())
+        const span_clone=$(span_tmp).clone()[0];
+        $(span_clone).addClass("add_card").removeClass("del_card").css({display:"block"})
+        $(span_tmp).after(span_clone);
+    } else if (change===+1 && set_type !==null) {
+        const span_tmp=$(img_target).parents("span")[0];
+        const span_clone=$(span_tmp).clone()[0];
+        $(span_clone).addClass("add_card").removeClass("del_card").css({display:"block"});
+        const image_set_now=$(`.image_set[set_type='${set_type}']`);
+        if (image_set_now.length===0) return;
+        $(image_set_now).append(span_clone);
     }
-    else if (num_old === 0 && card_type!==null){
+    //else if (num_old === 0 && card_type!==null){
         // new kind
-    }
+    //    console.log("comnig soon")
+    //}
+}
+
+const judgeCardType = (df, info_input, output="row") =>{
+    const row_idents_dic={monster:["Monster"], spell:["Spell"], trap:["Trap"], extra:["Fusion", "Synchro", "XYZ", "Link"]};
+    const type_now=df_filter(df, "type" ,info_input)[0];
+    if (type_now == null) console.log(info_input);
+    const type_judged_arr=Object.entries(row_idents_dic).map(([row_name, row_idents])=>{
+        if (row_idents.some(d=>type_now.indexOf(d)!==-1)) return row_name;
+        else return null;
+    }).filter(d=>d!=null).concat([null]);
+    const type_judged= type_judged_arr.indexOf("extra")!==-1 ? "extra" : type_judged_arr[0];
+    if (output==="row") return type_judged;
+    else if (output === "set") return ["monster", "spell", "trap"].indexOf(type_judged)!==-1 ? "main": type_judged;
+    else return type_judged;
+}
+
+const sideChange_deck=(df, img_target, onEdit=true) =>{
+    const row_results= onEdit===true ? obtainRowResults_Input(df): obtainRowResults();
+    const cid_now=parseInt($(img_target).attr("card_cid"));
+    const from_set_type=$(img_target).parents("div.image_set").attr("set_type");
+    if (from_set_type == null) return row_results;
+    const raw_type=judgeCardType(df, ["cid", cid_now], "row");
+    const to_type = (from_set_type === "side") ? raw_type : "side";
+    const from_type= (from_set_type === "main") ? raw_type : from_set_type;
+    const row_results_tmp1=operateRowResults(row_results, cid_now, -1, from_type, df);
+    const row_results_tmp2=operateRowResults(row_results_tmp1, cid_now, +1, to_type, df);
+    if (onEdit === true) importDeck(row_results_tmp2);
+    modifyDeckImg(img_target, -1);
+    const to_set_type= ["monster", "spell", "trap"].indexOf(to_type)!==-1 ? "main": to_type;
+    modifyDeckImg(img_target, +1, to_set_type);
+    return row_results_tmp2;
 }
 
 const operate_deckEditVisible = (key_show="image") => {
-    const div_deck_dic={text:$("#deck_text"), image:$("#deck_image_MouseUI")};
-    console.log(Object.keys(div_deck_dic).indexOf(key_show))
+    const div_deck_dic={text:$("#deck_text"), image:$("#deck_image")};
     if (Object.keys(div_deck_dic).indexOf(key_show) === -1 ) return;
     Object.entries(div_deck_dic).map(([key_div, div_deck])=>{
         const display_style= (key_show === key_div) ? "block" : "none";
-        console.log(display_style)
         div_deck.css({display:display_style});
     });
+}
+
+// # sideChange on deck view
+
+const operateSideChangeMode = (mode="toggle", df=null) =>{
+    const button_sideChange=$("#button_sideChange");
+    const status_pre=$(button_sideChange).hasClass("on");
+    if (mode=== "toggle") {
+        $(button_sideChange).toggleClass("on");
+        $(button_sideChange).toggleClass("red");
+        const status_new=!status_pre;
+        const on_off_text= status_new ? "ON->off" : "OFF->on" ;
+        const span_text=`SideChange|L:Reset/R:${on_off_text}`;
+        $("span", button_sideChange).html(span_text);
+        _operateSideChange(status_new);
+    } else if (mode === "reset") {
+        //const row_results=obtainRowResults();
+        $("#deck_image div.image_set span.add_card:has(img)").remove();
+        const cards_all_exist=Array.from($("#deck_image div.image_set span:has(img):not(.add_card)"));
+        $("#deck_image div.image_set span.del_card:has(img)").css({display:"block"}).removeClass("del_card");
+        /*Object.entries(row_results).map(([row_name, row_result])=>{
+            row_result.names.map(([card_name, card_ind])=>{
+                const card_num=row_result.nums[card_ind];
+                const card_cid=row_result.cids[card_ind];
+                const class_name=`card_image_${row_name}_${card_ind}_1`;
+                const card_exist=cards_all_exist.filter(d=>$(d).is(`.${class_name}`));
+                const num_exist=card_exist.length;
+                if (num_exist < card_num && num_exist>0) {
+                    return Array(card_num-num_exist).map(_=>$(card_exist[0]).clone());
+                } else if (num_exist < card_num && num_exist===0) {
+                    const span_new=_generateDeckImgSpan(df, row_name, {name:card_name, cid:card_cid}, `${card_ind}_1`);
+
+                }
+            })
+        })*/
+        resetSortDeckImgs(cards_all_exist).map(span=>{
+            const img=$("img", span);
+            const classInfo_tmp=$(img).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/);
+            const classInfo={
+                type:classInfo_tmp[1],
+                ind1:classInfo_tmp[2],
+                ind2:classInfo_tmp[3]
+            };
+            const set_type=["monster", "spell", "trap"].indexOf(classInfo.type)!== -1 ?"main" : classInfo.type;
+            //if (classInfo.type==="side") console.log(img, classInfo, set_type)
+            const image_set=$(`#deck_image div.image_set[set_type='${set_type}']`);
+            $(image_set).append(span);
+        });
+    }
+}
+
+const _operateSideChange = (sideChangeIsValid=true)=>{
+    const deck_image=$("#deck_image");
+    const par_dic={
+        true:{attr:{oncontextmenu: "return false;", wheelClick: "return false;"},css:{"min-height":"780px"}},
+        false:{attr:{oncontextmenu: "", wheelClick: ""},css:{"min-height":"0"}}
+    }
+    $(deck_image).attr(par_dic[sideChangeIsValid].attr);
+    $(deck_image).css(par_dic[sideChangeIsValid].css);
+    $("#deck_image div.card_set div.image_set span:has(img):not(.add_card)").attr(par_dic[sideChangeIsValid].attr);
+    Array.from($("#deck_image .image_set span:has(img):not(.add_card)")).map(span=>{
+        const image_set=$(span).parents(".image_set")[0];
+        const a_span_ident=$(span).attr("a_span")
+        const card_a=$(`#deck_image div.image_set a[a_span='${a_span_ident}']`);
+        if (sideChangeIsValid===true) {
+            //$(image_set).append(span);
+            $(card_a).before(span);
+            $(card_a).css({display:"none"});
+            $(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box"});
+        } else {
+            $(span).css({"max-width": "", padding:"0px", "box-sizing":""});
+            $(card_a).after(span);
+            $(card_a).append(span);
+            //$(card_a).css({display:"block"});
+        }
+    })
+    if (sideChangeIsValid!==true) $("#deck_image div.image_set a:has(span:has(img))").css({display:"block"});
+}
+
+const updateDeckCountView=()=>{
+    Array.from($("#deck_image .card_set")).map(card_set=>{
+        const div_top=$("div.subcatergory>div.top", card_set);
+        const span_count=$("span:last", div_top);
+        span_count.html($("div.image_set span:has(img):not(.del_card)", card_set).length);
+    })
 }
 
 //------------------------------------
@@ -863,6 +978,7 @@ $(async function () {
         .then(items => Object.assign(defaultSettings, JSON.parse(items.settings)));
     //console.log(settings)
 
+    const script_initial_count=$("script[type='text/javascript']").length;
 
     if (html_parse_dic.ope == "2") {
         // ## deck edit
@@ -917,6 +1033,7 @@ $(async function () {
             })
         }
         if (settings.valid_feature_deckEditImage === true){
+            $("article").attr({oncontextmenu:"return false;"})
             const div_tablink=$("<div>", {class:"tablink tablink_deckSupport tablink_deckEdit", id:"mode_deckEdit"});
             const liInfo_dic={text:{class:"deck_edit_text", text:"Text"}, image:{class:"deck_edit_image", text:"Image"}};
             const ul_now=$("<ul>")
@@ -939,7 +1056,6 @@ $(async function () {
 
             const df=await obtainDF(obtainLang());
             const row_results=obtainRowResults_Input(df);
-            console.log(row_results)
             //console.log(row_results)
             insertDeckImg(df, row_results, false);
             const key_show=settings.default_deck_edit_image ? "image": "text";
@@ -958,14 +1074,89 @@ $(async function () {
                 .append("<span>Export (L:id/R:Name)</span>"),
             sort: $("<a>", { class: "btn hex red button_sort", id: "button_sort" })
                 .append("<span>Sort & Save</span>"),
-            shuffle: $("<a>", { class: "btn hex red button_shuffle", id: "button_shuffle", oncontextmenu:"return false;" })
-                .append("<span>L:Shuffle/R:Sort</span>")
         };
         for (const [button_type, button_tmp] of Object.entries(button_dic)) {
-            if (button_type == "sort" && (my_cgid == null || html_parse_dic.cgid != my_cgid)) continue;
-            if (settings.valid_feature_importExport === false && ["import", "export"].indexOf(button_type) != -1) continue;
-            if (settings.valid_feature_sortShuffle === false && ["sort", "shuffle"].indexOf(button_type) != -1) continue;
+            if (button_type === "sort" &&
+                (my_cgid == null || html_parse_dic.cgid !== my_cgid) || settings.valid_feature_sortShuffle === false) continue;
+            if (settings.valid_feature_importExport === false && ["import", "export"].indexOf(button_type) !== -1) continue;
+            //if (settings.valid_feature_sideChange === false && ["sideChange"].indexOf(button_type) !== -1) continue;
             $(area).append(button_tmp);
+        }
+        if (settings.valid_feature_sortShuffle === true) {
+            $("#deck_image div.card_set div.image_set a").css({"max-width":"6.5%"});
+            $("#deck_image div.card_set").css({"margin":"0 0 20px"});
+            const shuffle_span=$("<span>", {style: "border:none; line-height: 30px; min-width: fit-content;"})
+                .append("L:Shuffle/R:Sort");
+            const flex_dic={"main":2.7, "extra":4, "side":4}
+            for (const set_type of ["main", "extra", "side"]){
+                const span_tmp=$("<span>", {
+                    style:`flex:${flex_dic[set_type]};border:none;`,
+                    oncontextmenu:"return false;"
+                })
+                const shuffle_button= $("<a>", { class: "btn hex red button_shuffle",
+                        set_type:set_type,
+                        id: `button_shuffle_${set_type}`,
+                        oncontextmenu:"return false;" })
+                    .append($(shuffle_span).clone());
+                const h3_tmp=$(`#${set_type}>div.subcatergory>div.top>h3`);
+                $(h3_tmp).css({"min-width":"0"});
+                $(h3_tmp).after(shuffle_button);
+                $(shuffle_button).after(span_tmp);
+            }
+        }
+        if (settings.valid_feature_sideChange===true) {
+            const span_tmp=$("<span>", {style: "border:none; line-height: 30px; min-width: 180px;"})
+            .append(`SideChange|L:Reset/R:OFF->on`);
+            const button_sideChange=$("<a>", {
+                class: `btn hex button_sideChange sideChange`,
+                id: "button_sideChange",
+                oncontextmenu:"return false;" })
+                .append(span_tmp.clone());
+            const h3_tmp=$("#deck_image #main div.subcatergory div.top>h3");
+            const a_tmp=$("#deck_image #main div.subcatergory div.top>a");
+            if (a_tmp.length>0){
+                a_tmp.after(button_sideChange);
+            } else {
+                h3_tmp.after(button_sideChange);
+            }
+
+            const row_results=obtainRowResults();
+            const df=await obtainDF(obtainLang());
+            let count=0;
+            for (const card_a of Array.from($("#deck_image div.card_set div.image_set a"))){
+                const span=$("span:eq(0)", card_a);
+                const img=$("img", span);
+                const classInfo_tmp=$(img).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/);
+                const classInfo={
+                    type:classInfo_tmp[1],
+                    ind1:classInfo_tmp[2],
+                    ind2:classInfo_tmp[3]
+                };
+                const row_result=row_results[classInfo.type];
+                const cid_now=row_result.cids[classInfo.ind1];
+                const id_now= df_filter(df, "id", ["cid", cid_now])[0];
+                const attr_dic={
+                    card_name:row_result.names[classInfo.ind1],
+                    card_cid:cid_now,
+                    card_id:id_now,
+                    card_type:classInfo.type
+                }
+                $(img).attr(attr_dic);
+                $(img).css({position: "relative", width: "100%"});
+                $(card_a).css({padding: "1px"});
+                //$(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
+                //$(card_a).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
+                $(span).attr({a_span:count});
+                $(card_a).attr({a_span:count});
+                count +=1;
+            }
+            Array.from($("#deck_image div.card_set")).map(card_set =>{
+                const image_set=$("div.image_set", card_set);
+                $(image_set).attr({"set_type":$(card_set).attr("id")});
+            })
+            if (settings.default_sideChange_view===true) operateSideChangeMode("toggle");
+            //const card_class_arr=
+            //    .map(d=>$("img", d).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/)).map(d=>Object({type:d[1], ind1:d[2], ind2:d[3]}));
         }
     }
 
@@ -982,7 +1173,7 @@ $(async function () {
         }
     })
 
-    // ## button clicked
+    // # button clicked
     document.addEventListener("click", async function (e) {
         if ($(e.target).is("a.button_size_header, a.button_size_header *")) {
             const button = $([$(e.target).children(), e.target]
@@ -994,52 +1185,75 @@ $(async function () {
             const tablink_now=$(e.target).parents(".tablink_deckSupport")[0];
             const ul_now=$("ul", tablink_now);
             const li_now=$(e.target).is("li") ? e.target : $(e.target).parents("li")[0];
-            console.log(ul_now, li_now)
             Array.from($("li", ul_now)).map(li_tmp=>{
                 if (li_tmp==li_now) $(li_tmp).addClass("now");
                 else $(li_tmp).removeClass("now");
             });
             const key_show=$(li_now).attr("value");
-            console.log(key_show);
             operate_deckEditVisible(key_show);
         }
     });
+    // ## mousedown
     const df=await obtainDF(obtainLang());
     document.addEventListener("mousedown", async function (e){
+        const sideChangeOnViewIsValid=["1", null].indexOf(html_parse_dic.ope) != -1 &&
+            settings.valid_feature_sideChange === true &&
+            $("#button_sideChange").length>0 &&
+            $("#button_sideChange").hasClass("on");
         if ($(e.target).is("a.button_export, a.button_export *")) {
             const form = (e.button===0) ? "id" : "name";
             console.log(`export deck as ${form}`)
             await exportAs(form);
-        } else if ($(e.target).is("#button_shuffle, #button_shuffle *")){
+        } else if ($(e.target).is("a.button_shuffle, a.button_shuffle *")){
             const mode_shuffle = (e.button===0) ? "shuffle" : "sort";
-            shuffleCards(mode_shuffle);
-        } else if ($(e.target).is("div.image_set_MouseUI span *")) {
-            const row_results=obtainRowResults_Input(df);
+            const button_target=$(e.target).is("a.button_shuffle") ? $(e.target) : $(e.target).parents("a.button_shuffle")[0];
+            const set_type=$(button_target).attr("set_type");
+            shuffleCards(mode_shuffle, set_type);
+        }  else if ($(e.target).is("a.button_sideChange, a.button_sideChange *")){
+            const mode_sideChange = (e.button===2) ? "toggle" : "reset";
+            operateSideChangeMode(mode_sideChange, df);
+
+        } else if ($(e.target).is("div.image_set span:has(img) *")) {
             e.preventDefault();
-            const img_target =  $(e.target).is("img") ? e.target : $("img", e.target);
+            if (!$(e.target).is("div.image_set_MouseUI *") && !sideChangeOnViewIsValid) return;
+            const row_results=obtainRowResults_Input(df);
+            const span_tmp = $(e.target).is("div.image_set span:has(img)") ? e.target : $(e.target).parents("div.image_set span:has(img)")[0];
+            const img_target = $("img", span_tmp);
             const cid_now=parseInt($(img_target).attr("card_cid"));
-            const num_now=Object.values(row_results).map((d, ind)=>{
+            const set_type=$(img_target).parents("div.image_set").attr("set_type");
+            const row_type=judgeCardType(df, ["cid", cid_now], "row");
+            const num_now= sideChangeOnViewIsValid ?
+             $(`#deck_image .image_set span:has(img[card_cid='${cid_now}']):not(.del_card)`).length :
+                Object.values(row_results).map((d, ind)=>{
                 const ind_fromCid=d.cids.indexOf(cid_now);
                 if (ind_fromCid!==-1) return d.nums[ind_fromCid];
-                else return 0;
-            }).filter(d=>d!==null).map(d=>parseInt(d))[0];
-            const cardInfo={
+                else return null;
+            }).filter(d=>d!==null).map(d=>parseInt(d)).concat([0]).reduce((acc,cur)=>acc+cur);
+            /*const cardInfo={
                 name:$(img_target).attr("card_name"),
                 cid:cid_now,
                 id:$(img_target).attr("card_id"),
                 num:num_now
-            }
-            //console.log(img_target, e)
+            }*/
             const change_dic={2:-1, 1:+1}
             if ([1,2].indexOf(e.button)!==-1) {
                 const change_now=change_dic[e.button];
-                const row_results_new=operateRowResults(row_results, cid_now, change_now);
+                const row_type_modified = (set_type === "main") ? row_type : set_type;
+                const row_results_new=operateRowResults(row_results, cid_now, change_now, row_type_modified, df);
                 importDeck(row_results_new);
-                modifyDeckImg(img_target, num_now, change);
+                if (num_now+change_now<=3) modifyDeckImg(img_target, change_now);
                 //insertDeckImg(df, row_results_new);
+            } else if (e.button===0 && $(e.target).is("#deck_image .image_set *")) {
+                const onEdit = !sideChangeOnViewIsValid;
+                const row_results_new = sideChange_deck(df, img_target, onEdit);
             }
         }
+
+        if (sideChangeOnViewIsValid===true) updateDeckCountView();
+        // remove additional script
+        $(`script[type='text/javascript']:gt(${script_initial_count - 1})`).remove();
     })
+    // ## button id
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
     });
@@ -1053,7 +1267,8 @@ $(async function () {
     $("#button_sort").on("click", async function (){
         const row_results=obtainRowResults_Input(df);
         //console.log(row_results)
-        insertDeckImg(df, row_results);
+        const MouseUIIsVisible=$(".tablink_deckEdit ul li.deck_edit_image").hasClass("now");
+        insertDeckImg(df, row_results, MouseUIIsVisible);
     })
     // ## trigger
     window.addEventListener("message", async function (e) {

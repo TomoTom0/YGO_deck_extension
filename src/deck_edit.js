@@ -102,3 +102,5 @@ Object.entries(row_results).map(([card_type, row_result])=>{
     return {[card_type]:row_result};
 })}
 
+ope=1&sess=1&rp=20&keyword=&stype=1&ctype=&othercon=2&starfr=&starto=&pscalefr=&pscaleto=&linkmarkerfr=&linkmarkerto=&link_m=2&atkfr=&atkto=&deffr=&defto=
+ope=1&sess=1&rp=20&keyword=&stype=1&ctype=&othercon=2&starfr=&starto=&pscalefr=&pscaleto=&linkmarkerfr=&linkmarkerto=&link_m=2&atkfr=&atkto=&deffr=&defto=
