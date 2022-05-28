@@ -1,3 +1,4 @@
+/* tablink */
 .tablink_deckSupport li.now, .tablink_deckSupport li:active {
     border-bottom-color: #ffba00;
 }
@@ -6,11 +7,55 @@
     color: #ffba00;
 }
 
-#deck_image .image_set span.add_card {
-    position: relative;
-}
+/* shuffle */
 
-#deck_image .image_set span.add_card>div {
+/*.deck_image.shuffle div.card_set div.image_set a {
+    max-width:6.5%;
+}
+.deck_image.shuffle div.card_set{
+    margin:0 0 20px;
+}
+.deck_image.shuffle div.card_set>div.subcatergory>div.top>h3 {
+    min-width:0;
+}*/
+
+/* sideChange */
+
+/*.deck_image.MouseUI {
+    min-height:780px;
+}*/
+
+/*.deck_image:not(.MouseUI) .image_set>a:not(:has(span:has(img):not(.del_card))) {
+    max-width: 6.5%;
+    padding:1px;
+    box-sizing:border-box;
+    position: relative;
+}*/
+
+
+/*.deck_image .image_set a:has(span.del_card:has(img)) {
+    display: none !important;
+}
+.deck_image .image_set a:not(:has(span:has(img):not(.del_card))) {
+    display: none !important;
+}*/
+
+/*.deck_image.MouseUI .image_set span:not(.del_card):has(img) {
+    max-width: 6.5%;
+    padding:1px;
+    box-sizing:border-box;
+    position: relative;
+}*/
+
+/*.deck_image .image_set span.del_card:has(img) {
+    display: none;
+}*/
+
+/*.deck_image .image_set span.add_card:has(img) {
+    position: relative;
+}*/
+
+.deck_image .image_set span.add_card>div {
     display: block;
     width: 100%;
     height: 100%;
@@ -21,7 +66,7 @@
     background-position: center 3px;
 }
 
-#deck_image .image_set span.add_card>div>span{
+.deck_image .image_set span.add_card>div>span{
     position: absolute;
     width: 100%;
     height: 100%;
@@ -31,12 +76,3 @@
     top: 0;
 }
 
-#deck_image .image_set span.del_card:has(img),
- #deck_image .image_set a:has(span.del_card:has(img)),
- #deck_image .image_set a:not(:has(span:has(img))) {
-    display: none;
-}
-
-#deck_image.MouseUI {
-    min-height:780px
-}

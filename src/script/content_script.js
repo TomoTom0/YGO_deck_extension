@@ -170,7 +170,7 @@ const serializeRowResults = (row_results) => {
     }).join("&");
 }
 // ## operate recipie
-const operateRowResults = (row_results={}, cidIn=10, change=1, type_new=null, df=null)=>{
+const operateRowResults = (row_results={}, cidIn=10, change=1, row_type=null, df=null)=>{
     const num_all=Object.values(row_results).map((d, _ind)=>{
         const ind_fromCid=d.cids.indexOf(cidIn);
         if (ind_fromCid!==-1) return d.nums[ind_fromCid];
@@ -179,7 +179,7 @@ const operateRowResults = (row_results={}, cidIn=10, change=1, type_new=null, df
     if (num_all+change>3) return row_results;
     const row_results_new_tmp=Object.entries(row_results).map(([set_type, row_result])=>{
         const ind_fromCid=row_result.cids.indexOf(cidIn);
-        if ((ind_fromCid===-1 && change <= 0) || type_new !== set_type) return {[set_type]:row_result}
+        if ((ind_fromCid===-1 && change <= 0) || row_type !== set_type) return {[set_type]:row_result}
         const num_old= (ind_fromCid===-1) ? 0: row_result.nums[ind_fromCid];
         const num_new=Math.max(0, Math.min(3, num_old+change));
         if (ind_fromCid!==-1 && num_new===0) {
@@ -478,9 +478,7 @@ const resetSortDeckImgs = (cards_pre) => {
     //    .map(d=>$("img", d).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/)).map(d=>Object({type:d[1], ind1:d[2], ind2:d[3]}));
     const type_ind_dic={"monster":0, "spell":1, "trap":2, "extra":3, "side":4};
     return cards_pre.sort((a,b)=>{
-        const class_arr=[a,b].map(d=>
-            $("img", d).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/)).map(d=>Object({type:d[1], ind1:d[2], ind2:d[3]})
-        );
+        const class_arr=[a,b].map(d=>parseCardClass(d));
         const diff_dic={
             type:class_arr.map(d=>type_ind_dic[d.type]),
             ind1:class_arr.map(d=>parseInt(d.ind1)),
@@ -491,6 +489,31 @@ const resetSortDeckImgs = (cards_pre) => {
         }
         return 0;
     })
+}
+
+const addShuffleButton=(onView=true)=>{
+    $("#deck_image").addClass("shuffle");
+    $("#deck_image div.card_set div.image_set a").css({"max-width":"6.5%"});
+    $("#deck_image div.card_set").css({"margin":"0px 0px 0px"});
+    const shuffle_span=$("<span>", {style: "border:none; line-height: 30px; min-width: fit-content;"})
+        .append("L:Shuffle/R:Sort");
+    const flex_dic={"main": onView ? 2.7 : 4, "extra":4, "side":4}
+    for (const set_type of ["main", "extra", "side"]){
+        const span_tmp=$("<span>", {
+            style:`flex:${flex_dic[set_type]};border:none;`,
+            oncontextmenu:"return false;"
+        });
+        const shuffle_button= $("<a>", { class: "btn hex red button_shuffle",
+                set_type:set_type,
+                id: `button_shuffle_${set_type}`,
+                oncontextmenu:"return false;" })
+            .append($(shuffle_span).clone());
+        const h3_tmp=$(`#${set_type}>div.subcatergory>div.top>h3`);
+        $(h3_tmp).html(set_type.toUpperCase());
+        $(h3_tmp).css({"min-width":"0"});
+        $(h3_tmp).after(shuffle_button);
+        $(shuffle_button).after(span_tmp);
+    }
 }
 
 //---------------------------------
@@ -762,12 +785,38 @@ const _generateDeckImgSpan=(df, card_type, card_name_cid={name:null, cid:null}, 
     return span; // a_img;
 }
 
+const obtainNewCardSet=(row_name)=>{
+    const card_set=$("<div>", {id:row_name,class:"card_set", style:"margin: 0px 0px 0px;"})
+    const sub_cat=$("<div>", {
+        class:"subcatergory",
+        style:"padding: 10px 0 5px;"
+    }).append(
+        `<div class="icon hex"><span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 43 54"><defs><style>.a{fill:#fff;fill-rule:evenodd;}</style></defs><path class="a" d="M34.5,57V13.5L51.5,9V48.5Zm-2-20-24-9.5V7.5L28.5,3,51,7,32.5,12.5Zm0,20-21-8.8v-17l21,8.3Z" transform="translate(-8.5 -3)"></path></svg></span></div>`
+    )
+    const div_top=$("<div>", {class:"top"}).append(`<h3 style="min-width: 0px;">${row_name.toUpperCase()}</h3>`)
+        .append($(`<span>`, {
+            style:"border: 1px solid; padding: 0px 5px; min-width: 30px; box-sizing: border-box; line-height: 1.5; text-align: center;"
+        }).append("0"));
+    const image_set=$("<div>", { //(div_imageSet_old.length>0) ? div_imageSet_old : 
+        class:`image_set image_set_${row_name} image_set_MouseUI image_set_deck MouseUI`,
+        set_type:row_name,
+        style:`display: flex; flex-wrap: wrap; border: 2px solid #000; padding: 1px;min-height: min(8.8vw, 89px);`,
+        oncontextmenu:"return false;",
+        wheelClick:"return false;"
+    })
+    $(sub_cat).append(div_top);
+    $(card_set).append(sub_cat);
+    $(card_set).append(image_set);
+    return card_set;
+}
+
 const insertDeckImg = (df, row_results, displayIsValid=true) => {
     const div_deck_imageSet_old=$("div#deck_image");
     if (div_deck_imageSet_old.length>0) $(div_deck_imageSet_old).empty();
     const dislapy_style= displayIsValid ? "block":"none";
-    const div_deck_imageSet= (div_deck_imageSet_old.length>0) ? div_deck_imageSet_old : $("<div>", {
+    const deck_image= (div_deck_imageSet_old.length>0) ? div_deck_imageSet_old : $("<div>", {
         id:"deck_image",
+        class:"deck_image",
         style:`display:${dislapy_style}; max-width:980px;min-height: 576px;`,
         oncontextmenu:"return false;",
         wheelClick:"return false;"
@@ -775,15 +824,15 @@ const insertDeckImg = (df, row_results, displayIsValid=true) => {
     //const _judgeString = inputText => typeof inputText === "string" || inputText instanceof String;
     const row_imgs_dic_tmp=["monster", "spell", "trap", "extra", "side"].map(row_name=>{
         const row_result=row_results[row_name];
-        let count=0;
+        //let count=0;
         const card_imgs=row_result.names.map((name_now, ind_card)=>{
             const cid_now=row_result.cids[ind_card];
             const num_ind=row_result.nums[ind_card];
             const span_imgs=[...Array(num_ind).keys()].map(ind_local=>{
                 //const a_img=$("<a>", {href:"#"});
-                return _generateDeckImgSpan(df, row_name, {cid:cid_now, name:name_now}, `${ind_local}_1`);
+                return _generateDeckImgSpan(df, row_name, {cid:cid_now, name:name_now}, `${ind_card}_1`);
             });
-            count+=num_ind;
+            //count+=num_ind;
             return span_imgs;
         }).filter(d=>d!==null).flat();
         return {[row_name]:card_imgs};
@@ -796,44 +845,53 @@ const insertDeckImg = (df, row_results, displayIsValid=true) => {
     });
     const deck_imgs_dic=Object.assign(...deck_imgs_dic_tmp);
 
-    const div_deck_text=$("#deck_text");
-    for (const [row_name, row_imgs] of Object.entries(deck_imgs_dic)){
-        const div_imageSet=$("<div>", { //(div_imageSet_old.length>0) ? div_imageSet_old : 
+    for (const [set_name, set_imgs] of Object.entries(deck_imgs_dic)){
+        /*const div_imageSet=$("<div>", { //(div_imageSet_old.length>0) ? div_imageSet_old : 
             id:`${row_name}`,
             class:`image_set image_set_${row_name} image_set_MouseUI image_set_deck MouseUI`,
             set_type:row_name,
             style:`display: flex; flex-wrap: wrap; border: 2px solid #000; padding: 1px;min-height: 95px;`,
             oncontextmenu:"return false;",
             wheelClick:"return false;"
-        });
-        for (const img_card of row_imgs) {
-            div_imageSet.append(img_card)
+        });*/
+        const card_set=obtainNewCardSet(set_name);
+        const image_set=$(".image_set", card_set);
+        for (const img_card of set_imgs) {
+            image_set.append(img_card)
         };
-        div_deck_imageSet.append(div_imageSet)
+        deck_image.append(card_set);
     }
-    div_deck_text.after(div_deck_imageSet)
+    $(deck_image).append(obtainNewCardSet("temp"));
+    const deck_text=$("#deck_text");
+    deck_text.after(deck_image);
+    updateDeckCount();
 }
 
-const modifyDeckImg=(img_target, change=+1, set_type=null)=>{
+// ## modify
+const modifyDeckImg=(img_target, change=+1, to_set_type=null)=>{
     //const num_new=Math.max(0, Math.min(3, num_old+change));
     //if ( (num_old===0 && change<=0) || (num_old===3 && change>=0)) return;
     if (change===-1) {
         const span_tmp=$(img_target).parents("span")[0];
         $(span_tmp).addClass("del_card");
         $(span_tmp).css({display:"none"});
-        //span_tmp.remove();
-    } else if (change===+1 && set_type === null) {
+        if (to_set_type !== null) {
+            const span_clone=$(span_tmp).clone()[0];
+            const image_set_now=$(`.image_set[set_type='${to_set_type}']`);
+            if (image_set_now.length===0) return;
+            $(span_clone).addClass("add_card").removeClass("del_card").css({display:"block", position:"relative"});
+            $(image_set_now).append(span_clone);
+        }
+    } else if (change===+1) {
         const span_tmp=$(img_target).parents("span")[0];
         const span_clone=$(span_tmp).clone()[0];
-        $(span_clone).addClass("add_card").removeClass("del_card").css({display:"block"})
-        $(span_tmp).after(span_clone);
-    } else if (change===+1 && set_type !==null) {
-        const span_tmp=$(img_target).parents("span")[0];
-        const span_clone=$(span_tmp).clone()[0];
-        $(span_clone).addClass("add_card").removeClass("del_card").css({display:"block"});
-        const image_set_now=$(`.image_set[set_type='${set_type}']`);
-        if (image_set_now.length===0) return;
-        $(image_set_now).append(span_clone);
+        $(span_clone).addClass("add_card").removeClass("del_card").css({display:"block", position:"relative"});
+        if (to_set_type === null) $(span_tmp).after(span_clone);
+        else {
+            const image_set_now=$(`.image_set[set_type='${to_set_type}']`);
+            if (image_set_now.length===0) return;
+            $(image_set_now).append(span_clone);
+        }
     }
     //else if (num_old === 0 && card_type!==null){
         // new kind
@@ -855,6 +913,16 @@ const judgeCardType = (df, info_input, output="row") =>{
     else return type_judged;
 }
 
+const parseCardClass=(target)=>{
+    const img= $(target).is("img") ? target : $("img", target);
+    const classInfo_tmp= $(img).length===0 ? [null,null,null]: $(img).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/);
+    return {
+        type:classInfo_tmp[1],
+        ind1:classInfo_tmp[2],
+        ind2:classInfo_tmp[3]
+    };
+}
+
 const sideChange_deck=(df, img_target, onEdit=true) =>{
     const row_results= onEdit===true ? obtainRowResults_Input(df): obtainRowResults();
     const cid_now=parseInt($(img_target).attr("card_cid"));
@@ -866,9 +934,9 @@ const sideChange_deck=(df, img_target, onEdit=true) =>{
     const row_results_tmp1=operateRowResults(row_results, cid_now, -1, from_type, df);
     const row_results_tmp2=operateRowResults(row_results_tmp1, cid_now, +1, to_type, df);
     if (onEdit === true) importDeck(row_results_tmp2);
-    modifyDeckImg(img_target, -1);
+    //modifyDeckImg(img_target, -1);
     const to_set_type= ["monster", "spell", "trap"].indexOf(to_type)!==-1 ? "main": to_type;
-    modifyDeckImg(img_target, +1, to_set_type);
+    modifyDeckImg(img_target, -1, to_set_type);
     return row_results_tmp2;
 }
 
@@ -898,7 +966,7 @@ const operateSideChangeMode = (mode="toggle", df=null) =>{
         //const row_results=obtainRowResults();
         $("#deck_image div.image_set span.add_card:has(img)").remove();
         const cards_all_exist=Array.from($("#deck_image div.image_set span:has(img):not(.add_card)"));
-        $("#deck_image div.image_set span.del_card:has(img)").css({display:"block"}).removeClass("del_card");
+        $("#deck_image div.image_set span.del_card:has(img)").removeClass("del_card").css({display:"block"});
         /*Object.entries(row_results).map(([row_name, row_result])=>{
             row_result.names.map(([card_name, card_ind])=>{
                 const card_num=row_result.nums[card_ind];
@@ -916,12 +984,13 @@ const operateSideChangeMode = (mode="toggle", df=null) =>{
         })*/
         resetSortDeckImgs(cards_all_exist).map(span=>{
             const img=$("img", span);
-            const classInfo_tmp=$(img).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/);
-            const classInfo={
+            const classInfo=parseCardClass(img);
+            //const classInfo_tmp=$(img).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/);
+            /*const classInfo={
                 type:classInfo_tmp[1],
                 ind1:classInfo_tmp[2],
                 ind2:classInfo_tmp[3]
-            };
+            };*/
             const set_type=["monster", "spell", "trap"].indexOf(classInfo.type)!== -1 ?"main" : classInfo.type;
             //if (classInfo.type==="side") console.log(img, classInfo, set_type)
             const image_set=$(`#deck_image div.image_set[set_type='${set_type}']`);
@@ -933,16 +1002,16 @@ const operateSideChangeMode = (mode="toggle", df=null) =>{
 const _operateSideChange = (sideChangeIsValid=true)=>{
     const deck_image=$("#deck_image");
     const par_dic={
-        true:{attr:{oncontextmenu: "return false;", wheelClick: "return false;"},css:{"min-height":"780px"}},
-        false:{attr:{oncontextmenu: "", wheelClick: ""},css:{"min-height":"0"}}
+        true:{attr:{oncontextmenu: "return false;", wheelClick: "return false;"}}, //,css:{"min-height":"780px"}
+        false:{attr:{oncontextmenu: "", wheelClick: ""}} //,css:{"min-height":"0"}
     }
-    if (sideChangeIsValid) $(deck_image).addClass("MouseUI");
+    if (sideChangeIsValid===true) $(deck_image).addClass("MouseUI");
     else $(deck_image).removeClass("MouseUI");
     $(deck_image).attr(par_dic[sideChangeIsValid].attr);
-    $(deck_image).css(par_dic[sideChangeIsValid].css);
+    //$(deck_image).css(par_dic[sideChangeIsValid].css);
     $("#deck_image div.card_set div.image_set span:has(img):not(.add_card)").attr(par_dic[sideChangeIsValid].attr);
     Array.from($("#deck_image .image_set span:has(img):not(.add_card)")).map(span=>{
-        const image_set=$(span).parents(".image_set")[0];
+        //const image_set=$(span).parents(".image_set")[0];
         const a_span_ident=$(span).attr("a_span")
         const card_a=$(`#deck_image div.image_set a[a_span='${a_span_ident}']`);
         if (sideChangeIsValid===true) {
@@ -950,17 +1019,19 @@ const _operateSideChange = (sideChangeIsValid=true)=>{
             $(card_a).before(span);
             $(card_a).css({display:"none"});
             $(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box"});
+            //$("#temp").css({display:"block"});
         } else {
             $(span).css({"max-width": "", padding:"0px", "box-sizing":""});
             $(card_a).after(span);
             $(card_a).append(span);
-            //$(card_a).css({display:"block"});
+            $(card_a).css({display:"block"});
+            //$("#temp").css({display:"none"});
         }
     })
     if (sideChangeIsValid!==true) $("#deck_image div.image_set a:has(span:has(img):not(.del_card))").css({display:"block"});
 }
 
-const updateDeckCountView=()=>{
+const updateDeckCount=()=>{
     Array.from($("#deck_image .card_set")).map(card_set=>{
         const div_top=$("div.subcatergory>div.top", card_set);
         const span_count=$("span:last", div_top);
@@ -1013,7 +1084,6 @@ $(async function () {
             if (settings.valid_feature_deckHeader === false && ["header_visible"].indexOf(button_type) != -1) continue;
             $(area_bottom).append(button_tmp);
         }
-
         if (settings.valid_feature_deckHeader === true){
             toggleVisible_deckHeader(settings.default_visible_header);
 
@@ -1026,7 +1096,7 @@ $(async function () {
                 const button = $("<a>", {
                     class: `btn hex button_size_header ${ctc_name} ` + (isCT ? " isCT" : " isComment"),
                     type: "button", id: `button_size_header_${ctc_name}`,
-                    style: "position: relative;user-select: none;"
+                    style: "position: relative;user-select: none;min-width: 100%;"
                 })
                     .append("<span>Size</span>");
                 $(ctc_span).append(button);
@@ -1054,6 +1124,7 @@ $(async function () {
             div_tablink.append(select_now);
 
             const div_num_total=$("#num_total");
+            $(div_num_total).css({margin: "0 0 0"})
             div_num_total.append(div_tablink);
 
             const df=await obtainDF(obtainLang());
@@ -1062,6 +1133,9 @@ $(async function () {
             insertDeckImg(df, row_results, false);
             const key_show=settings.default_deck_edit_image ? "image": "text";
             operate_deckEditVisible(key_show);
+
+            // shuffle button
+            if (settings.valid_feature_sortShuffle === true) addShuffleButton(false);
         }
     }
     else if (["1", null].indexOf(html_parse_dic.ope) != -1) {
@@ -1084,29 +1158,13 @@ $(async function () {
             //if (settings.valid_feature_sideChange === false && ["sideChange"].indexOf(button_type) !== -1) continue;
             $(area).append(button_tmp);
         }
-        if (settings.valid_feature_sortShuffle === true) {
-            $("#deck_image div.card_set div.image_set a").css({"max-width":"6.5%"});
-            $("#deck_image div.card_set").css({"margin":"0 0 20px"});
-            const shuffle_span=$("<span>", {style: "border:none; line-height: 30px; min-width: fit-content;"})
-                .append("L:Shuffle/R:Sort");
-            const flex_dic={"main":2.7, "extra":4, "side":4}
-            for (const set_type of ["main", "extra", "side"]){
-                const span_tmp=$("<span>", {
-                    style:`flex:${flex_dic[set_type]};border:none;`,
-                    oncontextmenu:"return false;"
-                })
-                const shuffle_button= $("<a>", { class: "btn hex red button_shuffle",
-                        set_type:set_type,
-                        id: `button_shuffle_${set_type}`,
-                        oncontextmenu:"return false;" })
-                    .append($(shuffle_span).clone());
-                const h3_tmp=$(`#${set_type}>div.subcatergory>div.top>h3`);
-                $(h3_tmp).css({"min-width":"0"});
-                $(h3_tmp).after(shuffle_button);
-                $(shuffle_button).after(span_tmp);
-            }
-        }
+        if (settings.valid_feature_sortShuffle === true) addShuffleButton();
         if (settings.valid_feature_sideChange===true) {
+            const deck_image=$("#deck_image");
+            $(deck_image).addClass("deck_image").css({"min-height":"890px"});
+            $("#deck_image div.card_set div.image_set a").css({"max-width":"6.5%"});
+            $("#deck_image div.card_set").css({"margin":"0px 0px 0px"});
+
             const span_tmp=$("<span>", {style: "border:none; line-height: 30px; min-width: 180px;"})
             .append(`SideChange|L:Reset/R:OFF->on`);
             const button_sideChange=$("<a>", {
@@ -1116,11 +1174,22 @@ $(async function () {
                 .append(span_tmp.clone());
             const h3_tmp=$("#deck_image #main div.subcatergory div.top>h3");
             const a_tmp=$("#deck_image #main div.subcatergory div.top>a");
+            $(h3_tmp).css({"min-width":"0"});
             if (a_tmp.length>0){
-                a_tmp.after(button_sideChange);
+                $(a_tmp).after(button_sideChange);
             } else {
-                h3_tmp.after(button_sideChange);
+                const span_tmp=$("<span>", {
+                    style:`flex:4;border:none;`,
+                    oncontextmenu:"return false;"
+                });
+                $(h3_tmp).after(button_sideChange);
+                //$(h3_tmp).html("MAIN");
+                $(button_sideChange).after(span_tmp);
             }
+
+            const card_set_temp=obtainNewCardSet("temp");
+            //$(card_set_temp).css({display:"none"});
+            $(deck_image).append(card_set_temp);
 
             const row_results=obtainRowResults();
             const df=await obtainDF(obtainLang());
@@ -1128,12 +1197,13 @@ $(async function () {
             for (const card_a of Array.from($("#deck_image div.card_set div.image_set a"))){
                 const span=$("span:eq(0)", card_a);
                 const img=$("img", span);
-                const classInfo_tmp=$(img).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/);
-                const classInfo={
+                const classInfo=parseCardClass(img);
+                //const classInfo_tmp=$(img).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/);
+                /*const classInfo={
                     type:classInfo_tmp[1],
                     ind1:classInfo_tmp[2],
                     ind2:classInfo_tmp[3]
-                };
+                };*/
                 const row_result=row_results[classInfo.type];
                 const cid_now=row_result.cids[classInfo.ind1];
                 const id_now= df_filter(df, "id", ["cid", cid_now])[0];
@@ -1146,8 +1216,8 @@ $(async function () {
                 $(img).attr(attr_dic);
                 $(img).css({position: "relative", width: "100%"});
                 $(card_a).css({padding: "1px"});
-                //$(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
-                //$(card_a).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
+                if (settings.default_sideChange_view===true) $(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
+                else $(card_a).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
                 $(span).attr({a_span:count});
                 $(card_a).attr({a_span:count});
                 count +=1;
@@ -1213,24 +1283,30 @@ $(async function () {
             shuffleCards(mode_shuffle, set_type);
         }  else if ($(e.target).is("a.button_sideChange, a.button_sideChange *")){
             const mode_sideChange = (e.button===2) ? "toggle" : "reset";
+            if (mode_sideChange === "reset" && !sideChangeOnViewIsValid) return;
             operateSideChangeMode(mode_sideChange, df);
 
         } else if ($(e.target).is("div.image_set span:has(img) *")) {
             e.preventDefault();
             if (!$(e.target).is("div.image_set_MouseUI *") && !sideChangeOnViewIsValid) return;
-            const row_results=obtainRowResults_Input(df);
+            const row_results= sideChangeOnViewIsValid ? obtainRowResults(): obtainRowResults_Input(df);
             const span_tmp = $(e.target).is("div.image_set span:has(img)") ? e.target : $(e.target).parents("div.image_set span:has(img)")[0];
             const img_target = $("img", span_tmp);
             const cid_now=parseInt($(img_target).attr("card_cid"));
-            const set_type=$(img_target).parents("div.image_set").attr("set_type");
+            const classInfo = parseCardClass(img_target);
+            const from_set_type=$(img_target).parents("div.image_set").attr("set_type");
             const row_type=judgeCardType(df, ["cid", cid_now], "row");
-            const num_now= sideChangeOnViewIsValid ?
-             $(`#deck_image .image_set span:has(img[card_cid='${cid_now}']):not(.del_card)`).length :
-                Object.values(row_results).map((d, ind)=>{
-                const ind_fromCid=d.cids.indexOf(cid_now);
-                if (ind_fromCid!==-1) return d.nums[ind_fromCid];
-                else return null;
-            }).filter(d=>d!==null).map(d=>parseInt(d)).concat([0]).reduce((acc,cur)=>acc+cur);
+            const set_type_raw=["monster", "spell", "trap"].indexOf(row_type)!==-1 ? "main" : row_type;
+            const num_now_dic={
+                text: ()=> Object.values(row_results).map((d, ind)=>{
+                    const ind_fromCid=d.cids.indexOf(cid_now);
+                    if (ind_fromCid!==-1) return d.nums[ind_fromCid];
+                    else return null;
+                }).filter(d=>d!==null).map(d=>parseInt(d)).concat([0]).reduce((acc,cur)=>acc+cur),
+                image: ()=>$(`#deck_image .image_set span:has(img[card_cid='${cid_now}']):not(.del_card)`).filter(":not(#temp *)").length
+            }
+            const num_now= num_now_dic[sideChangeOnViewIsValid ? "image" : "text"]();
+            const num_image=num_now_dic.image();
             /*const cardInfo={
                 name:$(img_target).attr("card_name"),
                 cid:cid_now,
@@ -1240,18 +1316,25 @@ $(async function () {
             const change_dic={2:-1, 1:+1}
             if ([1,2].indexOf(e.button)!==-1) {
                 const change_now=change_dic[e.button];
-                const row_type_modified = (set_type === "main") ? row_type : set_type;
-                const row_results_new=operateRowResults(row_results, cid_now, change_now, row_type_modified, df);
-                importDeck(row_results_new);
-                if (num_now+change_now<=3) modifyDeckImg(img_target, change_now);
+                const to_set_type_tmp=change_now < 0 ? "temp": null;
+                const to_set_type = from_set_type==="temp" ? set_type_raw : to_set_type_tmp;
+                const to_row_type = (["main", "temp"].indexOf(from_set_type) !== -1) ? row_type : from_set_type;
+                //const to_row_type = (from_set_type === "temp") ? row_type : from_row_type;
+                const change_for_image = (from_set_type === "temp") ? Math.abs(change_now) : change_now;
+                const row_results_new=operateRowResults(row_results, cid_now, change_for_image, to_row_type, df);
+                if (sideChangeOnViewIsValid===false) importDeck(row_results_new);
+                if (num_image==3 && from_set_type==="temp" && change_now<0) modifyDeckImg(img_target, change_now, null);
+                else if (num_image+change_now<=3 && (num_now<3 || from_set_type!=="temp")) modifyDeckImg(img_target, change_now, to_set_type);
                 //insertDeckImg(df, row_results_new);
             } else if (e.button===0 && $(e.target).is("#deck_image .image_set *")) {
                 const onEdit = !sideChangeOnViewIsValid;
-                const row_results_new = sideChange_deck(df, img_target, onEdit);
+                const change_now= (from_set_type==="temp") ? 1 : 0;
+                if (num_now+change_now<=3) sideChange_deck(df, img_target, onEdit);
             }
         }
 
-        if (sideChangeOnViewIsValid===true) updateDeckCountView();
+        //if (sideChangeOnViewIsValid===true) 
+        updateDeckCount();
         // remove additional script
         $(`script[type='text/javascript']:gt(${script_initial_count - 1})`).remove();
     })
