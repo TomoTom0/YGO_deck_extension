@@ -936,6 +936,8 @@ const _operateSideChange = (sideChangeIsValid=true)=>{
         true:{attr:{oncontextmenu: "return false;", wheelClick: "return false;"},css:{"min-height":"780px"}},
         false:{attr:{oncontextmenu: "", wheelClick: ""},css:{"min-height":"0"}}
     }
+    if (sideChangeIsValid) $(deck_image).addClass("MouseUI");
+    else $(deck_image).removeClass("MouseUI");
     $(deck_image).attr(par_dic[sideChangeIsValid].attr);
     $(deck_image).css(par_dic[sideChangeIsValid].css);
     $("#deck_image div.card_set div.image_set span:has(img):not(.add_card)").attr(par_dic[sideChangeIsValid].attr);
@@ -955,7 +957,7 @@ const _operateSideChange = (sideChangeIsValid=true)=>{
             //$(card_a).css({display:"block"});
         }
     })
-    if (sideChangeIsValid!==true) $("#deck_image div.image_set a:has(span:has(img))").css({display:"block"});
+    if (sideChangeIsValid!==true) $("#deck_image div.image_set a:has(span:has(img):not(.del_card))").css({display:"block"});
 }
 
 const updateDeckCountView=()=>{
