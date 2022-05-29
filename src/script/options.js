@@ -1,8 +1,7 @@
 ﻿"use strict";
 
-// ----------------------------------
-//            # initial
-
+//--------------------------
+//         # initial
 const defaultSettings = {
     autoUpdateDB: true,
     addDate: false,
@@ -13,7 +12,9 @@ const defaultSettings = {
     valid_feature_sideChange: true,
     default_visible_header: true,
     default_deck_edit_image: true,
+    default_deck_edit_search: true,
     default_sideChange_view: true,
+    default_searchArea_visible:true,
     default_lang: "ja"
 }; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);

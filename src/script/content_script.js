@@ -12,10 +12,14 @@ const defaultSettings = {
     valid_feature_sideChange: true,
     default_visible_header: true,
     default_deck_edit_image: true,
+    default_deck_edit_search: true,
     default_sideChange_view: true,
+    default_searchArea_visible:true,
     default_lang: "ja"
 }; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);
+
+const IsLocalTest = (chrome.runtime.id !== "jdgobeohbdmglcmgblpodggmgmponihc")
 
 // ----------------------------------
 //       # parse text funtions
@@ -53,11 +57,39 @@ const shuffleArray = (arr) => {
     return arr;
 }
 
-
-// # deck recipe
-
-const obtainRowResults = () => {
-    const rows_num = $("#deck_text [id$='_list']").length;
+const obtainRowResults = (df=null, onViewIn=null) => {
+    const html_parse_dic = parse_YGODB_URL();
+    const onView_dic={"1":true, "2":false, null:true, "8": false};
+    const onView= onViewIn===null ? onView_dic[html_parse_dic.ope]: onViewIn;
+    return Object.assign(...Array.from($("#deck_text table[id$='_list']")).map(table_list=>{
+        const row_name=$(table_list).attr("id").match(/^\S*(?=_list)/)[0];
+        const input_span= (onView===true) ? "span": "input";
+        const td_dic={
+            name:(onView===true) ? "td.card_name": "td:not(.num)",
+            num: "td.num" //(onView===true) ? "td.num": 
+    }
+        const names= Array.from($(`#deck_text table#${row_name}_list tbody>tr>${td_dic.name}>${input_span}`))
+            .map(d=> (onView) ? $(d).text() : $(d).attr("value"));
+        const nums=Array.from($(`#deck_text table#${row_name}_list tbody>tr>${td_dic.num}>${input_span}`))
+            .map(d=> (onView) ? $(d).text() : $(d).attr("value"));
+        const cids= (onView) ? Array.from($(`#deck_text table#${row_name}_list tbody>tr>${td_dic.name}>input.link_value`))
+            .map(d=>$(d).attr("value").match(/(?<=cid=)\d+/)[0]) : [];
+        const limits=Array.from($(`#deck_text table#${row_name}_list tbody>tr`))
+            .map(tr=>["semi_limited", "forbidden", "limited"].filter(d=>$(tr).hasClass(d)).concat(["not_limited"])[0]);
+        const row_info_tmp=names.map((card_name, card_ind)=>{
+            const card_num=nums[card_ind];
+            const card_limit= limits[card_ind];
+            if ([card_name, card_num, card_limit].some(d=>d=="" || d==null)) return null;
+            const card_cid_tmp=(onView===false && df!==null) ? df_filter(df, "cid",["name", card_name])[0] : null;
+            const card_cid=(onView===true) ? cids[card_ind] : card_cid_tmp;
+            return {name: card_name, num: parseInt(card_num), limit:card_limit, cid:card_cid};
+        }).filter(d=>d!==null);
+        const row_dic_tmp=["name", "num", "cid", "limit"].map(key=>Object({[`${key}s`]:row_info_tmp.map(d=>d[key])}));
+        return {
+            [row_name]:Object.assign(...row_dic_tmp)
+        }
+    }))
+/*    const rows_num = $("#deck_text [id$='_list']").length;
     const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
         .match(/^\S*(?=_list)/)[0]);
     return Object.assign(...[...Array(rows_num).keys()].map(row_ind => {
@@ -66,19 +98,25 @@ const obtainRowResults = () => {
         return {
             [row_name]: {
                 names: [...Array(card_length).keys()]
-                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) td.card_name:eq(${d})`).text().replaceAll(/^\s*|\s*$/g, "")),
+                    .map(ind_card => $(`#deck_text [id$='_list']:eq(${row_ind}) td.card_name:eq(${ind_card})`).text().replaceAll(/^\s*|\s*$/g, "")),
                 cids: [...Array(card_length).keys()]
-                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) td.card_name:eq(${d})>input.link_value`)
+                    .map(ind_card => $(`#deck_text [id$='_list']:eq(${row_ind}) td.card_name:eq(${ind_card})>input.link_value`)
                         .val().match(/(?<=cid=)\d+/)[0] - 0),
                 nums: [...Array(card_length).keys()]
-                    .map(d => $(`#deck_text [id$='_list']:eq(${row_ind}) td.num:eq(${d})`).text().match(/\d/)[0])
+                    .map(ind_card => $(`#deck_text [id$='_list']:eq(${row_ind}) td.num:eq(${ind_card})`).text().match(/\d/)[0]),
+                limits: [...Array(card_length).keys()]
+                .map(ind_card => {
+                    const tr=$(`#deck_text [id$='_list']:eq(${row_ind}) tr:eq(${ind_card})`);
+                    return ["semi_limited", "forbidden", "limited"].filter(d=>$(tr).hasClass(d)).concat(["not_limited"])[0];
+                }),
             }
         };
-    }))
+    }))*/
 }
 
-// from input mode
-const obtainRowResults_Input = (df = undefined) => {
+// from edit mode
+/*const obtainRowResults_Edit = (df = null) => {
+    return obtainRowResults(df);
     const rows_num = $("#deck_text [id$='_list']").length;
     const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id")
         .match(/^\S*(?=_list)/)[0]);
@@ -88,22 +126,28 @@ const obtainRowResults_Input = (df = undefined) => {
         //const card_length = $(`#deck_text [id$='_list']:eq(${row_ind}) td.card_name`).length;
         const card_length_max = $(`input[name='${row_short_name}nm']`).length;
         const result_tmp = [...Array(card_length_max).keys()].map(card_ind => {
-            const name_tmp = $(`#${row_short_name}nm_${card_ind + 1}`).prop("value").replaceAll(/^\s*|\s*$/g, "");
-            const num_tmp = parseInt($(`#${row_short_name}num_${card_ind + 1}`).prop("value").replaceAll(/^\s*|\s*$/g, ""));
+            const input_name=$(`#${row_short_name}nm_${card_ind + 1}`);
+            const name_tmp = $(input_name).prop("value");//.replaceAll(/^\s*|\s*$/g, "");
+            if (name_tmp.length===0) return null;
+            const num_tmp = parseInt($(`#${row_short_name}num_${card_ind + 1}`).prop("value"));//.replaceAll(/^\s*|\s*$/g, "")
+            const tr=$(input_name).parents(`table#${row_name}_list>tbody>tr`)[0];
+            //console.log({input_name, name_tmp, class_arr})
+            const limit_tmp=["semi_limited", "forbidden", "limited"].filter(d=>$(tr).hasClass(d)).concat(["not_limited"])[0];
             if (name_tmp.length > 0 && Number.isInteger(num_tmp) && num_tmp > 0 && num_tmp < 4) {
-                return { name: name_tmp, num: num_tmp };
-            } else return undefined;
-        }).filter(d => d != undefined);
-        const cids_tmp= (df !== undefined) ? result_tmp.map(d=>df_filter(df, "cid", ["name", d.name])[0]) : result_tmp.map(_=>undefined);
+                return { name: name_tmp, num: num_tmp, limit: limit_tmp };
+            } else return null;
+        }).filter(d => d !== null);
+        const cids_tmp= (df !== null) ? result_tmp.map(d=>df_filter(df, "cid", ["name", d.name])[0]) : result_tmp.map(_=>null);
         return {
             [row_name]: {
                 names: result_tmp.map(d => d.name),
                 nums: result_tmp.map(d => d.num),
+                limits: result_tmp.map(d=>d.limit),
                 cids: cids_tmp
             }
         };
     }))
-}
+}*/
 
 const obtainDeckHeader_raw = async (url_deck = null) => {
     //const term_tables=await obtainTermTables();
@@ -188,8 +232,10 @@ const operateRowResults = (row_results={}, cidIn=10, change=1, row_type=null, df
             return {[set_type]:Object.assign(...row_result_tmp)};
         } else if (ind_fromCid === -1 && change>0 && df!==null) {
             const name_now=df_filter(df, "name", ["cid", cidIn])[0];
+            const limit_now="NaN";
             row_result.names.push(name_now)
             row_result.nums.push(change);
+            row_result.limits.push(limit_now);
             row_result.cids.push(cidIn);
         } else if (ind_fromCid !== -1) {
             row_result.nums[ind_fromCid]=num_new;
@@ -199,6 +245,53 @@ const operateRowResults = (row_results={}, cidIn=10, change=1, row_type=null, df
     return Object.assign(...row_results_new_tmp);
 }
 
+const guessDeckCategory=async (lower_limit=4, kwargsIn={})=>{
+    //const kwargs_default={count:true, value:true};
+    //const kwargs=Object.assign(kwargs_default, kwargsIn);
+    const row_results=obtainRowResults();
+    const url="https://www.db.yugioh-card.com/yugiohdb/deck_search.action"
+    const body=await obtainStreamBody(url);
+    const cats=Array.from($("select#dckCategoryMst>option:not([value=''])", body))
+        .map(option=>[$(option).text(), $(option).val()])
+        .map(([cat, val])=>{
+            const before_par=cat.match(/^([^（]{2,})（.*）$/);
+            if (before_par!=null && before_par.length==2) return [before_par[1], val];
+            else return [cat, val];
+        });
+    const names=Object.values(row_results).map(d=>d.names).flat();
+    const nums=Object.values(row_results).map(d=>d.nums).flat();
+    return cats.map(([cat, val])=>Object({
+        name:cat,
+        value:val,
+        num:names.map((card_name, card_ind)=>{
+            if (card_name.indexOf(cat)===-1) return 0;
+            else return nums[card_ind];
+        }).reduce((acc,cur)=>acc+cur)})
+    ).filter(d=>d.num>=lower_limit).sort((a,b)=>a.num-b.num).slice(-3);
+}
+
+const guess_clicked=async ()=>{
+    const html_parse_dic = parse_YGODB_URL(location.href, true);
+    if (html_parse_dic.ope==="1" && $("#message").length===0) $("div.sort_set div.pulldown").prepend($("<span>", {id: "message"}));
+    const message_area=$("#message");
+    $(message_area).removeClass("none");
+    $(message_area).css({width:"97%"});
+    const cat_guessed=await guessDeckCategory(4);
+    console.log(cat_guessed)
+    const content="Guessed Categories: "+cat_guessed.map(d=>d.name).join(", ");
+    console.log(content);
+    $(message_area).html(content);
+    if (["2", "8"].indexOf(html_parse_dic.ope)!==-1){
+        const select=$("select#dckCategoryMst");
+        cat_guessed.map(catInfo=>{
+            const option=$(`option[value=${catInfo.value}]`, select);
+            console.log(catInfo.value, option)
+            $(option).prop("selected", true);
+        });
+        const dnm=$("#dnm");
+        if ($(dnm).val()==="") $(dnm).val(cat_guessed.map(d=>d.name).join(""));
+    }
+}
 
 // obtain df tmp
 
@@ -329,7 +422,6 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
         success: (data, dataType) => {
             if (data.result) {
                 console.log("Registered");
-                //location.href = "/yugiohdb/member_deck.action?cgid=87999bd183514004b8aa8afa1ff1bdb9&dno=42&request_locale=ja";
             } else {
                 if (data.error) {
                     console.log("Register falied: ", data.error);
@@ -412,7 +504,7 @@ const _sortCards = (row_name, row_result, df, df_now = {}) => {
         //console.log(ind_fromCid, ind_fromName)
         return Object.assign(
             ...Object.keys(output_tmp_cid).map(k => ({ [k]: output_tmp_cid[k][ind_fromCid] })),
-            { cid: cid, name: name_tmp, num: row_result.nums[ind_cid] })
+            { cid: cid, name: name_tmp, num: row_result.nums[ind_cid], limit: row_result.limits[ind_cid] })
         /*return Object.assign(
             //...Object.keys(output_tmp_cid).map(k=>({[k]:output_tmp_cid[k][ind_fromCid]}))
             ...Object.keys(output_tmp_jap).map(k => {
@@ -491,13 +583,13 @@ const resetSortDeckImgs = (cards_pre) => {
     })
 }
 
-const addShuffleButton=(onView=true)=>{
+const addShuffleButton=(setSpace=true)=>{
     $("#deck_image").addClass("shuffle");
     $("#deck_image div.card_set div.image_set a").css({"max-width":"6.5%"});
     $("#deck_image div.card_set").css({"margin":"0px 0px 0px"});
     const shuffle_span=$("<span>", {style: "border:none; line-height: 30px; min-width: fit-content;"})
         .append("L:Shuffle/R:Sort");
-    const flex_dic={"main": onView ? 2.7 : 4, "extra":4, "side":4}
+    const flex_dic={"main": setSpace ? 2.7 : 4, "extra":4, "side":4}
     for (const set_type of ["main", "extra", "side"]){
         const span_tmp=$("<span>", {
             style:`flex:${flex_dic[set_type]};border:none;`,
@@ -677,8 +769,8 @@ async function importFromYdk() {
     }
 }
 
-// # sort
-async function sortClicked() {
+// # sortSave
+async function sortSaveClicked() {
     const url_now = location.href;
     const html_parse_dic = Object.assign(parse_YGODB_URL(url_now), { ope: 2 });
     //console.log(html_parse_dic);
@@ -717,7 +809,7 @@ async function sortClicked() {
 // # deck header show / hide
 const toggleVisible_deckHeader = (toShow_in = null) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
-    if (html_parse_dic.ope != 2) return;
+    if (["2", "8"].indexOf(html_parse_dic.ope) === -1) return;
     const button = $("#button_visible_header");
     const toShow = (typeof (toShow_in) !== "boolean") ? $(button).hasClass("show") : toShow_in;
     const showHide = { true: "show", false: "hide" };
@@ -738,7 +830,7 @@ const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in = null) => {
     const arr_size_ct = [120, 500] // [120,300,500]
 
     const html_parse_dic = parse_YGODB_URL(location.href, true);
-    if (html_parse_dic.ope != 2) return;
+    if (["2", "8"].indexOf(html_parse_dic.ope) === -1) return;
 
     const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
     const ctc_now = $(`#${header_ids_dic[ctc_name]}`);
@@ -759,9 +851,9 @@ const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in = null) => {
 }
 
 // # insert deck image
-const _generateDeckImgSpan=(df, card_type, card_name_cid={name:null, cid:null}, card_class_ind=0)=>{
+const _generateDeckImgSpan=(df, card_type, card_name_cid={name:null, cid:null}, card_class_ind="0_1", card_limit="not_limited")=>{
     const span=$("<span>", {
-        style:"max-width: 6.5%; padding:1px; box-sizing:border-box; display: block;"
+        style:"max-width: 6.5%; padding:1px; box-sizing:border-box; display: block;position: relative;"
     });
 
     const card_input=Object.assign({name:null, cid:null}, card_name_cid);
@@ -778,9 +870,13 @@ const _generateDeckImgSpan=(df, card_type, card_name_cid={name:null, cid:null}, 
         card_cid:cid_now,
         card_type:card_type,
         card_name:name_now,
+        card_url:`https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=${cid_now}`,
+        loading:"lazy",
         src:`/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid_now}&ciid=1&enc=${encImg_now}&osplang=1`,
         style:"position: relative;width: 100%;"});
     span.append(img_tmp);
+    $(span).addClass(card_limit);
+    span.append($("<div>").append($("<span>")));
     //a_img.append(span);
     return span; // a_img;
 }
@@ -800,7 +896,7 @@ const obtainNewCardSet=(row_name)=>{
     const image_set=$("<div>", { //(div_imageSet_old.length>0) ? div_imageSet_old : 
         class:`image_set image_set_${row_name} image_set_MouseUI image_set_deck MouseUI`,
         set_type:row_name,
-        style:`display: flex; flex-wrap: wrap; border: 2px solid #000; padding: 1px;min-height: min(8.8vw, 89px);`,
+        style:`display: flex; flex-wrap: wrap; border: 2px solid #000; padding: 1px;min-height: min(8.7vw, 87px);`,
         oncontextmenu:"return false;",
         wheelClick:"return false;"
     })
@@ -812,7 +908,7 @@ const obtainNewCardSet=(row_name)=>{
 
 const insertDeckImg = (df, row_results, displayIsValid=true) => {
     const div_deck_imageSet_old=$("div#deck_image");
-    if (div_deck_imageSet_old.length>0) $(div_deck_imageSet_old).empty();
+    //if (div_deck_imageSet_old.length>0) $(div_deck_imageSet_old).empty();
     const dislapy_style= displayIsValid ? "block":"none";
     const deck_image= (div_deck_imageSet_old.length>0) ? div_deck_imageSet_old : $("<div>", {
         id:"deck_image",
@@ -828,17 +924,18 @@ const insertDeckImg = (df, row_results, displayIsValid=true) => {
         const card_imgs=row_result.names.map((name_now, ind_card)=>{
             const cid_now=row_result.cids[ind_card];
             const num_ind=row_result.nums[ind_card];
+            const limit_now=row_result.limits[ind_card];
             const span_imgs=[...Array(num_ind).keys()].map(ind_local=>{
                 //const a_img=$("<a>", {href:"#"});
-                return _generateDeckImgSpan(df, row_name, {cid:cid_now, name:name_now}, `${ind_card}_1`);
+                return _generateDeckImgSpan(df, row_name, {cid:cid_now, name:name_now}, `${ind_card}_1`, limit_now);
             });
             //count+=num_ind;
             return span_imgs;
         }).filter(d=>d!==null).flat();
         return {[row_name]:card_imgs};
     });
-    const row_imgs_dic=Object.assign(...row_imgs_dic_tmp)
-    const deck_key_dic={main:["monster", "spell", "trap"], extra:["extra"], side:["side"]}
+    const row_imgs_dic=Object.assign(...row_imgs_dic_tmp);
+    const deck_key_dic={main:["monster", "spell", "trap"], extra:["extra"], side:["side"]};
     const deck_imgs_dic_tmp=Object.entries(deck_key_dic).map(([deck_key, card_type_arr]) => {
         const deck_imgs_tmp=card_type_arr.map(card_type=>row_imgs_dic[card_type]);
         return {[deck_key]:deck_imgs_tmp.flat()};
@@ -854,14 +951,19 @@ const insertDeckImg = (df, row_results, displayIsValid=true) => {
             oncontextmenu:"return false;",
             wheelClick:"return false;"
         });*/
+        const image_set_old=$(`#${set_name}.card_set .image_set`);
+        const imageSetExists= image_set_old.length>0;
+        if (imageSetExists) image_set_old.empty();
         const card_set=obtainNewCardSet(set_name);
-        const image_set=$(".image_set", card_set);
+        const image_set= (imageSetExists) ? image_set_old : $(".image_set", card_set);
         for (const img_card of set_imgs) {
-            image_set.append(img_card)
+            image_set.append(img_card);
         };
-        deck_image.append(card_set);
+        if (!imageSetExists) deck_image.append(card_set);
     }
-    $(deck_image).append(obtainNewCardSet("temp"));
+    if ($("#temp").length===0){
+        $(deck_image).append(obtainNewCardSet("temp"));
+    }
     const deck_text=$("#deck_text");
     deck_text.after(deck_image);
     updateDeckCount();
@@ -902,7 +1004,10 @@ const modifyDeckImg=(img_target, change=+1, to_set_type=null)=>{
 const judgeCardType = (df, info_input, output="row") =>{
     const row_idents_dic={monster:["Monster"], spell:["Spell"], trap:["Trap"], extra:["Fusion", "Synchro", "XYZ", "Link"]};
     const type_now=df_filter(df, "type" ,info_input)[0];
-    if (type_now == null) console.log(info_input);
+    if (type_now == null) {
+        console.log(info_input);
+        return null;
+    }
     const type_judged_arr=Object.entries(row_idents_dic).map(([row_name, row_idents])=>{
         if (row_idents.some(d=>type_now.indexOf(d)!==-1)) return row_name;
         else return null;
@@ -924,11 +1029,12 @@ const parseCardClass=(target)=>{
 }
 
 const sideChange_deck=(df, img_target, onEdit=true) =>{
-    const row_results= onEdit===true ? obtainRowResults_Input(df): obtainRowResults();
+    const row_results=obtainRowResults(df); // onEdit===true ? obtainRowResults_Edit(df): obtainRowResults();
     const cid_now=parseInt($(img_target).attr("card_cid"));
     const from_set_type=$(img_target).parents("div.image_set").attr("set_type");
     if (from_set_type == null) return row_results;
     const raw_type=judgeCardType(df, ["cid", cid_now], "row");
+    if (raw_type===null) return row_results;
     const to_type = (from_set_type === "side") ? raw_type : "side";
     const from_type= (from_set_type === "main") ? raw_type : from_set_type;
     const row_results_tmp1=operateRowResults(row_results, cid_now, -1, from_type, df);
@@ -947,6 +1053,39 @@ const operate_deckEditVisible = (key_show="image") => {
         const display_style= (key_show === key_div) ? "block" : "none";
         div_deck.css({display:display_style});
     });
+    //if (key_show==="text") $("#num_totoal").css({display:"block"});
+    //else $("#num_totoal").css({display:"none"});
+}
+
+const updateCardLimitClass=(row_results)=>{
+    const all_limit_class=["forbidden","limited", "semi_limited", "not_limited"];
+    for (const [row_name, row_result] of Object.entries(row_results)){
+        for (const ind_card of [...Array(row_result.names.length).keys()]){
+            const limit=row_result.limits[ind_card];
+            const card_class=`card_image_${row_name}_${ind_card}_1`;
+            const span=$(`#deck_image .image_set span:has(img.${card_class})`);
+            if ($(span).hasClass(limit)) return;
+            all_limit_class.map(d=>$(span).removeClass(d));
+            $(span).addClass(limit);
+        }
+    }
+    ;
+}
+
+const addButtonAfterMainShuffle=(button)=>{
+    const h3_tmp=$("#deck_image #main div.subcatergory div.top>h3");
+    const a_tmp=$("#deck_image #main div.subcatergory div.top>a");
+    $(h3_tmp).css({"min-width":"0"});
+    if (a_tmp.length>0){
+        $(a_tmp).after(button);
+    } else {
+        const span_tmp=$("<span>", {
+            style:`flex:4;border:none;`,
+            oncontextmenu:"return false;"
+        });
+        $(h3_tmp).after(button);
+        $(button).after(span_tmp);
+    }
 }
 
 // # sideChange on deck view
@@ -958,7 +1097,7 @@ const operateSideChangeMode = (mode="toggle", df=null) =>{
         $(button_sideChange).toggleClass("on");
         $(button_sideChange).toggleClass("red");
         const status_new=!status_pre;
-        const on_off_text= status_new ? "ON->off" : "OFF->on" ;
+        const on_off_text= status_new ? "OFF" : "ON" ;
         const span_text=`SideChange|L:Reset/R:${on_off_text}`;
         $("span", button_sideChange).html(span_text);
         _operateSideChange(status_new);
@@ -1003,32 +1142,36 @@ const _operateSideChange = (sideChangeIsValid=true)=>{
     const deck_image=$("#deck_image");
     const par_dic={
         true:{attr:{oncontextmenu: "return false;", wheelClick: "return false;"}}, //,css:{"min-height":"780px"}
-        false:{attr:{oncontextmenu: "", wheelClick: ""}} //,css:{"min-height":"0"}
+        false:{attr:{oncontextmenu: "return true;", wheelClick: "return true;"}} //,css:{"min-height":"0"} /-> not work
     }
     if (sideChangeIsValid===true) $(deck_image).addClass("MouseUI");
     else $(deck_image).removeClass("MouseUI");
     $(deck_image).attr(par_dic[sideChangeIsValid].attr);
     //$(deck_image).css(par_dic[sideChangeIsValid].css);
-    $("#deck_image div.card_set div.image_set span:has(img):not(.add_card)").attr(par_dic[sideChangeIsValid].attr);
-    Array.from($("#deck_image .image_set span:has(img):not(.add_card)")).map(span=>{
+    $("#deck_image div.card_set div.image_set span:has(img)").attr(par_dic[sideChangeIsValid].attr);//:not(.add_card)
+    if (sideChangeIsValid===true) $("#deck_image").removeClass("click_open_url");
+    else $("#deck_image").addClass("click_open_url");
+    /*Array.from($("#deck_image .image_set span:has(img)")).map(span=>{//:not(.add_card)
         //const image_set=$(span).parents(".image_set")[0];
-        const a_span_ident=$(span).attr("a_span")
-        const card_a=$(`#deck_image div.image_set a[a_span='${a_span_ident}']`);
+        //const a_span_ident=$(span).attr("a_span")
+        //const card_a=$(`#deck_image div.image_set a[a_span='${a_span_ident}']`);
         if (sideChangeIsValid===true) {
             //$(image_set).append(span);
-            $(card_a).before(span);
-            $(card_a).css({display:"none"});
-            $(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box"});
+            //$(card_a).before(span);
+            //$(card_a).css({display:"none"});
+            //$(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box"});
+            $("img", span).removeClass("url_open");
             //$("#temp").css({display:"block"});
         } else {
-            $(span).css({"max-width": "", padding:"0px", "box-sizing":""});
-            $(card_a).after(span);
-            $(card_a).append(span);
-            $(card_a).css({display:"block"});
+            //$(span).css({"max-width": "", padding:"0px", "box-sizing":""});
+            $("img", span).addClass("url_open");
+            //$(card_a).after(span);
+            //$(card_a).append(span);
+            //$(card_a).css({display:"block"});
             //$("#temp").css({display:"none"});
         }
-    })
-    if (sideChangeIsValid!==true) $("#deck_image div.image_set a:has(span:has(img):not(.del_card))").css({display:"block"});
+    })*/
+    //if (sideChangeIsValid!==true) $("#deck_image div.image_set a:has(span:has(img):not(.del_card))").css({display:"block"});
 }
 
 const updateDeckCount=()=>{
@@ -1039,12 +1182,30 @@ const updateDeckCount=()=>{
     })
 }
 
+const operate_searchArea=(toShowIn=null)=>{
+    const searchArea=$("#search_area");
+    if (toShowIn===null) $(searchArea).toggleClass("none");
+    else if (toShowIn===true) $(searchArea).removeClass("none");
+    else if (toShowIn===false) $(searchArea).addClass("none");
+    const toShow=!$(searchArea).hasClass("none");
+    $(searchArea).css({display: toShow ? "table-cell" : "none"});
+    const button_operate=$("#button_searchShowHide");
+    $("span", button_operate).html(`Search `+(toShow ? "HIDE" : "SHOW"));
+    if (toShow===true) {
+        ;
+    } else {
+        //$(image_sets).css({"min-height":"min(8.7vw, 87px)"});
+    }
+}
+
 //------------------------------------
 //         #  on loading
 
 $(async function () {
     const url_now = location.href;
     const html_parse_dic = parse_YGODB_URL(url_now, true);
+    const url_body=parse_YGODB_URL_body(url_now);
+    if (url_body !== "member_deck.action") return;
     const my_cgid = obtainMyCgid();
 
     const settings = await operateStorage({ settings: JSON.stringify({}) }, "sync")
@@ -1052,8 +1213,12 @@ $(async function () {
     //console.log(settings)
 
     const script_initial_count=$("script[type='text/javascript']").length;
-
-    if (html_parse_dic.ope == "2") {
+    $("#footer_icon svg").css({height:"min(5vh, 30px)"})
+    if (html_parse_dic.ope == "8") {
+        await guess_clicked();
+    }
+    if (["2", "8"].indexOf(html_parse_dic.ope) !== -1) {
+        const IsCopyMode=html_parse_dic.ope==="8";
         // ## deck edit
         // import button
         //const area = $("#header_box .save"); // before// 2022/4/18
@@ -1078,14 +1243,18 @@ $(async function () {
                 style: "position: relative;user-select: none;"
             }).append("<span>Header HIDE</span>"),
             sort: $("<a>", { class: "btn hex red button_sort", id: "button_sort" })
-            .append("<span>Sort</span>")
+                .append("<span>Sort</span>"),
+            searchShowHide: $("<a>", { class: "btn hex red button_searchShowHide", id: "button_searchShowHide" }).append("<span>Search SHOW</span>"),
+            test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
         };
         for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
-            if (settings.valid_feature_deckHeader === false && ["header_visible"].indexOf(button_type) != -1) continue;
+            if (settings.valid_feature_deckHeader === false && ["header_visible"].indexOf(button_type) !== -1) continue;
+            if (settings.valid_feature_deckEditImage === false && ["sort", "searchShowHide"].indexOf(button_type) !== -1) continue;
+            if (IsLocalTest === false && ["test"].indexOf(button_type) !== -1) continue;
             $(area_bottom).append(button_tmp);
         }
         if (settings.valid_feature_deckHeader === true){
-            toggleVisible_deckHeader(settings.default_visible_header);
+            toggleVisible_deckHeader(settings.default_visible_header || IsCopyMode);
 
             // deck header
             const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
@@ -1096,16 +1265,20 @@ $(async function () {
                 const button = $("<a>", {
                     class: `btn hex button_size_header ${ctc_name} ` + (isCT ? " isCT" : " isComment"),
                     type: "button", id: `button_size_header_${ctc_name}`,
-                    style: "position: relative;user-select: none;min-width: 100%;"
-                })
-                    .append("<span>Size</span>");
+                    style: "position: relative;user-select: none;min-width: 0;"
+                }).append("<span>Size</span>");
                 $(ctc_span).append(button);
                 const ctc_ind_size = 0;
-                changeSize_deckHeader(ctc_name, ctc_ind_size - 1)
+                changeSize_deckHeader(ctc_name, ctc_ind_size - 1);
             })
+            const button_guess=$("<a>", { class: "btn hex red button_guess", id: "button_guess" }).append("<span>Guess</span>");
+            $(`#button_size_header_category`).after(button_guess);
+            $(".box_default .box_default_table dt span").css({"min-width":"0"});
+
         }
         if (settings.valid_feature_deckEditImage === true){
-            $("article").attr({oncontextmenu:"return false;"})
+            //$("article>body").attr({oncontextmenu:"return false;"})
+            // tablink for image/text
             const div_tablink=$("<div>", {class:"tablink tablink_deckSupport tablink_deckEdit", id:"mode_deckEdit"});
             const liInfo_dic={text:{class:"deck_edit_text", text:"Text"}, image:{class:"deck_edit_image", text:"Image"}};
             const ul_now=$("<ul>")
@@ -1124,18 +1297,52 @@ $(async function () {
             div_tablink.append(select_now);
 
             const div_num_total=$("#num_total");
-            $(div_num_total).css({margin: "0 0 0"})
-            div_num_total.append(div_tablink);
+            //$(div_num_total).css({margin: "0 0 0"})
+            div_num_total.css({display:"none"});
+            area_bottom.append(div_tablink);
 
+            // deck image
             const df=await obtainDF(obtainLang());
-            const row_results=obtainRowResults_Input(df);
+            const row_results=obtainRowResults(df);//obtainRowResults_Edit(df);
             //console.log(row_results)
             insertDeckImg(df, row_results, false);
+            updateCardLimitClass(row_results);
             const key_show=settings.default_deck_edit_image ? "image": "text";
             operate_deckEditVisible(key_show);
 
             // shuffle button
-            if (settings.valid_feature_sortShuffle === true) addShuffleButton(false);
+            if (settings.valid_feature_sortShuffle === true) addShuffleButton(true);
+
+            // operate click mode
+            const span_tmp=$("<span>", {style: "border:none; line-height: 30px; min-width: 135px;"})
+            .append(`Click|MOVE CARD/open url`);
+            const button_clickMode=$("<a>", {
+                class: `btn hex button_clickMode red`,
+                id: "button_clickMode",
+                oncontextmenu:"return false;" })
+                .append(span_tmp.clone());
+            addButtonAfterMainShuffle(button_clickMode);
+
+            // search Area
+            $("#bg>div:eq(0)").css({background:"none"});
+            $("#num_total").css({display:"none"});
+            const div_search=obtainSearchForm();
+            //const script_search=obtainSearchScript();
+            const table=$("<div>", {style:"display:table;"});
+            const div_body=$("<div>", {style:"display:none;width:40vw;", class:"none", id:"search_area"}); //table-cell
+            const article=$("article");
+            const article_body=$("#article_body");
+            $(article_body).css({display:"table-cell", "width":"50vw"});
+            article.css({"max-width":"initial"});
+            //$(div_body).append(script_search);
+            const div_search_result=$("<div>", {id:"search_result", style:"max-height:80vh;overflow-y:scroll;", oncontextmenu: "return false;"});
+            $(div_body).append(div_search);
+            $(table).append(article_body).append(div_body);
+            $(article).append(table);
+            $("#form_search").after(div_search_result);
+            obtainSearchScript();
+            $("#deck_image .image_set").css({"min-height":"min(4.1vw, 87px)"});
+            operate_searchArea(settings.default_searchArea_visible && !IsCopyMode);
         }
     }
     else if (["1", null].indexOf(html_parse_dic.ope) != -1) {
@@ -1148,14 +1355,16 @@ $(async function () {
         const button_dic = {
             export: $("<a>", { class: "btn hex red button_export", oncontextmenu:"return false;"  })
                 .append("<span>Export (L:id/R:Name)</span>"),
-            sort: $("<a>", { class: "btn hex red button_sort", id: "button_sort" })
+            sortSave: $("<a>", { class: "btn hex red button_sort", id: "button_sortSave" })
                 .append("<span>Sort & Save</span>"),
+            test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
         };
         for (const [button_type, button_tmp] of Object.entries(button_dic)) {
-            if (button_type === "sort" &&
-                (my_cgid == null || html_parse_dic.cgid !== my_cgid) || settings.valid_feature_sortShuffle === false) continue;
+            if (button_type === "sortSave" &&
+                (my_cgid == null || html_parse_dic.cgid !== my_cgid || settings.valid_feature_sortShuffle === false)) continue;
             if (settings.valid_feature_importExport === false && ["import", "export"].indexOf(button_type) !== -1) continue;
             //if (settings.valid_feature_sideChange === false && ["sideChange"].indexOf(button_type) !== -1) continue;
+            if (IsLocalTest === false && ["test"].indexOf(button_type) !== -1) continue;
             $(area).append(button_tmp);
         }
         if (settings.valid_feature_sortShuffle === true) addShuffleButton();
@@ -1166,26 +1375,14 @@ $(async function () {
             $("#deck_image div.card_set").css({"margin":"0px 0px 0px"});
 
             const span_tmp=$("<span>", {style: "border:none; line-height: 30px; min-width: 180px;"})
-            .append(`SideChange|L:Reset/R:OFF->on`);
+            .append(`SideChange|L:Reset/R:ON`);
             const button_sideChange=$("<a>", {
                 class: `btn hex button_sideChange sideChange`,
                 id: "button_sideChange",
                 oncontextmenu:"return false;" })
                 .append(span_tmp.clone());
-            const h3_tmp=$("#deck_image #main div.subcatergory div.top>h3");
-            const a_tmp=$("#deck_image #main div.subcatergory div.top>a");
-            $(h3_tmp).css({"min-width":"0"});
-            if (a_tmp.length>0){
-                $(a_tmp).after(button_sideChange);
-            } else {
-                const span_tmp=$("<span>", {
-                    style:`flex:4;border:none;`,
-                    oncontextmenu:"return false;"
-                });
-                $(h3_tmp).after(button_sideChange);
-                //$(h3_tmp).html("MAIN");
-                $(button_sideChange).after(span_tmp);
-            }
+            addButtonAfterMainShuffle(button_sideChange);
+
 
             const card_set_temp=obtainNewCardSet("temp");
             //$(card_set_temp).css({display:"none"});
@@ -1211,21 +1408,35 @@ $(async function () {
                     card_name:row_result.names[classInfo.ind1],
                     card_cid:cid_now,
                     card_id:id_now,
-                    card_type:classInfo.type
+                    card_type:classInfo.type,
+                    card_url:`https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=${cid_now}`
                 }
                 $(img).attr(attr_dic);
                 $(img).css({position: "relative", width: "100%"});
-                $(card_a).css({padding: "1px"});
-                if (settings.default_sideChange_view===true) $(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
-                else $(card_a).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
-                $(span).attr({a_span:count});
-                $(card_a).attr({a_span:count});
+                //$(card_a).css({padding: "1px"});
+                $(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block", position: "relative"});
+                $(img).addClass("url_open");
+                $(card_a).before(span);
+                //if (settings.default_sideChange_view===true) $(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
+                //else $(card_a).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
+                //$(span).attr({a_span:count});
+                //$(card_a).attr({a_span:count});
+                $(card_a).remove();
                 count +=1;
             }
-            Array.from($("#deck_image div.card_set")).map(card_set =>{
+            ["main", "extra", "side"].map(set_type=>{
+                const card_set=$(`#deck_image div.card_set#${set_type}`);
                 const image_set=$("div.image_set", card_set);
-                $(image_set).attr({"set_type":$(card_set).attr("id")});
+                if (image_set.length>0) $(image_set).attr({"set_type":$(card_set).attr("id")});
+                else {
+                    const card_set_new=obtainNewCardSet(set_type);
+                    const image_set_new=$("div.image_set", card_set_new);
+                    $(card_set).append(image_set_new);
+                }
             })
+            /*Array.from($("#deck_image div.card_set")).map(card_set =>{
+                const image_set=$("div.image_set", card_set);
+            })*/
             if (settings.default_sideChange_view===true) operateSideChangeMode("toggle");
             //const card_class_arr=
             //    .map(d=>$("img", d).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/)).map(d=>Object({type:d[1], ind1:d[2], ind2:d[3]}));
@@ -1263,15 +1474,18 @@ $(async function () {
             });
             const key_show=$(li_now).attr("value");
             operate_deckEditVisible(key_show);
+            //const row_results=obtainRowResults_Edit(df);
+            //insertDeckImg(df, row_results, false);
         }
     });
     // ## mousedown
     const df=await obtainDF(obtainLang());
     document.addEventListener("mousedown", async function (e){
-        const sideChangeOnViewIsValid=["1", null].indexOf(html_parse_dic.ope) != -1 &&
+        const sideChangeOnViewIsValid=["1", null].indexOf(html_parse_dic.ope) !== -1 &&
             settings.valid_feature_sideChange === true &&
             $("#button_sideChange").length>0 &&
             $("#button_sideChange").hasClass("on");
+        const clickIsToOpenURL=$("#deck_image").length>0 &&$("#deck_image").hasClass("click_open_url");
         if ($(e.target).is("a.button_export, a.button_export *")) {
             const form = (e.button===0) ? "id" : "name";
             console.log(`export deck as ${form}`)
@@ -1285,13 +1499,18 @@ $(async function () {
             const mode_sideChange = (e.button===2) ? "toggle" : "reset";
             if (mode_sideChange === "reset" && !sideChangeOnViewIsValid) return;
             operateSideChangeMode(mode_sideChange, df);
-
         } else if ($(e.target).is("div.image_set span:has(img) *")) {
             e.preventDefault();
-            if (!$(e.target).is("div.image_set_MouseUI *") && !sideChangeOnViewIsValid) return;
-            const row_results= sideChangeOnViewIsValid ? obtainRowResults(): obtainRowResults_Input(df);
             const span_tmp = $(e.target).is("div.image_set span:has(img)") ? e.target : $(e.target).parents("div.image_set span:has(img)")[0];
             const img_target = $("img", span_tmp);
+            if (clickIsToOpenURL && $(img_target).attr("card_url")!==undefined) {
+                if ([0,1].indexOf(e.button)!==-1){
+                    const url=$(img_target).attr("card_url");
+                    window.open(url);
+                }
+                return;
+            } else if (!$(e.target).is("div.image_set_MouseUI *") && !sideChangeOnViewIsValid) return;
+            const row_results= obtainRowResults(df)//sideChangeOnViewIsValid ? obtainRowResults(): obtainRowResults_Edit(df);
             const cid_now=parseInt($(img_target).attr("card_cid"));
             const classInfo = parseCardClass(img_target);
             const from_set_type=$(img_target).parents("div.image_set").attr("set_type");
@@ -1331,6 +1550,38 @@ $(async function () {
                 const change_now= (from_set_type==="temp") ? 1 : 0;
                 if (num_now+change_now<=3) sideChange_deck(df, img_target, onEdit);
             }
+        } else if ($(e.target).is("#search_result #card_list div.t_row img")) {
+            e.preventDefault();
+            const img_target=e.target;
+            const cardInfo_tmp=["name", "id", "cid", "type", "url"].map(d=>Object({[d]:$(img_target).attr(`card_${d}`)}));
+            const cardInfo=Object.assign(...cardInfo_tmp);
+            if ([0,2].indexOf(e.button)!==-1){
+                const row_results=obtainRowResults(df)//obtainRowResults_Edit();
+                const num_now_dic={
+                    text: ()=> Object.values(row_results).map((d, ind)=>{
+                        const ind_fromCid=d.cids.indexOf(cardInfo.cid);
+                        if (ind_fromCid!==-1) return d.nums[ind_fromCid];
+                        else return null;
+                    }).filter(d=>d!==null).map(d=>parseInt(d)).concat([0]).reduce((acc,cur)=>acc+cur),
+                    image: ()=>$(`#deck_image .image_set span:has(img[card_cid='${cid_now}']):not(.del_card)`).filter(":not(#temp *)").length
+                }
+                const num_now_text=num_now_dic.text();
+                if (num_now_text===0) {
+                    const to_row_type= e.button===0 ? cardInfo.type : "side";
+                    const to_set_type= ["monster", "spell", "trap"].indexOf(to_row_type)!==-1 ? "main" : to_row_type;
+                    const row_results_new=operateRowResults(row_results, cardInfo.cid, +1, to_row_type , df);
+                    importDeck(row_results_new);
+                    const row_result=row_results[cardInfo.type];
+                    const ind_new=row_result.nums.length;
+                    const span=_generateDeckImgSpan(df, cardInfo.type, {name:cardInfo.name, cid:cardInfo.cid}, `${ind_new}_1`);
+                    modifyDeckImg($("img", span), +1, to_set_type);
+                } else if (num_now_text<3) {
+                    ;
+                }
+            } else if (e.button===1) {
+                const url=cardInfo.url;
+                window.open(url, "_blank");
+            }
         }
 
         //if (sideChangeOnViewIsValid===true) 
@@ -1342,15 +1593,44 @@ $(async function () {
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
     });
+    $("#button_sortSave").on("click", async function () {
+        await sortSaveClicked();
+    });
     $("#button_sort").on("click", async function () {
-        await sortClicked();
+        if ($("#deck_text").css("display")!=="none") return;
+        const row_results=obtainRowResults(df);//obtainRowResults_Edit(df);
+        const row_results_new=await sortCards(row_results);
+        importDeck(row_results);
+        insertDeckImg(df, row_results_new);
+        /*for (const set_type of ["main", "extra", "side", "temp"]){
+            shuffleCards("reset", set_type);
+        }*/
+        //await sortClicked();
+    });
+    $("#button_searchShowHide").on("click", async function () {
+        operate_searchArea();
+    });
+    $("#button_clickMode").on("click", async function () {
+        //operate_clickMode();
+        $("#deck_image").toggleClass("click_open_url");
+        $(this).toggleClass("red");
+        const clickIsToOpenURL=$("#deck_image").hasClass("click_open_url");
+        $("span", this).html(`Click|`+(clickIsToOpenURL ? "move card/OPEN URL" : "MOVE CARD/open url"));
+    });
+
+    $("#button_guess").on("click", async function () {
+        await guess_clicked();
+    });
+    $("#button_test").on("click", async function () {
+        console.log(1)
+        await guess_clicked();
     });
 
     $("#button_visible_header").on("click", function () {
         toggleVisible_deckHeader();
     });
     $("#button_sort").on("click", async function (){
-        const row_results=obtainRowResults_Input(df);
+        const row_results=obtainRowResults(df)//obtainRowResults_Edit(df);
         //console.log(row_results)
         const MouseUIIsVisible=$(".tablink_deckEdit ul li.deck_edit_image").hasClass("now");
         insertDeckImg(df, row_results, MouseUIIsVisible);
@@ -1370,7 +1650,7 @@ $(async function () {
                 .map(row_name => ({ [row_name]: { names: row_results_new[row_name].names, nums: row_results_new[row_name].nums.map(d => parseInt(d)) } })))
             while (true) {
                 importDeck(row_results_new);
-                const row_results = obtainRowResults_Input();
+                const row_results = obtainRowResults()//obtainRowResults_Edit();
                 const row_str = JSON.stringify(row_names
                     .map(row_name => ({ [row_name]: { names: row_results[row_name].names, nums: row_results[row_name].nums } })))
                 if (row_str == row_str_new) {
@@ -1405,3 +1685,4 @@ $(async function () {
         }
     })
 });
+

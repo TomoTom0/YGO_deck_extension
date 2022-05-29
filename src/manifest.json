@@ -1,17 +1,21 @@
 {
   "name": "遊戯王DBデッキサポート",
   "author":"TomoTomo",
-  "version": "0.11.2.0",
+  "version": "1.0.0.0",
   "manifest_version": 3,
   "icons":{
-    "16":"img/icon-16.png",
-    "48":"img/icon-48.png",
-    "128":"img/icon-128.png"
+    "16":"images/icon-16.png",
+    "48":"images/icon-48.png",
+    "128":"images/icon-128.png"
   },
   "content_scripts": [{
     "matches": ["https://www.db.yugioh-card.com/yugiohdb/*"],
-    "js": ["js/jquery-3.5.1.min.js", "js/async.min.js", "script/content_script.js", "js/sql-wasm.min.js", "script/db_functions.js"],
-    "css":["css/content_script.css"]
+    "js": ["js/jquery-3.5.1.min.js", "js/async.min.js", "script/content_script.js", "script/db_functions.js", "script/card_search_script.js"],
+    "css":["css/content_script.css", "css/card_search.css"]
+  }],
+  "web_accessible_resources": [{
+    "matches":["https://www.db.yugioh-card.com/*"],
+    "resources":["images/*"]
   }],
   "permissions":["storage", "unlimitedStorage"],
   "options_ui": {

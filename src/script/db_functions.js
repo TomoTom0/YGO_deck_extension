@@ -88,6 +88,9 @@ async function gitFetch(url, opts = {}) {
 // -----------------------------
 //           # YGODB
 
+const parse_YGODB_URL_body = (url_now = location.href) => {
+    return url_now.match(/([^\/\?]+)\??[^\/]*$/)[1];
+}
 const parse_YGODB_URL = (url_now = location.href, nullIsValid = false) => {
     const html_parse_keys = ["cgid", "dno", "request_locale", "ope"];
     const html_parse_dic_arr = html_parse_keys.map(key => {
