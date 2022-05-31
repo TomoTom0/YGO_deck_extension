@@ -111,8 +111,8 @@ $("button.btnClearStorage").on("click", async function () {
 
 })
 
-const limitedKey = ["race", "type", "attribute", "set", "LMarker", "cid", "ot"];
-const numberKey = ["atk", "def", "scale", "level", "id"];
+const limitedKey = ["atk", "def", "race", "type", "attribute", "set", "LMarker", "cid", "ot"];
+const numberKey = ["scale", "level", "id"];
 const includeKey=["type", "set"];
 
 $(".btnSearchDB").on("click", async function (e) {
@@ -131,9 +131,11 @@ const searchFunc = async ()=>{
     });
     //console.log(searchKVs)
     const searcheResults = searchKVs.reduce((df_tmp, cur) => {
-        const condition = ([...includeKey, "name"].indexOf(cur[0])!=-1) ? "in" : "=";
-        const ids = df_filter(df_tmp, "id", cur, condition);
-        return df_filter(df_tmp, Object.keys(df), ["id", ids])
+        const langs=["ja", "en", "de", "fr", "it", "es", "pt", "ko"];
+        const name_langs=langs.map(d=>`name_${d}`)
+        const condition = ([...includeKey, "name", ...name_langs].indexOf(cur[0])!=-1) ? "in" : "=";
+        const ids = df_filter(df_tmp, "ind", cur, condition);
+        return df_filter(df_tmp, Object.keys(df), ["ind", ids])
     }, df)
     console.log(searcheResults);
     const searchResultArea=$("#searchResultArea");

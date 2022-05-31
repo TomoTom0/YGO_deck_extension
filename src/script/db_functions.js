@@ -145,16 +145,20 @@ function split_data(data) {
 }
 
 function df_filter(df, col_out, array_in, condition = "=") {
+    df.ind=[...Array(df.name.length).keys()];
     const key = array_in[0];
     const val = Array.isArray(array_in[1]) ? array_in[1] : [array_in[1]];
     if (df == {} && Array.isArray(col_out)) return col_out.reduce((acc, key) => Object.assign(acc, { [key]: [] }), {});
     else if (df == {}) return [];
 
-    const indexes_in = df[key].reduce((acc, cur, ind) => {
-        if (condition == "=" && val.indexOf(cur) != -1) return acc.concat([ind]);
-        else if (condition == "=" && isFinite(cur) && val.indexOf(String(cur)) != -1) return acc.concat([ind]);
-        else if (condition == "in" && val.some(d => cur.indexOf(d) != -1)) return acc.concat([ind]);
-        else return acc;
+    const indexes_in = df[key].reduce((acc, cur_tmp, ind) => {
+        if (cur_tmp==null) return acc;
+        for (const cur of [cur_tmp, isFinite(cur_tmp)&& !Number.isInteger(cur_tmp) ? parseInt(cur_tmp) : `${cur_tmp}`]){
+            if (condition == "=" && val.indexOf(cur) != -1) return acc.concat([ind]);
+            //else if (condition == "=" && isFinite(cur) && val.indexOf(String(cur)) != -1) return acc.concat([ind]);
+            else if (condition == "in" && val.some(d => `${cur}`.indexOf(d) != -1)) return acc.concat([ind]);
+        }
+        return acc;
     }, []);
     if (Array.isArray(col_out)) {
         const dics = col_out.map(key => { return { [key]: Array.from(new Set(indexes_in)).map(d => df[key][d]) }; });
@@ -459,8 +463,8 @@ async function updateDB() {
         .then(res => atob(res.content));
     console.log("Database has been updated.");
     let df_new = JSON.parse(content).all;
-    df_new.id = df_new.id.map(d => d - 0);
-    df_new.cid = df_new.cid.map(d => d - 0);
+    df_new.id = df_new.id.map(d => d );
+    df_new.cid = df_new.cid.map(d => d );
     await operateStorage({ df: JSON.stringify(df_new), lastModifiedDate: Date.now() }, "local", "set");
     return df_new;
 }
