@@ -1,0 +1,104 @@
+/* tablink */
+.tablink_deckSupport li.now, .tablink_deckSupport li:active {
+    border-bottom-color: #ffba00;
+}
+
+.tablink_deckSupport li.now span {
+    color: #ffba00;
+}
+
+/* shuffle */
+
+/*.deck_image.shuffle div.card_set div.image_set a {
+    max-width:6.5%;
+}
+.deck_image.shuffle div.card_set{
+    margin:0 0 20px;
+}
+.deck_image.shuffle div.card_set>div.subcatergory>div.top>h3 {
+    min-width:0;
+}*/
+
+/* sideChange */
+
+/*.deck_image.MouseUI {
+    min-height:780px;
+}*/
+
+/*.deck_image:not(.MouseUI) .image_set>a:not(:has(span:has(img):not(.del_card))) {
+    max-width: 6.5%;
+    padding:1px;
+    box-sizing:border-box;
+    position: relative;
+}*/
+
+
+/*.deck_image .image_set a:has(span.del_card:has(img)) {
+    display: none !important;
+}
+.deck_image .image_set a:not(:has(span:has(img):not(.del_card))) {
+    display: none !important;
+}*/
+
+/*.deck_image.MouseUI .image_set span:not(.del_card):has(img) {
+    max-width: 6.5%;
+    padding:1px;
+    box-sizing:border-box;
+    position: relative;
+}*/
+
+/*.deck_image .image_set span.del_card:has(img) {
+    display: none;
+}*/
+
+/*.deck_image .image_set span.add_card:has(img) {
+    position: relative;
+}*/
+
+.deck_image .image_set span>div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: block;
+    border: 3px solid transparent;
+    top: 0;
+}
+
+/*.deck_image .image_set span.add_card>div>span{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: block;
+    border: 3px solid transparent;
+    top: 0;
+}*//*#2ef706;*/
+
+.deck_image .image_set span.forbidden >div>span {
+    background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_forb_unlim.svg);
+    background-color: #dc0000;
+}
+
+.deck_image .image_set span.limited >div span {
+    background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_limit_unlim.svg);
+    background-color: #fb8c32;
+}
+
+.deck_image .image_set span.semi_limited >div>span {
+    background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_slim_unlim.svg);
+    background-color: #fbb830;
+
+}
+
+.deck_image .image_set span >div span {
+    display: block;
+    width: 100%;
+    height: min(2vw, 20px);
+    position: absolute;
+    bottom: 0;
+    background-size: auto 80%;
+    background-repeat: no-repeat;
+    background-position: center 3px;
+}
+

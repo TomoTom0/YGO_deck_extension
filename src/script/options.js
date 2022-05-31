@@ -1,10 +1,23 @@
 ﻿"use strict";
 
-// ----------------------------------
-//            # initial
-
-const defaultSettings={autoUpdateDB:true, addDate:false}; // , changeCDBRepo:false, changeConstantLuaRepo:false, changeStringsLuaRepo:false
-const defaultString=JSON.stringify(defaultSettings);
+//--------------------------
+//         # initial
+const defaultSettings = {
+    autoUpdateDB: true,
+    addDate: false,
+    valid_feature_importExport: true,
+    valid_feature_sortShuffle: true,
+    valid_feature_deckHeader: true,
+    valid_feature_deckEditImage: true,
+    valid_feature_sideChange: true,
+    default_visible_header: true,
+    default_deck_edit_image: true,
+    default_deck_edit_search: true,
+    default_sideChange_view: true,
+    default_searchArea_visible:true,
+    default_lang: "ja"
+}; // , changeCDBRepo: false, showColor: true
+const defaultString = JSON.stringify(defaultSettings);
 
 function makeTable(tableContent={},captionText=""){
     const table=$("<table>", {class:"part"});
@@ -30,8 +43,8 @@ function makeTable(tableContent={},captionText=""){
 
 // # on load
 $(async function () {
-    const items=await getSyncStorage({settings: defaultString, repoInfos:defaultRepoStrings});
-    const settings=JSON.parse(items.settings);
+    const items=await getSyncStorage({settings: JSON.stringify({}), repoInfos:defaultRepoStrings});
+    const settings=Object.assign(defaultSettings, JSON.parse(items.settings));
     for (const [key, val] of Object.entries(settings)){
         const checkArea=$(`#check_${key}`);
         if (checkArea.length>0) $(checkArea).prop({checked:val});
@@ -98,8 +111,8 @@ $("button.btnClearStorage").on("click", async function () {
 
 })
 
-const limitedKey = ["race", "type", "attribute", "set", "LMarker", "cid", "ot"];
-const numberKey = ["atk", "def", "scale", "level", "id"];
+const limitedKey = ["atk", "def", "race", "type", "attribute", "set", "LMarker", "cid", "ot"];
+const numberKey = ["scale", "level", "id"];
 const includeKey=["type", "set"];
 
 $(".btnSearchDB").on("click", async function (e) {
@@ -118,15 +131,17 @@ const searchFunc = async ()=>{
     });
     //console.log(searchKVs)
     const searcheResults = searchKVs.reduce((df_tmp, cur) => {
-        const condition = ([...includeKey, "name"].indexOf(cur[0])!=-1) ? "in" : "=";
-        const ids = df_filter(df_tmp, "id", cur, condition);
-        return df_filter(df_tmp, Object.keys(df), ["id", ids])
+        const langs=["ja", "en", "de", "fr", "it", "es", "pt", "ko"];
+        const name_langs=langs.map(d=>`name_${d}`)
+        const condition = ([...includeKey, "name", ...name_langs].indexOf(cur[0])!=-1) ? "in" : "=";
+        const ids = df_filter(df_tmp, "ind", cur, condition);
+        return df_filter(df_tmp, Object.keys(df), ["ind", ids])
     }, df)
     console.log(searcheResults);
     const searchResultArea=$("#searchResultArea");
     searchResultArea.empty();
     const table=makeTable(searcheResults, "Search Results");
-    searchResultArea.append(table)
+    searchResultArea.append(table);
 }
 
 $(".btnSearchAdd").on("click", async function (e) {
@@ -134,7 +149,7 @@ $(".btnSearchAdd").on("click", async function (e) {
     const DateNow = `${Date.now()}`;
     const span = $("<span>", { class: "spanSearchKV" });
     const searchKey = $("<select>", { type: "text", style: "width:80px;", class: "selectSearchKey" });
-    const searchVal = $("<input>", { type: "number", placeholder: "a word or value", style: "width:200px;", class: "inputSearchVal", list: `selectSearchList_${DateNow}`});
+    const searchVal = $("<input>", { type: "text", placeholder: "a word or value", style: "width:200px;", class: "inputSearchVal", list: `selectSearchList_${DateNow}`});
     const datalist = $("<datalist>", { id: `selectSearchList_${DateNow}` });
     const clearButton = $("<button>", { type: "button", class: "btnSearchClear btn btn-primary" }).append("Clear");
     const deleteButton = $("<button>", { type: "button", class: "btnSearchDelete btn btn-primary" }).append("Delete");

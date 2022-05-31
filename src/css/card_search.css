@@ -1,0 +1,628 @@
+.search_btn_set{
+    background: #022c53;
+    padding: 10px;
+    display: flex;
+}
+
+    .search_btn_set .search{
+        display: flex;
+        justify-content: space-between;
+        flex: 1;
+    }
+    .search_btn_set .search #first_search{
+        flex: 1;
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border: 1px solid #888;
+        padding-right: 5px;
+        margin-right: 50px;
+        box-sizing: border-box;
+    }
+        #keyword {
+            padding: 4px 7px;
+        font-size: 15px !important;
+        font-weight: bold;
+        height: 30px;
+        border: none;
+        box-sizing: border-box;
+        flex: 1;
+        outline: none;
+        }
+    .search_btn_set .search #first_search img{
+        position: relative;
+        padding: initial;
+        width: 20px;
+        height: 20px;
+    }
+
+#submit_area{
+    padding: 0 45px 0 50px;
+}
+@media only screen and (max-width: 896px) {/*デバイスの横幅が896px以下の場合*/
+    .search_btn_set{
+        display: block;
+    }
+    .search_btn_set .search{
+        margin-bottom: 20px;
+    }
+    #submit_area >* {
+        justify-content: center;
+    }
+}
+@media only screen and (max-width: 700px) {/*デバイスの横幅が700px以下の場合*/
+
+    .search_btn_set .search{
+        display: block;
+    }
+    .search_btn_set .search >*{
+        margin-bottom: 10px;
+        min-width: 100%;
+    }
+}
+@media only screen and (max-width: 500px) {/*デバイスの横幅が500px以下の場合*/
+}
+
+
+
+#search .filter_set_area{
+    display: block;
+    border: 2px solid #000;
+    border-top: none;
+    margin: 5px;
+}
+#search .filter_set_area.none{display: none}
+
+#search .fliter_btns{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: left;
+    flex: 5;
+    padding: 0 3px;
+}
+#search .fliter_btns li,
+.filter_set_monster .updw label,.filter_set_monster .updw p{
+    min-width: 14.28%;
+    margin: 0;
+    padding: 1px;
+    box-sizing: border-box;
+}
+.filter_set_monster .updw label,.filter_set_monster .updw p{
+    width: 10.9%;
+    min-width: 80px;
+    display: block;
+}
+
+#search .fliter_btns li >span,
+.filter_set_monster .updw span{
+    font-size: 1.2rem;
+    background: #002345;
+    color: #ffffff;
+    border-radius: 2px;
+    padding: 2px 5px;
+    box-sizing: border-box;
+    display: block;
+    text-align: center
+}
+
+#search .fliter_btns li:hover,
+.filter_set_monster .updw label:hover,
+.filter_set_monster .updw p:hover{opacity: .8;}
+
+
+    #search .fliter_btns li.check > span{
+		font-weight:bold;
+		background-color:#239adf;
+	}
+#search .fliter_btns li.untick > span,
+.filter_set_monster .updw .untick span{
+            box-sizing: border-box;
+            background-color:#ffa6a6;
+            background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/untick.png);
+            background-size:20px 20px;
+            background-position: center center;
+            background-repeat: no-repeat;
+            display: block;
+        }
+#search .fliter_btns li >span span{
+    background-repeat: no-repeat;
+    background-position: center left;
+    background-size: auto 94%;
+    padding: 0 0 0 20px;
+}
+
+
+		#search .filter_set>div{
+			padding:3px;
+            border-bottom: 1px solid #888;
+            display: flex;
+		}
+		#search .filter_set>div .title{
+			font-size:12px;
+			color:#ffffff;background-color: #467491;
+            display: flex;
+            flex: 1;
+            padding: 3px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            min-width: 160px;
+		}
+@media only screen and (max-width: 700px) {/*デバイスの横幅が700px以下の場合*/
+    #search .filter_set>div{
+        display: block;
+        padding: 0;
+    }
+    #search .fliter_btns,
+    .filter_set_monster .updw{
+        padding: 5px;
+        box-sizing: border-box;
+    }
+
+    #search .fliter_btns li >span,
+    .filter_set_monster .updw span{
+        padding: 5px 5px;
+        text-align: center;
+    }
+    
+    #search .fliter_btns li{
+        width: auto;
+        min-width: 20%;
+    }
+    .filter_set_monster .updw label,.filter_set_monster .updw p{
+        width: auto;
+        min-width: 14.28%;
+    }
+
+}
+
+
+
+
+
+#search .filter_set>div .title h3{
+    margin: 0;
+    white-space: nowrap;
+}
+#search .filter_set>div .title .bottom{
+    min-width: 100%;
+    margin-right: 0;
+}
+@media only screen and (max-width: 700px) {/*デバイスの横幅が700px以下の場合*/
+    #search .filter_set>div .title .bottom{
+        min-width: auto;
+        margin: 0 5px;
+    }
+}
+
+
+		#search .slider{
+			text-align:left;
+		}
+			.slider .updw{
+				font-size:14px;
+				font-weight:bold;
+				color:#FFFFFF;
+                margin-right: 0;
+                display: block;
+                flex: none;
+			}
+
+
+			.slider .bar_area{
+				margin:5px 0;
+				padding:15px 3px 8px;
+				background:#ccc;
+			}
+				.slider .bar_area>div{position:relative;}
+				.slider .bar_area>div .bar{
+					height:4px;
+					background:#777;
+					margin:0 14px;
+				}
+				.slider .bar_area>div .tab{
+					position:absolute;
+					height:30px;
+					width:30px;
+					background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/tabs.png);
+					top:-17px;
+                    cursor: pointer;
+				}
+				.slider .bar_area *.ontouch{	background-position:right 0px;	border:none;}
+				.slider .bar_area .min_tab{	z-index:2;}
+				.slider .bar_area .max_tab{	z-index:3;}
+
+
+		#search .filter_set>div .and_or{
+            justify-content: center;
+		}
+            #search .filter_set>div .and_or.hex > span{
+                line-height: 1.2;
+                background-color: #fff;
+            }
+            #search .filter_set>div .and_or.hex:before, #search .filter_set>div .and_or.hex:after{
+                width: 10px;
+                background-color: #fff;
+            }
+            #search .filter_set>div .and_or.hex label{
+                color: #000000;
+                padding: 5px;
+            }
+
+
+.filter_set_monster .updw{
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 2px;
+}
+
+.filter_set_monster .updw input[type=checkbox]{display: none;}
+.filter_set_monster .updw input[type=checkbox]:checked + label >span{
+		font-weight:bold;
+		background-color:#239adf;
+}
+
+#legend_type_set >*{
+    display: flex;
+    flex-wrap: wrap;
+}
+#legend_type_set .legend_type_tab{
+    flex: 1;
+    padding: 0 20px;
+}
+@media only screen and (max-width: 700px) {/*デバイスの横幅が700px以下の場合*/
+    .filter_set_monster .updw{
+        padding: 5px;
+    }
+}
+@media only screen and (max-width: 500px) {/*デバイスの横幅が500px以下の場合*/
+    #legend_type_set .legend_type_tab{
+        flex: none;
+        padding: 0;
+            width: 100%;
+    }
+
+}
+
+#search .filter_set> #filter_other .title span {
+    flex: none;
+    margin: 0;
+}
+
+#bottombtn{
+        background: #022c53;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+#bottombtn.none{display: none}
+.bar_set{
+    flex: 5;
+}
+.sab{
+    flex: 5;
+}
+#link_set .sab{
+    display: flex;
+    align-items: flex-start;
+}
+#link_set.filter_set_monster .updw label{
+    width: 16.6%;
+    min-width: 80px;
+}
+#link_set.filter_set_monster .updw{
+    flex: 1;
+    align-items: flex-start;
+}
+
+.search_m_set{
+    background-color: #778995;
+    display: inline-flex;
+    padding: 5px;
+    align-items: flex-start;
+    margin: 0 4px;
+}
+
+
+#search .filter_set>.atkdef{
+    display: flex;
+    padding: 0;
+    border: none;
+}
+#search .filter_set>.atkdef >*{
+    flex: 1;
+    display: flex;
+}
+#search .filter_set>.atkdef .title{
+    margin: 3px 0 3px 3px;
+}
+#search .filter_set>.atkdef .input_set{
+    margin: 3px 3px 3px 0;
+    flex: 2;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+#search .filter_set>.atkdef input[type="text"]{
+    width: 100%;
+    max-width: 45%;
+    padding: 2px 2px 2px 24px;
+    box-sizing: border-box;
+    background: #fff no-repeat url(chrome-extension://__MSG_@@extension_id__/images/parts/mark_more.png);
+    background-position: 2px center;
+    margin: 2px;
+    min-width: 120px;
+}
+#search .filter_set>.atkdef #atkto,#search .filter_set>.atkdef #defto{
+    background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/mark_less.png) ;
+}
+.atkdef .search_bottom{
+    border-left: 1px solid #888888;
+}
+@media only screen and (max-width: 700px) {/*デバイスの横幅が700px以下の場合*/
+    #search .filter_set>.atkdef,
+    #search .filter_set>.atkdef >*{
+        display: block;
+    }
+    #search .filter_set>.atkdef .title{
+        margin: 0;
+    }
+    .atkdef .search_bottom{border-left: none;}
+    #search .filter_set>.atkdef .input_set{margin: 5px;}
+    #search .filter_set>.atkdef input[type="text"]{
+        min-width: auto;
+    }
+    .search_m_set{
+        margin: 5px;
+    }
+
+}
+
+#search{
+    border: 2px solid #000000;
+}
+
+.Question{
+    position: relative;
+    margin: 0 0 0 10px;
+    flex: 2;
+}
+                    .Question p{
+                        position: absolute;
+                        font-weight: bold;
+                        white-space: nowrap;
+                        text-align: center;
+                        top: -50px;
+                        left: -10px;
+                        border: 2px solid #ff7200;
+                        border-radius: 6px;
+                        min-width: 100%;
+                        padding: 6px;
+                        display: none;
+                        z-index: 10;
+                        font-size: 1.2rem;
+                        color: #000;
+                        background-color: #ffba00;
+                    }
+                    .Question p::after{
+                        content: '';
+                        position:absolute;
+                        left: 10px;
+                        bottom: -8px;
+                        width:0;
+                        white-space: nowrap;
+                        border-width:8px 8px 0px 8px;
+                        border-style:solid;
+                        border-left-color:transparent;
+                        border-right-color:transparent;
+                        border-bottom-color:transparent;
+                        display: none;
+                        color: #ff7200;
+
+                    }
+                    .Question:hover p,
+                    .Question:hover p::after{
+                        display: block;
+                        cursor:help;
+                    }
+
+.Question .hex > span ,.untick.hex > span{
+    font-size: 1.2rem;
+    min-height: auto;
+    line-height: 1.4;
+    padding: 0 2px;
+    color: #000000;
+}
+.untick.hex > span{
+    color: #ffffff;
+}
+.Question .hex:before, .Question .hex:after,
+.untick.hex:before, .untick.hex:after{
+    width: 5px;
+}
+@media only screen and (max-width: 700px) {/*デバイスの横幅が700px以下の場合*/
+    /*
+    .Question{
+        display: flex;
+        box-sizing: border-box;
+        justify-content: flex-start;
+        border: 1px solid rgb(255,255,255,.8);
+        line-height: 1.5;
+        border-radius: 5px;
+        order: 6;
+        min-width: 100%;
+        margin: 2px 0 0;
+    }
+    .Question .btn.hex.orn{
+        filter: none;
+        margin: 0;
+        display: flex;
+    }
+    .Question .hex > span{
+        background: rgb(255,255,255,.8);
+        border-radius: 3px 0px 0 3px;
+        padding: 0 5px;
+        color: #467491;
+    }
+    .Question p{
+        display: inline-block;
+        position: relative;
+        min-width: auto;
+        top: 0;
+        left: 0;
+        padding: 0;
+        margin: 2px;
+        line-height: 1.2;
+        border: none;
+        border-radius: 0;
+        font-size: 1.2rem;
+        font-weight: normal;
+        flex: 1;
+        white-space: normal;
+        background: none;
+        color: rgb(255,255,255,.8);
+        text-align: left;
+    }
+    .Question .hex:before, .Question .hex:after,
+    .Question:hover p::after{display: none;}
+    */
+    .untick{order: 4}
+}
+
+
+
+
+/**----以下実験----**/
+#search_set{
+	overflow:hidden;
+	display:table;
+	padding:0;
+	margin:0;
+}
+	 #search_by_attack_and_defense_and_level #search_set span{
+		float:none;
+	}
+	#search_by_attack_and_defense_and_level #search_set #defense_title,
+	#search_by_attack_and_defense_and_level #search_set #pen_scale_title,
+	#search_by_attack_and_defense_and_level #search_set #link_title,
+	#search_by_attack_and_defense_and_level #search_set #level_rank_input,
+	#search_by_attack_and_defense_and_level #search_set #attack_input{
+		padding:0;
+		border:none;
+	}
+	#search_by_attack_and_defense_and_level #search_set #pen_scale_title{
+		width:130px;
+	}
+	#search_set .search_top{
+		padding:2px 0px 0;
+	}
+	#search_set .search_bottom{
+		padding:20px 0px 2px;
+	}
+	#search_set .search_l,#search_set .search_m,#search_set .search_r{
+		display:table-cell;
+		vertical-align:top;
+		box-sizing:border-box;
+	}
+	#search_set .search_l{
+			border-right: solid 1px #414a56;
+			padding:5px 25px 0 0px;
+	}
+	#search_set .search_m{
+			border-left: solid 1px #90a6b0;
+		    border-right: solid 1px #414a56;
+			overflow:hidden;
+			padding:0 40px;
+	}
+	#search_set .search_r{
+			border-left: solid 1px #90a6b0;
+			padding:5px 0 0 40px;
+	}
+
+
+        #link_set .link_m{
+            overflow: hidden;
+            border-radius: 5px;
+            position: relative;
+            width:94px;
+			height:94px;
+			display:block;
+			margin:0 10px 0 0;
+		}
+
+				#link_set .link_m label,#link_set .link_m img{cursor:pointer;}
+				#link_set .link_m input[type=checkbox]{display:none;}
+				#link_set .link_m label{
+					display: block;
+                    text-indent: -9999px;
+                    overflow: hidden;
+                    background-position: bottom;
+                    padding: 0;
+                    cursor: pointer;
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+				}
+	
+				#link_set .link_m label.linkbtn7,
+				#link_set .link_m label.linkbtn9,
+				#link_set .link_m label.linkbtn1,
+				#link_set .link_m label.linkbtn3{
+					width:32px;
+					height:32px;
+				}
+				#link_set .link_m label.linkbtn8,
+				#link_set .link_m label.linkbtn2{
+					width:44px;
+					height:24px;
+				}
+				#link_set .link_m label.linkbtn4,
+				#link_set .link_m label.linkbtn6{
+					width:24px;
+					height:44px;
+				}
+#link_set .link_m label.linkbtn1{margin: auto auto 0 2px;}
+#link_set .link_m label.linkbtn2{margin: auto auto 0}
+#link_set .link_m label.linkbtn3{margin: auto 2px 0 auto;}
+#link_set .link_m label.linkbtn4{margin: auto auto auto 0;}
+#link_set .link_m label.linkbtn6{margin: auto 0 auto auto;}
+#link_set .link_m label.linkbtn7{margin: 0 auto auto 2px;}
+#link_set .link_m label.linkbtn8{margin: 0 auto;}
+#link_set .link_m label.linkbtn9{margin: 0 2px auto auto;}
+
+
+#link_set .link_m label{
+    background-size: 100% auto;
+    background-position: top;
+}
+				#link_set .link_m label.linkbtn1{background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/linkmarker/linkmarker_1.png);}
+				#link_set .link_m label.linkbtn2{background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/linkmarker/linkmarker_2.png);}
+				#link_set .link_m label.linkbtn3{background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/linkmarker/linkmarker_3.png);}
+				#link_set .link_m label.linkbtn4{background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/linkmarker/linkmarker_4.png);}
+				#link_set .link_m label.linkbtn6{background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/linkmarker/linkmarker_6.png);}	
+				#link_set .link_m label.linkbtn7{background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/linkmarker/linkmarker_7.png);}
+				#link_set .link_m label.linkbtn8{background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/linkmarker/linkmarker_8.png);}
+				#link_set .link_m label.linkbtn9{background-image:url(chrome-extension://__MSG_@@extension_id__/images/parts/linkmarker/linkmarker_9.png);}
+
+				#link_set .link_m label:hover{
+                    background-position: center;
+                    opacity: .5;
+                }
+
+				#link_set .link_m input[type="checkbox"]:checked + label{background-position: bottom;}
+
+#choice_card_area{
+    background-color: #467491;
+    display: flex;
+}
+#choice_card_area >*{
+    flex: 1;
+    color: #fff;
+    text-align: center;
+}
+#choice_card_area .text{
+    flex: 20
+}

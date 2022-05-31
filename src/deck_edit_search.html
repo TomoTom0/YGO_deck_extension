@@ -1,0 +1,865 @@
+<form id="form_search" action="/yugiohdb/card_search.action" method="GET" autocomplete="off">
+    <input type="hidden" name="ope" value="1">
+    <input type="hidden" name="sess" value="1">
+    <input type="hidden" name="rp" value="20">
+
+    <div id="search" class="card_s">
+        <div class="search_btn_set">
+            <div class="search">
+                <div id="first_search" class="decoration">
+                    <input type="text" id="keyword" name="keyword" value="" maxlength="50" class="keyword_ja" placeholder="キーワードを入力">
+                    <img src="external/image/parts/keyword_delete.png" id="keyword_delete" alt="" class="ui-draggable ui-draggable-handle">
+                </div>
+
+                
+                <select id="stype" name="stype" style="">
+                    <option value="1" selected="">「カード名」検索</option>
+                    <option value="2">「カードテキスト」検索</option>
+                    <option value="3">「ペンデュラム効果」検索</option>
+                    <option value="4">「カードNo」検索</option>
+                </select>
+            </div>
+
+            
+            <div id="submit_area">
+                <div class="btn hex orn" onclick="javascript:Search(4)"><span>検　索</span></div>
+            </div><!--#submit_area-->
+        </div><!-- .search_btn_set -->
+
+
+        
+        <div id="choice_card_area">
+            <span></span>
+            <span class="text">
+                条件を絞って検索
+            </span>
+            <span class="yaji">∨</span>
+        </div><!--#choice_card_area-->
+        
+
+            <div id="card_set" class="filter_set_area">
+            
+            <div id="ctype_set" class="tablink">
+                <ul>
+                    <li class="now"><span>すべてのカードから検索</span></li>
+            
+                    <li class="1"><span>モンスターカード</span></li>
+            
+                    <li class="2"><span>魔法カード</span></li>
+            
+                    <li class="3"><span>罠カード</span></li>
+            
+                </ul>
+                <select id="ctype" name="ctype">
+                    <option value="" class="tabset choice">すべてのカードから検索</option>
+            
+                    <option value="1" class="tabset choice">モンスターカード</option>
+            
+                    <option value="2" class="tabset choice">魔法カード</option>
+            
+                    <option value="3" class="tabset choice">罠カード</option>
+            
+                </select>
+            </div>
+                
+                <div id="filter_set_monster" class="filter_set">
+                    
+                    <div id="filter_attribute" class="filter_set_monster" style="">
+                        <div class="title">
+
+                            <h3>属性</h3>
+                            <div class="Question">
+                                <div class="btn hex orn"><span>?</span></div>
+                                <p>絞り込みたい属性を選択してください</p>
+                            </div>
+                            <div class="btn hex red untick type1"><span>x</span></div>
+
+                        </div>
+                        <ul class="fliter_btns">
+
+                            <li class=""><span>
+                                <span style="background-image:url(external/image/parts/attribute/attribute_icon_dark.png)">
+                                    闇属性
+                                </span>
+                                <input type="checkbox" name="attr" class="none" value="12">
+                            </span></li>
+
+                            <li class=""><span>
+                                <span style="background-image:url(external/image/parts/attribute/attribute_icon_light.png)">
+                                    光属性
+                                </span>
+                                <input type="checkbox" name="attr" class="none" value="11">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/attribute/attribute_icon_earth.png)">
+                                    地属性
+                                </span>
+                                <input type="checkbox" name="attr" class="none" value="15">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/attribute/attribute_icon_water.png)">
+                                    水属性
+                                </span>
+                                <input type="checkbox" name="attr" class="none" value="13">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/attribute/attribute_icon_fire.png)">
+                                    炎属性
+                                </span>
+                                <input type="checkbox" name="attr" class="none" value="14">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/attribute/attribute_icon_wind.png)">
+                                    風属性
+                                </span>
+                                <input type="checkbox" name="attr" class="none" value="16">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/attribute/attribute_icon_divine.png)">
+                                    神属性
+                                </span>
+                                <input type="checkbox" name="attr" class="none" value="17">
+                            </span></li>
+
+
+                        </ul>
+                    </div>
+                    
+
+                
+
+
+                    
+                    <div id="filter_effect_set" style="">
+                        <div class="title">
+                            <h3>効果</h3>
+                            <div class="Question">
+                                <div class="btn hex orn"><span>?</span></div>
+                                <p>絞り込みたい効果を選択してください</p>
+                            </div>
+                            <div class="btn hex red untick type1"><span>x</span></div>
+
+                        </div>
+                
+                        <ul class="fliter_btns filter_effect_magic" style="display: none;">
+
+    
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_equip.png)">
+                                    装備
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_magic" value="23" disabled="">
+                            </span></li>
+    
+
+    
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_field.png)">
+                                    フィールド
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_magic" value="22" disabled="">
+                            </span></li>
+    
+
+    
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_quickplay.png)">
+                                    速攻
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_magic" value="25" disabled="">
+                            </span></li>
+    
+
+    
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_ritual.png)">
+                                    儀式
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_magic" value="26" disabled="">
+                            </span></li>
+    
+
+    
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_continuous.png)">
+                                    永続
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_magic" value="24" disabled="">
+                            </span></li>
+    
+
+    
+
+    
+                            <li><span>
+                                <span style="padding: 0;">
+                                    通常
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_magic" value="20" disabled="">
+                            </span></li>
+    
+
+
+                        </ul>
+                
+
+
+                
+                        <ul class="fliter_btns filter_effect_trap" style="display: none;">
+
+    
+
+    
+
+    
+
+    
+
+    
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_continuous.png)">
+                                    永続
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="24" disabled="">
+                            </span></li>
+    
+
+    
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_counter.png)">
+                                    カウンター
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="21" disabled="">
+                            </span></li>
+    
+
+    
+                            <li><span>
+                                <span style="padding: 0;">
+                                    通常
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="20" disabled="">
+                            </span></li>
+    
+
+
+                        </ul>
+                
+
+                
+                        <ul class="fliter_btns filter_effect" style="">
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_equip.png)">
+                                    装備
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="23">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_field.png)">
+                                    フィールド
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="22">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_quickplay.png)">
+                                    速攻
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="25">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_ritual.png)">
+                                    儀式
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="26">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_continuous.png)">
+                                    永続
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="24">
+                            </span></li>
+
+                            <li><span>
+                                <span style="background-image:url(external/image/parts/effect/effect_icon_counter.png)">
+                                    カウンター
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="21">
+                            </span></li>
+
+                            <li><span>
+                                <span style="padding: 0;">
+                                    通常
+                                </span>
+                                <input type="checkbox" name="effe" class="none check_trap" value="20">
+                            </span></li>
+
+
+                        </ul>
+                
+
+
+
+                    </div>
+                    
+                    
+
+
+
+
+
+                    
+                    <div id="filter_specis" class="filter_set_monster" style="">
+                        <div class="title">
+                            <h3>種族</h3>
+                            <div class="Question">
+                                <div class="btn hex orn"><span>?</span></div>
+                                <p>絞り込みたい種族を選択してください</p>
+                            </div>
+                            <div class="btn hex red untick type1"><span>x</span></div>
+                        </div>
+                        <ul class="fliter_btns">
+
+                            <li class="species_1_ja"><span>
+                                魔法使い族
+                                <input type="checkbox" name="species" class="none" value="18">
+                            </span></li>
+
+                            <li class="species_2_ja"><span>
+                                ドラゴン族
+                                <input type="checkbox" name="species" class="none" value="1">
+                            </span></li>
+
+                            <li class="species_3_ja"><span>
+                                アンデット族
+                                <input type="checkbox" name="species" class="none" value="2">
+                            </span></li>
+
+                            <li class="species_4_ja"><span>
+                                戦士族
+                                <input type="checkbox" name="species" class="none" value="15">
+                            </span></li>
+
+                            <li class="species_5_ja"><span>
+                                獣戦士族
+                                <input type="checkbox" name="species" class="none" value="12">
+                            </span></li>
+
+                            <li class="species_6_ja"><span>
+                                獣族
+                                <input type="checkbox" name="species" class="none" value="11">
+                            </span></li>
+
+                            <li class="species_7_ja"><span>
+                                鳥獣族
+                                <input type="checkbox" name="species" class="none" value="16">
+                            </span></li>
+
+                            <li class="species_8_ja"><span>
+                                悪魔族
+                                <input type="checkbox" name="species" class="none" value="3">
+                            </span></li>
+
+                            <li class="species_9_ja"><span>
+                                天使族
+                                <input type="checkbox" name="species" class="none" value="17">
+                            </span></li>
+
+                            <li class="species_10_ja"><span>
+                                昆虫族
+                                <input type="checkbox" name="species" class="none" value="10">
+                            </span></li>
+
+                            <li class="species_11_ja"><span>
+                                恐竜族
+                                <input type="checkbox" name="species" class="none" value="9">
+                            </span></li>
+
+                            <li class="species_12_ja"><span>
+                                爬虫類族
+                                <input type="checkbox" name="species" class="none" value="20">
+                            </span></li>
+
+                            <li class="species_13_ja"><span>
+                                魚族
+                                <input type="checkbox" name="species" class="none" value="8">
+                            </span></li>
+
+                            <li class="species_14_ja"><span>
+                                海竜族
+                                <input type="checkbox" name="species" class="none" value="5">
+                            </span></li>
+
+                            <li class="species_15_ja"><span>
+                                水族
+                                <input type="checkbox" name="species" class="none" value="14">
+                            </span></li>
+
+                            <li class="species_16_ja"><span>
+                                炎族
+                                <input type="checkbox" name="species" class="none" value="4">
+                            </span></li>
+
+                            <li class="species_17_ja"><span>
+                                雷族
+                                <input type="checkbox" name="species" class="none" value="19">
+                            </span></li>
+
+                            <li class="species_18_ja"><span>
+                                岩石族
+                                <input type="checkbox" name="species" class="none" value="6">
+                            </span></li>
+
+                            <li class="species_19_ja"><span>
+                                植物族
+                                <input type="checkbox" name="species" class="none" value="13">
+                            </span></li>
+
+                            <li class="species_20_ja"><span>
+                                機械族
+                                <input type="checkbox" name="species" class="none" value="7">
+                            </span></li>
+
+                            <li class="species_21_ja"><span>
+                                サイキック族
+                                <input type="checkbox" name="species" class="none" value="21">
+                            </span></li>
+
+                            <li class="species_22_ja"><span>
+                                幻神獣族
+                                <input type="checkbox" name="species" class="none" value="22">
+                            </span></li>
+
+                            <li class="species_23_ja"><span>
+                                創造神族
+                                <input type="checkbox" name="species" class="none" value="23">
+                            </span></li>
+
+                            <li class="species_24_ja"><span>
+                                幻竜族
+                                <input type="checkbox" name="species" class="none" value="26">
+                            </span></li>
+
+                            <li class="species_25_ja"><span>
+                                サイバース族
+                                <input type="checkbox" name="species" class="none" value="27">
+                            </span></li>
+
+
+                        </ul>
+                    </div>
+                    
+
+                    
+                    <div id="filter_other" class="filter_set_monster" style="">
+                        <div class="title">
+                            <h3>その他項目</h3>
+                            <div class="Question">
+                                <div class="btn hex orn"><span>?</span></div>
+                                <p>絞り込みたいその他の項目を選択してください、AndあるいはOrで絞り込みます</p>
+                            </div>
+                            <div class="btn hex red untick type1"><span>x</span></div>
+                            <div class="bottom">
+                                <div id="and_or" class="and_or hex"><span>
+                                    <label>
+                                        <input type="radio" id="othercon_and" name="othercon" value="1">
+                                        <span>and</span>
+                                    </label>
+                                    <label>
+                                        <input type="radio" id="othercon_or" name="othercon" value="2" checked="">
+                                        <span>or</span>
+                                    </label>
+
+                                </span></div>
+                            </div>
+
+                        </div>
+                        <ul class="fliter_btns">
+
+                            <li><span>
+                                通常
+                                <input type="checkbox" name="other" class="none" value="0">
+                            </span></li>
+
+                            <li><span>
+                                効果
+                                <input type="checkbox" name="other" class="none" value="1">
+                            </span></li>
+
+                            <li><span>
+                                儀式
+                                <input type="checkbox" name="other" class="none" value="3">
+                            </span></li>
+
+                            <li><span>
+                                融合
+                                <input type="checkbox" name="other" class="none" value="2">
+                            </span></li>
+
+                            <li><span>
+                                シンクロ
+                                <input type="checkbox" name="other" class="none" value="9">
+                            </span></li>
+
+                            <li><span>
+                                エクシーズ
+                                <input type="checkbox" name="other" class="none" value="10">
+                            </span></li>
+
+                            <li><span>
+                                トゥーン
+                                <input type="checkbox" name="other" class="none" value="4">
+                            </span></li>
+
+                            <li><span>
+                                スピリット
+                                <input type="checkbox" name="other" class="none" value="5">
+                            </span></li>
+
+                            <li><span>
+                                ユニオン
+                                <input type="checkbox" name="other" class="none" value="6">
+                            </span></li>
+
+                            <li><span>
+                                デュアル
+                                <input type="checkbox" name="other" class="none" value="7">
+                            </span></li>
+
+                            <li><span>
+                                チューナー
+                                <input type="checkbox" name="other" class="none" value="8">
+                            </span></li>
+
+                            <li><span>
+                                リバース
+                                <input type="checkbox" name="other" class="none" value="14">
+                            </span></li>
+
+                            <li><span>
+                                ペンデュラム
+                                <input type="checkbox" name="other" class="none" value="15">
+                            </span></li>
+
+                            <li><span>
+                                特殊召喚
+                                <input type="checkbox" name="other" class="none" value="16">
+                            </span></li>
+
+                            <li><span>
+                                リンク
+                                <input type="checkbox" name="other" class="none" value="17">
+                            </span></li>
+
+
+                        </ul>
+                    </div>
+                    
+
+                    
+                    <div id="filter_other" class="filter_set_monster" style="">
+                        <div class="title">
+                            <h3>除外項目</h3>
+                            <div class="Question">
+                                <div class="btn hex orn"><span>?</span></div>
+                                <p>除外したい項目を選択してください</p>
+                            </div>
+                            <div class="btn hex red untick type1"><span>x</span></div>
+                        </div>
+                        <ul class="fliter_btns">
+
+                            <li><span>
+                                通常
+                                <input type="checkbox" name="jogai" class="none" value="0">
+                            </span></li>
+
+                            <li><span>
+                                効果
+                                <input type="checkbox" name="jogai" class="none" value="1">
+                            </span></li>
+
+                            <li><span>
+                                儀式
+                                <input type="checkbox" name="jogai" class="none" value="3">
+                            </span></li>
+
+                            <li><span>
+                                融合
+                                <input type="checkbox" name="jogai" class="none" value="2">
+                            </span></li>
+
+                            <li><span>
+                                シンクロ
+                                <input type="checkbox" name="jogai" class="none" value="9">
+                            </span></li>
+
+                            <li><span>
+                                エクシーズ
+                                <input type="checkbox" name="jogai" class="none" value="10">
+                            </span></li>
+
+                            <li><span>
+                                トゥーン
+                                <input type="checkbox" name="jogai" class="none" value="4">
+                            </span></li>
+
+                            <li><span>
+                                スピリット
+                                <input type="checkbox" name="jogai" class="none" value="5">
+                            </span></li>
+
+                            <li><span>
+                                ユニオン
+                                <input type="checkbox" name="jogai" class="none" value="6">
+                            </span></li>
+
+                            <li><span>
+                                デュアル
+                                <input type="checkbox" name="jogai" class="none" value="7">
+                            </span></li>
+
+                            <li><span>
+                                チューナー
+                                <input type="checkbox" name="jogai" class="none" value="8">
+                            </span></li>
+
+                            <li><span>
+                                リバース
+                                <input type="checkbox" name="jogai" class="none" value="14">
+                            </span></li>
+
+                            <li><span>
+                                ペンデュラム
+                                <input type="checkbox" name="jogai" class="none" value="15">
+                            </span></li>
+
+                            <li><span>
+                                特殊召喚
+                                <input type="checkbox" name="jogai" class="none" value="16">
+                            </span></li>
+
+                            <li><span>
+                                リンク
+                                <input type="checkbox" name="jogai" class="none" value="17">
+                            </span></li>
+
+
+                        </ul>
+                    </div>
+                    
+
+
+
+                    
+                    <div id="filter_star" class=" filter_set_monster" style="">
+                        <div class="title">
+                            <h3>レベル</h3>
+                            <div class="Question">
+                                <div class="btn hex orn"><span>?</span></div>
+                                <p>0から13までのレベルあるいはランクを絞り込みます</p>
+                            </div>
+                            <div class="btn hex red untick type2"><span>x</span></div>
+                        </div>
+                          <div class="sab">
+                            <div class="updw">
+                                <input type="hidden" name="starfr" id="starfr" value="">
+                                <input type="hidden" name="starto" id="starto" value="">
+
+                                <input id="level_0" type="checkbox" name="level0" class="" value="on">
+                                    <label for="level_0"><span>0</span></label>
+                                <input id="level_1" type="checkbox" name="level1" class="" value="on">
+                                    <label for="level_1"><span>1</span></label>
+                                <input id="level_2" type="checkbox" name="level2" class="" value="on">
+                                    <label for="level_2"><span>2</span></label>
+                                <input id="level_3" type="checkbox" name="level3" class="" value="on">
+                                    <label for="level_3"><span>3</span></label>
+                                <input id="level_4" type="checkbox" name="level4" class="" value="on">
+                                    <label for="level_4"><span>4</span></label>
+                                <input id="level_5" type="checkbox" name="level5" class="" value="on">
+                                    <label for="level_5"><span>5</span></label>
+                                <input id="level_6" type="checkbox" name="level6" class="" value="on">
+                                    <label for="level_6"><span>6</span></label>
+                                <input id="level_7" type="checkbox" name="level7" class="" value="on">
+                                    <label for="level_7"><span>7</span></label>
+                                <input id="level_8" type="checkbox" name="level8" class="" value="on">
+                                    <label for="level_8"><span>8</span></label>
+                                <input id="level_9" type="checkbox" name="level9" class="" value="on">
+                                    <label for="level_9"><span>9</span></label>
+                                <input id="level_10" type="checkbox" name="level10" class="" value="on">
+                                    <label for="level_10"><span>10</span></label>
+                                <input id="level_11" type="checkbox" name="level11" class="" value="on">
+                                    <label for="level_11"><span>11</span></label>
+                                <input id="level_12" type="checkbox" name="level12" class="" value="on">
+                                    <label for="level_12"><span>12</span></label>
+                                <input id="level_13" type="checkbox" name="level13" class="" value="on">
+                                    <label for="level_13"><span>13</span></label>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+
+                    
+                    <div class="search_bottom filter_set_monster" style="">
+                        <div class="title">
+                            <h3>ペンデュラム</h3>
+                            <div class="Question">
+                                <div class="btn hex orn"><span>?</span></div>
+                                <p>ペンデュラムスケールで絞り込みます</p>
+                            </div>
+                            <div class="btn hex red untick type2"><span>x</span></div>
+                        </div>
+                        <div class="sab">
+                            <div class="updw">
+                                <input type="hidden" id="pscalefr" name="pscalefr" maxlength="2">
+                                <input type="hidden" id="pscaleto" name="pscaleto" maxlength="2">
+
+
+                                <input id="Pscale_0" type="checkbox" name="Pscale0" class="" value="on">
+                                    <label for="Pscale_0"><span>0</span></label>
+                                <input id="Pscale_1" type="checkbox" name="Pscale1" class="" value="on">
+                                    <label for="Pscale_1"><span>1</span></label>
+                                <input id="Pscale_2" type="checkbox" name="Pscale2" class="" value="on">
+                                    <label for="Pscale_2"><span>2</span></label>
+                                <input id="Pscale_3" type="checkbox" name="Pscale3" class="" value="on">
+                                    <label for="Pscale_3"><span>3</span></label>
+                                <input id="Pscale_4" type="checkbox" name="Pscale4" class="" value="on">
+                                    <label for="Pscale_4"><span>4</span></label>
+                                <input id="Pscale_5" type="checkbox" name="Pscale5" class="" value="on">
+                                    <label for="Pscale_5"><span>5</span></label>
+                                <input id="Pscale_6" type="checkbox" name="Pscale6" class="" value="on">
+                                    <label for="Pscale_6"><span>6</span></label>
+                                <input id="Pscale_7" type="checkbox" name="Pscale7" class="" value="on">
+                                    <label for="Pscale_7"><span>7</span></label>
+                                <input id="Pscale_8" type="checkbox" name="Pscale8" class="" value="on">
+                                    <label for="Pscale_8"><span>8</span></label>
+                                <input id="Pscale_9" type="checkbox" name="Pscale9" class="" value="on">
+                                    <label for="Pscale_9"><span>9</span></label>
+                                <input id="Pscale_10" type="checkbox" name="Pscale10" class="" value="on">
+                                    <label for="Pscale_10"><span>10</span></label>
+                                <input id="Pscale_11" type="checkbox" name="Pscale11" class="" value="on">
+                                    <label for="Pscale_11"><span>11</span></label>
+                                <input id="Pscale_12" type="checkbox" name="Pscale12" class="" value="on">
+                                    <label for="Pscale_12"><span>12</span></label>
+                                <input id="Pscale_13" type="checkbox" name="Pscale13" class="" value="on">
+                                    <label for="Pscale_13"><span>13</span></label>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="link_set" class="search_m filter_set_monster" style="">
+                        <div class="title">
+                            <h3>リンク</h3>
+                            <div class="Question">
+                                <div class="btn hex orn"><span>?</span></div>
+                                <p>リンクを数値またはマーカーの位置で絞り込みます。</p>
+                            </div>
+                            <div class="btn hex red untick type2"><span>x</span></div>
+                        </div>
+                        <div class="sab">
+                            <div class="updw">
+                                    <input type="hidden" id="linkmarkerfr" name="linkmarkerfr" maxlength="2">
+                                    <input type="hidden" id="linkmarkerto" name="linkmarkerto" maxlength="2">
+                                    <input id="Link_1" type="checkbox" name="Link1" class="" value="on">
+                                        <label for="Link_1"><span>1</span></label>
+                                    <input id="Link_2" type="checkbox" name="Link2" class="" value="on">
+                                        <label for="Link_2"><span>2</span></label>
+                                    <input id="Link_3" type="checkbox" name="Link3" class="" value="on">
+                                        <label for="Link_3"><span>3</span></label>
+                                    <input id="Link_4" type="checkbox" name="Link4" class="" value="on">
+                                        <label for="Link_4"><span>4</span></label>
+                                    <input id="Link_5" type="checkbox" name="Link5" class="" value="on">
+                                        <label for="Link_5"><span>5</span></label>
+                                    <input id="Link_6" type="checkbox" name="Link6" class="" value="on">
+                                        <label for="Link_6"><span>6</span></label>
+                            </div>
+                            <div class="search_m_set">
+                                <div class="link_m">
+                                    <input type="checkbox" id="linkbtn7" name="linkbtn7" value="7"><label class="linkbtn7" for="linkbtn7"></label>
+                                        <input type="checkbox" id="linkbtn8" name="linkbtn8" value="8"><label class="linkbtn8" for="linkbtn8"></label>
+                                        <input type="checkbox" id="linkbtn9" name="linkbtn9" value="9"><label class="linkbtn9" for="linkbtn9"></label>
+                                        <input type="checkbox" id="linkbtn4" name="linkbtn4" value="4"><label class="linkbtn4" for="linkbtn4"></label>
+                                        <input type="checkbox" id="linkbtn6" name="linkbtn6" value="6"><label class="linkbtn6" for="linkbtn6"></label>
+                                        <input type="checkbox" id="linkbtn1" name="linkbtn1" value="1"><label class="linkbtn1" for="linkbtn1"></label>
+                                        <input type="checkbox" id="linkbtn2" name="linkbtn2" value="2"><label class="linkbtn2" for="linkbtn2"></label>
+                                        <input type="checkbox" id="linkbtn3" name="linkbtn3" value="3"><label class="linkbtn3" for="linkbtn3"></label>
+
+                                </div>
+                                <div id="and_or2" class="and_or hex">
+                                    <span><a href="javascript:void(0);" class="link_left radio_off_left off">
+                                        <label>
+                                            <input type="radio" id="link_and" name="link_m" value="1" class="">
+                                            <span>and</span>
+                                        </label>
+                                    </a>
+                                    <a href="javascript:void(0);" class="link_right radio_off_right on" style="">
+                                        <label>
+                                            <input type="radio" id="link_or" name="link_m" value="2" class="">
+                                            <span>or</span>
+                                        </label>
+                                    </a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="atkdef  filter_set_monster" style="">
+                        <div class="search_top">
+                            <div class="title">
+                                <h3>攻撃力</h3>
+                                <div class="Question">
+                                    <div class="btn hex orn"><span>?</span></div>
+                                    <p>攻撃力で絞り込みます、最大は5000です</p>
+                                </div>
+                            </div>
+                            <div id="attack_input" class="input_set">
+                                <input type="text" id="atkfr" name="atkfr" maxlength="4">
+                                <input type="text" id="atkto" name="atkto" maxlength="4">
+                            </div>
+                        </div>
+                        <div class="search_bottom">
+                            <div class="title">
+                                <h3>守備力</h3>
+                                <div class="Question">
+                                    <div class="btn hex orn"><span>?</span></div>
+                                    <p>守備力で絞り込みます、最大は5000です</p>
+                                </div>
+                            </div>
+                            <div id="defense_input" class="input_set">
+                                <input type="text" id="deffr" name="deffr" maxlength="4">
+                                <input type="text" id="defto" name="defto" maxlength="4">
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!--#filter_set_monster-->
+                
+
+
+
+
+
+
+
+            </div><!--.filter_set_area-->
+            
+            <div id="bottombtn" class="">
+                <div class="btn hex orn" onclick="javascript:Search(4)"><span>検　索</span></div>
+            </div>
+
+        
+        
+    </div><!--#search-->
+</form>

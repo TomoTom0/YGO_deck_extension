@@ -33,7 +33,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="page-header">
-                        <h1 id="forms">遊戯王デッキサポート(インポート/エクスポート)</h1>
+                        <h1 id="forms">遊戯王DBデッキサポート</h1>
                     </div>
                 </div>
             </div>
@@ -59,6 +59,26 @@
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_addDate">
                                     <label class="custom-control-label">Add date to the name when importing a deck</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_importExport">
+                                    <label class="custom-control-label">Valid Features about Import and Export</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_sortShuffle">
+                                    <label class="custom-control-label">Valid Features about Sort and Shuffle</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_deckHeader">
+                                    <label class="custom-control-label">Valid Features about Deck Header</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_sideChange">
+                                    <label class="custom-control-label">Valid Features about Side Change in View Mode</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_deckEditImage">
+                                    <label class="custom-control-label">Valid Features about Deck Edit with Image in Edit Mode</label>
                                 </div>
                                 <!--
                                 <div class="custom-control custom-checkbox">
@@ -106,6 +126,44 @@
 
                         </form>
                     </div>
+
+                    <h2 class="defaultSettings">Default Settings</h2>
+                    <div class="well bs-component">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_default_visible_header">
+                                    <label class="custom-control-label">Show Deck Header as Default in Edit Mode</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_default_sideChange_view">
+                                    <label class="custom-control-label">Side Change Mode as Default in View Mode</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_default_deck_edit_image">
+                                    <label class="custom-control-label">Deck Image Edit Mode as Default in Edit Mode</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_default_searchArea_visible">
+                                    <label class="custom-control-label">Show Search Area as Default in Edit Mode</label>
+                                </div>
+                                <!--
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_changeStringsConfRepo">
+                                    <label class="custom-control-label">Change the Repository for strings.conf (including set)</label>
+                                    <div class="col-lg-10 col-lg-offset-2 changeStringsConfRepo">
+                                        <input type="text" placeholder="User" style="width:150px" class="inputChangeUser"/>
+                                        <input type="text" placeholder="Repo" style="width:150px" class="inputChangeRepo"/>
+                                        <input type="text" placeholder="path of file" style="width:150px" class="inputChangePath"/>
+                                        <button type="button" class="btnSave_changeStringsConfRepo btnSave_changeRepo btn btn-primary">Save</button>
+                                    </div>
+                                </div>-->
+
+                            </div>
+
+                        </form>
+                    </div>
+
                     <h2 class="searchCardDBSection">Search Card DataBase</h2>
                     <div class="well bs-component">
                         <form class="form-horizontal">
@@ -114,6 +172,7 @@
                                     <span class="spanSearchKV">
                                         <select type="text" style="width:80px;" class="selectSearchKey"></select>
                                         <input type="text" placeholder="a word or value" style="width:200px;" class="inputSearchVal" list="selectSearchList_0"></input>
+                                        <input type="text" style="display: none;"></input>
                                         <datalist id="selectSearchList_0"></datalist>
                                     </span>
                                     <button type="button" class="btnSearchClear btn btn-primary">Clear</button>
