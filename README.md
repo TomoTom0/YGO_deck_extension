@@ -2,31 +2,70 @@
 
 ## Abstract
 
-このアプリは公式カードデータベースのデッキ表示画面にエクスポート・インポート・ソート・シャッフルボタンを追加します。
+公式カードデータベースのデッキ画面にExport / Import / Sort / ShuffleボタンやMouseUIモードを追加します。
 
-OCGのみのカードのDB作成において、[ocg-card.com](https://ocg-card.com/)様を利用させていただいています。
+DB作成における古いOCGカードのid収集において、[ocg-card.com](https://ocg-card.com/)様を利用させていただいています。
 
 ## Usage
 ### Export
-- デッキの内容が表示されている画面で**Export**ボタンを押すと、.ydkファイル(各カードのパスワードが表記されているファイル)としてダウンロードします。
+- デッキ閲覧画面で**Export**ボタンを押すと、.ydkファイル(各カードのパスワードが表記されているファイル)としてダウンロードします。
 
-![](intro/export.gif)
+<img src="intro/ygo_export.gif" style="width:60vw;">
 
 ### Import
 - デッキ編集画面で**Import**ボタンを押して.ydkファイルを選択すると、その内容が自動で入力されます。
-- **2021/02/11: 現在はカード名の入力が英語で行われますが、そのまま保存すれば問題は生じません。** (英語名または日本語名が正式に決まっていないカードのみ除外されます。)
-![](intro/import.gif)
-
-### Sort
-- デッキの内容が表示されている画面で**Sort**ボタンを押すと、**ソート結果が保存され、自動でページが更新されます。** (2022/05/02 更新)
-    ソート基準はオプションや画面内で調整できるようにする予定です。
-    また、ソート機能は自身のデッキに対してのみ使用可能です。
-
-### Shuffle
-
-- デッキの内容が表示されている画面で**Shuffle**ボタンを押すと、メインデッキのカード画像がランダムにシャッフルされます。ドローシミュレーターとしてお使いください。なお、保存されているカードの並び順はシャッフルされません。
+- ~~**2021/02/11: 現在はカード名の入力が英語で行われますが、そのまま保存すれば問題は生じません。** (英語名または日本語名が正式に決まっていないカードのみ除外されます。)~~
+<img src="intro/ygo_import.gif" style="width:60vw;">
 
 
+### Shuffle/Sort
+- **Shuffle/Sort**ボタンを左/右クリックすると、そのエリアのカードがShuffle/Sortされます。(これらは保存されているカードの並び順に影響しません。)
+    - この機能はデッキ閲覧画面・編集画面の両方で利用できます。
+- デッキ閲覧画面にて**Sort & Save**ボタンを押すと、デッキレシピがソートされて**その結果が保存され、自動でページが更新されます。**
+- デッキ編集画面にて**Reload & Save**ボタンを押すと、テキストエリアからデッキレシピを再読み込みしてソートされた結果が入力されます。(レシピの保存は別途行う必要があります。)
+
+### MouseUI
+
+- **遊戯王DBのデッキ編集が、マスターデュエルのようにマウスを主体としたUI(MouseUI)で操作できます**。
+- テキストベースとMouseUIの画面はボタンエリアの**Text/Image**で切り替えできます。
+- カードの移動はマウスのクリックで行います。
+
+|From|Left|Wheel|Right|
+|-|-|-|-|
+|Main/Extra| Sideへ移動|  Main/Extraに追加| 削除(Tempへ)|
+|Side| Main/EXtraへ移動|  Sideに追加| 削除(Tempへ)|
+|Temp|Main/Extraへ移動|Main/Extraに追加|Sideに移動|
+|Search|Main/Extraへ追加|カードのページを開く|Sideへ追加|
+
+<img src="intro/ygo_MouseUI.gif" style="width:60vw;">
+
+- クリックモードの切り替えは**Click|MOVE CARD/open url**で行います。
+    - **OPEN URL**モードではLeft/Wheelクリックでカードのページを開きます。(カードの移動は行いません。)
+- **Reload & Sort**ボタンをクリックすれば、textの情報に合わせてデッキ画像をリセットします。
+
+### Search Area in Deck Edit mode
+
+- MouseUI画面の導入に合わせて、カード検索エリアをデッキ編集画面に追加しました。
+- 公式のカード検索画面と同様のUI・機能を備えています。
+- クリックでの移動に関する説明は、前節の表に含んでいます。
+- **Search SHOW/HIDE**ボタンで検索エリアの表示・非表示を切り替えます。
+
+## Side Change in Deck View Mode
+
+- デッキ閲覧画面でサイドチェンジを模したカード移動が行えます。
+- 検索エリアがないことを除き、デッキ編集画面のMouseUIモードの表と同様です。
+
+- **SideChange|L:Reset/R:OFF**をLeftクリックすれば、初期のカード順にResetされます。
+- **SideChange|L:Reset/R:OFF**をRightクリックすれば、SideChangeモードのON/OFFが切り替わります。
+    - SideChangeモードがOFFのとき、Left/Wheelクリックでカードのページを開きます。(カードの移動は行いません。)
+- **Sort & Save**をクリックでソートした上で保存します。
+
+<img src="intro/ygo_sideChange.gif" style="width:60vw;">
+
+## Left/Wheel/Right Click
+
+各種機能のクリックで「Left/Wheel/Right」を区別できるようになりました。
+「L:AAA/R:BBB」という表示のボタンは、LeftクリックでAAA、RightクリックでBBBを行います。
 
 ## News
 
@@ -34,11 +73,13 @@ OCGのみのカードのDB作成において、[ocg-card.com](https://ocg-card.c
 - 2022/04/18: v0.8: 遊戯王DBのHTML要素についての大幅な変更に対応しました。
 - 2022/04/26: v0.9: ソート機能を追加しました。シャッフル機能を追加しました。
 - 2022/05/02: v0.10: Rest APIを用いてデッキレシピを保存するようになりました。DBの作成に公式遊戯王DBの情報を利用するようにしました。
+- 2022/06/01: v1.0: デッキ編集画面にMouseUIモードの導入を行いました。他にもマウス操作に関する機能を多数追加しました。
 
 ## Install
 
 ### Chrome Store
 Chrome Storeの[遊戯王DBデッキサポート](https://chrome.google.com/webstore/detail/jdgobeohbdmglcmgblpodggmgmponihc)からインストールできます。
+[オプションページ](chrome-extension://jdgobeohbdmglcmgblpodggmgmponihc/script/options.html)で各種設定を変更できます。
 
 ### GitHub
 GitHubから本拡張機能をインストールする場合、以下の手順になります。
@@ -53,8 +94,11 @@ GitHubから本拡張機能をインストールする場合、以下の手順�
 
 ## Feauture Work
 
-- マスターデュエルのようなデッキ編集画面 (-> v1.0)
-- データベース作成で ocg-card.com 様に依存しないようにする (->日本語・英語以外の言語への対応)
+- [x] マスターデュエルのようなデッキ編集画面 (-> v1.0)
+- [x] データベース作成で ocg-card.com 様に依存しないようにする (->日本語・英語以外の言語への対応)
+- [ ] デッキごとのフォルダ分けないしタグ付けによる管理
+- [ ] 編集対象のデッキの切り替えをスムーズに
+- [ ] デッキレシピのスクショ作成
 ## Contact
 
 - [お問い合わせ](https://docs.google.com/forms/d/e/1FAIpQLSdh2wRCUWpX6ZLfma-g5O46eD93wOPHpDHWQGxdOcJLmm_tGQ/viewform?usp=sf_link)
