@@ -1245,14 +1245,14 @@ $(async function () {
                 class: "btn hex red button_visible_header hide", type: "button", id: "button_visible_header",
                 style: "position: relative;user-select: none;"
             }).append("<span>Header HIDE</span>"),
-            sort: $("<a>", { class: "btn hex red button_sort", id: "button_sort" })
-                .append("<span>Sort</span>"),
+            reloadSort: $("<a>", { class: "btn hex red button_reloadSort", id: "button_reloadSort" })
+                .append("<span>Reload & Sort</span>"),
             searchShowHide: $("<a>", { class: "btn hex red button_searchShowHide", id: "button_searchShowHide" }).append("<span>Search SHOW</span>"),
             test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
         };
         for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
             if (settings.valid_feature_deckHeader === false && ["header_visible"].indexOf(button_type) !== -1) continue;
-            if (settings.valid_feature_deckEditImage === false && ["sort", "searchShowHide"].indexOf(button_type) !== -1) continue;
+            if (settings.valid_feature_deckEditImage === false && ["reloadSort", "searchShowHide"].indexOf(button_type) !== -1) continue;
             if (IsLocalTest === false && ["test"].indexOf(button_type) !== -1) continue;
             $(area_bottom).append(button_tmp);
         }
@@ -1558,7 +1558,16 @@ $(async function () {
             e.preventDefault();
             const img_target = e.target;
             const cardInfo_tmp = ["name", "id", "cid", "type", "url"].map(d => Object({ [d]: $(img_target).attr(`card_${d}`) }));
-            const cardInfo = Object.assign(...cardInfo_tmp);
+            const card_tRow= $(img_target).parents("#search_result>#card_list>div.t_row");
+            const card_limit_div=$("dl.flex_1>dd.icon.top_set>div.lr_icon", card_tRow);
+            const card_limit_dic={forbidden:"fl_1", limited:"fl_2", semi_limited: "fl_3"};
+            const card_limit= card_limit_div.length==0 ? "not_limited" :
+                Object.entries(card_limit_dic)
+                .map(([lim_name, lim_class])=>{
+                    if ($(card_limit_div).hasClass(lim_class)) return lim_name;
+                    else return null;
+                }).filter(d=>d!==null)[0];
+            const cardInfo = Object.assign(...cardInfo_tmp, {limit:card_limit});
             if ([0, 2].indexOf(e.button) !== -1) {
                 const row_results = obtainRowResults(df)//obtainRowResults_Edit();
                 const num_now_dic = {
@@ -1577,10 +1586,8 @@ $(async function () {
                     importDeck(row_results_new);
                     const row_result = row_results[cardInfo.type];
                     const ind_new = row_result.nums.length;
-                    const span = _generateDeckImgSpan(df, cardInfo.type, { name: cardInfo.name, cid: cardInfo.cid }, `${ind_new}_1`);
+                    const span = _generateDeckImgSpan(df, cardInfo.type, { name: cardInfo.name, cid: cardInfo.cid }, `${ind_new}_1`, cardInfo.limit);
                     modifyDeckImg($("img", span), +1, to_set_type);
-                } else if (num_now_text < 3) {
-                    ;
                 }
             } else if (e.button === 1) {
                 const url = cardInfo.url;
@@ -1600,7 +1607,7 @@ $(async function () {
     $("#button_sortSave").on("click", async function () {
         await sortSaveClicked();
     });
-    $("#button_sort").on("click", async function () {
+    $("#button_reloadSort").on("click", async function () {
         if ($("#deck_text").css("display") !== "none") return;
         const row_results = obtainRowResults(df);//obtainRowResults_Edit(df);
         const row_results_new = await sortCards(row_results);
