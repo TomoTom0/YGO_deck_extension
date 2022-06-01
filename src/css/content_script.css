@@ -102,3 +102,9 @@
     background-position: center 3px;
 }
 
+#deck_header a.button_keyword_delete {
+    background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/keyword_delete.png);
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    border: solid 1px transparent;
+}

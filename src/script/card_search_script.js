@@ -30,7 +30,7 @@ const obtainSearchScript = async () => {
     }
     const remakeSearchResult=async (search_result)=>{
         const df=await obtainDF();
-        Array.from($("#card_list>div.t_row", search_result)).map(t_row=>{
+        Array.from($("#card_list>.t_row", search_result)).map(t_row=>{
             const img=$("div.box_card_img>img", t_row);
             const card_name=$(img).attr("title");
             const card_url=$("input.link_value:last", t_row).attr("value");
@@ -55,20 +55,55 @@ const obtainSearchScript = async () => {
         });
         return search_result;
     }
+    const obtainDeckRecipie = async () => {
+        const my_cgid=obtainMyCgid();
+        const lang=obtainLang();
+        const dno_tmp=$("#keyword").val().match(/#(\d+)$/);
+        if (dno_tmp.length<2) return null;
+        const dno=dno_tmp[1];
+        const url=`https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=1&cgid=${my_cgid}&dno=${dno}&request_locale=${lang}`;
+        const body=await obtainStreamBody(url);
+        const deck_text=$("#deck_text", body);
+        const card_list=$("<div>", {id:"card_list"});
+        Array.from($("table.deck_list>tbody>tr", deck_text)).map(tr=>{
+            const t_row=$("<span>", {class:"t_row"}).append($("<div>", {class:"box_card_img"}));
+            const input_link=$("td.card_name>input", tr);
+            const card_name=$("td.card_name>span", tr).text();
+            if (card_name==null || card_name.length===0) return;
+            const img=$("<img>", {title:card_name, style:"padding: 1px;width:100%;"});
+            $("div.box_card_img", t_row).append(img);
+            $(t_row).css({"max-width":" 10%"});
+            $(t_row).append(input_link);
+            card_list.append(t_row);
+        })
+        $(card_list).css({display:"flex", "flex-wrap":"wrap"});
+        //console.log(body)
+        return card_list;
+    }
     const searchClicked = async () => {
-        const search_result = await obtainSearchResult();
-        //console.log(search_result, search_result_tmp);
         showHideSearch(false);
+        const search_result = ($("#stype").val()=="deck") ? await obtainDeckRecipie() : await obtainSearchResult();
+        console.log(search_result);
         const div_search_result = $("#search_result");
         div_search_result.empty();
-        $(search_result).addClass("search_result");
-        //console.log($(search_result).prop("outerHTML"));
         div_search_result.append($(search_result).prop("outerHTML"));
         $("#choice_card_area>span:first").text($("img", search_result).length);
         await remakeSearchResult(div_search_result);
     }
     // # document
     $(document).ready(async function () {
+        $(search_result).addClass("search_result");
+        const select_stype=$("select#stype");
+        select_stype.append($("<option>", {value:"deck"}).append("「デッキ内容」表示"));
+        const datalist=$("<datalist>", {id:"search_stypeList"});
+        $("#first_search").append(datalist);
+        $("#first_search>#keyword").attr({list:"search_stypeList"})
+        $("select#stype").on("change", async function(){
+            if ($(this).val()=="deck") {
+                setDeckNames(datalist);
+                //showHideSearch(false);
+            } else $(datalist).empty();
+        })
         //const isTouch = ('ontouchstart' in window);
 
         /*const star_array	= new Array("","0","1","2","3","4","5","6","7","8","9","10","11","12","");
