@@ -10,7 +10,7 @@ const defaultSettings = {
     valid_feature_deckHeader: true,
     valid_feature_deckEditImage: true,
     valid_feature_sideChange: true,
-    valid_feature_deckManager:true,
+    valid_feature_deckManager: true,
     default_visible_header: true,
     default_deck_edit_image: true,
     default_deck_edit_search: true,
@@ -58,24 +58,25 @@ const shuffleArray = (arr) => {
     return arr;
 }
 
-const obtainRowResults = (df = null, onViewIn = null) => {
+const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     const onView_dic = { "1": true, "2": false, null: true, "8": false };
     const onView = onViewIn === null ? onView_dic[html_parse_dic.ope] : onViewIn;
-    return Object.assign(...Array.from($("#deck_text table[id$='_list']")).map(table_list => {
+    const deck_text = deck_textIn !== null ? deck_textIn : $("#deck_text");
+    return Object.assign(...Array.from($("table[id$='_list']", deck_text)).map(table_list => {
         const row_name = $(table_list).attr("id").match(/^\S*(?=_list)/)[0];
         const input_span = (onView === true) ? "span" : "input";
         const td_dic = {
             name: (onView === true) ? "td.card_name" : "td:not(.num)",
-            num: "td.num" //(onView===true) ? "td.num": 
+            num: "td.num" //(onView===true) ? "td.num":
         }
-        const names = Array.from($(`#deck_text table#${row_name}_list tbody>tr>${td_dic.name}>${input_span}`))
+        const names = Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>${input_span}`, deck_text))
             .map(d => (onView) ? $(d).text() : $(d).prop("value"));
-        const nums = Array.from($(`#deck_text table#${row_name}_list tbody>tr>${td_dic.num}>${input_span}`))
+        const nums = Array.from($(`table#${row_name}_list tbody>tr>${td_dic.num}>${input_span}`, deck_text))
             .map(d => (onView) ? $(d).text() : $(d).prop("value"));
-        const cids = (onView) ? Array.from($(`#deck_text table#${row_name}_list tbody>tr>${td_dic.name}>input.link_value`))
+        const cids = (onView) ? Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>input.link_value`, deck_text))
             .map(d => $(d).attr("value").match(/(?<=cid=)\d+/)[0]) : [];
-        const limits = Array.from($(`#deck_text table#${row_name}_list tbody>tr`))
+        const limits = Array.from($(`table#${row_name}_list tbody>tr`, deck_text))
             .map(tr => ["semi_limited", "forbidden", "limited"].filter(d => $(tr).hasClass(d)).concat(["not_limited"])[0]);
         const row_info_tmp = names.map((card_name, card_ind) => {
             const card_num = nums[card_ind];
@@ -150,47 +151,58 @@ const obtainRowResults = (df = null, onViewIn = null) => {
     }))
 }*/
 
-const obtainDeckHeader_raw = async (url_deck = null) => {
+const obtainDeckHeader_raw = async (url_deck = null, deck_headerIn = null) => {
     //const term_tables=await obtainTermTables();
     const _obtainDeckHeaderArea = async (url_deck = url_deck) => {
         const html_parse_dic = parse_YGODB_URL(url_deck || location.href);
         if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return [];
         else if (url_deck !== null && url_deck !== location.href) {
             const parsed_html = $.parseHTML(await obtainStreamBody(url_deck));
-            return $("#deck_header", parsed_html);
+            return { header: $("#deck_header", parsed_html), title: $("#broad_title", parsed_html) };
         } else {
-            return $("#deck_header");
+            return { header: $("#deck_header"), title: $("#broad_title") };
         }
     }
-    const header_area = await _obtainDeckHeaderArea(url_deck);
-    if (header_area.length === 0) return null;
+    const header_dic = deck_headerIn !== null ? deck_headerIn : await _obtainDeckHeaderArea(url_deck);
+    if (header_dic.header.length === 0 || header_dic.title.length === 0) return null;
+    const header_area = header_dic.header;
+    const header_title = header_dic.title;
     return {
-        pflag: $("#broad_title>div>h1", header_area).text().match(/【 (.*) 】/)[1],
-        deck_type: Array.from($(".text_set>span:eq(0)", header_area)).text(),
-        deck_style: Array.from($(".text_set>span:eq(1)", header_area)).text(),
+        pflag: $("div>h1", header_title).text().match(/【 (.*) 】/)[1],
+        deck_type: Array.from($(".text_set>span:eq(0)", header_area)).map(d => $(d).text()),
+        deck_style: Array.from($(".text_set>span:eq(1)", header_area)).map(d => $(d).text()),
         category: $(".regist_category>span", header_area).length === 0 ? [] : Array.from($(".regist_category>span", header_area)).map(d => d.textContent),
         tag: $(".regist_tag>span", header_area).length === 0 ? [] : Array.from($(".regist_tag>span", header_area)).map(d => d.textContent),
-        comment: Array.from($(".text_set>span.biko", header_area)).text()
+        comment: Array.from($(".text_set>span.biko", header_area)).map(d => $(d).text())
     }
 }
 
-const obtainDeckHeader_edit = async (html_parse_dic) => {
+const _obtainHiddenHeader = (html_edit) => {
+    return Object.assign(...["dno", "pflg", "deck_type", "deckStyle"]
+        .map(k => {
+            const match_res = html_edit.match(new RegExp(`\\(\'#${k}\'\\)\.val\\(\'([^\\)]*)\'\\)`));
+            return {[k]: (match_res==null || match_res.length < 1) ? "" : match_res[1]};
+        }))
+}
+
+const  _obtainSerializedHeader = (serialized_header, html_edit) =>{
+    const sps_par = new URLSearchParams(serialized_header);
+    Object.entries(_obtainHiddenHeader(html_edit)).map(([k, v]) => sps_par.set(k,v));
+    return sps_par.toString();
+}
+
+const obtainDeckHeader_edit = async (html_parse_dic, html_editIn=null) => {
     const my_cgid = obtainMyCgid();
     if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return null;
     else if (html_parse_dic.cgid != my_cgid) return null;
     const html_parse_dic_valid = Object.assign(...["cgid", "dno"].map(k => Object({ [k]: html_parse_dic[k] })), { ope: 2 });
     const sps = new URLSearchParams(html_parse_dic_valid);
     const url_edit = `/yugiohdb/member_deck.action?` + sps.toString();
-    const html_edit = await obtainStreamBody(url_edit);
-    const parsed_html = $.parseHTML(html_edit);
-    const serialized_obtain = $("#deck_header input, #deck_header select, #deck_header textarea", parsed_html).serialize();
-    const sps_par = new URLSearchParams(serialized_obtain);
-    ["dno", "pflg", "deck_type", "deckStyle"]
-        .map(k => {
-            const match_res = html_edit.match(new RegExp(`\\(\'#${k}\'\\)\.val\\(\'([^\\)]*)\'\\)`))
-            return [k, (match_res.length < 1) ? "" : match_res[1]]
-        }).map(kv => sps_par.set(...kv));
-    return sps_par.toString();
+    const html_edit = html_editIn!==null ? html_editIn.prop("outerHTML") : await obtainStreamBody(url_edit);
+    //const parsed_html = $.parseHTML(html_edit);
+    const serialized_header = $("#deck_header input, #deck_header select, #deck_header textarea", html_edit).serialize();
+    //console.log(serialized_header, html_edit)
+    return _obtainSerializedHeader(serialized_header, html_edit);
 }
 
 const serializeRowResults = (row_results) => {
@@ -287,6 +299,7 @@ const guess_clicked = async () => {
         cat_guessed.map(catInfo => {
             const option = $(`option[value=${catInfo.value}]`, select);
             $(option).prop("selected", true);
+            //$(option).attr("checked", true);
             $(option).addClass("guessed");
         });
         const dnm = $("#dnm");
@@ -407,10 +420,12 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
     const request_locale = lang != null ? `&request_locale=` + lang : "";
     if (serialized_data_in === null && $("#form_regist").length === 0) return;
     const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
+    const sps=new URLSearchParams(serialized_data);
+    sps.set("ope", "3");
     return await $.ajax({
         type: 'post',
         url: `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`,
-        data: serialized_data,
+        data: sps.toString(),
         dataType: 'json',
         beforeSend: () => {
             $('#btn_regist').removeAttr('href');
@@ -480,6 +495,64 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
         $('#btn_regist').attr('href', 'javascript:Regist();');
     }
 }*/
+
+const load_deckOfficial=async (df, my_cgid, deck_dno, settings)=>{
+    const deck_body = await _obtainDeckRecipie(my_cgid, deck_dno, obtainLang(), "2");
+    const deck_name=$("#dnm", deck_body.body).val();
+    const row_results = obtainRowResults(df, false, deck_body.text);
+    $("input#dno").val(deck_dno);
+    if (settings.valid_feature_deckManager === true){
+        $("#deck_dno_opened").text(deck_dno);
+        $("#deck_name_opened").text(deck_name);
+    }
+    $("#dnm").val(deck_name);
+    // import
+    importDeck(row_results);
+    if (settings.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
+    // header
+    const header_names={
+        input:["dnm", "biko"],
+        select:["dckCategoryMst", "dckTagMst"]
+    }
+    for (const [type, arr] of Object.entries(header_names)){
+        for (const dom_id of arr){
+            if (type==="input") {
+                const old_val=$(`#${dom_id}`, deck_body.header).val();
+                $(`#${dom_id}`).val(old_val);
+            } else if (type === "select") {
+                const select=$(`#${dom_id}`);
+                const select_old=$(`#${dom_id}`, deck_body.header);
+                Array.from($("option",select)).map(option=>{
+                    $(option).attr({selected:false}).prop("selected", false);
+                })
+                Array.from($(`option[selected]`, select_old)).map(option=>{
+                    const val=$(option).val();
+                    const option_new=$(`option[value='${val}']`, select);
+                    $(option_new).attr({selected:true}).prop("selected", true);
+                })
+            }
+        }
+    }
+    // ,"dno","pflg", "deck_type", "deckStyle"
+    Object.entries(_obtainHiddenHeader(deck_body.body)).map(([k,v])=>{
+        $(`#${k}`).val(v);
+    })
+    showSelectedOption();
+}
+
+const generateNewDeck= async ()=>{
+    const my_cgid = obtainMyCgid();
+    //const dno = $("#dno").val();
+    const lang = obtainLang();
+    const deckList=await obtainDeckListOfficial();
+    //const dno_new=[...Array(deckList.length+1).keys()].map(d=>d+1).filter(dno_cand=>!deckList.some(d=>d.dno==dno_cand))[0];
+    const dno_tmp=Math.max(deckList.map(d=>d.dno))+1;
+    const sps = { ope: "6", cgid: my_cgid, request_locale: lang, dno:dno_tmp };
+    const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?` + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
+    const body=await obtainStreamBody(url);
+    const dnos=Array.from($("div.t_body>div.t_row div.inside>input.link_value", body)).map(d=>$(d).attr("value").match(/dno=(\d+)/)[1]).map(d=>parseInt(d))
+    return Math.max(...dnos)//{dno:dno_new, body:body};
+}
 
 // ## sort cards
 
@@ -587,7 +660,7 @@ const resetSortDeckImgs = (cards_pre) => {
 
 const addShuffleButton = (setSpace = true) => {
     $("#deck_image").addClass("shuffle");
-    $("#deck_image div.card_set div.image_set a").css({ "max-width": "6.5%" });
+    $("#deck_image div.card_set div.image_set a").css({ "max-width": "max(6.5%, 55px)" });
     $("#deck_image div.card_set").css({ "margin": "0px 0px 0px" });
     const shuffle_span = $("<span>", { style: "border:none; line-height: 30px; min-width: fit-content;" })
         .append("L:Shuffle/R:Sort");
@@ -709,19 +782,19 @@ async function importFromYdk() {
     const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
     for (const [ind_import, ids] of Object.entries(imported_ids)) {
         for (const id_tmp of Array.from(new Set(ids)).filter(d => d.length > 0)) {
-            const id = (isFinite(id_tmp)) ? id_tmp - 0 : id_tmp;
+            const isID = /^\d+$/.test(id);
+            if (id_tmp.length === 0) continue;
+            const id = (isFinite(id_tmp)) ? parseInt(id_tmp) : id_tmp;
             let name_tmp = "";
-            let types_tmp = "";
             // empty
             if (!/^\d+$/.test(id) && !id) name_tmp = "";
             // id
             else if (/^\d+$/.test(id) && id) {
                 name_tmp = df_filter(df, "name", ["id", id])[0];
             }
-            // Jap or Eng name
+            // name
             else if (!/^\d+$/.test(id) && id) {
                 name_tmp = id.split("\t")[0];
-                types_tmp = id.split("\t")[1];
             }
             //console.log(id,id_tmp, name_tmp, ids.map(d => d.split("\t")[0]).filter(d => d == id), ids.map(d => d.split("\t")[0]).filter(d => d == id_tmp));
 
@@ -854,10 +927,29 @@ const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in = null) => {
     }
 }
 
+const showSelectedOption = () => {
+    for (const table of Array.from($("dl.category_tag>dd>div.table_l"))) {
+        const old_div = $("div.selected_options", table);
+        if (old_div.length > 0) $(old_div).empty();
+        const div = old_div.length > 0 ? old_div : $("<div>", { class: "selected_options" });
+        Array.from($("select option[selected]", table))
+            .map(d => $(d).text())
+            .map(d => {
+                const css_dic = {
+                    border: "1px solid #579c57", background: "#d8f2d9", "font-weight": "bold",
+                    "vertical-align": "middle"
+                }
+                const span = $("<span>").append(d).css(css_dic);
+                div.append(span);
+            })
+        $(table).append(div);
+    };
+}
+
 // # insert deck image
 const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: null }, card_class_ind = "0_1", card_limit = "not_limited") => {
     const span = $("<span>", {
-        style: "max-width: 6.5%; padding:1px; box-sizing:border-box; display: block;position: relative;"
+        style: "max-width: max(6.5%, 55px); padding:1px; box-sizing:border-box; display: block;position: relative;"
     });
 
     const card_input = Object.assign({ name: null, cid: null }, card_name_cid);
@@ -1196,94 +1288,112 @@ const operate_searchArea = (toShowIn = null) => {
     const button_operate = $("#button_searchShowHide");
     $("span", button_operate).html(`Search ` + (toShow ? "HIDE" : "SHOW"));
     if (toShow === true) {
-        ;
+        $("#bg>div>article").css({ "max-width": "initial" });
+        $("#bg>div>article div#article_body").css({ "width": "50vw" });
     } else {
-        //$(image_sets).css({"min-height":"min(8.7vw, 87px)"});
+        $("#bg>div>article").css({ "max-width": "" });
+        $("#bg>div>article div#article_body").css({ "width": "auto" });
     }
 }
 
 // # deck version
 
-const setDeckVersionTagList=async (updateDeckNameIsValid=true)=>{
-    const data_deckVersion=await operateStorage({data_deckVersion:JSON.stringify({})}, "local", "get")
-        .then(d=>JSON.parse(d.data_deckVersion));
+const setDeckVersionTagList = async (updateDeckNameIsValid = true) => {
+    const data_deckVersion = await operateStorage({ data_deckVersion: JSON.stringify({}) }, "local", "get")
+        .then(d => JSON.parse(d.data_deckVersion));
 
-    if (updateDeckNameIsValid===true) {
-        const datalist_name=$("#deckVersion_nameList");
+    if (updateDeckNameIsValid === true) {
+        const datalist_name = $("#deckVersion_nameList");
         $(datalist_name).empty();
-        Object.keys(data_deckVersion).map(d=>{
-            const option=$("<option>", {value:d}).append(d);
+        Object.keys(data_deckVersion).map(d => {
+            const option = $("<option>", { value: d }).append(d);
             datalist_name.append(option);
         })
     }
-    const deck_name=$("#deck_version_name").val().replace(/^\s*|\s*$/g, "");
-    if (Object.keys(data_deckVersion).indexOf(deck_name)===-1) return;
-    const datalist_tag=$("#deckVersion_tagList");
+    const deck_name = $("#deck_version_name").val().replace(/^\s*|\s*$/g, "");
+    if (Object.keys(data_deckVersion).indexOf(deck_name) === -1) return;
+    const datalist_tag = $("#deckVersion_tagList");
     $(datalist_tag).empty();
-    Object.entries(data_deckVersion[deck_name]).map(([key, deckVersion])=>{
-        const option=$("<option>", {value:`${deckVersion.tag} #${key}`}).append(deckVersion.date);
+    Object.entries(data_deckVersion[deck_name]).map(([key, deckVersion]) => {
+        const option = $("<option>", { value: `${deckVersion.tag} #${key}` }).append(deckVersion.date);
         datalist_tag.append(option);
     })
 }
-const operateDeckVersion=async (mode="get", deckInfoIn={name:null, tag:null, tag_key:null}, row_results={})=>{
-    const deckInfo_empty={name:null, tag:null, tag_key:null};
-    const deckInfo=Object.assign(deckInfo_empty, deckInfoIn);
-    if (deckInfo.name===null || deckInfo.name.length===0) return;
-    const version_date=new Date().toLocaleDateString();
-    const version_key=Date.now().toString(36);
-    const deck_name=deckInfo.name;
-    const data_deckVersion=await operateStorage({data_deckVersion:JSON.stringify({})}, "local", "get")
-        .then(d=>JSON.parse(d.data_deckVersion));
-    const old_data=(Object.keys(data_deckVersion).indexOf(deck_name)===-1) ? {} : data_deckVersion[deck_name];
-    if (mode==="set"){
-        const deck_tag=deckInfo.tag || version_date;
-        const row_results_min=Object.assign(...Object.entries(row_results)
-            .map(([row_name, row_result])=>Object({[row_name]:{cids:row_result.cids,
-                  nums:row_result.nums}})
-        ));
-        const new_data_deckVersion={
-            [deck_name]:Object.assign({
-                [version_key]:{
-                    row_results_min:row_results_min,
-                    date:version_date,
-                    tag:deck_tag
-                }}, old_data)
+const operateDeckVersion = async (mode = "get", deckInfoIn = { name: null, tag: null, tag_key: null }, row_results = {}) => {
+    const deckInfo_empty = { name: null, tag: null, tag_key: null };
+    const deckInfo = Object.assign(deckInfo_empty, deckInfoIn);
+    if (deckInfo.name === null || deckInfo.name.length === 0) return;
+    const version_date = new Date().toLocaleDateString();
+    const version_key = Date.now().toString(36);
+    const deck_name = deckInfo.name;
+    const data_deckVersion = await operateStorage({ data_deckVersion: JSON.stringify({}) }, "local", "get")
+        .then(d => JSON.parse(d.data_deckVersion));
+    const old_data = (Object.keys(data_deckVersion).indexOf(deck_name) === -1) ? {} : data_deckVersion[deck_name];
+    if (mode === "set") {
+        const deck_tag = deckInfo.tag || version_date;
+        const row_results_min = Object.assign(...Object.entries(row_results)
+            .map(([row_name, row_result]) => Object({
+                [row_name]: {
+                    cids: row_result.cids,
+                    nums: row_result.nums
+                }
+            })
+            ));
+        const new_data_deckVersion = {
+            [deck_name]: Object.assign({
+                [version_key]: {
+                    row_results_min: row_results_min,
+                    date: version_date,
+                    tag: deck_tag
+                }
+            }, old_data)
         };
-        const new_saved_json=Object.assign(data_deckVersion, new_data_deckVersion);
-        await operateStorage({data_deckVersion:JSON.stringify(new_saved_json)}, "local", "set");
+        const new_saved_json = Object.assign(data_deckVersion, new_data_deckVersion);
+        await operateStorage({ data_deckVersion: JSON.stringify(new_saved_json) }, "local", "set");
         console.log("saved");
-    } else if (mode==="get") {
+    } else if (mode === "get") {
         if (old_data === {}) return;
-        const deck_tag_key=deckInfo.tag_key;
-        const deck_version=(Object.keys(old_data).indexOf(deck_tag_key)===-1) ? {} : old_data[deck_tag_key];
-        const row_results_min=deck_version.row_results_min;
+        const deck_tag_key = deckInfo.tag_key;
+        const deck_version = (Object.keys(old_data).indexOf(deck_tag_key) === -1) ? {} : old_data[deck_tag_key];
+        const row_results_min = deck_version.row_results_min;
         // re-convert row_results
-        const df= await obtainDF(obtainLang());
-        const row_results=Object.assign(...Object.entries(row_results_min)
-        .map(([row_name, row_result])=>Object({[row_name]:{
-            cids:row_result.cids,
-            nums:row_result.nums,
-            names:row_result.cids.map(cid=>df_filter(df, "name", ["cid", cid])[0]),
-            limits:row_result.cids.map(d=>"not_limited")
-        }})))
+        const df = await obtainDF(obtainLang());
+        const row_results = Object.assign(...Object.entries(row_results_min)
+            .map(([row_name, row_result]) => Object({
+                [row_name]: {
+                    cids: row_result.cids,
+                    nums: row_result.nums,
+                    names: row_result.cids.map(cid => df_filter(df, "name", ["cid", cid])[0]),
+                    limits: row_result.cids.map(d => "not_limited")
+                }
+            })))
         console.log("loaded");
         return row_results;
     }
 }
 
-const setDeckNames=async (datalist)=>{
-    const my_cgid=obtainMyCgid();
-    const lang=obtainLang();
-    const body=await obtainStreamBody(`https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=4&cgid=${my_cgid}&request_locale=${lang}`)
-    const deck_names=Array.from($("div#deck_list>div.t_body>div.t_row>div>div.inside", body))
-        .map(d=>Object({
-            name:$("div.dack_set>div.text_set>span.name>span.name", d).text(),
-            dno:$("input.link_value", d).val().match(/dno=(\d+)/)[1]
+const obtainDeckListOfficial = async () => {
+    const sps={
+        ope:"4",
+        cgid: obtainMyCgid(),
+        request_locale : obtainLang()
+    }
+    if (sps.cgid==null) return null;
+    const url=`https://www.db.yugioh-card.com/yugiohdb/member_deck.action?`+Object.entries(sps).map(([k,v])=>`${k}=${v}`).join("&");
+    const body = await obtainStreamBody(url);
+    return Array.from($("div#deck_list>div.t_body>div.t_row>div>div.inside", body))
+        .map(d => Object({
+            name: $("div.dack_set>div.text_set>span.name>span.name", d).text(),
+            dno: $("input.link_value", d).val().match(/dno=(\d+)/)[1]
         }));
+}
+
+const setDeckNames = async (datalist) => {
+    const deck_names = await obtainDeckListOfficial();
     //const datalist=$("#deck_nameList");
     datalist.empty();
-    deck_names.map((deckInfo)=>{
-        const option=$("<option>", {value:`${deckInfo.name} #${deckInfo.dno}`});
+    deck_names.map((deckInfo) => {
+        const option = $("<option>", { value: `${deckInfo.name} #${deckInfo.dno}` });
         datalist.append(option);
     })
 }
@@ -1310,24 +1420,13 @@ $(async function () {
     if (["2", "8"].indexOf(html_parse_dic.ope) !== -1) {
         const IsCopyMode = html_parse_dic.ope === "8";
         // ## deck edit
-        // import button
         //const area = $("#header_box .save"); // before// 2022/4/18
         const area_bottom = $("#bottom_btn_set"); // after 2022/4/18
-        if (settings.valid_feature_importExport === true) {
-            const label = $("<label>", { for: "button_importFromYdk_input" });
-            const button_import = $("<a>", {
-                class: "btn hex red button_import", type: "button", id: "button_importFromYdk",
-                style: "position: relative;user-select: none;"
-            })
-                .append("<span>Import</span>")
-            const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
-            button_import.append(input_button);
-            label.append(button_import);
-            area_bottom.append(label);
-        }
 
         // other buttons for bottom
         const button_bottom_dic = {
+            back: $("<a>", { class: "btn hex orn button_backtoView", id: "button_backToView" })
+                .append("<span>Back</span>"),
             header_visible: $("<a>", {
                 class: "btn hex red button_visible_header hide", type: "button", id: "button_visible_header",
                 style: "position: relative;user-select: none;"
@@ -1340,8 +1439,22 @@ $(async function () {
         for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
             if (settings.valid_feature_deckHeader === false && ["header_visible"].indexOf(button_type) !== -1) continue;
             if (settings.valid_feature_deckEditImage === false && ["reloadSort", "searchShowHide"].indexOf(button_type) !== -1) continue;
+            if (settings.valid_feature_deckManager === false && !IsCopyMode && ["back"].indexOf(button_type) !== -1) continue;
             if (IsLocalTest === false && ["test"].indexOf(button_type) !== -1) continue;
             $(area_bottom).append(button_tmp);
+        }
+        // import button
+        if (settings.valid_feature_importExport === true) {
+            const label = $("<label>", { for: "button_importFromYdk_input" });
+            const button_import = $("<a>", {
+                class: "btn hex red button_import", type: "button", id: "button_importFromYdk",
+                style: "position: relative;user-select: none;"
+            })
+                .append("<span>Import</span>")
+            const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
+            button_import.append(input_button);
+            label.append(button_import);
+            area_bottom.append(label);
         }
         if (settings.valid_feature_deckHeader === true) {
             toggleVisible_deckHeader(settings.default_visible_header || IsCopyMode);
@@ -1364,61 +1477,96 @@ $(async function () {
             const button_guess = $("<a>", { class: "btn hex red button_guess", id: "button_guess" }).append("<span>Guess</span>");
             $(`#button_size_header_category`).after(button_guess);
             $(".box_default .box_default_table dt span").css({ "min-width": "0" });
+            showSelectedOption();
         }
-        if (settings.valid_feature_deckManager === true) {
-            const header_box=$("div#deck_header>div#header_box");
-            const dl_deck_name=$("dl:has(dd>input#dnm)", header_box);
-            const img_delete=$("<a>", {
-                class:"ui-draggable ui-draggable-handle button_keyword_delete",
-                style:"flex:none;width:20px;height:20px;"
+        if (html_parse_dic.ope !== "8" && settings.valid_feature_deckManager === true) {
+            const header_box = $("div#deck_header>div#header_box");
+            const dl_deck_name = $("dl:has(dd>input#dnm)", header_box);
+            const img_delete = $("<a>", {
+                class: "ui-draggable ui-draggable-handle button_keyword_delete",
+                style: "flex:none;width:20px;height:20px;"
             })
 
-            const dl_deck_version=$("<dl>", {class:"tab_mh100 alwaysShow", id:"deck_version_box"});
-            const dt=$("<dt>").append($("<span>", {style:"min-width:0px;"}).append("Deck Version"));
-            const dd=$("<dd>");
+            const dl_deck_version = $("<dl>", { class: "tab_mh100 alwaysShow", id: "deck_version_box" });
+            const dt = $("<dt>").append($("<span>", { style: "min-width:0px;" }).append("Deck Version"));
+            const dd = $("<dd>");
             //input_version_name=$("<select>", {id:"deck_version_name"});
             //input_version_tag=$("<select>", {id:"deck_version_tag"});
-            const btns={
-                save:$("<a>", { class: "btn hex red button_deckVersion Save", id: "button_deckVersionSave" })
+            const btns_version = {
+                save: $("<a>", { class: "btn hex red button_deckVersion button_save", id: "button_deckVersionSave" })
                     .append("<span>Save</span>"),
-                load:$("<a>", { class: "btn hex red button_deckVersion Load", id: "button_deckVersionLoad" })
+                load: $("<a>", { class: "btn hex red button_deckVersion button_load", id: "button_deckVersionLoad" })
                     .append("<span>Load</span>")
-                };
-            ["name", "tag"].map(key=>{
+            };
+            ["name", "tag"].map(key => {
                 //const select=$("<select>", {type:"text", class:`select_deck_version ${key}`, style:"flex:1;"});
-                const input=$("<input>", {
-                    type:"text",
-                    placeholder:`deck version ${key}`,
-                    list:`deckVersion_${key}List`,
-                    id:`deck_version_${key}`});
+                const placeholder_dic = { name: "deck name", tag: "version tag" };
+                const flex_dic = { name: 4, tag: 3 };
+                const input = $("<input>", {
+                    type: "text",
+                    placeholder: `${placeholder_dic[key]}`,
+                    list: `deckVersion_${key}List`,
+                    id: `deck_version_${key}`,
+                    style: `flex: ${flex_dic[key]}`
+                });
                 //const input_dummy=$("<input>", {style:"display:none;"});
-                const datalist=$("<datalist>", {id:`deckVersion_${key}List`});
+                const datalist = $("<datalist>", { id: `deckVersion_${key}List` });
                 dd.append($(img_delete).clone()).append(input).append(datalist);//.append(input_dummy)
                 //dd.append(select)
             })
             //dd.append(input_version_name).append(input_version_tag)
-            Object.values(btns).map(d=>dd.append(d));
+            Object.values(btns_version).map(d => dd.append(d));
             dl_deck_version.append(dt).append(dd);
             dl_deck_name.after(dl_deck_version);
             //const deck_name=$("#dnm").val().replace(/^\s*|\s*$/g, "");
             //if (deck_name.length>0) $("#deck_version_name").val(deck_name);
             setDeckVersionTagList(true);
 
-            const dnm=$("#dnm");
-            const input=$("<input>", {
-                type:"text",
-                placeholder:`deck name to open`,
-                list:`deck_nameList`,
-                id:`deck_name_toOpen`});
-            const datalist_deckName=$("<datalist>", {id:"deck_nameList"});
-            const button=$("<a>", { class: "btn hex red button_deckName Load", id: "button_deckNameLoad" })
-                    .append("<span>Load</span>");
-            $(dnm).css({width:"auto"});
-            $(dnm).before($(img_delete).clone().css({visibility:"hidden"}));
-            $(dnm).after(button);
+            const dnm = $("#dnm");
+            const span_opened_dic = {
+                dno: $("<span>", {
+                    id: `deck_dno_opened`,
+                    style: "flex:none;margin:0 2px 0;height:100%;background-color:#ddd;border: solid 1px #aaa"
+                }).append(`${html_parse_dic.dno}`)
+                    .css({
+                        "font-weight": "bold",
+                        "vertical-align": "middle"
+                    }),
+                name: $("<span>", {
+                    id: `deck_name_opened`,
+                    style: "flex:none;mrgin:0 2px 0;height:100%;background-color:#ddd;border: solid 1px #aaa"
+                }).append(`${$(dnm).val()}`)
+                    .css({
+                        "font-weight": "bold",
+                        "vertical-align": "middle"
+                    })
+            }
+            Object.values(span_opened_dic).map(d => $(dnm).before(d));
+            $(dnm).attr({ list: `deck_nameList` }).css({ flex: "4" });
+            const datalist_deckName = $("<datalist>", { id: "deck_nameList" });
+            const btns_official = {
+                new: $("<a>", { class: "btn hex orn button_deckOfficial button_new", id: "button_deckOfficialNew" })
+                    .append("<span>New</span>"),
+                delete: $("<a>", { class: "btn hex orn button_deckOfficial button_delete", id: "button_deckOfficialDelete" })
+                    .append("<span>Delete</span>"),
+                copy: $("<a>", { class: "btn hex orn button_deckOfficial button_copy", id: "button_deckOfficialCopy" })
+                    .append("<span>Copy</span>"),
+                load: $("<a>", { class: "btn hex orn button_deckOfficial button_load", id: "button_deckOfficialLoad" })
+                    .append("<span>Load</span>"),
+                save: $("<a>", { class: "btn hex orn button_deckOfficial button_save", id: "button_deckOfficialSave" })
+                    .append("<span>Save</span>"),
+            };
+            $(dnm).css({ width: "auto" });
+            $(dnm).before($(img_delete).clone());
+            // save, load button
+            for (const [key, btn] of Object.entries(btns_official)){
+                if (IsLocalTest===false && ["delete", "copy", "new"].indexOf(key)!==-1) continue;
+                $(dnm).after(btn);
+            };
+            $("#btn_regist").css({ display: "none" });
             $(dnm).after(datalist_deckName);
-            $(dnm).after(input);
-            $(dnm).after($(img_delete).clone());
+            //$(dnm).after(input);
+            //$(dnm).after($(img_delete).clone());
             //$(dnm).attr({list:"deck_nameList"});
             await setDeckNames(datalist_deckName);
         }
@@ -1472,8 +1620,8 @@ $(async function () {
 
             // search Area
             $("#bg>div:eq(0)").css({ background: "none" });
-            $("div#wrapper").css({width:"100%", "min-width":"fit-content"});
-            $("#bg").css({overflow:"scroll"});
+            $("div#wrapper").css({ width: "100%", "min-width": "fit-content" });
+            $("#bg").css({ overflow: "scroll" });
             $("#num_total").css({ display: "none" });
             const div_search = obtainSearchForm();
             //const script_search=obtainSearchScript();
@@ -1520,7 +1668,7 @@ $(async function () {
         if (settings.valid_feature_sideChange === true) {
             const deck_image = $("#deck_image");
             $(deck_image).addClass("deck_image").css({ "min-height": "890px" });
-            $("#deck_image div.card_set div.image_set a").css({ "max-width": "6.5%" });
+            $("#deck_image div.card_set div.image_set a").css({ "max-width": "max(6.5%, 55px)" });
             $("#deck_image div.card_set").css({ "margin": "0px 0px 0px" });
 
             const span_tmp = $("<span>", { style: "border:none; line-height: 30px; min-width: 180px;" })
@@ -1551,7 +1699,7 @@ $(async function () {
                 };*/
                 const row_result = row_results[classInfo.type];
                 const cid_now = row_result.cids[classInfo.ind1];
-                if (cid_now==null) console.log({classInfo, row_result})
+                if (cid_now == null) console.log({ classInfo, row_result })
                 //const id_now= df_filter(df, "id", ["cid", cid_now])[0];
                 const attr_dic = {
                     card_name: row_result.names[classInfo.ind1],
@@ -1562,7 +1710,7 @@ $(async function () {
                 $(img).attr(attr_dic);
                 $(img).css({ position: "relative", width: "100%" });
                 //$(card_a).css({padding: "1px"});
-                $(span).css({ "max-width": "6.5%", padding: "1px", "box-sizing": "border-box", display: "block", position: "relative" });
+                $(span).css({ "max-width": "max(6.5%, 55px)", padding: "1px", "box-sizing": "border-box", display: "block", position: "relative" });
                 $(img).addClass("url_open");
                 $(card_a).before(span);
                 //if (settings.default_sideChange_view===true) $(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box", display: "block"});
@@ -1627,6 +1775,113 @@ $(async function () {
         } else if ($(e.target).is("a.button_keyword_delete")) {
             $(e.target).next("input").val("");
             if ($(e.target).is("#deck_header dl#deck_version_box *")) await setDeckVersionTagList(false);
+        } else if ($(e.target).is("a.button_deckVersion, a.button_deckVersion *")) {
+            const button_target = $(e.target).is("a.button_deckVersion") ? e.target : $(e.target).parents("a.button_deckVersion")[0];
+            const toSave = $(button_target).hasClass("button_save");
+            $(button_target).toggleClass("red");
+            const row_results = obtainRowResults(df);
+            const deck_name = $("#deck_version_name").val().replace(/^\s*|\s*$/g, "");
+            const deck_tag = $("#deck_version_tag").val().replace(/^\s*|\s*$/g, "").replace(/#\w+$/, "");
+            const deck_tag_key_tmp = $("#deck_version_tag").val().replace(/^\s*|\s*$/g, "").match(/#(\w+)$/);
+            if (toSave) {
+                await operateDeckVersion("set", { name: deck_name, tag: deck_tag }, row_results);
+                setDeckVersionTagList(true);
+            } else {
+                if (deck_tag_key_tmp.length < 2) return;
+                const deck_tag_key = deck_tag_key_tmp[1];
+                const row_results = await operateDeckVersion("get", { name: deck_name, tag_key: deck_tag_key });
+                importDeck(row_results);
+                if (settings.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
+            }
+            await sleep(500);
+            $(button_target).toggleClass("red");
+        } else if ($(e.target).is("a.button_deckOfficial *")) {
+            const button_target = $(e.target).is("a.button_deckOfficial") ? e.target : $(e.target).parents("a.button_deckOfficial")[0];
+            //const toSave = $(button_target).hasClass("button_save");
+            $(button_target).toggleClass("orn");
+            const deck_name_tmp = $("#dnm").val().replace(/^\s*|\s*$/g, "");
+            const deck_name_opened = $("#deck_name_opened").val().replace(/^\s*|\s*$/g, "");
+            const deck_dno_opened = $("#deck_dno_opened").val().replace(/^\s*|\s*$/g, "");
+            const deck_dno_tmp = deck_name_tmp.match(/#(\d+)$/);
+
+            if ($(button_target).hasClass("button_save")) {
+                const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
+                const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
+                const row_results = obtainRowResults(df);
+                const serialized_dic = {
+                    header: $("#deck_header input, #deck_header select, #deck_header textarea").serialize(),
+                    deck: serializeRowResults(row_results)
+                };
+                //console.log(serialized_dic);
+                const serialized_data = "ope=3&" + Object.values(serialized_dic).join("&");
+
+                await _Regist_fromYGODB(html_parse_dic, serialized_data);
+                await operateDeckVersion("set", { name: "@@Auto", tag: "_save_"+deck_name }, row_results);
+                setDeckVersionTagList(true);
+            } else if ($(button_target).hasClass("button_load")) {
+                //const deck_name = deck_name_tmp.replace(/#\d+$/, "");
+                if (deck_dno_tmp.length < 2) return;
+                const deck_dno = deck_dno_tmp[1];
+                await load_deckOfficial(df, my_cgid, deck_dno, settings);
+            } else if ($(button_target).hasClass("button_new")){
+                const my_cgid = obtainMyCgid();
+                const dno_new=await generateNewDeck()//.then(d=>d.dno);
+                //const deck_headr_hidden=_obtainHiddenHeader(body);
+                //console.log($(body).prop("outerHTML"))
+                await load_deckOfficial(df, my_cgid, dno_new, settings);
+                //const res=await fetch(url)
+                //console.log(body);
+            } else if ($(button_target).hasClass("button_copy")){
+                const my_cgid = obtainMyCgid();
+                const dno = $("#dno").val();
+                const lang = obtainLang();
+                //const sps=new URLSearchParams(deck_header_tmp);
+                //sps.set("dnm", Date.now().toString());
+                const dno_new=await generateNewDeck();
+                const deck_header_tmp=$("#deck_header input, #deck_header select, #deck_header textarea").serialize();
+                const sps=new URLSearchParams(deck_header_tmp);
+                sps.set("dno", dno_new);
+                const serialized_dic={
+                    header:sps.toString(),
+                    deck:serializeRowResults(obtainRowResults(df))
+                }
+                const serialized_data="ope=3&"+Object.values(serialized_dic).join("&");
+                console.log(serialized_data)
+                await _Regist_fromYGODB({dno:dno_new, cgid:my_cgid, request_locale:lang}, serialized_data);
+                await load_deckOfficial(df, my_cgid, dno_new, settings);
+            } else if ($(button_target).hasClass("button_delete")){
+                const my_cgid = obtainMyCgid();
+                //const dno = $("#dno").val();
+                const lang = obtainLang();
+                const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
+                const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
+                const deck_dno = (deck_dno_tmp!=null && deck_dno_tmp.length >=2) ? deck_dno_tmp[1]:deck_dno_opened;
+                const sps_dic={cgid:my_cgid, request_locale:lang, dno:deck_dno, ope:7};
+                const sps=new URLSearchParams(sps_dic);
+                const url="https://www.db.yugioh-card.com/yugiohdb/member_deck.action?"+sps.toString();
+                const html_dic=await _obtainDeckRecipie(my_cgid, deck_dno, lang, "1");
+                const row_results=obtainRowResults(df, true, html_dic.text);
+                await operateDeckVersion("set", { name: "@@Auto", tag: "_delete_"+deck_name }, row_results);
+                const res=await fetch(url);
+                if (!res.ok) {
+                    console.log(res);
+                    return;
+                }
+                const deckList=await obtainDeckListOfficial();
+                const dnos=deckList.map(d=>d.dno);
+                const dnos_smaller=dnos.filter(d=>parseInt(d)<deck_dno);
+                const dno_load= (dnos_smaller.length===0) ? Math.max(...dnos) : Math.max(...dnos_smaller);
+                await load_deckOfficial(df, my_cgid, dno_load, settings);
+            }
+            await sleep(500);
+            $(button_target).toggleClass("orn");
+            await setDeckNames($("#deck_nameList"));
+        } else if ($(e.target).is("#deck_header dl.category_tag>dd select>option")) {
+            const select=$(e.target).parents("select")[0];
+            //console.log($(select).attr("multiple"), select)
+            if ($(e.target).attr("value") !== "") $(e.target).attr({ "selected": $(e.target).attr("selected") === undefined });
+            if ($(e.target).attr("value") === "" || $(e.target).attr("selected") === undefined) $(e.target).prop("selected", false);
+            showSelectedOption();
         }
     });
     // ## mousedown
@@ -1706,16 +1961,16 @@ $(async function () {
             e.preventDefault();
             const img_target = e.target;
             const cardInfo_tmp = ["name", "id", "cid", "type", "url"].map(d => Object({ [d]: $(img_target).attr(`card_${d}`) }));
-            const card_tRow= $(img_target).parents("#search_result>#card_list>.t_row");
-            const card_limit_div=$("dl.flex_1>dd.icon.top_set>div.lr_icon", card_tRow);
-            const card_limit_dic={forbidden:"fl_1", limited:"fl_2", semi_limited: "fl_3"};
-            const card_limit= card_limit_div.length==0 ? "not_limited" :
+            const card_tRow = $(img_target).parents("#search_result>#card_list>.t_row");
+            const card_limit_div = $("dl.flex_1>dd.icon.top_set>div.lr_icon", card_tRow);
+            const card_limit_dic = { forbidden: "fl_1", limited: "fl_2", semi_limited: "fl_3" };
+            const card_limit = card_limit_div.length == 0 ? "not_limited" :
                 Object.entries(card_limit_dic)
-                .map(([lim_name, lim_class])=>{
-                    if ($(card_limit_div).hasClass(lim_class)) return lim_name;
-                    else return null;
-                }).filter(d=>d!==null)[0];
-            const cardInfo = Object.assign(...cardInfo_tmp, {limit:card_limit});
+                    .map(([lim_name, lim_class]) => {
+                        if ($(card_limit_div).hasClass(lim_class)) return lim_name;
+                        else return null;
+                    }).filter(d => d !== null)[0];
+            const cardInfo = Object.assign(...cardInfo_tmp, { limit: card_limit });
             if ([0, 2].indexOf(e.button) !== -1) {
                 const row_results = obtainRowResults(df)//obtainRowResults_Edit();
                 const num_now_dic = {
@@ -1747,6 +2002,15 @@ $(async function () {
         updateDeckCount();
         // remove additional script
         $(`script[type='text/javascript']:gt(${script_initial_count - 1})`).remove();
+    })
+
+    // ## double click
+    document.addEventListener("dblclick", async function (e) {
+        if ($(e.target).is("#deck_header dl.category_tag>dd select>option")) {
+            console.log($(e.target).prop("selected"))
+            //$(e.target).prop("selected", !$(e.target).prop("selected"));
+            //$(e.target).toggleClass("clicked");
+        }
     })
     // ## button id
     $("#button_importFromYdk").on("change", async function () {
@@ -1781,41 +2045,32 @@ $(async function () {
         await guess_clicked();
     });
 
-    $("#button_deckVersionSave").on("click", async function () {
-        $(this).toggleClass("red");
-        const row_results=obtainRowResults(df);
-        const deck_name=$("#deck_version_name").val().replace(/^\s*|\s*$/g, "");
-        const deck_tag=$("#deck_version_tag").val().replace(/^\s*|\s*$/g, "").replace(/#\w+$/, "");
-        await operateDeckVersion("set", {name:deck_name, tag:deck_tag}, row_results);
-        setDeckVersionTagList(true);
-        await sleep(500);
-        $(this).toggleClass("red");
-    });
-    $("#button_deckVersionLoad").on("click", async function () {
-        $(this).toggleClass("red");
-        const deck_name=$("#deck_version_name").val().replace(/^\s*|\s*$/g, "");
-        const deck_tag_key_tmp=$("#deck_version_tag").val().replace(/^\s*|\s*$/g, "").match(/#(\w+)$/);
-        if (deck_tag_key_tmp.length<2) return;
-        const deck_tag_key=deck_tag_key_tmp[1];
-        const row_results=await operateDeckVersion("get", {name:deck_name, tag_key:deck_tag_key});
-        importDeck(row_results);
-        if (settings.valid_feature_deckEditImage===true) insertDeckImg(df, row_results);
-        await sleep(500);
-        $(this).toggleClass("red");
-    });
+
 
     $("#button_test").on("click", async function () {
-        console.log(1)
-        await guess_clicked();
+        const url="https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=4&cgid=87999bd183514004b8aa8afa1ff1bdb9"
+        const body=await obtainStreamBody(url);
+        //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
+        console.log(body);
     });
 
     $("#button_visible_header").on("click", function () {
         toggleVisible_deckHeader();
     });
+    $("#button_backToView").on("click", async function () {
+        const my_cgid = obtainMyCgid();
+        const dno = $("#dno").val();
+        const lang = obtainLang();
+        const sps = { ope: "1", cgid: my_cgid, dno: dno, request_locale: lang };
+        const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?` + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
+        location.href = url;
+    });
+    
     // ## change
     $("#deck_version_name").on("change", async function () {
         await setDeckVersionTagList(false);
-    })
+    });
+
     /*$("#button_sort").on("click", async function (){
         const row_results=obtainRowResults(df)//obtainRowResults_Edit(df);
         //console.log(row_results)

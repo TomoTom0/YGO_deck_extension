@@ -108,3 +108,8 @@
     background-repeat: no-repeat;
     border: solid 1px transparent;
 }
+
+#deck_header dl dd select[multiple]>option[selected] {
+    font-weight: bold;
+    background-color: chartreuse;
+}

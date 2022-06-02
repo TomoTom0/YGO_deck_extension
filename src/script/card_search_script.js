@@ -1,5 +1,37 @@
 "use strict";
 
+const _obtainDeckRecipie = async (cgid, dno, lang, ope="2") => {
+    const url=`https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=${ope}&cgid=${cgid}&dno=${dno}&request_locale=${lang}`;
+    const body=await obtainStreamBody(url);
+    //const deck_text=$("#deck_text", body);
+    return {text:$("#deck_text", body), image:$("#deck_image", body), header:$("#deck_header", body), title:$("#broad_title", body), body:body};
+}
+
+const obtainDeckRecipie = async () => {
+    const my_cgid=obtainMyCgid();
+    const lang=obtainLang();
+    const dno_tmp=$("#keyword").val().match(/#(\d+)$/);
+    if (dno_tmp.length<2) return null;
+    const dno=dno_tmp[1];
+    const deck_body=_obtainDeckRecipie(my_cgid, dno, lang, "1");
+    const deck_text=(await deck_body).text;
+    const card_list=$("<div>", {id:"card_list"});
+    Array.from($("table.deck_list>tbody>tr", deck_text)).map(tr=>{
+        const t_row=$("<span>", {class:"t_row"}).append($("<div>", {class:"box_card_img"}));
+        const input_link=$("td.card_name>input", tr);
+        const card_name=$("td.card_name>span", tr).text();
+        if (card_name==null || card_name.length===0) return;
+        const img=$("<img>", {title:card_name, style:"padding: 1px;width:100%;"});
+        $("div.box_card_img", t_row).append(img);
+        $(t_row).css({"max-width":" 10%"});
+        $(t_row).append(input_link);
+        card_list.append(t_row);
+    })
+    $(card_list).css({display:"flex", "flex-wrap":"wrap"});
+    //console.log(body)
+    return card_list;
+}
+
 const obtainSearchScript = async () => {
     // # functions
     const showHideSearch = (toShowIn = null) => {
@@ -55,31 +87,7 @@ const obtainSearchScript = async () => {
         });
         return search_result;
     }
-    const obtainDeckRecipie = async () => {
-        const my_cgid=obtainMyCgid();
-        const lang=obtainLang();
-        const dno_tmp=$("#keyword").val().match(/#(\d+)$/);
-        if (dno_tmp.length<2) return null;
-        const dno=dno_tmp[1];
-        const url=`https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=1&cgid=${my_cgid}&dno=${dno}&request_locale=${lang}`;
-        const body=await obtainStreamBody(url);
-        const deck_text=$("#deck_text", body);
-        const card_list=$("<div>", {id:"card_list"});
-        Array.from($("table.deck_list>tbody>tr", deck_text)).map(tr=>{
-            const t_row=$("<span>", {class:"t_row"}).append($("<div>", {class:"box_card_img"}));
-            const input_link=$("td.card_name>input", tr);
-            const card_name=$("td.card_name>span", tr).text();
-            if (card_name==null || card_name.length===0) return;
-            const img=$("<img>", {title:card_name, style:"padding: 1px;width:100%;"});
-            $("div.box_card_img", t_row).append(img);
-            $(t_row).css({"max-width":" 10%"});
-            $(t_row).append(input_link);
-            card_list.append(t_row);
-        })
-        $(card_list).css({display:"flex", "flex-wrap":"wrap"});
-        //console.log(body)
-        return card_list;
-    }
+    
     const searchClicked = async () => {
         showHideSearch(false);
         const search_result = ($("#stype").val()=="deck") ? await obtainDeckRecipie() : await obtainSearchResult();
