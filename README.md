@@ -2,7 +2,7 @@
 
 ## Abstract
 
-公式カードデータベースのデッキ画面にExport / Import / Sort / ShuffleボタンやMouseUIモードを追加します。
+公式カードデータベースのデッキ画面にMouseUIモードやExport / Import / Sort / Shuffleボタンを追加します。
 
 DB作成における古いOCGカードのid収集において、[ocg-card.com](https://ocg-card.com/)様を利用させていただいています。
 

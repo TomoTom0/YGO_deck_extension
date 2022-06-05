@@ -57,7 +57,7 @@ const obtainSearchScript = async () => {
         const body = await obtainStreamBody(url);
         const max_page=max_pageIn || obtainMaxPageNum(body);
         const search_body = $("#card_list", body);
-        if (page < 3 && max_page>page) return search_body.append($(obtainSearchResult(parseInt(page)+1, max_page)).prop("innerHTML"));
+        if (page < 3 && max_page>page) return search_body.append($(await obtainSearchResult(parseInt(page)+1, max_page).then(d=>d.prop("innerHTML"))));
         else return search_body;
     }
     const remakeSearchResult=async (search_result)=>{
@@ -89,13 +89,13 @@ const obtainSearchScript = async () => {
     }
     
     const searchClicked = async () => {
+        const div_search_result = $("#search_result");
+        div_search_result.empty();
         showHideSearch(false);
         const search_result = ($("#stype").val()=="deck") ? await obtainDeckRecipie() : await obtainSearchResult();
         console.log(search_result);
-        const div_search_result = $("#search_result");
-        div_search_result.empty();
         div_search_result.append($(search_result).prop("outerHTML"));
-        $("#choice_card_area>span:first").text($("img", search_result).length);
+        $("#choice_card_area>span:first").text($("div.t_row>div.box_card_img", search_result).length);
         await remakeSearchResult(div_search_result);
     }
     // # document
@@ -111,6 +111,17 @@ const obtainSearchScript = async () => {
                 setDeckNames(datalist);
                 //showHideSearch(false);
             } else $(datalist).empty();
+        })
+        // ## document addEventListener
+        document.addEventListener("click", async function (e) {
+            if ($(e.target).is("#form_search div.button_search, #form_search div.button_search *")) {
+                const button_target=$(e.target).is("div.button_search") ? e.target : $(e.target).parents("div.search_button")[0];
+                $(button_target).toggleClass("orn");
+                await searchClicked();
+                $(button_target).toggleClass("orn");
+            } else if ($(e.target).is("#choice_card_area, #choice_card_area *")) {
+                showHideSearch();
+            }
         })
         //const isTouch = ('ontouchstart' in window);
 
@@ -567,14 +578,7 @@ const obtainSearchScript = async () => {
                 await searchClicked();
             }
         });
-        // ## document addEventListener
-        document.addEventListener("click", async function (e) {
-            if ($(e.target).is("#form_search div.button_search, #form_search div.button_search *")) {
-                await searchClicked();
-            } else if ($(e.target).is("#choice_card_area, #choice_card_area *")) {
-                showHideSearch();
-            }
-        })
+        
 
     });
 
