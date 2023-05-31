@@ -1,5 +1,11 @@
 ﻿"use strict";
 
+const limitedKey = ["atk", "def", "race", "type", "attribute", "set", "LMarker", "cid", "ot"];
+const numberKey = ["scale", "level", "id"];
+const includeKey=["type", "set"];
+
+const langs=["ja", "en", "de", "fr", "it", "es", "pt", "ko"];
+
 function makeTable(tableContent={},captionText=""){
     const table=$("<table>", {class:"part"});
     const caption=$("<caption>").append(captionText);
@@ -88,11 +94,7 @@ $(async function () {
     const df_init = (Date.now() - items2.lastModifiedDate < 3 * 86400 * 1000) ? JSON.parse(items2.df) :
         await updateDB({display:"", settings, repoInfos});
 
-    const limitedKey = ["atk", "def", "race", "type", "attribute", "set", "LMarker", "cid", "ot"];
-    const numberKey = ["scale", "level", "id"];
-    const includeKey=["type", "set"];
 
-    const langs=["ja", "en", "de", "fr", "it", "es", "pt", "ko"];
     const select_lang=$("select#value_defaultLang");
     langs.map(lang=>{
         const option=$("<option>", {value:lang}).append(lang);
@@ -337,6 +339,9 @@ $(async function () {
     // enter then search
     document.addEventListener("keydown", async function (e) {
         if ($(e.target).is("input.inputSearchVal") && e.key == "Enter") {
+            const settings=await getSyncStorage({settings:defaultString}).then(items=>Object.assign(defaultSettings, JSON.parse(items.settings)));
+            const lang=settings.value_defaultLang;
+            const df=await obtainDF(lang);
             await searchFunc(df);
         }
     })

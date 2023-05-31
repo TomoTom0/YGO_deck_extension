@@ -4,7 +4,7 @@
 //------------------------------------
 //         #  on loading
 
-$(async function () {
+window.onload = async function () {
     const url_now = location.href;
     const html_parse_dic = parse_YGODB_URL(url_now, true);
     const url_body = parse_YGODB_URL_body(url_now);
@@ -203,7 +203,7 @@ $(async function () {
             // deck image
             const df = await obtainDF(obtainLang());
             const row_results = obtainRowResults(df);//obtainRowResults_Edit(df);
-            //console.log(row_results)
+            console.log(row_results)
             insertDeckImg(df, row_results, false);
             updateCardLimitClass(row_results);
             const key_show = settings.default_deck_edit_image ? "image" : "text";
@@ -235,7 +235,7 @@ $(async function () {
             const article = $("article");
             const article_body = $("#article_body");
             $(article_body).css({ display: "table-cell", "width": "50vw" });
-            article.css({ "max-width": "initial" });
+            article.css({ "max-width": "initial", "scroll-snap-type": "y" });
             //$(div_body).append(script_search);
             const div_search_result = $("<div>", { id: "search_result", style: "max-height:80vh;overflow-y:scroll;", oncontextmenu: "return false;" });
             $(div_body).append(div_search);
@@ -737,5 +737,5 @@ setTimeout(() => { e.source.close() }, 200);
 setTimeout(() => { location.reload() }, 1000);
 }
 })*/
-});
+};
 

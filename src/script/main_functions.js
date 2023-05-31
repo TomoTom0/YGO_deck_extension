@@ -60,6 +60,7 @@ const shuffleArray = (arr) => {
 
 const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
+    // onView false => Edit mode
     const onView_dic = { "1": true, "2": false, null: true, "8": false };
     const onView = onViewIn === null ? onView_dic[html_parse_dic.ope] : onViewIn;
     const deck_text = deck_textIn !== null ? deck_textIn : $("#deck_text");
@@ -67,7 +68,7 @@ const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
         const row_name = $(table_list).attr("id").match(/^\S*(?=_list)/)[0];
         const input_span = (onView === true) ? "span" : "input";
         const td_dic = {
-            name: (onView === true) ? "td.card_name" : "td:not(.num)",
+            name: (onView === true) ? "td.card_name" : "td>div.card_name",
             num: "td.num" //(onView===true) ? "td.num":
         }
         const names = Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>${input_span}`, deck_text))
@@ -76,6 +77,8 @@ const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
             .map(d => (onView) ? $(d).text() : $(d).prop("value"));
         const cids = (onView) ? Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>input.link_value`, deck_text))
             .map(d => $(d).attr("value").match(/(?<=cid=)\d+/)[0]) : [];
+            // Array.from($(`table#${row_name}_list tbody>tr>input.imgs`, deck_text))
+            //.map(d => $(d).attr("value").match(/^\d+/)[0]);
         const limits = Array.from($(`table#${row_name}_list tbody>tr`, deck_text))
             .map(tr => ["semi_limited", "forbidden", "limited"].filter(d => $(tr).hasClass(d)).concat(["not_limited"])[0]);
         const row_info_tmp = names.map((card_name, card_ind) => {
@@ -681,7 +684,7 @@ const addShuffleButton = (setSpace = true) => {
     $("#deck_image").addClass("shuffle");
     $("#deck_image div.card_set div.image_set a").css({ "max-width": "max(6.5%, 55px)" });
     $("#deck_image div.card_set").css({ "margin": "0px 0px 0px" });
-    const shuffle_span = $("<span>", { style: "border:none; line-height: 30px; min-width: fit-content;" })
+    const shuffle_span = $("<span>", { style: "border:none; line-height: 30px; min-width: 100px;" })
         .append("L:Shuffle/R:Sort");
     const flex_dic = { "main": setSpace ? 2.7 : 4, "extra": 4, "side": 4 }
     for (const set_type of ["main", "extra", "side"]) {
