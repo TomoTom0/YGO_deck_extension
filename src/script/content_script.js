@@ -4,6 +4,7 @@
 //------------------------------------
 //         #  on loading
 
+//window.addEventListener("DOMContentLoaded",  async function(){
 window.onload = async function () {
     const url_now = location.href;
     const html_parse_dic = parse_YGODB_URL(url_now, true);
@@ -738,4 +739,5 @@ setTimeout(() => { location.reload() }, 1000);
 }
 })*/
 };
+//});
 

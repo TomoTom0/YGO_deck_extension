@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "ygo-db-update"
+version = "0.1.0"
+description = "update database for YGO DB Chrome Extension"
+authors = ["TomoTom0 <tomoIris427+GitHub@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.31.0"
+bs4 = "^0.0.1"
+python-dotenv = "^1.0.0"
+glob2 = "^0.7"
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
