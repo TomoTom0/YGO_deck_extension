@@ -39,7 +39,7 @@
             </div>
 
             <div class="row">
-                <div class="col-lg-7">
+                <div class="col-lg-20">
                     <h2 class="CardDBSection">Card DataBase: </h2>
                     <div class="well bs-component">
                         <form class="form-horizontal">
@@ -57,28 +57,28 @@
                                     <label class="custom-control-label">Auto Update DB</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_addDate">
-                                    <label class="custom-control-label">Add date to the name when importing a deck</label>
-                                </div>
-                                <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_importExport">
-                                    <label class="custom-control-label">Valid Features about Import and Export</label>
+                                    <label class="custom-control-label">Validate Features about Import and Export</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_sortShuffle">
-                                    <label class="custom-control-label">Valid Features about Sort and Shuffle</label>
+                                    <label class="custom-control-label">Validate Features about Sort and Shuffle</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_deckHeader">
-                                    <label class="custom-control-label">Valid Features about Deck Header</label>
+                                    <label class="custom-control-label">Validate Features about Deck Header</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_sideChange">
-                                    <label class="custom-control-label">Valid Features about Side Change in View Mode</label>
+                                    <label class="custom-control-label">Validate Features about Side Change in View Mode</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_deckEditImage">
-                                    <label class="custom-control-label">Valid Features about Deck Edit with Image in Edit Mode</label>
+                                    <label class="custom-control-label">Validate Features about Deck Edit with Image in Edit Mode</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_deckManager">
+                                    <label class="custom-control-label">Validate Features about Deck Manager in Edit Mode</label>
                                 </div>
                                 <!--
                                 <div class="custom-control custom-checkbox">
@@ -127,10 +127,18 @@
                         </form>
                     </div>
 
-                    <h2 class="defaultSettings">Default Settings</h2>
+                    <h2 class="defaultSettings">Settings</h2>
                     <div class="well bs-component">
                         <form class="form-horizontal">
                             <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <select class="custom-control value_settings" id="value_defaultLang"></select>
+                                    <label class="custom-control-label">Default Language</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings" id="check_addDate">
+                                    <label class="custom-control-label">Add Date to the Name When Importing a Deck</label>
+                                </div>
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_default_visible_header">
                                     <label class="custom-control-label">Show Deck Header as Default in Edit Mode</label>
@@ -164,6 +172,27 @@
                         </form>
                     </div>
 
+                    <h2 class="operateDeckVersionSection">Operate Deck in Cache</h2>
+                    <div class="well bs-component" >
+                        <form class="form-horizontal">
+                            <div class="form-group divDeckVersion">
+                                <div id="area_for_buttonDeckVersionImportExport" class="deckVersionName" style="margin:10px;"></div>
+                                <div class="col-lg-10 col-lg-offset-2">
+                                    <span class="">
+                                        <input type="text" placeholder="deck name" style="width:200px;" id="deck_version_name" class="input_deckVersion_name" list="deckVersion_nameList"></input>
+                                        <input type="text" style="display: none;"></input>
+                                        <datalist id="deckVersion_nameList"></datalist>
+                                    </span>
+                                    <span id="area_for_buttonDeckVersionName" class="deckVersionName" style="margin:10px;"></span>
+                                </div>
+                                <span id="area_for_buttonDeckVersionTagAll" class="deckVersionTagAll" style="padding:5px;margin:10px;display:none;background-color:#c0eb90">
+                                    <span id="deck_version_name_loaded" style="font-weight:bold;"></span><span>: For Checked Versions </span>
+                                </span>
+                            </div>
+                        </form>
+                        <div id="area_deckVersionImages" style="min-height:200px;"></div>
+                    </div>
+
                     <h2 class="searchCardDBSection">Search Card DataBase</h2>
                     <div class="well bs-component">
                         <form class="form-horizontal">
@@ -175,13 +204,14 @@
                                         <input type="text" style="display: none;"></input>
                                         <datalist id="selectSearchList_0"></datalist>
                                     </span>
-                                    <button type="button" class="btnSearchClear btn btn-primary">Clear</button>
+                                    <button type="button" class="btnSearchClear btn btn-primary">X</button>
                                     <button type="button" class="btnSearchDB btn btn-primary">Search</button>
                                     <button type="button" class="btnSearchAdd btn btn-primary">Add</button>
                                 </div>
                             </div>
+                            <div id="searchValidKeys"></div>
                         </form>
-                        <form class="form-horizontal" style="width:1000px;min-height:200px;">
+                        <form class="form-horizontal" style="min-width:1000px;min-height:200px;">
                             <div id="searchResultArea"></div>
                         </form>
                     </div>
@@ -191,7 +221,8 @@
     </div>
 
     <script src="../js/jquery-3.5.1.min.js"></script>
-    <script src="../js/sql-wasm.min.js"></script>
+    <!--<script src="../js/sql-wasm.min.js"></script>-->
+    <script src="../script/main_functions.js"></script>
     <script src="../script/db_functions.js"></script>
     <script src="../script/options.js"></script>
 
