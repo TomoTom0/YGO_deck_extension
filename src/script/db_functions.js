@@ -462,11 +462,24 @@ async function updateDB() {
     const content = await fetch(git_data_url, { method: "GET", headers: header_auth }).then(d => d.json())
         .then(res => atob(res.content));
     console.log("Database has been updated.");
-    let df_new = JSON.parse(content).all;
+    let df_new = {id:[10000], cid:["14809"]};
+    const text_tmp = content;//.replace(/(,?\s*)NaN(\s*,?)/g, `$1"NaN"$2`);
+    try {
+
+        console.log(JSON.parse(text_tmp));
+    df_new = JSON.parse(text_tmp).all;
     df_new.id = df_new.id.map(d => d );
     df_new.cid = df_new.cid.map(d => d );
+    } catch (err) {
+        console.log("Error on parsing Card Data Base string as json\n"+err);
+        const ind = 710328;
+        console.log(text_tmp.slice(ind-20,ind +20));
+        df_new = {id:[10000], cid:["14809"]};
+        
+    }
     await operateStorage({ df: JSON.stringify(df_new), lastModifiedDate: Date.now() }, "local", "set");
     return df_new;
+    
 }
 
 
