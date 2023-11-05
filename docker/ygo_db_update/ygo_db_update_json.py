@@ -19,7 +19,7 @@ import os
 import re
 import sys
 import json
-from unittest import result
+#from unittest import result
 import requests
 import base64
 from bs4 import BeautifulSoup
@@ -29,14 +29,22 @@ import html
 from concurrent import futures
 import multiprocessing
 
+#import pandas as pd
+
+#from typing import Union, Optional
+#import argparse
+
 # import time
-import glob2
+#import glob2
 from dotenv import load_dotenv
+from pathlib import Path
+
 # read .env
 
-env_files=sorted(glob2.glob("../../**/.env"))
+env_files_tmp=[Path("../"*ind+".env") for ind in range(3)]
+env_files=[s for s in env_files_tmp if s.is_file()]
 if len(env_files) > 0:
-    load_dotenv(env_files[0])
+    load_dotenv(env_files[0], override=True)
 
 GitHubToken = os.getenv("GitHubToken")
 
@@ -74,7 +82,7 @@ cardName_translations = {"D－HERO": "D-HERO"}
 
 # ## makeDB
 
-def make_db(dataIn=[], except_cards={}):
+def make_db(dataIn: list=[], except_cards: dict={})->dict:
     nowTime = datetime.datetime.now()
     if dataIn == []:
         url = "https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes"
@@ -181,7 +189,9 @@ def make_db(dataIn=[], except_cards={}):
 # ## obtain Jap info
 
 # +
-def _obtainJapInfos(formIn="id", valsIn={}, cardName_translations=cardName_translations):
+def _obtainJapInfos(formIn: str="id", valsIn: dict={},
+                    cardName_translations: dict=cardName_translations
+                    )-> dict:
     vals = valsIn if isinstance(valsIn, dict) else {s: s for s in valsIn}
     if (len(vals.keys()) == 0):
         return {}
@@ -227,7 +237,7 @@ def _obtainJapInfos(formIn="id", valsIn={}, cardName_translations=cardName_trans
     return cardInfos
 
 
-def obtainJapInfos(formIn="id", valsIn={}):
+def obtainJapInfos(formIn: str="id", valsIn: dict={})->dict:
     valsIn2 = valsIn if (type(valsIn) == "dict") else {s: s for s in valsIn}
     length_vals = len(valsIn2.keys())
     cardInfos = {}
@@ -252,7 +262,7 @@ def obtainJapInfos(formIn="id", valsIn={}):
 
 # ## operate GitHub
 
-def operateGitHub(method="upload", dataIn={}, repoInfo=repoInfos["MyRepo_DB"], commit_name=None):
+def operateGitHub(method: str="upload", dataIn: dict={}, repoInfo: dict=repoInfos["MyRepo_DB"], commit_name: Optional[str]=None)->dict:
     header_auth = {"Accept": "application/vnd.github.v3+json",
                    "Authorization": f"token {GitHubToken}"}
     if method == "download":
@@ -289,7 +299,7 @@ def operateGitHub(method="upload", dataIn={}, repoInfo=repoInfos["MyRepo_DB"], c
 
 # # cardList Lang
 
-def obtainCardsNum(lang="ja"):
+def obtainCardsNum(lang: str="ja")-> int:
     sort = "21"
     rp = 10
     page=1
@@ -303,7 +313,7 @@ def obtainCardsNum(lang="ja"):
     return rp*int(max_page)
 
 
-def obtainCardInfo_fromYGODB(page, lang="ja", rp=2000):
+def obtainCardInfo_fromYGODB(page: int, lang: str="ja", rp: int=2000)-> dict:
     sort = "21"
     url = f"https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=1&rp={rp}"\
             +f"&sort={sort}&page={page}&keyword=&stype=1&ctype=&othercon=2&starfr=&starto=&pscalefr="\
@@ -316,7 +326,7 @@ def obtainCardInfo_fromYGODB(page, lang="ja", rp=2000):
             for s, t in zip(soup.select("input.cid"), soup.select("span.card_name"))}
 
 
-def _updateCardList_Lang(lang, cardList_Lang_old, rp=2000):
+def _updateCardList_Lang(lang: str, cardList_Lang_old: dict, rp: int=2000)-> dict:
     cards_num = obtainCardsNum(lang=lang)
     cardList_Lang = cardList_Lang_old
     for page in range(1, cards_num//rp + 2):
@@ -329,7 +339,7 @@ def _updateCardList_Lang(lang, cardList_Lang_old, rp=2000):
     return {lang: cardList_Lang}
 
 
-def updateCardList_Langs(cardList_Langs_old={}, langs=["ja", "en", "de", "fr", "it", "es", "pt", "ko"]):
+def updateCardList_Langs(cardList_Langs_old: dict={}, langs: list=["ja", "en", "de", "fr", "it", "es", "pt", "ko"])-> dict:
     future_list = []
     try:
         with futures.ThreadPoolExecutor(max_workers=4) as executor:
@@ -345,119 +355,7 @@ def updateCardList_Langs(cardList_Langs_old={}, langs=["ja", "en", "de", "fr", "
 
     return {k: v for future_tmp in future_list for k, v in future_tmp._result.items()}
 
-# # make_good_db
-
-"""def make_good_db(on_regular=True, addInfo={"ocg": {}}, githubReuseIsValid=True, modifyOldIsValid=True, cardListLangUpdateIsValid=True):
-
-    data_db_empty = {"ocg": {}, "date": "2000-01-01"}
-    data_db_old_tmp = operateGitHub(
-        "download", repoInfo=repoInfos["MyRepo_DB"]) if githubReuseIsValid else data_db_empty
-
-    data_cardList_Langs = operateGitHub(
-        "download", repoInfo=repoInfos["MyRepo_cardListLang"])
-    cardList_Langs_old = data_cardList_Langs.get("cardList_Langs", {}) if isinstance(data_cardList_Langs, dict) and githubReuseIsValid else {}
-    data_db_old = data_db_old_tmp if isinstance(
-        data_db_old_tmp, dict) else data_db_empty
-    commit_name= None if on_regular is True else "Manual"
-
-    lastUpdated = data_db_old.get("date", "2000-01-01")
-    if on_regular and (lastUpdated == f"{datetime.date.today()}" or datetime.date.today().weekday() % 3 != 2):
-        print(f"{datetime.date.today()}: update is skipped")
-        return
-    elif cardListLangUpdateIsValid is True:
-        cardList_Langs = updateCardList_Langs(
-            cardList_Langs_old=cardList_Langs_old)
-        operateGitHub("upload", dataIn={
-                      "cardList_Langs": cardList_Langs,
-                      "date": f"{datetime.date.today()}"}, repoInfo=repoInfos["MyRepo_cardListLang"], commit_name=commit_name)
-    else:
-        cardList_Langs=cardList_Langs_old
-
-    dic_forModify_old = data_db_old.get(
-        "forModify", {}) if modifyOldIsValid else {}
-    print("1 / 3: obtain base info of database")
-    db_base = make_db()
-
-    #id2cid = {s: t for s, t in zip(db_base["id"], db_base["cid"])}
-    #id2ind = {str(id_tmp): ind for ind, id_tmp in enumerate(db_base["id"])}
-
-    # merge 1st
-    db_base["cid"] = [dic_forModify_old.get(str(ind), {"cid": cid})[
-        "cid"] for ind, cid in enumerate(db_base["cid"])]
-
-    # exceptions
-    nineOrderId_cards = {"10000030": {"id": "10000030", "cid": "10113", "name": "Magi Magi ☆ Magician Gal"},
-                         "10000040": {"id": "10000040", "cid": "10112", "name": "Holactie the Creator of Light"}}
-    for cardInfo in nineOrderId_cards.values():
-        ind_tmp = db_base["id"].index(int(cardInfo["id"]))
-        if cardInfo["name"] == db_base["name"][ind_tmp]:
-            db_base["cid"][ind_tmp] = cardInfo["cid"]
-
-    # check cards without cid
-    inds_withoutCid = [ind for ind, cid in enumerate(
-        db_base["cid"]) if cid == "NaN"]
-
-    # search cards with English name
-    inds_forSearch = []
-    fromNameEng_dic = {}
-    nameEng2cid = {s["name"]: s["cid"] for s in cardList_Langs["en"].values()}
-    for ind in inds_withoutCid:
-        id_tmp = str(db_base["id"][ind])
-        name_tmp = db_base["name"][ind]
-        cid_tmp = nameEng2cid.get(name_tmp, None)
-        if cid_tmp is None:
-            inds_forSearch.append(ind)
-        else:
-            fromNameEng_dic[id_tmp] = {"cid": cid_tmp, "id": id_tmp}
-
-    print("2 / 3: obtain info from ocg-card.com")
-    print("\t"+"\n\t".join([db_base["name"][ind]+"\t\t" +
-                            str(db_base["id"][ind]) for ind in inds_forSearch]))
-    cardInfos_searched = obtainJapInfos(
-        "id", [db_base["id"][ind] for ind in inds_forSearch])
-    fromOCGCARD_dic = {str(s["id"]): {"cid": s["cid"], "id": s["id"]}
-                       for s in cardInfos_searched.values()}
-
-    # merge now
-    db_new = db_base#.copy()
-    dic_forModify = {**fromOCGCARD_dic, **fromNameEng_dic}
-    #dic_forModify_tmp = {id2ind[str(k)]: v for k, v in dic_forModify.items()}
-    #db_new["cid"] = [dic_forModify.get(ind, {"cid": cid})["cid"] for ind, cid in enumerate(db_new["cid"])]
-    db_new["cid"] = [dic_forModify.get(db_new["id"][ind], {"cid": cid})["cid"] for ind, cid in enumerate(db_new["cid"])]
-
-    # add lang info
-    print("3 / 3: add lang info")
-    db_new["lang"] = []
-    db_new["encImg"]=[]
-    for lang in cardList_Langs.keys():
-        db_new[f"name_{lang}"] = []
-    for cid in db_new["cid"]:
-        encImg_now="NaN"
-        lang_list = []
-        for lang, cardList in cardList_Langs.items():
-            cardInfo_tmp = cardList.get(str(cid), None)
-            if cardInfo_tmp is None:
-                db_new[f"name_{lang}"].append("NaN")
-                continue
-            lang_list.append(lang)
-            encImg_now=cardInfo_tmp.get("encImg", "NaN")
-            db_new[f"name_{lang}"].append(cardInfo_tmp["name"])
-        db_new["lang"].append(",".join(lang_list))
-        db_new["encImg"].append(encImg_now)
-    db_new["name_orig"]=db_new["name"]
-    db_new["name"]=db_new["name_ja"]
-
-    data_db_new = {
-        "date": f"{datetime.date.today()}",
-        "all": db_new,
-        "forModify": dic_forModify, # fromOCGCARD_dic
-        "forModifyAll": {**dic_forModify_old, **dic_forModify},
-        "forSearch": cardInfos_searched
-    }
-    operateGitHub("upload", data_db_new, commit_name=commit_name)
-    return data_db_new"""
-
-def _obtainTermDic(lang="ja"):
+def _obtainTermDic(lang: str="ja")-> dict:
     url = f"https://www.db.yugioh-card.com/yugiohdb/card_search.action?request_locale={lang}"
     res = requests.get(url)
     soup = BeautifulSoup(res.text, "html.parser")
@@ -479,7 +377,7 @@ def _obtainTermDic(lang="ja"):
 
     return {**term_mon_dic, **term_st_dic}
 
-def obtainTermDic_Langs(langs=["ja", "en", "de", "fr", "it", "es", "pt", "ko"]):
+def obtainTermDic_Langs(langs: list=["ja", "en", "de", "fr", "it", "es", "pt", "ko"])-> dict:
     term_dics_tmp={lang: _obtainTermDic(lang=lang) for lang in langs}
     term_dics_Langs={}
     for lang, term_dic_mst in term_dics_tmp.items():
@@ -796,7 +694,7 @@ def make_good_db2(on_regular=True, addInfo={"ocg": {}, "uploadIsValid":True}, gi
         operateGitHub("upload", data_db_new)
     return data_db_new
 
-if __name__ == "__main__":
+def main():
     args=sys.argv
     on_regular="--regular" in args # False
     reuse=not "--no-reuse" in args # True
@@ -806,49 +704,6 @@ if __name__ == "__main__":
         githubReuse={"db":reuse, "Lang":reuse},
         modifyOldIsValid=True,
         paraIsValid=para)
-    #data_new = make_good_db(True, githubReuseIsValid=True, modifyOldIsValid=True)
-    #sleep(30*60)
 
-# import ygo_heroku
-#
-# db=ygo_heroku.make_good_db(False)
-
-# ocg_modify={
-#     "40939228":{"name":"シューティング・セイヴァー・スター・ドラゴン", "id": "40939228", "cid":16228},
-#     "93708824":{"name":"ロクスローズ・ドラゴン", "id":"93708824", "cid":15970},
-#     "58844135":{"name":"人攻智能ME－PSY－YA", "id":"58844135", "cid":16213},
-#     "41002238":{"name":"カイザー・グライダー－ゴールデン・バースト", "id":"41002238", "cid":16620},
-#     "9822220":{"name":"天獄の王", "id":"9822220", "cid":16516},
-#     "65681983":{"name":"抹殺の指名者", "id":"65681983", "cid":14627}
-# }
-
-# db = make_good_db(False, "NOTreuse", {"ocg":ocg_modify})
-
-# db_old = operateGitHub("download")
-
-# db["all"]["id"].index(9822220)
-
-# db["all"]["name"][5509]
-
-# db = make_good_db(False, "reuse")
-
-# [s for s in a if "OCG" in s["ot"] and not "Token" in s["name"]]
-
-# a=[{key: db["all"][key][ind] for key in db["all"].keys()} for ind, s in enumerate(db["all"]["cid"]) if s=="NaN" and not "Toekn" in db["all"]["name"][ind]]
-# [s for s in a if not "Token" in s["name"]]
-
-# + [markdown] jupyter={"outputs_hidden": true}
-# db_old["ocg"]
-# -
-
-# [s for s in [t["name"] for t in db_old["ocg"].values()] if s.startswith("想い")]
-
-# db_new["all"]["id"].index(58844135)
-
-# db_new["all"]["name"][407]
-
-# db_new["all"]["cid"][8847]
-
-# [s for s in db_new["all"]["name"] if s.startswith("シュ")]
-
-# [s for s in db_new["all"]["cid"] if str(s)!=""]
+if __name__ == "__main__":
+    main()

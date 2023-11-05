@@ -44,7 +44,7 @@ const obtainMyCgid = () => {
 }
 
 const obtainLang = () => {
-    const meta_lang = $("meta[http-equiv='COntent-Language']");
+    const meta_lang = $("meta[http-equiv='Content-Language']");
     if (meta_lang.length === 0) return null;
     else return $(meta_lang).prop("content");
 }
@@ -57,30 +57,53 @@ const shuffleArray = (arr) => {
     }
     return arr;
 }
-
+// # ----- obtain Row Results --------
 const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     // onView false => Edit mode
     const onView_dic = { "1": true, "2": false, null: true, "8": false };
     const onView = onViewIn === null ? onView_dic[html_parse_dic.ope] : onViewIn;
-    const deck_text = deck_textIn !== null ? deck_textIn : $("#deck_text");
-    return Object.assign(...Array.from($("table[id$='_list']", deck_text)).map(table_list => {
-        const row_name = $(table_list).attr("id").match(/^\S*(?=_list)/)[0];
+    const deck_text = deck_textIn !== null ? deck_textIn : document.querySelector("#deck_text");
+    return Object.assign(...Array.from(deck_text.querySelectorAll("table[id$='_list']")).map(table_list => {
+        const row_name = table_list.id.match(/^(\S+)_list/)[1];
         const input_span = (onView === true) ? "span" : "input";
         const td_dic = {
-            name: (onView === true) ? "td.card_name" : "td>div.card_name",
-            num: "td.num" //(onView===true) ? "td.num":
+            name: (onView === true) ? "td.card_name>div.icon" : "td>div.card_name",
+            num: "td.num", //(onView===true) ? "td.num":
+            cid: (onView === true) ? "td.card_name" : "td>div.card_name"
         }
-        const names = Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>${input_span}`, deck_text))
-            .map(d => (onView) ? $(d).text() : $(d).prop("value"));
-        const nums = Array.from($(`table#${row_name}_list tbody>tr>${td_dic.num}>${input_span}`, deck_text))
-            .map(d => (onView) ? $(d).text() : $(d).prop("value"));
-        const cids = (onView) ? Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>input.link_value`, deck_text))
-            .map(d => $(d).attr("value").match(/(?<=cid=)\d+/)[0]) : [];
-            // Array.from($(`table#${row_name}_list tbody>tr>input.imgs`, deck_text))
-            //.map(d => $(d).attr("value").match(/^\d+/)[0]);
-        const limits = Array.from($(`table#${row_name}_list tbody>tr`, deck_text))
-            .map(tr => ["semi_limited", "forbidden", "limited"].filter(d => $(tr).hasClass(d)).concat(["not_limited"])[0]);
+        const names = Array.from(
+            table_list.querySelectorAll(
+                `tbody>tr>${td_dic.name}>${input_span}`)
+                ).map(d=>(onView) ? d.innerText : d.value
+                ).filter(d=>d.length>0);
+        // const _names = Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>${input_span}`, deck_text))
+        //     .map(d => (onView) ? $(d).text() : d.value);
+        const nums = Array.from(
+            table_list.querySelectorAll(
+                `tbody>tr>${td_dic.num}>${input_span}`)
+                ).map(d=>(onView) ? d.innerText.trim() : d.value
+                ).filter(d=>d.length>0);
+
+        // const nums = Array.from($(`table#${row_name}_list tbody>tr>${td_dic.num}>${input_span}`, deck_text))
+        //     .map(d => (onView) ? $(d).text() : d.value);
+        const cids = Array.from(
+            table_list.querySelectorAll(
+                `tbody>tr>${td_dic.cid}>input.link_value`)
+                ).map(d=>d.value
+                ).filter(d=>d.length>0).map(d=>d.match(/cid=(\d+)/)[1]);
+        console.log(cids);
+        
+        // const cids = (onView) ? Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>input.link_value`, deck_text))
+        //     .map(d => $(d).attr("value").match(/(?<=cid=)\d+/)[0]) : [];
+        //     // Array.from($(`table#${row_name}_list tbody>tr>input.imgs`, deck_text))
+        //     //.map(d => $(d).attr("value").match(/^\d+/)[0]);
+        const limits = Array.from(table_list.querySelectorAll(`tbody>tr`))
+            .map(tr => ["semi_limited", "forbidden", "limited"
+            ].filter(d => tr.className.indexOf(d)!==-1).concat(["not_limited"])[0]);
+        // const limits = Array.from(table_list.querySelectorAll(`tbody>tr`))
+        //     .map(tr => ["semi_limited", "forbidden", "limited"
+        //     ].filter(d => $(tr).hasClass(d)).concat(["not_limited"])[0]);
         const row_info_tmp = names.map((card_name, card_ind) => {
             const card_num = nums[card_ind];
             const card_limit = limits[card_ind];
@@ -222,7 +245,7 @@ const serializeRowResults = (row_results) => {
                 }
             } else {
                 return {
-                    [row_name_veryShort + "nm"]: row_result.names[ind],
+                    [row_name_veryShort + "nm"]: encodeURIComponent(row_result.names[ind]),
                     [row_name_veryShort + "num"]: row_result.nums[ind]
                 }
             }
@@ -435,7 +458,7 @@ const importDeck = (row_results) => {
 
 // ## save/regist
 
-const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = null) => {
+const _Regist_fromYGODB_ = async (html_parse_dic_in = null, serialized_data_in = null) => {
     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
     const lang = obtainLang()
@@ -443,11 +466,61 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
     if (serialized_data_in === null && $("#form_regist").length === 0) return;
     const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
     const sps=new URLSearchParams(serialized_data);
+    console.log(lang, request_locale);
     sps.set("ope", "3");
+    sps.set("wname", "MemberDeck");
+    sps.set("ytkn", "72ddd2e0f51c2050e0f1d21278a10d1b8a81650fb4c12b3b731671f9a30f2466");
+    const url_post= `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`
+    $('#btn_regist').removeAttr('href');
+    $('#message').hide().text('');
+    $('#loader').show();
+    //console.log(sps);
+    console.log(sps.toString());
+    return await fetch(url_post,{
+        method:"POST",
+        body:sps,
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8",
+            "Accept":"applacation/text"
+        }
+    }
+    ).then(data =>{
+        if (data.result) {
+            console.log("Registered");
+        } else {
+            if (data.error) {
+                console.log("Register falied: ", data.error);
+                /*var lst = [];
+                $.each(data.error, function(index, value){
+                    lst.push($.escapeHTML(value));
+                });
+                console.log(lst);*/
+                //$('#message').append('<ul><li>' + lst.join('</li><li>') + '</li></ul>').show();
+            } else console.log("Register falied: ", data);
+            //$('#btn_regist').attr('href', 'javascript:Regist();');
+        }
+        return data
+    }).then(_=>$('#loader').hide());
+}
+
+const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = null) => {
+    const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
+    if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
+    const lang = obtainLang()
+    const request_locale = lang != null ? `&request_locale=` + lang : "";
+    if (serialized_data_in === null && $("#form_regist").length === 0) return;
+    // const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
+    console.log(serialized_data_in);
+    const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
+    
+    // const sps=new URLSearchParams(serialized_data);
+    // console.log("ope=3&" + $("#form_regist").serialize());
+    // sps.set("ope", "3");
+
     return await $.ajax({
         type: 'post',
         url: `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`,
-        data: sps.toString(),
+        data: serialized_data,//"ope=3&" + $("#form_regist").serialize(),//sps.toString(),
         dataType: 'json',
         beforeSend: () => {
             $('#btn_regist').removeAttr('href');
@@ -889,6 +962,7 @@ async function sortSaveClicked() {
     //console.log(serialized_data);
     //return; // test
     await _Regist_fromYGODB(html_parse_dic, serialized_data).then(async res => {
+        // await _Regist_fromYGODB(html_parse_dic, null).then(async res => {
         //console.log(res);
         console.log("Reload");
         await sleep(100);
@@ -1417,7 +1491,7 @@ const operateDeckVersion = async (mode = "get", deckInfoIn = { name: null, tag: 
         await operateStorage({ data_deckVersion: JSON.stringify(new_saved_json) }, "local", "set");
         //console.log("saved");
     } else if (mode === "get") {
-        if (old_data === {}) return;
+        if (Object.keys(old_data).length === 0) return;
         const deck_tag_key = deckInfo.tag_key;
         const deck_version = (Object.keys(old_data).indexOf(deck_tag_key) === -1) ? {} : old_data[deck_tag_key];
         const row_results_min = deck_version.row_results_min;
@@ -1435,7 +1509,7 @@ const operateDeckVersion = async (mode = "get", deckInfoIn = { name: null, tag: 
         console.log("loaded");
         return row_results;
     } else if (mode === "delete") {
-        if (old_data === {}) return;
+        if (Object.keys(old_data).length === 0) return;
         const deck_tag_key = deckInfo.tag_key;
         //const deck_version = (Object.keys(old_data).indexOf(deck_tag_key) === -1) ? {} : old_data[deck_tag_key];
         //const row_results_min = deck_version.row_results_min;

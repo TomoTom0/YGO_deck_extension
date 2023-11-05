@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.10
 
 ARG name="admin"
 
@@ -20,5 +20,4 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
 && . /home/${name}/.profile \
 && cd /home/${name}/src \
 && poetry install \
-&& echo ". /home/${name}/.profile" > /home/${name}/start.sh \
-&& echo "cd /home/${name}/src && poetry run python3 ygo_heroku.py" >> /home/${name}/start.sh
+&& echo ". /home/${name}/.profile && cd /home/${name}/src && poetry run python3 ygo_heroku.py" >> /home/${name}/script_start.sh
