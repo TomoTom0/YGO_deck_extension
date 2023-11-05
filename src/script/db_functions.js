@@ -71,6 +71,12 @@ const obtainStreamBody = async (url) => {
     return "";
 }
 
+function parseHTML(str_html) {
+    const tmp = document.implementation.createHTMLDocument("");
+    tmp.body.innerHTML = str_html;
+    return tmp.body;
+}
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

@@ -592,15 +592,17 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
 }*/
 
 const load_deckOfficial=async (df, my_cgid, deck_dno, settings)=>{
-    const deck_body = await _obtainDeckRecipie(my_cgid, deck_dno, obtainLang(), "2");
-    const deck_name=$("#dnm", deck_body.body).val();
+    const deck_body = await _nojqObtainDeckRecipie(my_cgid, deck_dno, obtainLang(), "2");
+    const deck_name=deck_body.body.querySelector("#dnm").value;
+    console.log(deck_name);
     const row_results = obtainRowResults(df, false, deck_body.text);
-    $("input#dno").val(deck_dno);
+    const input_dno = document.querySelector("input#dno");
+    input_dno.value=deck_dno;
     if (settings.valid_feature_deckManager === true){
-        $("#deck_dno_opened").text(deck_dno);
-        $("#deck_name_opened").text(deck_name);
+        document.querySelector("#deck_dno_opened").innerText=deck_dno;
+        document.querySelector("#deck_name_opened").innerText=deck_name;
     }
-    $("#dnm").val(deck_name);
+    document.querySelector("#dnm").value=deck_name;
     // import
     importDeck(row_results);
     if (settings.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
@@ -612,25 +614,32 @@ const load_deckOfficial=async (df, my_cgid, deck_dno, settings)=>{
     for (const [type, arr] of Object.entries(header_names)){
         for (const dom_id of arr){
             if (type==="input") {
-                const old_val=$(`#${dom_id}`, deck_body.header).val();
-                $(`#${dom_id}`).val(old_val);
+                const old_val=deck_body.header.querySelector(`#${dom_id}`).value;
+                document.querySelector(`#${dom_id}`).value=old_val;
             } else if (type === "select") {
-                const select=$(`#${dom_id}`);
-                const select_old=$(`#${dom_id}`, deck_body.header);
-                Array.from($("option",select)).map(option=>{
-                    $(option).attr({selected:false}).prop("selected", false);
+                const select=document.querySelector(`#${dom_id}`);
+                const select_old=deck_body.header.querySelector(`#${dom_id}`);
+                console.log(select_old.querySelectorAll("option"))
+                console.log(select_old.querySelectorAll("option[selected_old]"))
+                // ## 全部選択されてる
+                Array.from(select.querySelectorAll("option")
+                ).map(option=>{
+                    // option.setAttribute("selected", false);
+                    option.selected=null;
                 })
-                Array.from($(`option[selected]`, select_old)).map(option=>{
-                    const val=$(option).val();
-                    const option_new=$(`option[value='${val}']`, select);
-                    $(option_new).attr({selected:true}).prop("selected", true);
+                Array.from(select_old.querySelectorAll(`option[selected]`)
+                ).map(option=>{
+                    const val=option.value;
+                    const option_new=select.querySelector(`option[value='${val}']`);
+                    option_new.setAttribute("selected", true);
+                    option_new.selected=true;
                 })
             }
         }
     }
     // ,"dno","pflg", "deck_type", "deckStyle"
-    Object.entries(_obtainHiddenHeader(deck_body.body)).map(([k,v])=>{
-        $(`#${k}`).val(v);
+    Object.entries(_obtainHiddenHeader(deck_body.body.innerHTML)).map(([k,v])=>{
+        document.querySelector(`#${k}`).value=v;
     })
     showSelectedOption();
 }
@@ -644,8 +653,11 @@ const generateNewDeck= async ()=>{
     const dno_tmp=Math.max(deckList.map(d=>d.dno))+1;
     const sps = { ope: "6", cgid: my_cgid, request_locale: lang, dno:dno_tmp };
     const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?` + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
-    const body=await obtainStreamBody(url);
-    const dnos=Array.from($("div.t_body>div.t_row div.inside>input.link_value", body)).map(d=>$(d).attr("value").match(/dno=(\d+)/)[1]).map(d=>parseInt(d))
+    const body=parseHTML(await obtainStreamBody(url));
+    // ## 動作未確認バグるかも
+    const dnos=Array.from(
+        body.querySelectorAll("div.t_body>div.t_row div.inside>input.link_value")
+        ).map(d=>d.getAttribute("value").match(/dno=(\d+)/)[1]).map(d=>parseInt(d))
     return Math.max(...dnos)//{dno:dno_new, body:body};
 }
 
@@ -806,7 +818,8 @@ async function exportAs(form = "id") {
         for (const [ind, name_tmp] of Object.entries(row_result.names)) {
             const cid_tmp = row_result.cids[ind];
             let output_comp = undefined;
-            if (form == "Jap") output_comp = `${name_tmp}`;
+            if (form == "name") output_comp = `${name_tmp}`;
+            else if (form == "cid") output_comp = `${cid_tmp}`;
             else if (form == "id") {
                 // convert id -> name /  convert cid -> name
                 output_comp = df_filter(df, "id", ["cid", cid_tmp])[0];
@@ -838,7 +851,8 @@ async function exportAs(form = "id") {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     const deck_name = $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_"); // after 2022/4/18
-    a.download = deck_name + ".ydk";
+    const ext_dic = {"id":".ydk", "name":"_name.txt", "cid":"_cid.txt"}
+    a.download = deck_name +ext_dic[form];
     a.href = url;
     a.click();
     a.remove();
