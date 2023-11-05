@@ -340,7 +340,7 @@ class YGO_DB_Updater():
                 if "Token" in typeIn or "Skill" in typeIn:
                     continue
                 # OCG or TCG is reqi\uired in ot
-                if "TCG" in otIn or "OCG" in otIn:
+                if not ("TCG" in otIn or "OCG" in otIn):
                     continue
                 infoTmps = [
                     {k: infoIn[k] for k in ["name"]},
@@ -1003,7 +1003,10 @@ def main() -> None:
     uploadIsValid = not sysargs.not_upload
     postOnline = not sysargs.not_post_log
     IsTest = not sysargs.test
-    langs = [s for s in sysargs.langs.split(",") if len(s)==2]
+    if isinstance(sysargs.langs, str):
+        langs = [s for s in sysargs.langs.split(",") if len(s)==2]
+    else:
+        langs=None
     
     ydu = YGO_DB_Updater(        
         paraIsValid=para,

@@ -425,9 +425,10 @@ window.onload = async function () {
                     deck: serializeRowResults(row_results)
                 };
                 //console.log(serialized_dic);
-                const serialized_data = "ope=3&" + Object.values(serialized_dic).join("&");
+                // const serialized_data = "ope=3&" + Object.values(serialized_dic).join("&");
 
-                await _Regist_fromYGODB(html_parse_dic, serialized_data);
+                // await _Regist_fromYGODB(html_parse_dic, serialized_data);
+                await _Regist_fromYGODB(html_parse_dic);
                 await operateDeckVersion("set", { name: "@@Auto", tag: "_save_"+deck_name }, row_results);
                 setDeckVersionTagList(true);
             } else if ($(button_target).hasClass("button_load")) {
