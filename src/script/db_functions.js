@@ -92,7 +92,7 @@ const parse_YGODB_URL_body = (url_now = location.href) => {
     return url_now.match(/([^\/\?]+)\??[^\/]*$/)[1];
 }
 const parse_YGODB_URL = (url_now = location.href, nullIsValid = false) => {
-    const html_parse_keys = ["cgid", "dno", "request_locale", "ope"];
+    const html_parse_keys = ["ope", "wname", "ytkn", "cgid", "dno", "request_locale"];
     const html_parse_dic_arr = html_parse_keys.map(key => {
         const match_tmp = url_now.match(new RegExp(`(?<=${key}=)([^&=]+)`, "g"));
         if (Array.isArray(match_tmp) && match_tmp.length > 0) {
