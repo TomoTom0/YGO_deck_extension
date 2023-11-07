@@ -16,8 +16,8 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
 
 |From|Left|Wheel|Right|
 |-|-|-|-|
-|Main/Extra| Sideへ移動|  Main/Extraに追加| 削除(Tempへ)|
-|Side| Main/EXtraへ移動|  Sideに追加| 削除(Tempへ)|
+|Main/Extra| Sideへ移動|  (Main/Extraに)1枚追加| 削除(Tempへ)|
+|Side| Main/Extraへ移動|  (Sideに)1枚追加| 削除(Tempへ)|
 |Temp|Main/Extraへ移動|Main/Extraに追加|Sideに移動|
 |Search|Main/Extraへ追加|カードのページを開く|Sideへ追加|
 
@@ -25,6 +25,7 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
 
 - クリックモードの切り替えは**Click|MOVE CARD/open url**で行います。
     - **OPEN URL**モードではLeft/Wheelクリックでカードのページを開きます。(カードの移動は行いません。)
+    - **MOVE CARD**モードでも、Ctrl+Wheelクリックでカードのページを開きます。
 - **Reload & Sort**ボタンをクリックすれば、textの情報に合わせてデッキ画像をリセットします。
 
 ### Search Area in Deck Edit mode
@@ -49,10 +50,10 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
 ## Left/Wheel/Right Click
 
 各種機能のクリックで「Left/Wheel/Right」を区別できるようになりました。
-「L:AAA/R:BBB」という表示のボタンは、LeftクリックでAAA、RightクリックでBBBを行います。
+「L:AAA/M:CCC/R:BBB」という表示のボタンは、LeftクリックでAAA、RightクリックでBBB、Wheelクリック (Middleクリック)でCCCを行います。
 
 ### Export
-- デッキ閲覧画面で**Export**ボタンを押すと、各カードのパスワードが表記されているファイルをダウンロードします。
+- デッキ閲覧画面で**Export**ボタンを押すと、クリックしたボタンに応じて各カードのパスワード、cid、名前のいずれかが表記されているファイルをダウンロードします。
 
 <img src="intro/ygo_export.gif" style="width:60vw;">
 

@@ -7,6 +7,18 @@ const _obtainDeckRecipie = async (cgid, dno, lang, ope="2") => {
     return {text:$("#deck_text", body), image:$("#deck_image", body), header:$("#deck_header", body), title:$("#broad_title", body), body:body};
 }
 
+const _nojqObtainDeckRecipie = async (cgid, dno, lang, ope="2") => {
+    const url=`https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=${ope}&cgid=${cgid}&dno=${dno}&request_locale=${lang}`;
+    const body=parseHTML(await obtainStreamBody(url));
+    //const deck_text=$("#deck_text", body);
+    return {
+        text:body.querySelector("#deck_text"),
+        image:body.querySelector("#deck_image"),
+        header:body.querySelector("#deck_header"),
+        title:body.querySelector("#broad_title"),
+        body:body};
+}
+
 const obtainDeckRecipie = async () => {
     const my_cgid=obtainMyCgid();
     const lang=obtainLang();
