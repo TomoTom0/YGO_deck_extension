@@ -92,7 +92,6 @@ const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
                 `tbody>tr>${td_dic.cid}>input.link_value`)
         ).map(d => d.value
         ).filter(d => d.length > 0).map(d => d.match(/cid=(\d+)/)[1]);
-        console.log(cids);
 
         // const cids = (onView) ? Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>input.link_value`, deck_text))
         //     .map(d => $(d).attr("value").match(/(?<=cid=)\d+/)[0]) : [];
@@ -411,7 +410,7 @@ const convertRowResults = (df, row_results, toMin = true) => {
             }))
             const df_now = {
                 name: card_name, type: card_type.join(","),
-                atk: card_stat.atk, def: card_stat.def,
+                atk: card_stat.atk, def: card_simportDeckinsertat.def,
                 attribute: card_attr2, scale: card_stat.scale,
                 level: card_stat.level, ot: "OCG+"
             };
@@ -477,7 +476,7 @@ const _Regist_fromYGODB_ = async (html_parse_dic_in = null, serialized_data_in =
     $('#message').hide().text('');
     $('#loader').show();
     //console.log(sps);
-    console.log(sps.toString());
+    // console.log(sps.toString());
     return await fetch(url_post, {
         method: "POST",
         body: sps,
@@ -514,7 +513,6 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
     // const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
 
     const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
-    console.log(serialized_data);
     // const sps=new URLSearchParams(serialized_data);
     // console.log("ope=3&" + $("#form_regist").serialize());
     // sps.set("ope", "3");
@@ -549,6 +547,7 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
             }
         },
         error: function (xhr, status, error) {
+            console.log(serialized_data);
             console.log(error);
         }
     });
@@ -622,8 +621,6 @@ const load_deckOfficial=async (df, my_cgid, deck_dno, settings)=>{
             } else if (type === "select") {
                 const select=document.querySelector(`#${dom_id}`);
                 const select_old=deck_body.header.querySelector(`#${dom_id}`);
-                console.log(select_old.querySelectorAll("option"))
-                console.log(select_old.querySelectorAll("option[selected_old]"))
                 // ## 全部選択されてる
                 Array.from(select.querySelectorAll("option")
                 ).map(option=>{
@@ -883,10 +880,14 @@ async function importFromYdk() {
     const import_file = $("#button_importFromYdk_input").prop("files")[0];
     const data_tmp = await import_file.text();
     const data_array = split_data(data_tmp);
-    const imported_ids = obtain_deck_splited(data_array);
+    const imported_rows = obtain_deck_splited(data_array);
 
     const row_names = ["monster", "spell", "trap", "extra", "side"];
-    let row_results = Object.assign(...row_names.map(row_name => ({ [row_name]: { names: [], nums: [], cids: [] } })));
+    let row_results = Object.assign(
+        ...row_names.map(row_name => Object({
+             [row_name]: { names: [], nums: [], cids: [], limits:[] } 
+            })
+        ));
     const df = await obtainDF(obtainLang());
     let exceptions = [];
     // guess file type => id, Jap, Eng
@@ -901,32 +902,32 @@ async function importFromYdk() {
         })),
         onlyNumbers: data_array.filter(d=>!/^#|^!/.test(d)).every(data=>isFinite(data))}
     const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
-    for (const [ind_import, ids] of Object.entries(imported_ids)) {
-        for (const id_tmp of Array.from(new Set(ids)).filter(d => d.length > 0)) {
-            const isID = /^\d+$/.test(id);
-            if (id_tmp.length === 0) continue;
-            const id = (isFinite(id_tmp)) ? parseInt(id_tmp) : id_tmp;
+    for (const [ind_import, rows] of Object.entries(imported_rows)) {
+        for (const row of Array.from(new Set(rows)).map(d=>d.trim()).filter(d => d.length > 0)) {
+            // const isID = /^\d+$/.test(id_tmp);
+            if (row.length === 0) continue;
             let name_tmp = "";
-            // empty
-            if (!/^\d+$/.test(id) && !id) name_tmp = "";
-            // id
-            else if (/^\d+$/.test(id) && id) {
-                name_tmp = df_filter(df, "name", ["id", id])[0];
-            }
-            // name
-            else if (!/^\d+$/.test(id) && id) {
-                name_tmp = id.split("\t")[0];
-            }
+            const id = (/^\d+$/.test(row)) ? parseInt(row) : null; //isFinite(row) && 
+            const card_name = (id !== null) ? df_filter(df, "name", ["id", id])[0]: row;
+            const cid = (id !== null) ? df_filter(df, "cid", ["id", id])[0]: undefined;
+            // // id
+            // if (/^\d+$/.test(id) && id) {
+            //     name_tmp = df_filter(df, "name", ["id", id])[0];
+            // }
+            // // name
+            // else if (!/^\d+$/.test(id) && id) {
+            //     name_tmp = id.split("\t")[0];
+            // }
             //console.log(id,id_tmp, name_tmp, ids.map(d => d.split("\t")[0]).filter(d => d == id), ids.map(d => d.split("\t")[0]).filter(d => d == id_tmp));
 
-            const num_tmp = ids.map(d => d.split("\t")[0]).filter(d => d == id).length;
-            if (!name_tmp) exceptions.push(`${id} ${name_tmp}`);
+            const num_tmp = rows.map(d => d.split("\t")[0]).filter(d => d == row).length;
+            if (!card_name) exceptions.push(`${id} ${card_name}`);
             else {
                 let row_ind = 0;
                 let row_name = "";
                 if (ind_import == 0) {
-                    if (types_tmp == "") types_tmp = df_filter(df, "type", ["id", id])[0];
                     try {
+                        const types_tmp = df_filter(df, "type", ["id", id])[0];
                         const main_row = ["monster", "spell", "trap"].map(d => d.slice(0, 1).toUpperCase() + d.slice(1));
                         row_name = main_row.filter(d => types_tmp.split(",").some(dd => dd == d))[0].toLowerCase();
                         row_ind = row_names.indexOf(row_name);
@@ -938,9 +939,10 @@ async function importFromYdk() {
                     row_ind = parseInt(ind_import) + 2;
                     row_name = row_names[row_ind];
                 }
-                row_results[row_name].names.push(name_tmp);
+                row_results[row_name].names.push(card_name);
                 row_results[row_name].nums.push(num_tmp);
-                row_results[row_name].cids.push(undefined);
+                row_results[row_name].cids.push(cid);
+                row_results[row_name].limits.push("not_limited");
             }
         }
     }
@@ -949,8 +951,10 @@ async function importFromYdk() {
     const deck_name = import_file.name.replace(/(?<=^[^(@@)]+)@@.*\.ydk$|\.ydk$/, "") + (settings_tmp.addDate ? "@@" + new Date().toLocaleDateString() : "");
     // input deck name
     $("#dnm").val(deck_name);
+    console.log(row_results);
 
     const main_total_num = importDeck(row_results);
+    if (settings_tmp.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
     const message_forImportedData = `main: ${main_total_num}\n`
         + Object.entries(row_results).map(d => {
             const row_name = d[0];
