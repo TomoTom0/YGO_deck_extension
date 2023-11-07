@@ -431,7 +431,7 @@ window.onload = async function () {
                 // const serialized_data = "ope=3&" + Object.values(serialized_dic).join("&");
 
                 // await _Regist_fromYGODB(html_parse_dic, serialized_data);
-                res = await _Regist_fromYGODB(html_parse_dic);
+                const res = await _Regist_fromYGODB(html_parse_dic);
                 if (res.error) {
                     console.log("Failed to save");
                 }
