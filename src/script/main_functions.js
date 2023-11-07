@@ -75,32 +75,32 @@ const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
         const names = Array.from(
             table_list.querySelectorAll(
                 `tbody>tr>${td_dic.name}>${input_span}`)
-                ).map(d=>(onView) ? d.innerText : d.value
-                ).filter(d=>d.length>0);
+        ).map(d => (onView) ? d.innerText : d.value
+        ).filter(d => d.length > 0);
         // const _names = Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>${input_span}`, deck_text))
         //     .map(d => (onView) ? $(d).text() : d.value);
         const nums = Array.from(
             table_list.querySelectorAll(
                 `tbody>tr>${td_dic.num}>${input_span}`)
-                ).map(d=>(onView) ? d.innerText.trim() : d.value
-                ).filter(d=>d.length>0);
+        ).map(d => (onView) ? d.innerText.trim() : d.value
+        ).filter(d => d.length > 0);
 
         // const nums = Array.from($(`table#${row_name}_list tbody>tr>${td_dic.num}>${input_span}`, deck_text))
         //     .map(d => (onView) ? $(d).text() : d.value);
         const cids = Array.from(
             table_list.querySelectorAll(
                 `tbody>tr>${td_dic.cid}>input.link_value`)
-                ).map(d=>d.value
-                ).filter(d=>d.length>0).map(d=>d.match(/cid=(\d+)/)[1]);
+        ).map(d => d.value
+        ).filter(d => d.length > 0).map(d => d.match(/cid=(\d+)/)[1]);
         console.log(cids);
-        
+
         // const cids = (onView) ? Array.from($(`table#${row_name}_list tbody>tr>${td_dic.name}>input.link_value`, deck_text))
         //     .map(d => $(d).attr("value").match(/(?<=cid=)\d+/)[0]) : [];
         //     // Array.from($(`table#${row_name}_list tbody>tr>input.imgs`, deck_text))
         //     //.map(d => $(d).attr("value").match(/^\d+/)[0]);
         const limits = Array.from(table_list.querySelectorAll(`tbody>tr`))
             .map(tr => ["semi_limited", "forbidden", "limited"
-            ].filter(d => tr.className.indexOf(d)!==-1).concat(["not_limited"])[0]);
+            ].filter(d => tr.className.indexOf(d) !== -1).concat(["not_limited"])[0]);
         // const limits = Array.from(table_list.querySelectorAll(`tbody>tr`))
         //     .map(tr => ["semi_limited", "forbidden", "limited"
         //     ].filter(d => $(tr).hasClass(d)).concat(["not_limited"])[0]);
@@ -207,24 +207,24 @@ const _obtainHiddenHeader = (html_edit) => {
     return Object.assign(...["dno", "pflg", "deck_type", "deckStyle"]
         .map(k => {
             const match_res = html_edit.match(new RegExp(`\\(\'#${k}\'\\)\.val\\(\'([^\\)]*)\'\\)`));
-            return {[k]: (match_res==null || match_res.length < 1) ? "" : match_res[1]};
+            return { [k]: (match_res == null || match_res.length < 1) ? "" : match_res[1] };
         }))
 }
 
-const  _obtainSerializedHeader = (serialized_header, html_edit) =>{
+const _obtainSerializedHeader = (serialized_header, html_edit) => {
     const sps_par = new URLSearchParams(serialized_header);
-    Object.entries(_obtainHiddenHeader(html_edit)).map(([k, v]) => sps_par.set(k,v));
+    Object.entries(_obtainHiddenHeader(html_edit)).map(([k, v]) => sps_par.set(k, v));
     return sps_par.toString();
 }
 
-const obtainDeckHeader_edit = async (html_parse_dic, html_editIn=null) => {
+const obtainDeckHeader_edit = async (html_parse_dic, html_editIn = null) => {
     const my_cgid = obtainMyCgid();
     if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return null;
     else if (html_parse_dic.cgid != my_cgid) return null;
     const html_parse_dic_valid = Object.assign(...["cgid", "dno"].map(k => Object({ [k]: html_parse_dic[k] })), { ope: 2 });
     const sps = new URLSearchParams(html_parse_dic_valid);
     const url_edit = `/yugiohdb/member_deck.action?` + sps.toString();
-    const html_edit = html_editIn!==null ? html_editIn.prop("outerHTML") : await obtainStreamBody(url_edit);
+    const html_edit = html_editIn !== null ? html_editIn.prop("outerHTML") : await obtainStreamBody(url_edit);
     //const parsed_html = $.parseHTML(html_edit);
     const serialized_header = $("#deck_header input, #deck_header select, #deck_header textarea", html_edit).serialize();
     //console.log(serialized_header, html_edit)
@@ -333,22 +333,24 @@ const guess_clicked = async () => {
     }
 }
 
-const convertRowResults=(df, row_results, toMin=true)=>{
-    return Object.assign(...Object.entries(row_results).map(([row_name, row_result])=>{
-        const cids=row_result.cids;
-        const names=row_result.names;
-        const nums=row_result.nums;
-        if ((names===undefined && cids===undefined) || nums===undefined) return null;
-        const cids_valid= (cids===undefined) ? names.map(d=>df_filter(df, "cid", ["name", d])[0]) : cids;
-        return {[row_name]:(toMin===true) ? {
-            cids:cids_valid,
-            nums:nums
-        } : {
-            cids:cids_valid,
-            names:(names===undefined) ? cids_valid.map(d=>df_filter(df, "name", ["cid", d])[0]) : names,
-            nums:nums,
-            limits:cids_valid.map(d=>"not_limited")
-        }}
+const convertRowResults = (df, row_results, toMin = true) => {
+    return Object.assign(...Object.entries(row_results).map(([row_name, row_result]) => {
+        const cids = row_result.cids;
+        const names = row_result.names;
+        const nums = row_result.nums;
+        if ((names === undefined && cids === undefined) || nums === undefined) return null;
+        const cids_valid = (cids === undefined) ? names.map(d => df_filter(df, "cid", ["name", d])[0]) : cids;
+        return {
+            [row_name]: (toMin === true) ? {
+                cids: cids_valid,
+                nums: nums
+            } : {
+                cids: cids_valid,
+                names: (names === undefined) ? cids_valid.map(d => df_filter(df, "name", ["cid", d])[0]) : names,
+                nums: nums,
+                limits: cids_valid.map(d => "not_limited")
+            }
+        }
     }))
 }
 
@@ -465,26 +467,26 @@ const _Regist_fromYGODB_ = async (html_parse_dic_in = null, serialized_data_in =
     const request_locale = lang != null ? `&request_locale=` + lang : "";
     if (serialized_data_in === null && $("#form_regist").length === 0) return;
     const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
-    const sps=new URLSearchParams(serialized_data);
+    const sps = new URLSearchParams(serialized_data);
     console.log(lang, request_locale);
     sps.set("ope", "3");
-    sps.set("wname", "MemberDeck");
-    sps.set("ytkn", "72ddd2e0f51c2050e0f1d21278a10d1b8a81650fb4c12b3b731671f9a30f2466");
-    const url_post= `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`
+    sps.set("wname", html_parse_dic["wname"]);
+    sps.set("ytkn", html_parse_dic["ytkn"]);
+    const url_post = `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`
     $('#btn_regist').removeAttr('href');
     $('#message').hide().text('');
     $('#loader').show();
     //console.log(sps);
     console.log(sps.toString());
-    return await fetch(url_post,{
-        method:"POST",
-        body:sps,
-        headers:{
-            "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8",
-            "Accept":"applacation/text"
+    return await fetch(url_post, {
+        method: "POST",
+        body: sps,
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            "Accept": "applacation/text"
         }
     }
-    ).then(data =>{
+    ).then(data => {
         if (data.result) {
             console.log("Registered");
         } else {
@@ -500,7 +502,7 @@ const _Regist_fromYGODB_ = async (html_parse_dic_in = null, serialized_data_in =
             //$('#btn_regist').attr('href', 'javascript:Regist();');
         }
         return data
-    }).then(_=>$('#loader').hide());
+    }).then(_ => $('#loader').hide());
 }
 
 const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = null) => {
@@ -510,9 +512,9 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
     const request_locale = lang != null ? `&request_locale=` + lang : "";
     if (serialized_data_in === null && $("#form_regist").length === 0) return;
     // const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
-    console.log(serialized_data_in);
+
     const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
-    
+    console.log(serialized_data);
     // const sps=new URLSearchParams(serialized_data);
     // console.log("ope=3&" + $("#form_regist").serialize());
     // sps.set("ope", "3");
@@ -601,15 +603,16 @@ const load_deckOfficial=async (df, my_cgid, deck_dno, settings)=>{
     if (settings.valid_feature_deckManager === true){
         document.querySelector("#deck_dno_opened").innerText=deck_dno;
         document.querySelector("#deck_name_opened").innerText=deck_name;
+
     }
     document.querySelector("#dnm").value=deck_name;
     // import
     importDeck(row_results);
     if (settings.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
     // header
-    const header_names={
-        input:["dnm", "biko"],
-        select:["dckCategoryMst", "dckTagMst"]
+    const header_names = {
+        input: ["dnm", "biko"],
+        select: ["dckCategoryMst", "dckTagMst"]
     }
     for (const [type, arr] of Object.entries(header_names)){
         for (const dom_id of arr){
@@ -633,6 +636,7 @@ const load_deckOfficial=async (df, my_cgid, deck_dno, settings)=>{
                     const option_new=select.querySelector(`option[value='${val}']`);
                     option_new.setAttribute("selected", true);
                     option_new.selected=true;
+
                 })
             }
         }
@@ -644,14 +648,22 @@ const load_deckOfficial=async (df, my_cgid, deck_dno, settings)=>{
     showSelectedOption();
 }
 
-const generateNewDeck= async ()=>{
+const generateNewDeck = async (html_parse_dic_in = null) => {
+    const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     const my_cgid = obtainMyCgid();
     //const dno = $("#dno").val();
     const lang = obtainLang();
-    const deckList=await obtainDeckListOfficial();
+    const deckList = await obtainDeckListOfficial();
     //const dno_new=[...Array(deckList.length+1).keys()].map(d=>d+1).filter(dno_cand=>!deckList.some(d=>d.dno==dno_cand))[0];
-    const dno_tmp=Math.max(deckList.map(d=>d.dno))+1;
-    const sps = { ope: "6", cgid: my_cgid, request_locale: lang, dno:dno_tmp };
+    const dno_tmp = Math.max(deckList.map(d => d.dno)) + 1;
+    const sps = {
+        ope: "6",
+        wname: html_parse_dic.wname,
+        ytkn: html_parse_dic.ytkn,
+        cgid: my_cgid,
+        request_locale: lang,
+        dno: dno_tmp
+    };
     const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?` + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
     const body=parseHTML(await obtainStreamBody(url));
     // ## 動作未確認バグるかも
@@ -978,9 +990,15 @@ async function sortSaveClicked() {
     await _Regist_fromYGODB(html_parse_dic, serialized_data).then(async res => {
         // await _Regist_fromYGODB(html_parse_dic, null).then(async res => {
         //console.log(res);
-        console.log("Reload");
-        await sleep(100);
-        location.reload();
+        if (res.error) {
+            console.log("Reload");
+            await sleep(100);
+            location.reload();
+        } else {
+            console.log("Reload");
+            await sleep(100);
+            location.reload();
+        }
     });
     /*const postMsg = "trigger_sortCard_" + JSON.stringify(row_results_new);
     //console.log(row_results_new);
@@ -1112,8 +1130,8 @@ const obtainNewCardSet = (row_name) => {
     return card_set;
 }
 
-const insertDeckImg = (df, row_results, displayIsValid = true, div_deck_imageSetIn=null) => {
-    const div_deck_imageSet_old = div_deck_imageSetIn!==null ? div_deck_imageSetIn : $("div#deck_image");
+const insertDeckImg = (df, row_results, displayIsValid = true, div_deck_imageSetIn = null) => {
+    const div_deck_imageSet_old = div_deck_imageSetIn !== null ? div_deck_imageSetIn : $("div#deck_image");
     //if (div_deck_imageSet_old.length>0) $(div_deck_imageSet_old).empty();
     const dislapy_style = displayIsValid ? "block" : "none";
     const deck_image = (div_deck_imageSet_old.length > 0) ? div_deck_imageSet_old : $("<div>", {
@@ -1296,34 +1314,34 @@ const addButtonAfterMainShuffle = (button) => {
     }
 }
 
-const insertDeckText = (row_results, div_deckTextIn=null, display_text="")=>{
-    const div_deckText=div_deckTextIn!==null ? div_deckTextIn : $("<div>", {class:`deck_version_text`});
-    const div_deck=$("<div>", {style:"margin:10px;"});
-    const div_deck_table=$("<div>", {class:"deck_text_table hide", style:"display:table;display:none;"});
-    const div_deck_text_display=$("<span>", {
-        style:"font-weight:bold;margin:5px;flex:1;"
+const insertDeckText = (row_results, div_deckTextIn = null, display_text = "") => {
+    const div_deckText = div_deckTextIn !== null ? div_deckTextIn : $("<div>", { class: `deck_version_text` });
+    const div_deck = $("<div>", { style: "margin:10px;" });
+    const div_deck_table = $("<div>", { class: "deck_text_table hide", style: "display:table;display:none;" });
+    const div_deck_text_display = $("<span>", {
+        style: "font-weight:bold;margin:5px;flex:1;"
     }).append(display_text);
-    const input_for_rename=$("<div>").append($("<input>", {class:"input_deck_version_tag_rename", style:"margin:0 50px 0", placeholder:"new version tag"}))
-    const div_top=$("<div>", {class:"top", display:"flex"}).append(div_deck_text_display).append(input_for_rename);
+    const input_for_rename = $("<div>").append($("<input>", { class: "input_deck_version_tag_rename", style: "margin:0 50px 0", placeholder: "new version tag" }))
+    const div_top = $("<div>", { class: "top", display: "flex" }).append(div_deck_text_display).append(input_for_rename);
     div_deck.append(div_top);
     div_deck.append(div_deck_table);
-    Object.entries(row_results).map(([row_name, row_result])=>{
-        const div_row=$("<div>", {style:"display:table-cell; width:20vw;padding: 4px;"});
-        const div_row_name=$("<div>").append($("<span>", {
-            style:"font-weight:bold;margin:5px;"
+    Object.entries(row_results).map(([row_name, row_result]) => {
+        const div_row = $("<div>", { style: "display:table-cell; width:20vw;padding: 4px;" });
+        const div_row_name = $("<div>").append($("<span>", {
+            style: "font-weight:bold;margin:5px;"
         }).append(row_name));
         div_row.append(div_row_name);
-        const tbody=$("<tbody>", {style:"item-align:top;"});
-        const names=row_result.names;
-        const nums=row_result.nums;
-        names.map((name_now, ind_card)=>{
-            const num_now=nums[ind_card];
-            const tr=$("<tr>", {style:"display:flex;"});
-            const spans={
-                name:$("<span>", {style:"flex:1;"}).append(name_now),
-                num:$("<span>", {style:"padding:2px;font-weight:bold;"}).append(num_now)
+        const tbody = $("<tbody>", { style: "item-align:top;" });
+        const names = row_result.names;
+        const nums = row_result.nums;
+        names.map((name_now, ind_card) => {
+            const num_now = nums[ind_card];
+            const tr = $("<tr>", { style: "display:flex;" });
+            const spans = {
+                name: $("<span>", { style: "flex:1;" }).append(name_now),
+                num: $("<span>", { style: "padding:2px;font-weight:bold;" }).append(num_now)
             };
-            Object.entries(spans).map(([key, span_card])=>{
+            Object.entries(spans).map(([key, span_card]) => {
                 tr.append(span_card);
             })
             tbody.append(tr);
@@ -1465,7 +1483,7 @@ const setDeckVersionTagList = async (updateDeckNameIsValid = true) => {
     const deck_name = $("#deck_version_name").val().replace(/^\s*|\s*$/g, "");
     if (Object.keys(data_deckVersion).indexOf(deck_name) === -1) return;
     const datalist_tag = $("#deckVersion_tagList");
-    if (datalist_tag.length===0) return;
+    if (datalist_tag.length === 0) return;
     $(datalist_tag).empty();
     Object.entries(data_deckVersion[deck_name]).map(([key, deckVersion]) => {
         const option = $("<option>", { value: `${deckVersion.tag} #${key}` }).append(deckVersion.date);
@@ -1530,24 +1548,26 @@ const operateDeckVersion = async (mode = "get", deckInfoIn = { name: null, tag: 
         // re-convert row_results
         //const df = await obtainDF(obtainLang());
         const new_data_deckVersion = {
-            [deck_name]: Object.assign(...Object.entries(old_data).map(([k,v])=>{
-                if (k!==deck_tag_key) return {[k]:v};
+            [deck_name]: Object.assign(...Object.entries(old_data).map(([k, v]) => {
+                if (k !== deck_tag_key) return { [k]: v };
                 else return null;
-            }).filter(d=>d!==null))
+            }).filter(d => d !== null))
         };
         const new_saved_json = Object.assign(data_deckVersion, new_data_deckVersion);
         await operateStorage({ data_deckVersion: JSON.stringify(new_saved_json) }, "local", "set");
     }
 }
 
-const obtainDeckListOfficial = async () => {
-    const sps={
-        ope:"4",
+const obtainDeckListOfficial = async (html_parse_dic_in = null) => {
+    const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
+    const sps = {
+        ope: "4",
+        wname:html_parse_dic.wname,
         cgid: obtainMyCgid(),
-        request_locale : obtainLang()
+        request_locale: obtainLang()
     }
-    if (sps.cgid==null) return null;
-    const url=`https://www.db.yugioh-card.com/yugiohdb/member_deck.action?`+Object.entries(sps).map(([k,v])=>`${k}=${v}`).join("&");
+    if (sps.cgid == null) return null;
+    const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?` + Object.entries(sps).map(([k, v]) => `${k}=${v}`).join("&");
     const body = await obtainStreamBody(url);
     return Array.from($("div#deck_list>div.t_body>div.t_row>div>div.inside", body))
         .map(d => Object({

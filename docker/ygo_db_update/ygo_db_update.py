@@ -68,7 +68,7 @@ args_dic = {
         "action": "store_true",
     },
     "langs": {
-        "help": "execute script to specified languages, you should specified them joining comma like ja,en,ko"        
+        "help": "execute script to specified languages, you should specified them joining comma like ja,en,ko"
     },
     "test": {
         "help": "upload to test dir on GitHub",
@@ -87,10 +87,7 @@ for key_arg, val_dic in args_dic.items():
 
 # +
 REPO_INFOS = {
-    "DB": {
-        "user": "TomoTom0",
-        "repo": "ygo_db",
-        "path": "data/ygo_db.json"},
+    "DB": {"user": "TomoTom0", "repo": "ygo_db", "path": "data/ygo_db.json"},
     "cardListLang": {
         "user": "TomoTom0",
         "repo": "ygo_db",
@@ -118,11 +115,11 @@ EXCEPTS_FOR_TERM_ARR = [
 ]
 
 INFO_FOR_OCG_CARD_COM = {
-"except_cards" : {
-    10000030: {"id": "10000030", "cid": "10113", "name": "マジマジ☆マジシャンギャル"},
-    10000040: {"id": "10000040", "cid": "10112", "name": "光の創造神 ホルアクティ"},
-},
-"cardName_translations" : {"D－HERO": "D-HERO"}
+    "except_cards": {
+        10000030: {"id": "10000030", "cid": "10113", "name": "マジマジ☆マジシャンギャル"},
+        10000040: {"id": "10000040", "cid": "10112", "name": "光の創造神 ホルアクティ"},
+    },
+    "cardName_translations": {"D－HERO": "D-HERO"},
 }
 
 CARDS_NINE_ORDER = {
@@ -139,7 +136,7 @@ CARDS_NINE_ORDER = {
 
 CARD_INFO_TYPE_MODIFY = {"Xyz": "XYZ"}
 
-LANGS_ALL = ["ja", "en", "de", "fr", "it", "es", "pt", "ko"]
+LANGS_ALL = ["ja", "en", "de", "fr", "it", "es", "pt", "ko"]#, "ae"
 ZERO_DATE = "1990-01-01"
 
 CARD_INFO_KEYS = [
@@ -162,8 +159,10 @@ CARD_INFO_KEYS = [
 
 # ## ----- class YGO_DB_Updater -----
 
-class YGO_DB_Updater():
-    def __init__(self,
+
+class YGO_DB_Updater:
+    def __init__(
+        self,
         env_path: Optional[str] = None,
         localLogPath: Optional[str] = None,
         updateIsValid: bool = True,
@@ -171,9 +170,9 @@ class YGO_DB_Updater():
         paraIsValid: bool = True,
         postOnline: bool = True,
         repoInfos: Optional[dict] = None,
-        IsTest: bool = True,
-        langs: Optional[list] = None
-        ):
+        IsTest: bool = False,
+        langs: Optional[list] = None,
+    ):
         self.updateIsValid = updateIsValid
         self.uploadIsValid = uploadIsValid
         self.paraIsValid = paraIsValid
@@ -181,42 +180,46 @@ class YGO_DB_Updater():
         self.IsTest = IsTest
         self.env_path = env_path
         self.langsAll = langs or LANGS_ALL
-        
+
         self.load_env()
         self.log_path = localLogPath or "./output.log"
         self.github_token = os.getenv("GITHUB_TOKEN")
         self.post_url = os.getenv("POST_LOG_URL")
         self.post_auth = os.getenv("POST_LOG_AUTH")
         self.repoInfos = repoInfos or REPO_INFOS
-        
+
         pass
-    
-    def load_env(self, env_path: Optional[str]=None) -> None:
+
+    def load_env(self, env_path: Optional[str] = None) -> None:
         if env_path is None:
-            env_files_tmp = [Path(__file__).parent/("../" * ind + ".env") for ind in range(3)]
+            env_files_tmp = [
+                Path(__file__).parent / ("../" * ind + ".env") for ind in range(3)
+            ]
         elif env_path.startswith("./"):
-            env_files_tmp = [Path(__file__).parent/(env_path.replace("./", "", 1))]
+            env_files_tmp = [Path(__file__).parent / (env_path.replace("./", "", 1))]
         elif isinstance(env_path, str):
             env_files_tmp = [Path(env_path)]
         else:
             env_files_tmp = []
         env_files = [s for s in env_files_tmp if s.is_file()]
-    
+
         if len(env_files) > 0:
             dotenv.load_dotenv(env_files[0], override=True)
         else:
-            message="There is no valid env file:\n\t"+"\n\t".join(map(str, env_files_tmp))
+            message = "There is no valid env file:\n\t" + "\n\t".join(
+                map(str, env_files_tmp)
+            )
             print(message)
 
+    # # operate GitHub
 
-# # operate GitHub
-
-    def operateGitHub(self,
+    def operateGitHub(
+        self,
         method: str = "upload",
         data: Optional[dict] = {},
         repoInfo: Optional[dict] = None,
         commit_name: Optional[str] = None,
-        github_token: Optional[str] = None
+        github_token: Optional[str] = None,
     ) -> dict:
         github_token = github_token or self.github_token
         repoInfo = repoInfo or self.repoInfos["DB"]
@@ -231,21 +234,31 @@ class YGO_DB_Updater():
             )
             res = requests.get(git_content_url, headers=header_auth)
             if res.status_code != 200:
-                title="Error when using GitHub API"
-                content=json.dumps(repoInfo)+"\n"+json.dumps(res.json())
+                title = "Error when using GitHub API"
+                content = json.dumps(repoInfo) + "\n" + json.dumps(res.json())
                 self.postLog(title=title, content=content)
                 return {}
-            res_content=res.json()
-            sha = [s["sha"] for s in res_content if isinstance(s, dict) and s["path"] == repoInfo["path"]]
+            res_content = res.json()
+            sha = [
+                s["sha"]
+                for s in res_content
+                if isinstance(s, dict) and s["path"] == repoInfo["path"]
+            ]
             if len(sha) == 0:
-                title="Cannot access the file in GitHub API"
-                content=json.dumps(repoInfo)
+                title = "Cannot access the file in GitHub API"
+                content = json.dumps(repoInfo)
                 self.postLog(title=title, content=content)
                 return {}
             git_data_url = "https://api.github.com/repos/{}/{}/git/blobs/{}".format(
                 repoInfo["user"], repoInfo["repo"], sha[0]
             )
-            res_data = requests.get(git_data_url, headers=header_auth).json()
+            res = requests.get(git_data_url, headers=header_auth)
+            if res.status_code!=200:
+                title = "Failed to get with GitHub API"
+                content = json.dumps(repoInfo) + "\n" + json.dumps(res.json())
+                self.postLog(title=title, content=content)
+                return {}
+            res_data=res.json()
             content = base64.b64decode(res_data["content"]).decode()
             return json.loads(content)
         elif method == "upload":
@@ -254,17 +267,17 @@ class YGO_DB_Updater():
                     **repoInfo,
                     "path": "test/" + repoInfo["path"],
                 }
-
             git_content_url = "https://api.github.com/repos/{}/{}/contents/data".format(
                 repoInfo["user"], repoInfo["repo"]
             )
+
             res = requests.get(git_content_url, headers=header_auth)
             if res.status_code != 200:
-                title="Error when using GitHub API"
-                content=json.dumps(repoInfo)+"\n"+json.dumps(res.json())
+                title = "Error when using GitHub API"
+                content = json.dumps(repoInfo) + "\n" + json.dumps(res.json())
                 self.postLog(title=title, content=content)
                 return {}
-            res_content=res.json()
+            res_content = res.json()
             sha = [s["sha"] for s in res_content if s["path"] == repoInfo["path"]]
             git_put_url = "https://api.github.com/repos/{}/{}/contents/{}".format(
                 repoInfo["user"], repoInfo["repo"], repoInfo["path"]
@@ -273,7 +286,7 @@ class YGO_DB_Updater():
                 "Accept": "application/vnd.github.v3+json",
                 "Authorization": f"Bearer {github_token}",
             }
-            message = commit_name or f"regular update@{datetime.date.today()}"
+            message = f"regular update@{datetime.date.today()}"
             content = json.dumps(data)
             bodyTmp = {"sha": sha[0]} if len(sha) > 0 else {}
             body = {
@@ -281,15 +294,20 @@ class YGO_DB_Updater():
                 "content": base64.b64encode(content.encode()).decode(),
                 **bodyTmp,
             }
-            res_put = requests.put(
+            res = requests.put(
                 git_put_url, headers=header_put, data=json.dumps(body, allow_nan=False)
-            ).json()
-            return res_put
+            )
+            if res.status_code!=200:
+                title = "Failed to post with GitHub API"
+                content = json.dumps(repoInfo) + "\n" + json.dumps(res.json())
+                self.postLog(title=title, content=content)
+                return {}
+            res_json=res.json()
+            return res_json
 
-
-    # make db_base with db.ygoprodeck.com/api/v7
+    # # ---- make db_base with db.ygoprodeck.com/api/v7 ---------
     def make_db_base(self, params: dict = {}, dataIn: list = []) -> pd.DataFrame:
-        # nowTime = datetime.datetime.now()
+        dt_td = datetime.date.today()
         if dataIn == []:
             params_default = {"misc": "yes"}
             params = {**params_default, **params}
@@ -313,9 +331,16 @@ class YGO_DB_Updater():
             levelIn = infoIn.get("level", False)
             linkvalIn = infoIn.get("linkval", None)
             otIn = [
-                s for s in infoIn["misc_info"][0]["formats"][::-1] if s in ["OCG", "TCG"]
+                s
+                for s in infoIn["misc_info"][0]["formats"][::-1]
+                if s in ["OCG", "TCG"]
             ]
-            LMarkerDic = {"Bottom": "D", "Left": "L", "Right": "R", "Top": "U"}
+            LMarkerDic = {
+                "Bottom": "D",
+                "Left": "L",
+                "Right": "R",
+                "Top": "U"
+                }
             LMarkerDic2 = {
                 "LD": "1",
                 "D": "2",
@@ -328,14 +353,19 @@ class YGO_DB_Updater():
             }
             card_ids = [s["id"] for s in infoIn["card_images"]]
             for card_id in card_ids:
-                # publishedDate = infoIn["misc_info"][0].get("ocg_date", ZERO_DATE).strip()
-                # # publishedDate_tcg = infoIn["misc_info"][0].get("tcg_date", ZERO_DATE).strip()
-
-                # if not re.match(r"\d{4}-\d{2}-\d{2}", publishedDate):
-                #     publishedDate = ZERO_DATE
-                # publishedTime = datetime.datetime.strptime(publishedDate, "%Y-%m-%d")
-                # if (nowTime - publishedTime).days < 0:
-                #     continue
+                # ignore future cards
+                dates = [
+                    info.get(k)
+                    for info in infoIn["misc_info"]
+                    for k in ["ocg_date", "tcg_date"]
+                ]
+                IsOnSale=any(
+                    s is not None
+                    and (datetime.datetime.strptime(s, "%Y-%m-%d").date() - dt_td).days <= 0
+                    for s in dates
+                )
+                if IsOnSale is False:
+                    continue
                 # Token will be skipped
                 if "Token" in typeIn or "Skill" in typeIn:
                     continue
@@ -352,7 +382,10 @@ class YGO_DB_Updater():
                         ).replace(" ", ","),
                         "race": None,
                     },
-                    {k: infoIn.get(k, None) for k in ["atk", "def", "attribute", "scale"]},
+                    {
+                        k: infoIn.get(k, None)
+                        for k in ["atk", "def", "attribute", "scale"]
+                    },
                     {
                         "level": levelIn or linkvalIn,  # infoIn.get("linkval", None),
                         "LMarker": "".join(
@@ -368,7 +401,7 @@ class YGO_DB_Updater():
                         "ot": "/".join(otIn),
                         "cid": infoIn["misc_info"][0].get("konami_id", None),
                     },
-                    {"id": card_id},
+                    {"id": str(card_id)},
                 ]
                 dict_forDf = {}
                 for infoTmp in infoTmps:
@@ -377,11 +410,11 @@ class YGO_DB_Updater():
 
         return pd.DataFrame(dicts_forDf)
 
+    # ## obtain Jap info from ocg-card.com
 
-# ## obtain Jap info from ocg-card.com
-
-# +
-    def _obtainJapInfos(self,
+    # +
+    def _obtainJapInfos(
+        self,
         formIn: str = "id",
         valsIn: dict = {},
         cardName_translations: dict = INFO_FOR_OCG_CARD_COM["cardName_translations"],
@@ -391,7 +424,10 @@ class YGO_DB_Updater():
             return {}
         form = {"id": "pass", "name": "name"}[formIn]
         query = "&".join(
-            [f"{form}_{ind}={s}&{form}-op_{ind}=3" for ind, s in enumerate(vals.values())]
+            [
+                f"{form}_{ind}={s}&{form}-op_{ind}=3"
+                for ind, s in enumerate(vals.values())
+            ]
         )
         url = f"https://ocg-card.com/list/result/?{query}&dup=2&max=10"
         count = 0
@@ -439,7 +475,6 @@ class YGO_DB_Updater():
 
         return cardInfos
 
-
     def obtainJapInfos(self, formIn: str = "id", valsIn: dict = {}) -> dict:
         valsIn2 = valsIn if (type(valsIn) == "dict") else {s: s for s in valsIn}
         length_vals = len(valsIn2.keys())
@@ -462,10 +497,9 @@ class YGO_DB_Updater():
         print("\n")
         return cardInfos
 
+    # -
 
-# -
-
-# #  ------- terms Langs ------
+    # #  ------- terms Langs ------
 
     def _obtainTermDic(self, lang: str = "ja") -> dict:
         url = f"https://www.db.yugioh-card.com/yugiohdb/card_search.action?request_locale={lang}"
@@ -498,15 +532,15 @@ class YGO_DB_Updater():
 
         return {**term_mon_dic, **term_st_dic}
 
-
     def _judgeExcept(self, lang, mst, key, val):
         infoIn = {"lang": lang, "mst": mst, "key": key, "val": val}
         excepts = EXCEPTS_FOR_TERM_ARR
         for info_except in excepts:
-            if all(info_except["cond"][v] == infoIn[v] for v in info_except["cond"].keys()):
+            if all(
+                info_except["cond"][v] == infoIn[v] for v in info_except["cond"].keys()
+            ):
                 return info_except["alt"]
         return None
-
 
     def obtainTermDic_Langs(self, langs: Optional[list] = None) -> dict:
         if langs is None:
@@ -543,9 +577,9 @@ class YGO_DB_Updater():
         )
         res = requests.get(url)
         soup = BeautifulSoup(res.text, "html.parser")
-        max_page = re.findall(r"ChangePage\((\d+)\)", soup.select("a.yaji.max")[0]["href"])[
-            0
-        ]
+        max_page = re.findall(
+            r"ChangePage\((\d+)\)", soup.select("a.yaji.max")[0]["href"]
+        )[0]
         return rp * int(max_page)
 
     def _obtainSoup(self, url):
@@ -560,7 +594,6 @@ class YGO_DB_Updater():
             )
         }
         return soup, enc_cid_dic
-
 
     # def obtainCardInfo_fromYGODB(self, page: int, lang: str = "ja", rp: int = 2000) -> dict:
     #     sort = "21"
@@ -588,8 +621,8 @@ class YGO_DB_Updater():
     #         for s, t in zip(soup.select("input.cid"), soup.select("span.card_name"))
     #     }
 
-
-    def obtainCardInfosAll_fromYGODB(self, 
+    def obtainCardInfosAll_fromYGODB(
+        self,
         page: int,
         lang: str = "ja",
         rp: int = 2000,
@@ -643,7 +676,6 @@ class YGO_DB_Updater():
             cardInfos[cid_now] = cardInfo
         return cardInfos
 
-
     def _obtainCardInfoComplex(self, elm_card: object, term_dic: dict) -> dict:
         elm_card_spec = elm_card.select("dl.flex_1>dd.box_card_spec")[0]
         attr_src_tmp = elm_card_spec.select("span.box_card_attribute>img")[0]["src"]
@@ -661,7 +693,9 @@ class YGO_DB_Updater():
                 box_eff = elm_card_spec.select("span.box_card_effect>span")
                 if len(box_eff) > 0:
                     type_add_lang = box_eff[0].text
-                    card_type_list.append(term_dic[card_basic_type]["type"][type_add_lang])
+                    card_type_list.append(
+                        term_dic[card_basic_type]["type"][type_add_lang]
+                    )
                 else:
                     card_type_list.append("Normal")
                 cardInfo["type"] = ",".join(card_type_list)
@@ -716,7 +750,9 @@ class YGO_DB_Updater():
                 cardInfo["type"] = ",".join(
                     [CARD_INFO_TYPE_MODIFY.get(s, s) for s in card_type_list]
                 )
-                cardInfo["race"] = term_dic["monster"]["race"][card_race_lang].capitalize()
+                cardInfo["race"] = term_dic["monster"]["race"][
+                    card_race_lang
+                ].capitalize()
         except Exception as e:
             title = "Error when parsing yugioh db to obtain complex card info"
             content = "\t{}\n{}\n{}".format(
@@ -725,11 +761,8 @@ class YGO_DB_Updater():
             self.postLog(title, content)
         return cardInfo
 
-
-
-
-    def _updateCardInfosAll_Lang(self, 
-        lang: str, cardInfos_old: dict, rp: int = 2000, term_dic: dict = {}
+    def _updateCardInfosAll_Lang(
+        self, lang: str, cardInfos_old: dict, rp: int = 2000, term_dic: dict = {}
     ) -> dict:
         cards_num = self.obtainCardsNum(lang=lang)
         print(lang, cards_num)
@@ -750,8 +783,8 @@ class YGO_DB_Updater():
         print("")
         return {lang: cardInfos}
 
-
-    def updateCardInfosAll_Langs(self, 
+    def updateCardInfosAll_Langs(
+        self,
         cardInfos_Langs_old: dict = {},
         term_dics_Langs: dict = {},
         langs: Optional[list] = None,
@@ -794,9 +827,9 @@ class YGO_DB_Updater():
             title = "Error when updating CardInfos for multi langs"
             content = str(e)
             self.postLog(title, content)
-        return {k: v for future_tmp in future_list for k, v in future_tmp.result().items()}
-
-
+        return {
+            k: v for future_tmp in future_list for k, v in future_tmp.result().items()
+        }
 
     def combineCardInfosAll_Langs(self, cardInfos_Langs: dict = {}) -> pd.DataFrame:
         df_comb = None
@@ -810,15 +843,17 @@ class YGO_DB_Updater():
                 df_comb["lang"] = f"{lang} "
                 continue
             else:
-                df_comb = pd.concat([df_comb, df_tmp[~df_tmp.index.isin(df_comb.index)]])
+                df_comb = pd.concat(
+                    [df_comb, df_tmp[~df_tmp.index.isin(df_comb.index)]]
+                )
             df_comb[f"name_{lang}"] = df_tmp[f"name_{lang}"]
             df_tmp["lang"] = f"{lang} "
             df_comb.loc[df_tmp.index, "lang"] += f"{lang} "
         return df_comb
 
-
     # # ----- make good db -------
-    def make_good_db(self, 
+    def make_good_db(
+        self,
         on_regular: bool = False,
         githubReuse_df: bool = True,
         githubReuse_lang: bool = True,
@@ -855,7 +890,9 @@ class YGO_DB_Updater():
             term_dics_Langs = self.obtainTermDic_Langs()
 
         # ## obtain cardInfos Langs
-        updateIsInvalid = lastUpdated == f"{date_today}" or date_today.weekday() % 3 != 2
+        updateIsInvalid = (
+            lastUpdated == f"{date_today}" or date_today.weekday() % 3 != 2
+        )
         if on_regular is True and updateIsInvalid is True:
             title = "update is skipped"
             content = f"{date_today}: update is skipped"
@@ -870,9 +907,9 @@ class YGO_DB_Updater():
         df_base = self.make_db_base()
 
         dic_dtype = {"Int64": ["atk", "def", "level", "scale", "cid"]}
-        df_base = df_base.astype({s: k for k, v in dic_dtype.items() for s in v}).astype(
-            {s: "<U32" for k, v in dic_dtype.items() for s in v}
-        )
+        df_base = df_base.astype(
+            {s: k for k, v in dic_dtype.items() for s in v}
+        ).astype({s: "<U32" for k, v in dic_dtype.items() for s in v})
         df_base = df_base.mask((df_base == "<NA>") | (df_base.isnull()))
 
         # merge 1st
@@ -893,11 +930,12 @@ class YGO_DB_Updater():
         # check cards without cid
         df_withoudCid = df_base[df_base["cid"].isna()]
 
-        message = "2 / 3: obtain info from ocg-card.com\n\t{}".format(
+        message = "2 / 3: obtain info of {} cards from ocg-card.com\n\t{}".format(
+            len(df_withoudCid),
             "\n\t".join(df_withoudCid["name"])
         )
         print(message)
-        if len(df_withoudCid)>0:
+        if len(df_withoudCid) > 0:
             cardInfos_searched = self.obtainJapInfos("id", df_withoudCid["id"])
             id2cid_fromOCGCARD = {
                 int(s["id"]): str(s["cid"]) for s in cardInfos_searched.values()
@@ -908,8 +946,8 @@ class YGO_DB_Updater():
             )
             id2cid = id2cid_fromOCGCARD
         else:
-            id2cid={}
-            cardInfos_searched={}
+            id2cid = {}
+            cardInfos_searched = {}
 
         # ### db_new: index -> cid
         df_new = df_base[~df_base["cid"].isna()].set_index("cid")
@@ -966,15 +1004,16 @@ class YGO_DB_Updater():
         self.postLog(title, content)
         return info_data_new
 
-
-    def postLog(self, title: str = "", content: str = "", flag_local: Optional[bool] = None) -> None:
+    def postLog(
+        self, title: str = "", content: str = "", flag_local: Optional[bool] = None
+    ) -> None:
         if flag_local is None:
             flag_local = not self.postOnline
         log_path = Path(self.log_path or "")
         dt_now = datetime.datetime.now().isoformat()
         url = self.post_url
         message = "\n----\n" + "\t".join([dt_now, title, content]) + "\n----\n"
-        if flag_local is False and isinstance(url, str) and len(url)>0:
+        if flag_local is False and isinstance(url, str) and len(url) > 0:
             auth = self.post_auth
             headers = {"Authorization": auth, "Accept": "application/json"}
             obj = {
@@ -985,7 +1024,6 @@ class YGO_DB_Updater():
             }
             res = requests.post(url, headers=headers, json=obj, verify=False)
         elif log_path.is_file():
-            
             with open(log_path, "a") as f:
                 f.write(message)
 
@@ -993,6 +1031,7 @@ class YGO_DB_Updater():
 
 
 # # ------- main ----------
+
 
 def main() -> None:
     sysargs = parser.parse_args()
@@ -1002,23 +1041,25 @@ def main() -> None:
     para = not sysargs.no_para
     uploadIsValid = not sysargs.not_upload
     postOnline = not sysargs.not_post_log
-    IsTest = not sysargs.test
+    IsTest = sysargs.test
     if isinstance(sysargs.langs, str):
-        langs = [s for s in sysargs.langs.split(",") if len(s)==2]
+        langs = [s for s in sysargs.langs.split(",") if len(s) == 2]
     else:
-        langs=None
-    
-    ydu = YGO_DB_Updater(        
+        langs = None
+
+    ydur = YGO_DB_Updater(
         paraIsValid=para,
         uploadIsValid=uploadIsValid,
         postOnline=postOnline,
         IsTest=IsTest,
-        langs=langs
+        langs=langs,
     )
-    ydu.make_good_db(on_regular=on_regular,
+    ydur.make_good_db(
+        on_regular=on_regular,
         githubReuse_df=reuse,
         githubReuse_lang=reuse,
-        githubReuse_id2cid=reuse,)
+        githubReuse_id2cid=reuse,
+    )
 
 
 if __name__ == "__main__":

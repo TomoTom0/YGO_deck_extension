@@ -165,8 +165,8 @@ window.onload = async function () {
             $(dnm).css({ width: "auto" });
             
             // save, load button
-            for (const [key, btn] of Object.entries(btns_official)){
-                if (IsLocalTest===false && ["delete", "copy", "new"].indexOf(key)!==-1) continue;
+            for (const [key, btn] of Object.entries(btns_official)) {
+                if (IsLocalTest === false && ["delete", "copy", "new"].indexOf(key) !== -1) continue;
                 $(dnm).after(btn);
             };
             $("#btn_regist").css({ display: "none" });
@@ -361,6 +361,7 @@ window.onload = async function () {
 
     // # button clicked
     document.addEventListener("click", async function (e) {
+        const html_parse_dic = parse_YGODB_URL(location.href, true);
         if ($(e.target).is("a.button_size_header, a.button_size_header *")) {
             const button = $([$(e.target).children(), e.target]
                 .filter(d => $(d).length > 0)
@@ -392,7 +393,7 @@ window.onload = async function () {
             if ($(button_target).hasClass("button_save")) {
                 await operateDeckVersion("set", { name: deck_name, tag: deck_tag }, row_results);
                 setDeckVersionTagList(true);
-            } else if ($(button_target).hasClass("button_load")){
+            } else if ($(button_target).hasClass("button_load")) {
                 if (deck_tag_key_tmp.length < 2) return;
                 const deck_tag_key = deck_tag_key_tmp[1];
                 const row_results = await operateDeckVersion("get", { name: deck_name, tag_key: deck_tag_key });
@@ -422,77 +423,81 @@ window.onload = async function () {
                 const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
                 const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
                 const row_results = obtainRowResults(df);
-                const serialized_dic = {
-                    header: $("#deck_header input, #deck_header select, #deck_header textarea").serialize(),
-                    deck: serializeRowResults(row_results)
-                };
+                // const serialized_dic = {
+                //     header: $("#deck_header input, #deck_header select, #deck_header textarea").serialize(),
+                //     deck: serializeRowResults(row_results)
+                // };
                 //console.log(serialized_dic);
                 // const serialized_data = "ope=3&" + Object.values(serialized_dic).join("&");
 
                 // await _Regist_fromYGODB(html_parse_dic, serialized_data);
-                await _Regist_fromYGODB(html_parse_dic);
-                await operateDeckVersion("set", { name: "@@Auto", tag: "_save_"+deck_name }, row_results);
+                res = await _Regist_fromYGODB(html_parse_dic);
+                if (res.error) {
+                    console.log("Failed to save");
+                }
+                await operateDeckVersion("set", { name: "@@Auto", tag: "_save_" + deck_name }, row_results);
                 setDeckVersionTagList(true);
             } else if ($(button_target).hasClass("button_load")) {
                 //const deck_name = deck_name_tmp.replace(/#\d+$/, "");
                 if (deck_dno_tmp.length < 2) return;
                 const deck_dno = deck_dno_tmp[1];
                 await load_deckOfficial(df, my_cgid, deck_dno, settings);
-            } else if ($(button_target).hasClass("button_new")){
+            } else if ($(button_target).hasClass("button_new")) {
                 const my_cgid = obtainMyCgid();
-                const dno_new=await generateNewDeck()//.then(d=>d.dno);
+                const dno_new = await generateNewDeck()//.then(d=>d.dno);
                 //const deck_headr_hidden=_obtainHiddenHeader(body);
                 //console.log($(body).prop("outerHTML"))
                 await load_deckOfficial(df, my_cgid, dno_new, settings);
                 //const res=await fetch(url)
                 //console.log(body);
-            } else if ($(button_target).hasClass("button_copy")){
+            } else if ($(button_target).hasClass("button_copy")) {
                 const my_cgid = obtainMyCgid();
                 const dno = $("#dno").val();
                 const lang = obtainLang();
                 //const sps=new URLSearchParams(deck_header_tmp);
                 //sps.set("dnm", Date.now().toString());
-                const dno_new=await generateNewDeck();
-                const deck_header_tmp=$("#deck_header input, #deck_header select, #deck_header textarea").serialize();
-                const sps=new URLSearchParams(deck_header_tmp);
-                sps.set("dno", dno_new);
-                const serialized_dic={
-                    header:sps.toString(),
-                    deck:serializeRowResults(obtainRowResults(df))
-                }
-                const serialized_data="ope=3&"+Object.values(serialized_dic).join("&");
-                console.log(serialized_data)
-                await _Regist_fromYGODB({dno:dno_new, cgid:my_cgid, request_locale:lang}, serialized_data);
+                const dno_new = await generateNewDeck();
+                // const deck_header_tmp=$("#deck_header input, #deck_header select, #deck_header textarea").serialize();
+                // const sps=new URLSearchParams(deck_header_tmp);
+                // sps.set("dno", dno_new);
+                // const serialized_dic={
+                //     header:sps.toString(),
+                //     deck:serializeRowResults(obtainRowResults(df))
+                // }
+                // const serialized_data="ope=3&"+Object.values(serialized_dic).join("&");
+                const serialized_data = $("#form_regist").serialize().replace(/dno=\d+/, `dno=${dno}`);
+                console.log(serialized_data);
+                await _Regist_fromYGODB({ dno: dno_new, cgid: my_cgid, request_locale: lang }, serialized_data);
                 await load_deckOfficial(df, my_cgid, dno_new, settings);
-            } else if ($(button_target).hasClass("button_delete")){
+            } else if ($(button_target).hasClass("button_delete")) {
                 const my_cgid = obtainMyCgid();
                 //const dno = $("#dno").val();
                 const lang = obtainLang();
                 const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
                 const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
-                const deck_dno = (deck_dno_tmp!=null && deck_dno_tmp.length >=2) ? deck_dno_tmp[1]:deck_dno_opened;
-                const sps_dic={cgid:my_cgid, request_locale:lang, dno:deck_dno, ope:7};
-                const sps=new URLSearchParams(sps_dic);
-                const url="https://www.db.yugioh-card.com/yugiohdb/member_deck.action?"+sps.toString();
-                const html_dic=await _obtainDeckRecipie(my_cgid, deck_dno, lang, "1");
-                const row_results=obtainRowResults(df, true, html_dic.text);
-                await operateDeckVersion("set", { name: "@@Auto", tag: "_delete_"+deck_name }, row_results);
-                const res=await fetch(url);
+                const deck_dno = (deck_dno_tmp != null && deck_dno_tmp.length >= 2) ? deck_dno_tmp[1] : deck_dno_opened;
+                const sps_dic = { cgid: my_cgid, request_locale: lang, dno: deck_dno, ope: 7, wname:html_parse_dic.wname, ytkn:html_parse_dic.ytkn };
+                const sps = new URLSearchParams(sps_dic);
+                const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" + sps.toString();
+                const html_dic = await _nojqObtainDeckRecipie(my_cgid, deck_dno, lang, "1");
+                const row_results = obtainRowResults(df, true, html_dic.text);
+                await operateDeckVersion("set", { name: "@@Auto", tag: "_delete_" + deck_name }, row_results);
+                const res = await fetch(url);
                 if (!res.ok) {
                     console.log(res);
                     return;
                 }
-                const deckList=await obtainDeckListOfficial();
-                const dnos=deckList.map(d=>d.dno);
-                const dnos_smaller=dnos.filter(d=>parseInt(d)<deck_dno);
-                const dno_load= (dnos_smaller.length===0) ? Math.max(...dnos) : Math.max(...dnos_smaller);
+                const deckList = await obtainDeckListOfficial();
+                const dnos = deckList.map(d => d.dno);
+                const dnos_smaller = dnos.filter(d => parseInt(d) < deck_dno);
+                const dno_load = (dnos_smaller.length === 0) ? Math.max(...dnos) : Math.max(...dnos_smaller);
                 await load_deckOfficial(df, my_cgid, dno_load, settings);
             }
             await sleep(500);
             $(button_target).toggleClass("orn");
             await setDeckNames($("#deck_nameList"));
         } else if ($(e.target).is("#deck_header dl.category_tag>dd select>option")) {
-            const select=$(e.target).parents("select")[0];
+            const select = $(e.target).parents("select")[0];
             //console.log($(select).attr("multiple"), select)
             if ($(e.target).attr("value") !== "") $(e.target).attr({ "selected": $(e.target).attr("selected") === undefined });
             if ($(e.target).attr("value") === "" || $(e.target).attr("selected") === undefined) $(e.target).prop("selected", false);
@@ -665,8 +670,8 @@ window.onload = async function () {
 
 
     $("#button_test").on("click", async function () {
-        const url="https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=4&cgid=87999bd183514004b8aa8afa1ff1bdb9"
-        const body=await obtainStreamBody(url);
+        const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=4&cgid=87999bd183514004b8aa8afa1ff1bdb9"
+        const body = await obtainStreamBody(url);
         //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
         console.log(body);
     });
@@ -675,14 +680,15 @@ window.onload = async function () {
         toggleVisible_deckHeader();
     });
     $("#button_backToView").on("click", async function () {
+        const html_parse_dic = parse_YGODB_URL(location.href, true);
         const my_cgid = obtainMyCgid();
         const dno = $("#dno").val();
         const lang = obtainLang();
-        const sps = { ope: "1", cgid: my_cgid, dno: dno, request_locale: lang };
+        const sps = { ope: "1", wname: html_parse_dic.wname, cgid: my_cgid, dno: dno, request_locale: lang };
         const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?` + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
         location.href = url;
     });
-    
+
     // ## change
     $("#deck_version_name").on("change", async function () {
         await setDeckVersionTagList(false);
