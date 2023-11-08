@@ -20,6 +20,11 @@ const defaultSettings = {
 }; // , changeCDBRepo: false, showColor: true
 const defaultString = JSON.stringify(defaultSettings);
 
+const defaultTemps = {
+    ytkn:null
+};
+const defaultTempsString = JSON.stringify(defaultTemps);
+
 const IsLocalTest = (chrome.runtime.id !== "jdgobeohbdmglcmgblpodggmgmponihc");
 
 // ----------------------------------
@@ -41,6 +46,19 @@ const obtainMyCgid = () => {
     if (my_deck_btn.length == 0) {
         return null;
     } else return $(my_deck_btn).prop("href").match(/cgid=([^\&=]+)/)[1];
+}
+
+const obtainMyYtkn = async (params_in=null) => {
+    const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action"
+    const my_cgid = obtainMyCgid();
+    const params = params_in || {
+        ope:"4",
+        wname:obtain_YGODB_fromHidden("wname"),
+        cgid:my_cgid
+    }
+    const body = parseHTML(await obtainStreamBody(url, params));
+    return obtain_YGODB_fromHidden("ytkn", body);
+
 }
 
 const obtainLang = () => {
@@ -459,50 +477,6 @@ const importDeck = (row_results) => {
 
 // ## save/regist
 
-const _Regist_fromYGODB_ = async (html_parse_dic_in = null, serialized_data_in = null) => {
-    const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
-    if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
-    const lang = obtainLang()
-    const request_locale = lang != null ? `&request_locale=` + lang : "";
-    if (serialized_data_in === null && $("#form_regist").length === 0) return;
-    const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
-    const sps = new URLSearchParams(serialized_data);
-    console.log(lang, request_locale);
-    sps.set("ope", "3");
-    sps.set("wname", html_parse_dic["wname"]);
-    sps.set("ytkn", html_parse_dic["ytkn"]);
-    const url_post = `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`
-    $('#btn_regist').removeAttr('href');
-    $('#message').hide().text('');
-    $('#loader').show();
-    //console.log(sps);
-    // console.log(sps.toString());
-    return await fetch(url_post, {
-        method: "POST",
-        body: sps,
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-            "Accept": "applacation/text"
-        }
-    }
-    ).then(data => {
-        if (data.result) {
-            console.log("Registered");
-        } else {
-            if (data.error) {
-                console.log("Register falied: ", data.error);
-                /*var lst = [];
-                $.each(data.error, function(index, value){
-                    lst.push($.escapeHTML(value));
-                });
-                console.log(lst);*/
-                //$('#message').append('<ul><li>' + lst.join('</li><li>') + '</li></ul>').show();
-            } else console.log("Register falied: ", data);
-            //$('#btn_regist').attr('href', 'javascript:Regist();');
-        }
-        return data
-    }).then(_ => $('#loader').hide());
-}
 
 const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = null) => {
     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
@@ -511,16 +485,26 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
     const request_locale = lang != null ? `&request_locale=` + lang : "";
     if (serialized_data_in === null && $("#form_regist").length === 0) return;
     // const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
-
-    const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
+    // console.log("ope=3&" + $("#form_regist").serialize());
+    const ytkn=obtainMyYtkn();
+    const serialized_data_ytkn = (serialized_data_in || "ope=3&" + $("#form_regist").serialize()).replace(/ytkn=[^&]/, "ytkn="+ytkn);
+    const serialized_data = (serialized_data_in || "ope=3&" + $("#form_regist").serialize());
+    console.log(serialized_data==serialized_data_ytkn)
     // const sps=new URLSearchParams(serialized_data);
     // console.log("ope=3&" + $("#form_regist").serialize());
     // sps.set("ope", "3");
+    // {
+    //     ope:"2",
+    //     wname:html_parse_dic.wname,
+    //     cgid:obtainMyCgid(),
+    //     dno:serialized_data.match(/dno=(\d+)/)[1],
+    //     ytkn:html_parse_dic.ytkn
+    // }
 
     return await $.ajax({
         type: 'post',
-        url: `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`,
-        data: serialized_data,//"ope=3&" + $("#form_regist").serialize(),//sps.toString(),
+        url: `/yugiohdb/member_deck.action?cgid=${obtainMyCgid()}&${request_locale}`,
+        data: serialized_data_ytkn,//"ope=3&" + $("#form_regist").serialize(),//sps.toString(),
         dataType: 'json',
         beforeSend: () => {
             $('#btn_regist').removeAttr('href');
@@ -552,6 +536,58 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
         }
     });
 }
+
+
+// const _Regist_fromYGODB_ = async (html_parse_dic_in = null, serialized_data_in = null) => {
+//     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
+//     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
+//     const lang = obtainLang()
+//     const request_locale = lang != null ? `&request_locale=` + lang : "";
+//     if (serialized_data_in === null && $("#form_regist").length === 0) return;
+//     const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
+//     const sps = new URLSearchParams(serialized_data);
+//     console.log(lang, request_locale);
+//     sps.set("ope", "3");
+//     sps.set("wname", html_parse_dic.wname);
+//     sps.set("ytkn", obtainMyYtkn({
+//         ope:"2",
+//         wname:html_parse_dic.wname,
+//         cgid:obtainMyCgid(),
+//         dno:serialized_data.match(/dno=(\d+)/)[1],
+//         ytkn:html_parse_dic.ytkn
+//     }));
+//     const url_post = `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`
+//     $('#btn_regist').removeAttr('href');
+//     $('#message').hide().text('');
+//     $('#loader').show();
+//     //console.log(sps);
+//     // console.log(sps.toString());
+//     return await fetch(url_post, {
+//         method: "POST",
+//         body: sps,
+//         headers: {
+//             "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+//             "Accept": "applacation/text"
+//         }
+//     }
+//     ).then(data => {
+//         if (data.result) {
+//             console.log("Registered");
+//         } else {
+//             if (data.error) {
+//                 console.log("Register falied: ", data.error);
+//                 /*var lst = [];
+//                 $.each(data.error, function(index, value){
+//                     lst.push($.escapeHTML(value));
+//                 });
+//                 console.log(lst);*/
+//                 //$('#message').append('<ul><li>' + lst.join('</li><li>') + '</li></ul>').show();
+//             } else console.log("Register falied: ", data);
+//             //$('#btn_regist').attr('href', 'javascript:Regist();');
+//         }
+//         return data
+//     }).then(_ => $('#loader').hide());
+// }
 
 /*const __FetchNotWork_Regist_fromYGODB = async () => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
@@ -592,19 +628,24 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
     }
 }*/
 
-const load_deckOfficial=async (df, my_cgid, deck_dno, settings)=>{
+const load_deckOfficial = async (df, my_cgid, deck_dno, settings) => {
     const deck_body = await _nojqObtainDeckRecipie(my_cgid, deck_dno, obtainLang(), "2");
-    const deck_name=deck_body.body.querySelector("#dnm").value;
+    const deck_name = deck_body.body.querySelector("#dnm").value;
     console.log(deck_name);
+    // console.log(deck_body.body.innerHTML);
+    const ytkn = deck_body.body.querySelector("input#ytkn").value;
+    const temps = await operateStorage({ temps: JSON.stringify({}) }, "sync")
+    .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
+    const new_temps = Object.assign(temps, {ytkn:ytkn});
+    await operateStorage({ data_deckVersion: JSON.stringify(new_temps) }, "local", "set");
     const row_results = obtainRowResults(df, false, deck_body.text);
     const input_dno = document.querySelector("input#dno");
-    input_dno.value=deck_dno;
-    if (settings.valid_feature_deckManager === true){
-        document.querySelector("#deck_dno_opened").innerText=deck_dno;
-        document.querySelector("#deck_name_opened").innerText=deck_name;
-
+    input_dno.value = deck_dno;
+    if (settings.valid_feature_deckManager === true) {
+        document.querySelector("#deck_dno_opened").innerText = deck_dno;
+        document.querySelector("#deck_name_opened").innerText = deck_name;
     }
-    document.querySelector("#dnm").value=deck_name;
+    document.querySelector("#dnm").value = deck_name;
     // import
     importDeck(row_results);
     if (settings.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
@@ -613,61 +654,77 @@ const load_deckOfficial=async (df, my_cgid, deck_dno, settings)=>{
         input: ["dnm", "biko"],
         select: ["dckCategoryMst", "dckTagMst"]
     }
-    for (const [type, arr] of Object.entries(header_names)){
-        for (const dom_id of arr){
-            if (type==="input") {
-                const old_val=deck_body.header.querySelector(`#${dom_id}`).value;
-                document.querySelector(`#${dom_id}`).value=old_val;
+    for (const [type, arr] of Object.entries(header_names)) {
+        for (const dom_id of arr) {
+            if (type === "input") {
+                const old_val = deck_body.header.querySelector(`#${dom_id}`).value;
+                document.querySelector(`#${dom_id}`).value = old_val;
             } else if (type === "select") {
-                const select=document.querySelector(`#${dom_id}`);
-                const select_old=deck_body.header.querySelector(`#${dom_id}`);
-                // ## 全部選択されてる
+                const select = document.querySelector(`#${dom_id}`);
+                const select_old = deck_body.header.querySelector(`#${dom_id}`);
+                // #/ 全部選択されてる
                 Array.from(select.querySelectorAll("option")
-                ).map(option=>{
+                ).map(option => {
                     // option.setAttribute("selected", false);
-                    option.selected=null;
+                    option.selected = null;
                 })
                 Array.from(select_old.querySelectorAll(`option[selected]`)
-                ).map(option=>{
-                    const val=option.value;
-                    const option_new=select.querySelector(`option[value='${val}']`);
+                ).map(option => {
+                    const val = option.value;
+                    const option_new = select.querySelector(`option[value='${val}']`);
                     option_new.setAttribute("selected", true);
-                    option_new.selected=true;
+                    option_new.selected = true;
 
                 })
             }
         }
     }
     // ,"dno","pflg", "deck_type", "deckStyle"
-    Object.entries(_obtainHiddenHeader(deck_body.body.innerHTML)).map(([k,v])=>{
-        document.querySelector(`#${k}`).value=v;
+    Object.entries(_obtainHiddenHeader(deck_body.body.innerHTML)).map(([k, v]) => {
+        document.querySelector(`#${k}`).value = v;
     })
     showSelectedOption();
 }
 
 const generateNewDeck = async (html_parse_dic_in = null) => {
-    const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
+    // const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     const my_cgid = obtainMyCgid();
+    // const url_decklist = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";
+    // const params_decklist = {
+    //     ope:"4",
+    //     wname:obtain_YGODB_fromHidden("wname"),
+    //     cgid:my_cgid
+    // }
+    // const body_decklist = parseHTML(await obtainStreamBody(url_decklist, params_decklist));
+    // console.log(body_decklist.innerHTML);
+    // console.log(body_decklist.querySelector("#ytkn").value());
+    
     //const dno = $("#dno").val();
-    const lang = obtainLang();
-    const deckList = await obtainDeckListOfficial();
+    // const lang = obtainLang();
+    // const deckList = await obtainDeckListOfficial();
     //const dno_new=[...Array(deckList.length+1).keys()].map(d=>d+1).filter(dno_cand=>!deckList.some(d=>d.dno==dno_cand))[0];
-    const dno_tmp = Math.max(deckList.map(d => d.dno)) + 1;
+    const dno_tmp = 1;//Math.max(deckList.map(d => d.dno)) + 1;
+    // const ytkn = obtain_YGODB_fromHidden("ytkn", body_decklist)
     const sps = {
         ope: "6",
-        wname: html_parse_dic.wname,
-        ytkn: html_parse_dic.ytkn,
+        wname: obtain_YGODB_fromHidden("wname"),
+        ytkn: obtainMyYtkn(),
         cgid: my_cgid,
-        request_locale: lang,
+        // request_locale: lang,
         dno: dno_tmp
     };
-    const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?` + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
-    const body=parseHTML(await obtainStreamBody(url));
-    // ## 動作未確認バグるかも
-    const dnos=Array.from(
+    // 7c47b&cgid=87999bd183514004b8aa8afa1ff1bdb9&dno=1
+    // https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=6&wname=MemberDeck&ytkn=bc4acdcbd5a412c757fe43dc8f31b242444b31d201d1384eb4c8525cad311646&cgid=87999bd183514004b8aa8afa1ff1bdb9&dno=1
+    const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?`;// + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
+    console.log(url);
+    const body = parseHTML(await obtainStreamBody(url, sps));
+    // console.log(body);
+    // #/ 動作未確認バグるかも => fixed
+    const dnos = Array.from(
         body.querySelectorAll("div.t_body>div.t_row div.inside>input.link_value")
-        ).map(d=>d.getAttribute("value").match(/dno=(\d+)/)[1]).map(d=>parseInt(d))
-    return Math.max(...dnos)//{dno:dno_new, body:body};
+    ).map(d => d.getAttribute("value").match(/dno=(\d+)/)[1]).map(d => parseInt(d))
+    // console.log(dnos);
+    return Math.max(...dnos);//, ytkn;//{dno:dno_new, body:body};
 }
 
 // ## sort cards
@@ -860,8 +917,8 @@ async function exportAs(form = "id") {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     const deck_name = $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_"); // after 2022/4/18
-    const ext_dic = {"id":".ydk", "name":"_name.txt", "cid":"_cid.txt"}
-    a.download = deck_name +ext_dic[form];
+    const ext_dic = { "id": ".ydk", "name": "_name.txt", "cid": "_cid.txt" }
+    a.download = deck_name + ext_dic[form];
     a.href = url;
     a.click();
     a.remove();
@@ -885,8 +942,8 @@ async function importFromYdk() {
     const row_names = ["monster", "spell", "trap", "extra", "side"];
     let row_results = Object.assign(
         ...row_names.map(row_name => Object({
-             [row_name]: { names: [], nums: [], cids: [], limits:[] } 
-            })
+            [row_name]: { names: [], nums: [], cids: [], limits: [] }
+        })
         ));
     const df = await obtainDF(obtainLang());
     let exceptions = [];
@@ -903,13 +960,13 @@ async function importFromYdk() {
         onlyNumbers: data_array.filter(d=>!/^#|^!/.test(d)).every(data=>isFinite(data))}
     const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
     for (const [ind_import, rows] of Object.entries(imported_rows)) {
-        for (const row of Array.from(new Set(rows)).map(d=>d.trim()).filter(d => d.length > 0)) {
+        for (const row of Array.from(new Set(rows)).map(d => d.trim()).filter(d => d.length > 0)) {
             // const isID = /^\d+$/.test(id_tmp);
             if (row.length === 0) continue;
             let name_tmp = "";
             const id = (/^\d+$/.test(row)) ? parseInt(row) : null; //isFinite(row) && 
-            const card_name = (id !== null) ? df_filter(df, "name", ["id", id])[0]: row;
-            const cid = (id !== null) ? df_filter(df, "cid", ["id", id])[0]: undefined;
+            const card_name = (id !== null) ? df_filter(df, "name", ["id", id])[0] : row;
+            const cid = (id !== null) ? df_filter(df, "cid", ["id", id])[0] : undefined;
             // // id
             // if (/^\d+$/.test(id) && id) {
             //     name_tmp = df_filter(df, "name", ["id", id])[0];
@@ -1566,7 +1623,7 @@ const obtainDeckListOfficial = async (html_parse_dic_in = null) => {
     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     const sps = {
         ope: "4",
-        wname:html_parse_dic.wname,
+        wname: html_parse_dic.wname,
         cgid: obtainMyCgid(),
         request_locale: obtainLang()
     }

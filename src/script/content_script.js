@@ -163,7 +163,7 @@ window.onload = async function () {
                     .append("<span>Save</span>"),
             };
             $(dnm).css({ width: "auto" });
-            
+
             // save, load button
             for (const [key, btn] of Object.entries(btns_official)) {
                 if (IsLocalTest === false && ["delete", "copy", "new"].indexOf(key) !== -1) continue;
@@ -214,16 +214,16 @@ window.onload = async function () {
             // shuffle button
             if (settings.valid_feature_sortShuffle === true) addShuffleButton(true);
 
-            // operate click mode
-            const span_tmp = $("<span>", { style: "border:none; line-height: 30px; min-width: 135px;" })
-                .append(`Click|MOVE CARD/open url`);
-            const button_clickMode = $("<a>", {
-                class: `btn hex button_clickMode red`,
-                id: "button_clickMode",
-                oncontextmenu: "return false;"
-            })
-                .append(span_tmp.clone());
-            addButtonAfterMainShuffle(button_clickMode);
+            // // operate click mode
+            // const span_tmp = $("<span>", { style: "border:none; line-height: 30px; min-width: 135px;" })
+            //     .append(`Click|MOVE CARD/open url`);
+            // const button_clickMode = $("<a>", {
+            //     class: `btn hex button_clickMode red`,
+            //     id: "button_clickMode",
+            //     oncontextmenu: "return false;"
+            // })
+            //     .append(span_tmp.clone());
+            // addButtonAfterMainShuffle(button_clickMode);
 
             // search Area
             $("#bg>div:eq(0)").css({ background: "none" });
@@ -476,12 +476,18 @@ window.onload = async function () {
                 const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
                 const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
                 const deck_dno = (deck_dno_tmp != null && deck_dno_tmp.length >= 2) ? deck_dno_tmp[1] : deck_dno_opened;
-                const sps_dic = { cgid: my_cgid, request_locale: lang, dno: deck_dno, ope: 7, wname:html_parse_dic.wname, ytkn:html_parse_dic.ytkn };
-                const sps = new URLSearchParams(sps_dic);
-                const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" + sps.toString();
                 const html_dic = await _nojqObtainDeckRecipie(my_cgid, deck_dno, lang, "1");
                 const row_results = obtainRowResults(df, true, html_dic.text);
                 await operateDeckVersion("set", { name: "@@Auto", tag: "_delete_" + deck_name }, row_results);
+                const sps_dic = {
+                     cgid: my_cgid, 
+                     request_locale: lang, 
+                     dno: deck_dno, 
+                     ope: 7, 
+                     wname: obtain_YGODB_fromHidden("wname"), 
+                     ytkn: obtainMyYtkn() };
+                const sps = new URLSearchParams(sps_dic);
+                const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" + sps.toString();
                 const res = await fetch(url);
                 if (!res.ok) {
                     console.log(res);
@@ -513,7 +519,7 @@ window.onload = async function () {
             $("#button_sideChange").hasClass("on");
         const clickIsToOpenURL = $("#deck_image").length > 0 && $("#deck_image").hasClass("click_open_url");
         if ($(e.target).is("a.button_export, a.button_export *")) {
-            const form_dic = {0:"id", 2:"name", 1:"cid"}
+            const form_dic = { 0: "id", 2: "name", 1: "cid" }
             const form = form_dic[e.button];
             // const form = (e.button === 0) ? "id" : "name";
             console.log(`export deck as ${form}`)
@@ -655,13 +661,13 @@ window.onload = async function () {
     $("#button_searchShowHide").on("click", async function () {
         operate_searchArea();
     });
-    $("#button_clickMode").on("click", async function () {
-        //operate_clickMode();
-        $("#deck_image").toggleClass("click_open_url");
-        $(this).toggleClass("red");
-        const clickIsToOpenURL = $("#deck_image").hasClass("click_open_url");
-        $("span", this).html(`Click|` + (clickIsToOpenURL ? "move card/OPEN URL" : "MOVE CARD/open url"));
-    });
+    // $("#button_clickMode").on("click", async function () {
+    //     //operate_clickMode();
+    //     $("#deck_image").toggleClass("click_open_url");
+    //     $(this).toggleClass("red");
+    //     const clickIsToOpenURL = $("#deck_image").hasClass("click_open_url");
+    //     $("span", this).html(`Click|` + (clickIsToOpenURL ? "move card/OPEN URL" : "MOVE CARD/open url"));
+    // });
 
     $("#button_guess").on("click", async function () {
         await guess_clicked();
