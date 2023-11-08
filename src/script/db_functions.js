@@ -26,33 +26,44 @@ const operateStorage = (key = null, storageKey = "sync", operate = "get") => new
     chrome.storage[storageKey][operate](key, resolve);
 });
 
-const obtainDF = async (lang=null) => {
+const obtainDF = async (lang = null) => {
     const df = await operateStorage({ df: JSON.stringify({}) }, "local")
         .then(items => JSON.parse(items.df))
-        .then(df_tmp=>{
-            const name_key=`name_${lang}`
-            if (Object.keys(df_tmp).indexOf(name_key)!==-1){
-                df_tmp["name"]=df_tmp[name_key];
+        .then(df_tmp => {
+            const name_key = `name_${lang}`
+            if (Object.keys(df_tmp).indexOf(name_key) !== -1) {
+                df_tmp["name"] = df_tmp[name_key];
             }
             return df_tmp;
         });
     if (Object.keys(df).length === 0) {
-        return await updateDB().then(df_tmp=>{
-            const name_key=`name_${lang}`
-            if (Object.keys(df_tmp).indexOf(name_key)!==-1){
-                df_tmp["name"]=df_tmp[name_key];
+        return await updateDB().then(df_tmp => {
+            const name_key = `name_${lang}`
+            if (Object.keys(df_tmp).indexOf(name_key) !== -1) {
+                df_tmp["name"] = df_tmp[name_key];
             }
             return df_tmp;
         });
     } else return df;
 }
 
+const fetchParams = async (url, params = null) => {
+    if (url === null) {
+        url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";
+    }
+    if (params !== null) {
+        url = url.replace(/\?$/, "") + "?" +
+            Object.entries(params).filter(([_k, v]) => v !== null
+            ).map(([k, v]) => `${k}=${v}`).join("&");
+    }
+    return await fetch(url);
+}
 
-const obtainStreamBody = async (url) => {
+const obtainStreamBody = async (url, params = null) => {
     let count_error = 0;
     while (count_error < 3) {
         try {
-            return await fetch(url).then(d => d.body)
+            return await fetchParams(url, params).then(d => d.body)
                 .then(d => d.getReader())
                 .then(async reader => {
                     const readChunk = async (res, longText = "") => {
@@ -103,11 +114,20 @@ const parse_YGODB_URL = (url_now = location.href, nullIsValid = false) => {
         const match_tmp = url_now.match(new RegExp(`(?<=${key}=)([^&=]+)`, "g"));
         if (Array.isArray(match_tmp) && match_tmp.length > 0) {
             return { [key]: match_tmp[0] };
-        } else return { [key]: null };
+        } else return { [key]: obtain_YGODB_fromHidden(key) || null };
     });
     if (nullIsValid === false) {
         return Object.assign(...html_parse_dic_arr.filter(d => Object.values(d)[0] != null));
     } else return Object.assign(...html_parse_dic_arr);
+}
+
+const obtain_YGODB_fromHidden = (key, body_in = null) => {
+    const body = body_in !== null ? body_in : document.querySelector("body");
+    try {
+        return body.querySelector(`#${key}`).value;
+    } catch (e) {
+        return "";
+    }
 }
 
 const _makeTermTables = async (lang = "ja") => {
@@ -151,15 +171,15 @@ function split_data(data) {
 }
 
 function df_filter(df, col_out, array_in, condition = "=") {
-    df.ind=[...Array(df.name.length).keys()];
+    df.ind = [...Array(df.name.length).keys()];
     const key = array_in[0];
     const val = Array.isArray(array_in[1]) ? array_in[1] : [array_in[1]];
     if (df == {} && Array.isArray(col_out)) return col_out.reduce((acc, key) => Object.assign(acc, { [key]: [] }), {});
     else if (df == {}) return [];
 
     const indexes_in = df[key].reduce((acc, cur_tmp, ind) => {
-        if (cur_tmp==null) return acc;
-        for (const cur of [cur_tmp, isFinite(cur_tmp)&& !Number.isInteger(cur_tmp) ? parseInt(cur_tmp) : `${cur_tmp}`]){
+        if (cur_tmp == null) return acc;
+        for (const cur of [cur_tmp, isFinite(cur_tmp) && !Number.isInteger(cur_tmp) ? parseInt(cur_tmp) : `${cur_tmp}`]) {
             if (condition == "=" && val.indexOf(cur) != -1) return acc.concat([ind]);
             //else if (condition == "=" && isFinite(cur) && val.indexOf(String(cur)) != -1) return acc.concat([ind]);
             else if (condition == "in" && val.some(d => `${cur}`.indexOf(d) != -1)) return acc.concat([ind]);
@@ -468,24 +488,24 @@ async function updateDB() {
     const content = await fetch(git_data_url, { method: "GET", headers: header_auth }).then(d => d.json())
         .then(res => atob(res.content));
     console.log("Database has been updated.");
-    let df_new = {id:[10000], cid:["14809"]};
+    let df_new = { id: [10000], cid: ["14809"] };
     const text_tmp = content;//.replace(/(,?\s*)NaN(\s*,?)/g, `$1"NaN"$2`);
     try {
 
         console.log(JSON.parse(text_tmp));
-    df_new = JSON.parse(text_tmp).all;
-    df_new.id = df_new.id.map(d => d );
-    df_new.cid = df_new.cid.map(d => d );
+        df_new = JSON.parse(text_tmp).all;
+        df_new.id = df_new.id.map(d => d);
+        df_new.cid = df_new.cid.map(d => d);
     } catch (err) {
-        console.log("Error on parsing Card Data Base string as json\n"+err);
+        console.log("Error on parsing Card Data Base string as json\n" + err);
         const ind = 710328;
-        console.log(text_tmp.slice(ind-20,ind +20));
-        df_new = {id:[10000], cid:["14809"]};
-        
+        console.log(text_tmp.slice(ind - 20, ind + 20));
+        df_new = { id: [10000], cid: ["14809"] };
+
     }
     await operateStorage({ df: JSON.stringify(df_new), lastModifiedDate: Date.now() }, "local", "set");
     return df_new;
-    
+
 }
 
 
