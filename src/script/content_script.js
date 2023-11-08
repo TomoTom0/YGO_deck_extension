@@ -14,7 +14,11 @@ window.onload = async function () {
 
     const settings = await operateStorage({ settings: JSON.stringify({}) }, "sync")
         .then(items => Object.assign(defaultSettings, JSON.parse(items.settings)));
-    //console.log(settings)
+    const ytkn = obtain_YGODB_fromHidden("ytkn");
+    const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
+        .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
+    const new_temps = Object.assign(temps, { ytkn: ytkn });
+    await operateStorage({ temps: JSON.stringify(new_temps) }, "local", "set");
 
     const script_initial_count = $("script[type='text/javascript']").length;
     $("#footer_icon svg").css({ height: "min(5vh, 30px)" })
@@ -205,7 +209,7 @@ window.onload = async function () {
             // deck image
             const df = await obtainDF(obtainLang());
             const row_results = obtainRowResults(df);//obtainRowResults_Edit(df);
-            console.log(row_results)
+            // console.log(row_results)
             insertDeckImg(df, row_results, false);
             updateCardLimitClass(row_results);
             const key_show = settings.default_deck_edit_image ? "image" : "text";
@@ -441,19 +445,20 @@ window.onload = async function () {
                 //const deck_name = deck_name_tmp.replace(/#\d+$/, "");
                 if (deck_dno_tmp.length < 2) return;
                 const deck_dno = deck_dno_tmp[1];
-                await load_deckOfficial(df, my_cgid, deck_dno, settings);
+                await load_deckOfficial(df, deck_dno, settings, my_cgid);
             } else if ($(button_target).hasClass("button_new")) {
                 const my_cgid = obtainMyCgid();
                 const dno_new = await generateNewDeck()//.then(d=>d.dno);
                 //const deck_headr_hidden=_obtainHiddenHeader(body);
                 //console.log($(body).prop("outerHTML"))
-                await load_deckOfficial(df, my_cgid, dno_new, settings);
+                await load_deckOfficial(df, dno_new, settings, my_cgid);
                 //const res=await fetch(url)
                 //console.log(body);
             } else if ($(button_target).hasClass("button_copy")) {
                 const my_cgid = obtainMyCgid();
                 const dno = $("#dno").val();
                 const lang = obtainLang();
+                const row_results = await obtainRowResults(df);
                 //const sps=new URLSearchParams(deck_header_tmp);
                 //sps.set("dnm", Date.now().toString());
                 const dno_new = await generateNewDeck();
@@ -465,39 +470,38 @@ window.onload = async function () {
                 //     deck:serializeRowResults(obtainRowResults(df))
                 // }
                 // const serialized_data="ope=3&"+Object.values(serialized_dic).join("&");
-                const serialized_data = $("#form_regist").serialize().replace(/dno=\d+/, `dno=${dno}`);
-                console.log(serialized_data);
-                await _Regist_fromYGODB({ dno: dno_new, cgid: my_cgid, request_locale: lang }, serialized_data);
-                await load_deckOfficial(df, my_cgid, dno_new, settings);
+                const serialized_data = $("#form_regist").serialize().replace(/dno=\d+/, `dno=${dno_new}`);
+                // console.log(serialized_data);
+                // const res = await fetchParams(null, {
+                //     ope:2,
+                //     dno:dno_new,
+                //     cgid:my_cgid,
+                //     wname:obtain_YGODB_fromHidden("wname"),
+                //     request_locale:lang
+                // });
+                // const html_dic = await _nojqObtainDeckRecipie(my_cgid, dno_new, lang, 2);
+                // console.log(html_dic.body.querySelector("input#ytkn"))
+                await load_deckOfficial(df, dno_new, settings, my_cgid);
+                importDeck(row_results);
+                if (settings.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
+                await _Regist_fromYGODB();
+
             } else if ($(button_target).hasClass("button_delete")) {
                 const my_cgid = obtainMyCgid();
                 //const dno = $("#dno").val();
-                const lang = obtainLang();
+                // const lang = obtainLang();
                 const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
                 const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
                 const deck_dno = (deck_dno_tmp != null && deck_dno_tmp.length >= 2) ? deck_dno_tmp[1] : deck_dno_opened;
-                const html_dic = await _nojqObtainDeckRecipie(my_cgid, deck_dno, lang, "1");
-                const row_results = obtainRowResults(df, true, html_dic.text);
-                await operateDeckVersion("set", { name: "@@Auto", tag: "_delete_" + deck_name }, row_results);
-                const sps_dic = {
-                     cgid: my_cgid, 
-                     request_locale: lang, 
-                     dno: deck_dno, 
-                     ope: 7, 
-                     wname: obtain_YGODB_fromHidden("wname"), 
-                     ytkn: obtainMyYtkn() };
-                const sps = new URLSearchParams(sps_dic);
-                const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" + sps.toString();
-                const res = await fetch(url);
-                if (!res.ok) {
-                    console.log(res);
-                    return;
-                }
-                const deckList = await obtainDeckListOfficial();
-                const dnos = deckList.map(d => d.dno);
-                const dnos_smaller = dnos.filter(d => parseInt(d) < deck_dno);
-                const dno_load = (dnos_smaller.length === 0) ? Math.max(...dnos) : Math.max(...dnos_smaller);
-                await load_deckOfficial(df, my_cgid, dno_load, settings);
+                await delete_deckOfficial(
+                    df,
+                    settings,
+                    deck_dno,
+                    deck_name,
+                    true,
+                    my_cgid,
+                    obtainRowResults(df, true));
+
             }
             await sleep(500);
             $(button_target).toggleClass("orn");
@@ -517,7 +521,8 @@ window.onload = async function () {
             settings.valid_feature_sideChange === true &&
             $("#button_sideChange").length > 0 &&
             $("#button_sideChange").hasClass("on");
-        const clickIsToOpenURL = $("#deck_image").length > 0 && $("#deck_image").hasClass("click_open_url");
+        const clickIsToOpenURL = $("#deck_image").length > 0 &&
+            $("#deck_image").hasClass("click_open_url");
         if ($(e.target).is("a.button_export, a.button_export *")) {
             const form_dic = { 0: "id", 2: "name", 1: "cid" }
             const form = form_dic[e.button];

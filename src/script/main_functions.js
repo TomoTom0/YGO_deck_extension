@@ -21,7 +21,7 @@ const defaultSettings = {
 const defaultString = JSON.stringify(defaultSettings);
 
 const defaultTemps = {
-    ytkn:null
+    ytkn: null
 };
 const defaultTempsString = JSON.stringify(defaultTemps);
 
@@ -48,17 +48,22 @@ const obtainMyCgid = () => {
     } else return $(my_deck_btn).prop("href").match(/cgid=([^\&=]+)/)[1];
 }
 
-const obtainMyYtkn = async (params_in=null) => {
+const obtainMyYtkn = async (flag_fetch = false, params_in = null) => {
+    const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
+        .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
+    if (flag_fetch === false && params_in === null) return temps.ytkn;
     const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action"
     const my_cgid = obtainMyCgid();
-    const params = params_in || {
-        ope:"4",
-        wname:obtain_YGODB_fromHidden("wname"),
-        cgid:my_cgid
-    }
+    const params = Object.assign({
+        ope: "4",
+        wname: obtain_YGODB_fromHidden("wname"),
+        cgid: my_cgid
+    }, params_in);
     const body = parseHTML(await obtainStreamBody(url, params));
-    return obtain_YGODB_fromHidden("ytkn", body);
-
+    const ytkn = obtain_YGODB_fromHidden("ytkn", body);
+    const new_temps = Object.assign(temps, { ytkn: ytkn });
+    await operateStorage({ temps: JSON.stringify(new_temps) }, "local", "set");
+    return ytkn
 }
 
 const obtainLang = () => {
@@ -270,7 +275,12 @@ const serializeRowResults = (row_results) => {
     }).join("&");
 }
 // ## operate recipie
-const operateRowResults = (row_results = {}, cidIn = 10, change = 1, to_row_type = null, df = null) => {
+const operateRowResults = (
+    row_results = {},
+    cidIn = 10,
+    change = 1,
+    to_row_type = null,
+    df = null) => {
     const num_all = Object.values(row_results).map(row_result => {
         const ind_fromCid = row_result.cids.indexOf(cidIn);
         if (ind_fromCid !== -1) return row_result.nums[ind_fromCid];
@@ -478,7 +488,11 @@ const importDeck = (row_results) => {
 // ## save/regist
 
 
-const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = null) => {
+const _Regist_fromYGODB = async (
+    html_parse_dic_in = null,
+     serialized_data_in = null,
+     ytkn_in = null,
+      retry_count = 0) => {
     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
     const lang = obtainLang()
@@ -486,10 +500,16 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
     if (serialized_data_in === null && $("#form_regist").length === 0) return;
     // const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
     // console.log("ope=3&" + $("#form_regist").serialize());
-    const ytkn=obtainMyYtkn();
-    const serialized_data_ytkn = (serialized_data_in || "ope=3&" + $("#form_regist").serialize()).replace(/ytkn=[^&]/, "ytkn="+ytkn);
     const serialized_data = (serialized_data_in || "ope=3&" + $("#form_regist").serialize());
-    console.log(serialized_data==serialized_data_ytkn)
+    const dno = serialized_data.match(/dno=(\d+)/)[1];
+    // const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
+    //     .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
+    // console.log(temps.ytkn, obtain_YGODB_fromHidden("ytkn"))
+    // const ytkn = temps.ytkn || obtain_YGODB_fromHidden("ytkn");
+    const ytkn = await obtainMyYtkn(true, { dno: dno, ope: 2 });
+    // console.log(ytkn);
+    const serialized_data_ytkn = serialized_data.replace(/ytkn=[^&]+/, "ytkn=" + ytkn);
+    // console.log(serialized_data_ytkn)
     // const sps=new URLSearchParams(serialized_data);
     // console.log("ope=3&" + $("#form_regist").serialize());
     // sps.set("ope", "3");
@@ -500,10 +520,10 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
     //     dno:serialized_data.match(/dno=(\d+)/)[1],
     //     ytkn:html_parse_dic.ytkn
     // }
-
+    const url = `/yugiohdb/member_deck.action?cgid=${obtainMyCgid()}&${request_locale}`;
     return await $.ajax({
         type: 'post',
-        url: `/yugiohdb/member_deck.action?cgid=${obtainMyCgid()}&${request_locale}`,
+        url: url,
         data: serialized_data_ytkn,//"ope=3&" + $("#form_regist").serialize(),//sps.toString(),
         dataType: 'json',
         beforeSend: () => {
@@ -530,15 +550,20 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
                 //$('#btn_regist').attr('href', 'javascript:Regist();');
             }
         },
-        error: function (xhr, status, error) {
-            console.log(serialized_data);
+        error: async function (xhr, status, error) {
+            // console.log(url);
+            // console.log(serialized_data);
+            // console.log(serialized_data_ytkn);
             console.log(error);
+            // if (retry_count==0) {
+            //     await _Regist_fromYGODB(html_parse_dic, serialized_data, retry_count+1);
+            // }
         }
     });
 }
 
 
-// const _Regist_fromYGODB_ = async (html_parse_dic_in = null, serialized_data_in = null) => {
+// const _Fetch_Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = null) => {
 //     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
 //     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
 //     const lang = obtainLang()
@@ -628,16 +653,17 @@ const _Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = 
     }
 }*/
 
-const load_deckOfficial = async (df, my_cgid, deck_dno, settings) => {
+const load_deckOfficial = async (df, deck_dno, settings, my_cgid=null) => {
+    if ( my_cgid===null) my_cgid = obtainMyCgid();
     const deck_body = await _nojqObtainDeckRecipie(my_cgid, deck_dno, obtainLang(), "2");
     const deck_name = deck_body.body.querySelector("#dnm").value;
     console.log(deck_name);
     // console.log(deck_body.body.innerHTML);
     const ytkn = deck_body.body.querySelector("input#ytkn").value;
-    const temps = await operateStorage({ temps: JSON.stringify({}) }, "sync")
-    .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
-    const new_temps = Object.assign(temps, {ytkn:ytkn});
-    await operateStorage({ data_deckVersion: JSON.stringify(new_temps) }, "local", "set");
+    const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
+        .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
+    const new_temps = Object.assign(temps, { ytkn: ytkn });
+    await operateStorage({ temps: JSON.stringify(new_temps) }, "local", "set");
     const row_results = obtainRowResults(df, false, deck_body.text);
     const input_dno = document.querySelector("input#dno");
     input_dno.value = deck_dno;
@@ -686,6 +712,59 @@ const load_deckOfficial = async (df, my_cgid, deck_dno, settings) => {
     showSelectedOption();
 }
 
+const delete_deckOfficial = async (
+    df_in = null,
+    settings_in = null,
+    dno = null,
+    deck_name = null,
+    flag_load = true,
+    cgid_in = null,
+    row_results_in = null) => {
+    if (dno === null || deck_name === null) {
+        return false
+    }
+    const df = df_in || await obtainDF(obtainLang());
+    const settings = settings_in;
+    const my_cgid = cgid_in || obtainMyCgid();
+    //const dno = $("#dno").val();
+    const lang = obtainLang();
+    // const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
+    // const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
+    // const deck_dno = (deck_dno_tmp != null && deck_dno_tmp.length >= 2) ? deck_dno_tmp[1] : deck_dno_opened;
+    if (row_results_in !== null) {
+        await operateDeckVersion("set", { name: "@@Auto", tag: "_delete_" + deck_name }, row_results_in);
+    } else {
+        const html_dic = await _nojqObtainDeckRecipie(my_cgid, dno, lang, "1");
+        const row_results = obtainRowResults(df, true, html_dic.text);
+        await operateDeckVersion("set",
+            { name: "@@Auto", tag: "_delete_" + deck_name },
+            row_results);
+    }
+    const ytkn = await obtainMyYtkn(true, { ope: 1, dno: dno });
+    const sps = {
+        cgid: my_cgid,
+        request_locale: lang,
+        dno: dno,
+        ope: 7,
+        wname: obtain_YGODB_fromHidden("wname"),
+        ytkn: ytkn
+    };
+    // const sps = new URLSearchParams(sps_dic);
+    const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";// + sps.toString();
+    const res = await fetchParams(url, sps);
+    if (!res.ok) {
+        console.log(res);
+        return;
+    }
+    if (flag_load === true) {
+        const deckList = await obtainDeckListOfficial();
+        const dnos = deckList.map(d => d.dno);
+        const dnos_smaller = dnos.filter(d => parseInt(d) < dno);
+        const dno_load = (dnos_smaller.length === 0) ? Math.max(...dnos) : Math.max(...dnos_smaller);
+        await load_deckOfficial(df, dno_load, settings, my_cgid);
+    }
+}
+
 const generateNewDeck = async (html_parse_dic_in = null) => {
     // const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     const my_cgid = obtainMyCgid();
@@ -698,17 +777,19 @@ const generateNewDeck = async (html_parse_dic_in = null) => {
     // const body_decklist = parseHTML(await obtainStreamBody(url_decklist, params_decklist));
     // console.log(body_decklist.innerHTML);
     // console.log(body_decklist.querySelector("#ytkn").value());
-    
+
     //const dno = $("#dno").val();
     // const lang = obtainLang();
     // const deckList = await obtainDeckListOfficial();
     //const dno_new=[...Array(deckList.length+1).keys()].map(d=>d+1).filter(dno_cand=>!deckList.some(d=>d.dno==dno_cand))[0];
     const dno_tmp = 1;//Math.max(deckList.map(d => d.dno)) + 1;
     // const ytkn = obtain_YGODB_fromHidden("ytkn", body_decklist)
+    const ytkn_decklist = await obtainMyYtkn(true);
+    // console.log(ytkn_decklist)
     const sps = {
-        ope: "6",
+        ope: 6,
         wname: obtain_YGODB_fromHidden("wname"),
-        ytkn: obtainMyYtkn(),
+        ytkn: ytkn_decklist,
         cgid: my_cgid,
         // request_locale: lang,
         dno: dno_tmp
@@ -716,14 +797,20 @@ const generateNewDeck = async (html_parse_dic_in = null) => {
     // 7c47b&cgid=87999bd183514004b8aa8afa1ff1bdb9&dno=1
     // https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=6&wname=MemberDeck&ytkn=bc4acdcbd5a412c757fe43dc8f31b242444b31d201d1384eb4c8525cad311646&cgid=87999bd183514004b8aa8afa1ff1bdb9&dno=1
     const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?`;// + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
-    console.log(url);
+    // console.log(url);
     const body = parseHTML(await obtainStreamBody(url, sps));
-    // console.log(body);
+    // console.log(body.innerHTML);
+    // const ytkn = body.querySelector("input#ytkn").value;
+    // const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
+    //     .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
+    // const new_temps = Object.assign(temps, { ytkn: ytkn });
+    // await operateStorage({ temps: JSON.stringify(new_temps) }, "local", "set");
+
     // #/ 動作未確認バグるかも => fixed
     const dnos = Array.from(
         body.querySelectorAll("div.t_body>div.t_row div.inside>input.link_value")
     ).map(d => d.getAttribute("value").match(/dno=(\d+)/)[1]).map(d => parseInt(d))
-    // console.log(dnos);
+    // console.log(Math.max(...dnos), dnos);
     return Math.max(...dnos);//, ytkn;//{dno:dno_new, body:body};
 }
 

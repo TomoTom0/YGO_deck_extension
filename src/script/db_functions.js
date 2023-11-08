@@ -47,15 +47,23 @@ const obtainDF = async (lang = null) => {
     } else return df;
 }
 
-
-const obtainStreamBody = async (url, params=null) => {
-    let count_error = 0;
-    if (params!==null){
-        url = url.replace(/\?$/, "")+"?"+ Object.entries(params).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
+const fetchParams = async (url, params = null) => {
+    if (url === null) {
+        url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";
     }
+    if (params !== null) {
+        url = url.replace(/\?$/, "") + "?" +
+            Object.entries(params).filter(([_k, v]) => v !== null
+            ).map(([k, v]) => `${k}=${v}`).join("&");
+    }
+    return await fetch(url);
+}
+
+const obtainStreamBody = async (url, params = null) => {
+    let count_error = 0;
     while (count_error < 3) {
         try {
-            return await fetch(url).then(d => d.body)
+            return await fetchParams(url, params).then(d => d.body)
                 .then(d => d.getReader())
                 .then(async reader => {
                     const readChunk = async (res, longText = "") => {
