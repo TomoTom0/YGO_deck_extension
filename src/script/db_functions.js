@@ -47,7 +47,7 @@ const obtainDF = async (lang = null) => {
     } else return df;
 }
 
-const fetchParams = async (url, params = null) => {
+const fetchParams = async (url=null, params = null) => {
     if (url === null) {
         url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";
     }
@@ -59,7 +59,7 @@ const fetchParams = async (url, params = null) => {
     return await fetch(url);
 }
 
-const obtainStreamBody = async (url, params = null) => {
+const obtainStreamBody = async (url=null, params = null) => {
     let count_error = 0;
     while (count_error < 3) {
         try {
@@ -82,13 +82,17 @@ const obtainStreamBody = async (url, params = null) => {
     return "";
 }
 
-function parseHTML(str_html) {
+const parseHTML = (str_html) => {
     const tmp = document.implementation.createHTMLDocument("");
     tmp.body.innerHTML = str_html;
     return tmp.body;
 }
 
-function sleep(ms) {
+const obtainParsedHTML  = async (url=null, params=null) => {
+    return parseHTML(await obtainStreamBody(url, params));
+}
+
+const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 async function gitFetch(url, opts = {}) {

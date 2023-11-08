@@ -1056,7 +1056,10 @@ const obtainSearchForm = () => {
                                 サイバース族
                                 <input type="checkbox" name="species" class="none" value="27">
                             </span></li>
-
+                            <li class="species_26_ja"><span>
+                                幻想魔族
+                                <input type="checkbox" name="species" class="none" value="28">
+                            </span></li>
 
                         </ul>
                     </div>
@@ -1076,7 +1079,7 @@ const obtainSearchForm = () => {
                                     <label>
                                         <input type="radio" id="othercon_and" name="othercon" value="1">
                                         <span>and</span>
-                                    </label>
+                                    </label></br>
                                     <label>
                                         <input type="radio" id="othercon_or" name="othercon" value="2" checked="">
                                         <span>or</span>
@@ -1359,7 +1362,7 @@ const obtainSearchForm = () => {
                             </div>
                         </div>
                     </div>
-
+                    
                     <div id="link_set" class="search_m filter_set_monster" style="">
                         <div class="title">
                             <h3>リンク</h3>

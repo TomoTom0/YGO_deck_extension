@@ -1,5 +1,6 @@
 /* tablink */
-.tablink_deckSupport li.now, .tablink_deckSupport li:active {
+.tablink_deckSupport li.now,
+.tablink_deckSupport li:active {
     border-bottom-color: #ffba00;
 }
 
@@ -73,25 +74,26 @@
     display: block;
     border: 3px solid transparent;
     top: 0;
-}*//*#2ef706;*/
+}*/
+/*#2ef706;*/
 
-.deck_image .image_set span.forbidden >div>span {
+.deck_image .image_set span.forbidden>div>span {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_forb_unlim.svg);
     background-color: #dc0000;
 }
 
-.deck_image .image_set span.limited >div span {
+.deck_image .image_set span.limited>div span {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_limit_unlim.svg);
     background-color: #fb8c32;
 }
 
-.deck_image .image_set span.semi_limited >div>span {
+.deck_image .image_set span.semi_limited>div>span {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_slim_unlim.svg);
     background-color: #fbb830;
 
 }
 
-.deck_image .image_set span >div span {
+.deck_image .image_set span>div span {
     display: block;
     width: 100%;
     height: min(2vw, 20px);
@@ -103,7 +105,7 @@
 }
 
 #deck_header a.button_keyword_delete {
-    background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/keyword_delete.png);
+    /* background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/keyword_delete.png); */
     background-size: auto 100%;
     background-repeat: no-repeat;
     border: solid 1px transparent;
@@ -113,3 +115,23 @@
     font-weight: bold;
     background-color: chartreuse;
 }
+
+.hex.square:before, .hex.square:after, #deck_image .hex.square:before, #deck_image .hex.square:after  {
+    width: 0px;
+    margin: 2px;
+    filter:none;
+}
+
+
+/* #search .filter_set > div .title {
+    font-size: 10px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(70, 116, 145);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    min-width: 120px;
+    flex: 1 1 0%;
+    padding: 3px;
+} */

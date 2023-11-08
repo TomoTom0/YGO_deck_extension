@@ -34,31 +34,36 @@ window.onload = async function () {
         // other buttons for bottom
         const button_bottom_dic = {
             back: $("<a>", { class: "btn hex orn button_backtoView", id: "button_backToView" })
-                .append("<span>Back</span>"),
-            header_visible: $("<a>", {
+                .append($("<span>", { title: "back" }).append(svgs.arrowBack)),
+            headerShowHide: $("<a>", {
                 class: "btn hex red button_visible_header hide", type: "button", id: "button_visible_header",
                 style: "position: relative;user-select: none;"
-            }).append("<span>Header HIDE</span>"),
-            reloadSort: $("<a>", { class: "btn hex red button_reloadSort", id: "button_reloadSort" })
-                .append("<span>Reload & Sort</span>"),
-            searchShowHide: $("<a>", { class: "btn hex red button_searchShowHide", id: "button_searchShowHide" }).append("<span>Search SHOW</span>"),
-            test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
+            }).append("<span>Header</span>"),
+            searchShowHide: $("<a>", { class: "btn hex square button_searchShowHide", id: "button_searchShowHide" }
+            ).append($("<span>", { title: "toggle to show search area or not" }).append(svgs.search)),
+            infoShowHide: $("<a>", { class: "btn hex red square button_infoShowHide", id: "button_infoShowHide" }
+            ).append($("<span>").append(svgs.contancts)),
+            test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>"),
+            hoverName: $("<a>", { class: "btn hex square red show button_toggleHoverName", id: "button_toggleHoverName" })
+                .append($("<span>", { title: "toggle to show card names on mouse hovering or not" }).append(svgs.liveHelp)),
+            reloadSort: $("<a>", { class: "btn hex square red button_reloadSort", id: "button_reloadSort" })
+                .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
         };
         for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
-            if (settings.valid_feature_deckHeader === false && ["header_visible"].indexOf(button_type) !== -1) continue;
+            if (settings.valid_feature_deckHeader === false && ["headerShowHide"].indexOf(button_type) !== -1) continue;
             if (settings.valid_feature_deckEditImage === false && ["reloadSort", "searchShowHide"].indexOf(button_type) !== -1) continue;
             if (settings.valid_feature_deckManager === false && !IsCopyMode && ["back"].indexOf(button_type) !== -1) continue;
-            if (IsLocalTest === false && ["test"].indexOf(button_type) !== -1) continue;
+            if (IsLocalTest === false && ["test", "hoverName"].indexOf(button_type) !== -1) continue;
             $(area_bottom).append(button_tmp);
         }
         // import button
         if (settings.valid_feature_importExport === true) {
             const label = $("<label>", { for: "button_importFromYdk_input" });
             const button_import = $("<a>", {
-                class: "btn hex red button_import", type: "button", id: "button_importFromYdk",
+                class: "btn hex red square button_import", type: "button", id: "button_importFromYdk",
                 style: "position: relative;user-select: none;"
             })
-                .append("<span>Import</span>")
+                .append($("<span>", { title: "import from .ydk file" }).append(svgs.upload));
             const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
             button_import.append(input_button);
             label.append(button_import);
@@ -92,8 +97,15 @@ window.onload = async function () {
             const dl_deck_name = $("dl:has(dd>input#dnm)", header_box);
             const img_delete = $("<a>", {
                 class: "ui-draggable ui-draggable-handle button_keyword_delete",
-                style: "flex:none;width:20px;height:20px;"
-            })
+                style: "flex:none;width:20px;height:20px;cursor:pointer;"
+            }).append(svgs.backspace);
+            // edit style sheet
+            // const sheets = document.styleSheets
+            // const sheet = sheets[sheets.length - 1];
+            // sheet.insertRule(
+            //     "#header_box>div dl dd .hex:before, #header_box>div dl dd .hex:after { width: 0px }",
+            //     sheet.cssRules.length
+            // );
 
             const dl_deck_version = $("<dl>", { class: "tab_mh100 alwaysShow", id: "deck_version_box" });
             const dt = $("<dt>").append($("<span>", { style: "min-width:0px;" }).append("Deck in Cache"));
@@ -101,12 +113,12 @@ window.onload = async function () {
             //input_version_name=$("<select>", {id:"deck_version_name"});
             //input_version_tag=$("<select>", {id:"deck_version_tag"});
             const btns_version = {
-                save: $("<a>", { class: "btn hex red button_deckVersion button_save", id: "button_deckVersionSave" })
-                    .append("<span>Save</span>"),
-                load: $("<a>", { class: "btn hex red button_deckVersion button_load", id: "button_deckVersionLoad" })
-                    .append("<span>Load</span>"),
-                delete: $("<a>", { class: "btn hex red button_deckVersion button_delete", id: "button_deckVersionDelete" })
-                    .append("<span>Delete</span>"),
+                save: $("<a>", { class: "btn hex red square button_deckVersion button_save", id: "button_deckVersionSave" })
+                    .append($("<span>", { title: "save" }).append(svgs.save)),
+                load: $("<a>", { class: "btn hex red square button_deckVersion button_load", id: "button_deckVersionLoad" })
+                    .append($("<span>", { title: "load" }).append(svgs.style)),
+                delete: $("<a>", { class: "btn hex red square button_deckVersion button_delete", id: "button_deckVersionDelete" })
+                    .append($("<span>", { title: "delete" }).append(svgs.delete)),
             };
             ["name", "tag"].map(key => {
                 //const select=$("<select>", {type:"text", class:`select_deck_version ${key}`, style:"flex:1;"});
@@ -155,16 +167,16 @@ window.onload = async function () {
             $(dnm).attr({ list: `deck_nameList` }).css({ flex: "4" });
             const datalist_deckName = $("<datalist>", { id: "deck_nameList" });
             const btns_official = {
-                new: $("<a>", { class: "btn hex orn button_deckOfficial button_new", id: "button_deckOfficialNew" })
-                    .append("<span>New</span>"),
-                delete: $("<a>", { class: "btn hex orn button_deckOfficial button_delete", id: "button_deckOfficialDelete" })
-                    .append("<span>Delete</span>"),
-                copy: $("<a>", { class: "btn hex orn button_deckOfficial button_copy", id: "button_deckOfficialCopy" })
-                    .append("<span>Copy</span>"),
-                load: $("<a>", { class: "btn hex orn button_deckOfficial button_load", id: "button_deckOfficialLoad" })
-                    .append("<span>Load</span>"),
-                save: $("<a>", { class: "btn hex orn button_deckOfficial button_save", id: "button_deckOfficialSave" })
-                    .append("<span>Save</span>"),
+                new: $("<a>", { class: "btn hex orn square button_deckOfficial button_new", id: "button_deckOfficialNew" })
+                    .append($("<span>", { title: "new" }).append(svgs.add)),
+                delete: $("<a>", { class: "btn hex orn square button_deckOfficial button_delete", id: "button_deckOfficialDelete" })
+                    .append($("<span>", { title: "delete" }).append(svgs.delete)),
+                copy: $("<a>", { class: "btn hex orn square button_deckOfficial button_copy", id: "button_deckOfficialCopy" })
+                    .append($("<span>", { title: "copy" }).append(svgs.copy)),
+                load: $("<a>", { class: "btn hex orn square button_deckOfficial button_load", id: "button_deckOfficialLoad" })
+                    .append($("<span>", { title: "load" }).append(svgs.style)),
+                save: $("<a>", { class: "btn hex orn square button_deckOfficial button_save", id: "button_deckOfficialSave" })
+                    .append($("<span>", { title: "save" }).append(svgs.save)),
             };
             $(dnm).css({ width: "auto" });
 
@@ -180,6 +192,7 @@ window.onload = async function () {
             //$(dnm).after($(img_delete).clone());
             //$(dnm).attr({list:"deck_nameList"});
             await setDeckNames(datalist_deckName);
+            showMessage(`Loaded`);
         }
         if (settings.valid_feature_deckEditImage === true) {
             $("#article_body").attr({ oncontextmenu: "return false;" })
@@ -234,24 +247,67 @@ window.onload = async function () {
             $("div#wrapper").css({ width: "100%", "min-width": "fit-content" });
             $("#bg").css({ overflow: "scroll" });
             $("#num_total").css({ display: "none" });
-            const div_search = obtainSearchForm();
-            //const script_search=obtainSearchScript();
-            const table = $("<div>", { style: "display:table;" });
-            const div_body = $("<div>", { style: "display:none;width:40vw;", class: "none", id: "search_area" }); //table-cell
+            
             const article = $("article");
-            const article_body = $("#article_body");
-            $(article_body).css({ display: "table-cell", "width": "50vw" });
             article.css({ "max-width": "initial", "scroll-snap-type": "y" });
-            //$(div_body).append(script_search);
-            const div_search_result = $("<div>", { id: "search_result", style: "max-height:80vh;overflow-y:scroll;", oncontextmenu: "return false;" });
-            $(div_body).append(div_search);
-            $(table).append(article_body).append(div_body);
+            const div_article_body = $("div#article_body");
+            $(div_article_body).css({ display: "table-cell", "max-width": "35vw" });
+            
+            const div_search = obtainSearchForm();
+            const table = $("<div>", { style: "display:table;" });
+            $(table).append(div_article_body);
             $(article).append(table);
+
+            const div_body = $("<div>", {
+                style: "display:none;max-width:30vw;padding:15px;",
+                class: "none",
+                id: "search_area"
+            });
+            const div_search_result = $("<div>", {
+                id: "search_result",
+                style: "max-height:90vh;overflow-y:scroll;",
+                oncontextmenu: "return false;"
+            });
+            $(div_body).append(div_search);
+
+            $(table).append(div_body);
             $("#form_search").after(div_search_result);
+
+            // $(".type2").on("click", function (evt) {	
+            //     $(this).parents().nextAll(".sab").children().children("input").prop('checked', false).change();
+            // });
+            // $("#link_set .type2").click(function(){
+            
+            //     $(this).parents().nextAll(".sab").children(".search_m_set").find(':checkbox').prop('checked', false);
+            // });
+            
             obtainSearchScript();
-            $("#deck_image .image_set").css({ "min-height": "min(4.1vw, 87px)" });
+            $("#deck_image .image_set").css({ "min-height": "min(3.5vw, 45px)" });
             operate_searchArea(settings.default_searchArea_visible && !IsCopyMode);
+
+            const doc_get=await obtainParsedHTML("https://www.db.yugioh-card.com/yugiohdb/card_search.action", {ope:2, cid:13842});
+            // console.log(doc_get);
+            const test=doc_get.querySelector("#article_body");
+            test.setAttribute("id", "test");
+            test.style["max-height"]="90vh";
+            test.style["overflow-y"]="scroll";
+            const div_info = $("<div>", {style:"width:100%;"}).append(test);
+            const div_info_body = $("<div>", {
+                style: "display:table-cell;max-width:30vw;padding:5px;",
+                class: "",
+                id: "info_area"
+            });
+            $(div_info_body).append(div_info);
+            $(table).prepend(div_info_body);
+            document.addEventListener("click", async function(e){
+                if ($(e).is("#test, #test *")){
+                    console.log(e);
+                    return false;
+                }
+            })
+
         }
+
     }
     else if (["1", null].indexOf(html_parse_dic.ope) != -1) {
         // ## deck view
@@ -384,9 +440,10 @@ window.onload = async function () {
             operate_deckEditVisible(key_show);
             //const row_results=obtainRowResults_Edit(df);
             //insertDeckImg(df, row_results, false);
-        } else if ($(e.target).is("a.button_keyword_delete")) {
-            $(e.target).prev("input").val("");
-            if ($(e.target).is("#deck_header dl#deck_version_box *")) await setDeckVersionTagList(false);
+        } else if ($(e.target).is("a.button_keyword_delete, a.button_keyword_delete *")) {
+            const button_target = $(e.target).is("a.button_keyword_delete") ? e.target : $(e.target).parents("a.button_keyword_delete")[0];
+            $(button_target).prev("input").val("");
+            if ($(button_target).is("#deck_header dl#deck_version_box *")) await setDeckVersionTagList(false);
         } else if ($(e.target).is("a.button_deckVersion, a.button_deckVersion *")) {
             const button_target = $(e.target).is("a.button_deckVersion") ? e.target : $(e.target).parents("a.button_deckVersion")[0];
             $(button_target).toggleClass("red");
@@ -665,6 +722,9 @@ window.onload = async function () {
     });
     $("#button_searchShowHide").on("click", async function () {
         operate_searchArea();
+    });
+    $("#button_infoShowHide").on("click", async function () {
+        operate_infoArea();
     });
     // $("#button_clickMode").on("click", async function () {
     //     //operate_clickMode();

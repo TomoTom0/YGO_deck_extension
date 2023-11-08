@@ -11,7 +11,7 @@
   "content_scripts": [{
     "matches": ["https://www.db.yugioh-card.com/yugiohdb/*"],
     "js": ["js/jquery-3.6.0.min.js", "js/async.min.js", "script/main_functions.js", "script/content_script.js", "script/db_functions.js", "script/card_search_script.js"],
-    "css":["css/content_script.css", "css/card_search.css"]
+    "css":["css/content_script.css", "css/card_search.css", "css/card_details.css"]
   }],
   "web_accessible_resources": [{
     "matches":["https://www.db.yugioh-card.com/*"],

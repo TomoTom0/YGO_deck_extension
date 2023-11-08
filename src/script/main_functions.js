@@ -11,6 +11,7 @@ const defaultSettings = {
     valid_feature_deckEditImage: true,
     valid_feature_sideChange: true,
     valid_feature_deckManager: true,
+    valid_feature_infoArea: true,
     default_visible_header: true,
     default_deck_edit_image: true,
     default_deck_edit_search: true,
@@ -26,6 +27,27 @@ const defaultTemps = {
 const defaultTempsString = JSON.stringify(defaultTemps);
 
 const IsLocalTest = (chrome.runtime.id !== "jdgobeohbdmglcmgblpodggmgmponihc");
+
+const svgs={
+    shuffle : `<svg xmlns="http://www.w3.org/2000/svg" height="80%" viewBox="0 -960 960 960"><path d="M560-160v-80h104L537-367l57-57 126 126v-102h80v240H560Zm-344 0-56-56 504-504H560v-80h240v240h-80v-104L216-160Zm151-377L160-744l56-56 207 207-56 56Z"/></svg>`,
+    sort:`<svg xmlns="http://www.w3.org/2000/svg" height="80%" viewBox="0 -960 960 960" ><path d="M120-240v-80h240v80H120Zm0-200v-80h480v80H120Zm0-200v-80h720v80H120Z"/></svg>`,
+    delete:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>`,
+    add:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>`,
+    upload:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>`,
+    download:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>`,
+    save:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"/></svg>`,
+    refresh:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>`,
+    copy:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>`,
+    edit:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z"/></svg>`,
+    backspace:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M360-200q-20 0-37.5-9T294-234L120-480l174-246q11-16 28.5-25t37.5-9h400q33 0 56.5 23.5T840-680v400q0 33-23.5 56.5T760-200H360Zm400-80v-400 400Zm-400 0h400v-400H360L218-480l142 200Zm96-40 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Z"/></svg>`,
+    arrowBack:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>`,
+    abc: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M680-360q-17 0-28.5-11.5T640-400v-160q0-17 11.5-28.5T680-600h120q17 0 28.5 11.5T840-560v40h-60v-20h-80v120h80v-20h60v40q0 17-11.5 28.5T800-360H680Zm-300 0v-240h160q17 0 28.5 11.5T580-560v40q0 17-11.5 28.5T540-480q17 0 28.5 11.5T580-440v40q0 17-11.5 28.5T540-360H380Zm60-150h80v-30h-80v30Zm0 90h80v-30h-80v30Zm-320 60v-200q0-17 11.5-28.5T160-600h120q17 0 28.5 11.5T320-560v200h-60v-60h-80v60h-60Zm60-120h80v-60h-80v60Z"/></svg>`,
+    liveHelp: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M476-280q21 0 35.5-14.5T526-330q0-21-14.5-35.5T476-380q-21 0-35.5 14.5T426-330q0 21 14.5 35.5T476-280Zm-36-154h74q0-17 1.5-29t6.5-23q5-11 12.5-20.5T556-530q35-35 49.5-58.5T620-642q0-53-36-85.5T487-760q-55 0-93.5 27T340-658l66 26q7-27 28-43.5t49-16.5q27 0 45 14.5t18 38.5q0 17-11 36t-37 42q-17 14-27.5 27.5T453-505q-7 15-10 31.5t-3 39.5Zm40 394L360-160H200q-33 0-56.5-23.5T120-240v-560q0-33 23.5-56.5T200-880h560q33 0 56.5 23.5T840-800v560q0 33-23.5 56.5T760-160H600L480-40ZM200-240h192l88 88 88-88h192v-560H200v560Zm280-280Z"/></svg>`,
+    style:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="m159-168-34-14q-31-13-41.5-45t3.5-63l72-156v278Zm160 88q-33 0-56.5-23.5T239-160v-240l106 294q3 7 6 13.5t8 12.5h-40Zm206-4q-32 12-62-3t-42-47L243-622q-12-32 2-62.5t46-41.5l302-110q32-12 62 3t42 47l178 488q12 32-2 62.5T827-194L525-84Zm-86-476q17 0 28.5-11.5T479-600q0-17-11.5-28.5T439-640q-17 0-28.5 11.5T399-600q0 17 11.5 28.5T439-560Zm58 400 302-110-178-490-302 110 178 490ZM319-650l302-110-302 110Z"/></svg>`,
+    search:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>`,
+    contancts:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M160-40v-80h640v80H160Zm0-800v-80h640v80H160Zm320 400q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm70-80q45-56 109-88t141-32q77 0 141 32t109 88h70v-480H160v480h70Zm118 0h264q-29-20-62.5-30T480-280q-36 0-69.5 10T348-240Zm132-280q-17 0-28.5-11.5T440-560q0-17 11.5-28.5T480-600q17 0 28.5 11.5T520-560q0 17-11.5 28.5T480-520Zm0 40Z"/></svg>`,
+}
+
 
 // ----------------------------------
 //       # parse text funtions
@@ -337,16 +359,40 @@ const guessDeckCategory = async (lower_limit = 4, kwargsIn = {}) => {
     ).filter(d => d.num >= lower_limit).sort((a, b) => a.num - b.num).slice(-3);
 }
 
-const guess_clicked = async () => {
+const showMessage = (content = null) => {
+    const html_parse_dic = parse_YGODB_URL(location.href, true);
+    if (html_parse_dic.ope === "1" && $("#message").length === 0) {
+        const header_box = document.querySelector("#header_box");
+        const span = document.createElement("span");
+        span.setAttribute("id", "test");
+        header_box.after(span);
+        // $("div.sort_set div.pulldown").prepend($("<span>", { id: "message" }));
+    }
+
+    const message_area = document.querySelector("#message");
+    if (content === null) {
+        message_area.classList.add("none");
+    } else {
+        message_area.classList.remove("none");
+        message_area.style.width = "97%";
+        message_area.style.margin = "5px";
+        message_area.style.padding = "3px";
+        message_area.innerHTML = content;
+    }
+
+}
+
+const guess_clicked = async (card_num = 4) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     if (html_parse_dic.ope === "1" && $("#message").length === 0) $("div.sort_set div.pulldown").prepend($("<span>", { id: "message" }));
-    const message_area = $("#message");
-    $(message_area).removeClass("none");
-    $(message_area).css({ width: "97%" });
-    const cat_guessed = await guessDeckCategory(4);
+    // const message_area = $("#message");
+    // $(message_area).removeClass("none");
+    // $(message_area).css({ width: "97%" });
+    const cat_guessed = await guessDeckCategory(card_num);
     const content = "Guessed Categories: " + cat_guessed.map(d => d.name).join(", ");
-    console.log(content);
-    $(message_area).html(content);
+    // console.log(content);
+    showMessage(content);
+    // $(message_area).html(content);
     if (["2", "8"].indexOf(html_parse_dic.ope) !== -1) {
         const select = $("select#dckCategoryMst");
         cat_guessed.map(catInfo => {
@@ -490,9 +536,9 @@ const importDeck = (row_results) => {
 
 const _Regist_fromYGODB = async (
     html_parse_dic_in = null,
-     serialized_data_in = null,
-     ytkn_in = null,
-      retry_count = 0) => {
+    serialized_data_in = null,
+    ytkn_in = null,
+    retry_count = 0) => {
     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
     const lang = obtainLang()
@@ -502,6 +548,7 @@ const _Regist_fromYGODB = async (
     // console.log("ope=3&" + $("#form_regist").serialize());
     const serialized_data = (serialized_data_in || "ope=3&" + $("#form_regist").serialize());
     const dno = serialized_data.match(/dno=(\d+)/)[1];
+    const deck_name = decodeURI(serialized_data.match(/dnm=([^&]+)/)[1]);
     // const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
     //     .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
     // console.log(temps.ytkn, obtain_YGODB_fromHidden("ytkn"))
@@ -528,7 +575,7 @@ const _Regist_fromYGODB = async (
         dataType: 'json',
         beforeSend: () => {
             $('#btn_regist').removeAttr('href');
-            $('#message').hide().text('');
+            // $('#message').hide().text('');
             $('#loader').show();
         },
         complete: () => {
@@ -536,8 +583,10 @@ const _Regist_fromYGODB = async (
         },
         success: (data, dataType) => {
             if (data.result) {
-                console.log("Registered");
+                console.log("Saved");
+                showMessage(`Saved as ${deck_name} #${dno}`);
             } else {
+                showMessage(`Failed to save as ${deck_name} #${dno}`);
                 if (data.error) {
                     console.log("Register falied: ", data.error);
                     /*var lst = [];
@@ -653,8 +702,8 @@ const _Regist_fromYGODB = async (
     }
 }*/
 
-const load_deckOfficial = async (df, deck_dno, settings, my_cgid=null) => {
-    if ( my_cgid===null) my_cgid = obtainMyCgid();
+const load_deckOfficial = async (df, deck_dno, settings, my_cgid = null) => {
+    if (my_cgid === null) my_cgid = obtainMyCgid();
     const deck_body = await _nojqObtainDeckRecipie(my_cgid, deck_dno, obtainLang(), "2");
     const deck_name = deck_body.body.querySelector("#dnm").value;
     console.log(deck_name);
@@ -710,6 +759,7 @@ const load_deckOfficial = async (df, deck_dno, settings, my_cgid=null) => {
         document.querySelector(`#${k}`).value = v;
     })
     showSelectedOption();
+    showMessage(`Loaded ${deck_name} #${deck_dno}`);
 }
 
 const delete_deckOfficial = async (
@@ -922,26 +972,53 @@ const addShuffleButton = (setSpace = true) => {
     $("#deck_image").addClass("shuffle");
     $("#deck_image div.card_set div.image_set a").css({ "max-width": "max(6.5%, 55px)" });
     $("#deck_image div.card_set").css({ "margin": "0px 0px 0px" });
-    const shuffle_span = $("<span>", { style: "border:none; line-height: 30px; min-width: 100px;" })
-        .append("L:Shuffle/R:Sort");
+    // const img_shuffle=document.createElement("img");
+    // img_shuffle.setAttribute("src", chrome.runtime.getURL("images/svg/sort_FILL0_wght400_GRAD0_opsz24.svg"));
+    // img_shuffle.setAttribute("height", "80%");
+    // const img_sort=document.createElement("img");
+    // img_sort.setAttribute("src","images/sort_FILL0_wght400_GRAD0_opsz24.svg");
+    // const imgs_shuffle_sort=img_shuffle.outerHTML+"/"+img_sort.outerHTML
+    // const shuffle_span = $("<span>", { style: "border:none; height: 24px; min-width: 0px;" })
+    //     .append(svg_shuffle);//.append("L:Shuffle/R:Sort");
+    // const sort_span = $("<span>", { style: "border:none; height: 24px; min-width: 0px;" })
+    //     .append(svg_sort);
     const flex_dic = { "main": setSpace ? 2.7 : 4, "extra": 4, "side": 4 }
     for (const set_type of ["main", "extra", "side"]) {
-        const span_tmp = $("<span>", {
+        const span_tmp = document.createElement("span")
+        for (const [key, val] of Object.entries({
             style: `flex:${flex_dic[set_type]};border:none;`,
             oncontextmenu: "return false;"
-        });
-        const shuffle_button = $("<a>", {
-            class: "btn hex red button_shuffle",
-            set_type: set_type,
-            id: `button_shuffle_${set_type}`,
-            oncontextmenu: "return false;"
-        })
-            .append($(shuffle_span).clone());
-        const h3_tmp = $(`#${set_type}>div.subcatergory>div.top>h3`);
-        $(h3_tmp).html(set_type.toUpperCase());
-        $(h3_tmp).css({ "min-width": "0" });
-        $(h3_tmp).after(shuffle_button);
-        $(shuffle_button).after(span_tmp);
+        })){
+            span_tmp.setAttribute(key, val);
+        }
+        const div_top = document.querySelector(`#${set_type}>div.subcatergory>div.top`);
+        const h3_tmp = div_top.children[0];
+        const span_num_tmp = div_top.children[1];//(`#${set_type}>div.subcatergory>div.top>h3`);
+        h3_tmp.innerHTML=set_type.toUpperCase();
+        h3_tmp.style["min-width"]=0;
+
+        for ( const key of ["shuffle", "sort"]){
+            const span = document.createElement("span");
+            span.setAttribute("title", `${key} ${set_type.toUpperCase()}`);
+            span.setAttribute("style","border:none; height: 24px; min-width: 0px;");
+            span.innerHTML+=svgs[key];
+            const button = document.createElement("a")
+            const attributes={
+                class: `btn hex square red button_${key}`,
+                set_type: set_type,
+                id: `button_${key}_${set_type}`,
+                oncontextmenu: "return false;"
+            }
+            for (const [key, val] of Object.entries(attributes)){
+                button.setAttribute(key, val);
+            }
+            button.appendChild(span);
+            // h3_tmp.after(button);
+            span_num_tmp.before(button);
+            // $(button).after(span_tmp);
+        }
+        span_num_tmp.before(span_tmp);
+
     }
 }
 
@@ -1005,16 +1082,20 @@ async function exportAs(form = "id") {
     const a = document.createElement("a");
     const deck_name = $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_"); // after 2022/4/18
     const ext_dic = { "id": ".ydk", "name": "_name.txt", "cid": "_cid.txt" }
-    a.download = deck_name + ext_dic[form];
+    const file_name = deck_name + ext_dic[form];
+    a.download = file_name;
     a.href = url;
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+    let message = `Exported to ${file_name}`;
     if (exceptions.length > 0 && form == "id") {
         const error_message = "一部のカードが変換できませんでした。\t" + exceptions.join(", ");
         console.log(error_message);
-        alert(error_message);
+        message += "\n" + error_message;
+        // alert(error_message);
     }
+    showMessage(message);
 }
 
 //--------------------------
@@ -1113,6 +1194,7 @@ async function importFromYdk() {
         console.log(message_forImportedData);
         alert(message_forImportedData);
     }
+    showMessage(`Imported ${deck_name}`);
 }
 
 // # sortSave
@@ -1168,7 +1250,8 @@ const toggleVisible_deckHeader = (toShow_in = null) => {
     const showHide = { true: "show", false: "hide" };
     $(button).removeClass(showHide[toShow]);
     $(button).addClass(showHide[!toShow]);
-    $("span", button).text("Header " + showHide[!toShow].toUpperCase());
+    $(button).toggleClass("red");
+    // $("span", button).text("Header " + showHide[!toShow].toUpperCase());
     const dls = Array.from($("#deck_header>div>div>dl:not(.alwaysShow)"));
     for (const dl_tmp of dls) {
         if (dls.indexOf(dl_tmp) !== 0 && toShow === false) {
@@ -1225,7 +1308,7 @@ const showSelectedOption = () => {
 // # insert deck image
 const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: null }, card_class_ind = "0_1", card_limit = "not_limited") => {
     const span = $("<span>", {
-        style: "max-width: max(6.5%, 55px); padding:1px; box-sizing:border-box; display: block;position: relative;"
+        style: "max-width: max(6.5%, 35px); padding:1px; box-sizing:border-box; display: block;position: relative;"
     });
 
     const card_input = Object.assign({ name: null, cid: null }, card_name_cid);
@@ -1246,6 +1329,7 @@ const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: 
         src: `https://www.db.yugioh-card.com/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid_now}&ciid=1&enc=${encImg_now}&osplang=1`,
         style: "position: relative;width: 100%;"
     });
+    span.attr("title", name_now);
     span.append(img_tmp);
     $(span).addClass(card_limit);
     span.append($("<div>").append($("<span>")));
@@ -1604,14 +1688,34 @@ const operate_searchArea = (toShowIn = null) => {
     const toShow = !$(searchArea).hasClass("none");
     $(searchArea).css({ display: toShow ? "table-cell" : "none" });
     const button_operate = $("#button_searchShowHide");
-    $("span", button_operate).html(`Search ` + (toShow ? "HIDE" : "SHOW"));
-    if (toShow === true) {
-        $("#bg>div>article").css({ "max-width": "initial" });
-        $("#bg>div>article div#article_body").css({ "width": "50vw" });
-    } else {
-        $("#bg>div>article").css({ "max-width": "" });
-        $("#bg>div>article div#article_body").css({ "width": "auto" });
-    }
+    $(button_operate).toggleClass("red");
+    // $("span", button_operate).html(`Search ` + (toShow ? "HIDE" : "SHOW"));
+    // if (toShow === true) {
+    //     $("#bg>div>article").css({ "max-width": "initial" });
+    //     $("#bg>div>article div#article_body").css({ "width": "35vw" });
+    // } else {
+    //     $("#bg>div>article").css({ "max-width": "" });
+    //     $("#bg>div>article div#article_body").css({ "width": "auto" });
+    // }
+}
+
+const operate_infoArea = (toShowIn = null) => {
+    const infoArea = $("#info_area");
+    if (toShowIn === null) $(infoArea).toggleClass("none");
+    else if (toShowIn === true) $(infoArea).removeClass("none");
+    else if (toShowIn === false) $(infoArea).addClass("none");
+    const toShow = !$(infoArea).hasClass("none");
+    $(infoArea).css({ display: toShow ? "table-cell" : "none" });
+    const button_operate = $("#button_infoShowHide");
+    $(button_operate).toggleClass("red");
+    // $("span", button_operate).html(`Search ` + (toShow ? "HIDE" : "SHOW"));
+    // if (toShow === true) {
+    //     $("#bg>div>article").css({ "max-width": "initial" });
+    //     $("#bg>div>article div#article_body").css({ "width": "35vw" });
+    // } else {
+    //     $("#bg>div>article").css({ "max-width": "" });
+    //     $("#bg>div>article div#article_body").css({ "width": "auto" });
+    // }
 }
 
 // # deck version
