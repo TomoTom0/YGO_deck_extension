@@ -47,19 +47,24 @@ const obtainDF = async (lang = null) => {
     } else return df;
 }
 
-const fetchParams = async (url=null, params = null) => {
+const fetchParams = async (url = null, params = null) => {
+    return await fetch(joinUrl(url, params));
+}
+
+const joinUrl = (url = null, params = null) => {
     if (url === null) {
         url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";
     }
     if (params !== null) {
         url = url.replace(/\?$/, "") + "?" +
             Object.entries(params).filter(([_k, v]) => v !== null
+            ).sort((a, b) => a[0] - b[0]
             ).map(([k, v]) => `${k}=${v}`).join("&");
     }
-    return await fetch(url);
+    return url;
 }
 
-const obtainStreamBody = async (url=null, params = null) => {
+const obtainStreamBody = async (url = null, params = null) => {
     let count_error = 0;
     while (count_error < 3) {
         try {
@@ -88,8 +93,32 @@ const parseHTML = (str_html) => {
     return tmp.body;
 }
 
-const obtainParsedHTML  = async (url=null, params=null) => {
-    return parseHTML(await obtainStreamBody(url, params));
+const obtainParsedHTML = async (url = null, params = null, cache = 1) => {
+    url = joinUrl(url);
+    const cacheHtmls = await operateStorage({ cacheHtmls: JSON.stringify({}) }, "local")
+        .then(items => Object.assign(JSON.stringify({}), JSON.parse(items.cacheHtmls)));
+    if (Object.keys(cacheHtmls).indexOf(url) != -1) console.log(cacheHtmls[url].time + cache * 86400 * 1000 > Date.now())
+    if (cache > 0 && Object.keys(cacheHtmls).indexOf(url) !== -1 && cacheHtmls[url].time + cache * 86400 * 1000 > Date.now()) {
+        console.log(url);
+        return parseHTML(cacheHtmls[url].html);
+    }
+    const html_get = await obtainStreamBody(url, params);
+    const cacheHtmls_new = Object.assign(cacheHtmls, { [url]: { html: html_get, time: Date.now() } });
+    await operateStorage({ cacheHtml: JSON.stringify(cacheHtmls_new) }, "local", "set");
+    return parseHTML(html_get);
+}
+
+const refreshCacheHtml = async (cache = 1) => {
+    const cacheHtmls = await operateStorage({ cacheHtmls: JSON.stringify({}) }, "local")
+        .then(items => Object.assign(JSON.stringify({}), JSON.parse(items.cacheHtmls)));
+    const now = Date.now()
+    const cacheHtmls_new = Object.assgin(
+        ...Object.entries(cacheHtmls
+        ).filter(([k, v]) => v.time + cache * 86400 * 1000 > now
+        ).map(([k, v]) => Object({ [k]: v }))
+    )
+    await operateStorage({ cacheHtml: JSON.stringify(cacheHtmls_new) }, "local", "set");
+    return cacheHtmls_new;
 }
 
 const sleep = (ms) => {

@@ -1105,3 +1105,344 @@ article #relationCard.list_style ul.box_list li dl dd.box_card_pen_info span.box
    .img_yaji{display: flex;}
     #thumbnail{display: none}
 }
+
+
+@charset "utf-8";
+
+@import "FaqSearchCondition.css";
+
+.list .dack_name .name{
+    padding: 10px 5px 5px;
+    line-height: 1.2;
+}
+.list .dack_set .text{
+    display: flex;
+}
+
+.list .dack_set .text span{
+    font-size: 1.2rem;
+}
+.list .dack_set .text .tag_name{
+    flex: 1;
+    display: flex;
+}
+.list .dack_set .text span{
+    padding: 0 10px;
+    border-radius: 5px;
+    color: #ffffff;
+    margin: 0 2px;
+    line-height: 1.5;
+    display: block;
+}
+.list .dack_set .text .tag_name span{
+    background: #467491;
+}
+.list .dack_set .text .new span{
+    background: #ffba00;
+}
+.list .dack_set .text .attention span{
+    background: #d83134;
+}
+ .list .t_row:first-child{
+    margin: 0;
+}
+
+@charset "utf-8";
+
+/*----card_info----*/
+
+.qa_text_area{
+	color: #000;
+    margin: 0 auto 30px;
+    background-color: #fff;
+    border: solid 2px #000;
+    box-sizing: border-box;
+}
+
+	.qa_text_area .title {
+        display: flex;
+        justify-content: space-between;
+		font-size:1.4rem;
+		font-weight:bold;
+		line-height:1.2;
+        padding: 5px;
+        color: #000;
+        border-bottom: 1px solid;
+        margin: 5px 5px 0;
+	}
+        .qa_text_area .title .update{
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+
+	.qa_text_area .text {
+		padding: 15px 10px 25px;
+        line-height: 1.8;
+        font-size: 1.4rem;
+        box-sizing: border-box;
+        min-height: 128px;
+	}
+
+	.qa_text_area .supplement{
+        margin: 10px;
+        border: 1px solid #467491;
+        border-radius: 5px;
+    }
+	.qa_text_area .supplement .title {
+        background: #467491;
+        margin: 0;
+        color: #ffffff;
+        border: none;
+	}
+	.qa_text_area .supplement .text {
+        min-height: 64px;
+	}
+.qa_text_area .text.supplement{
+}
+
+
+	.qa_text_area a{
+		text-decoration:none;
+	}
+
+	.qa_text_area a:hover{
+		text-decoration:underline !important;
+	}
+
+	.qa_text_area a:visited{
+		text-decoration:none;
+	}
+
+
+/*----/card_info----*/
+
+
+
+#article_body .list_style ul li {
+}
+
+	#article_body .list_style ul li:hover {
+		cursor:pointer;
+	}
+
+	#article_body .list_style ul li table tr td{
+		padding:5px 10px 0px 10px;
+	}
+
+		#article_body .list_style ul li table tr td div.border_t{
+			border-top:solid 1px #ccc;
+		}
+
+		#article_body .list_style ul li:hover table tr td div.border_t{
+			border-top:solid 1px #fff;
+		}
+
+	#article_body .list_style ul li div.qa_title{
+		font-size:1.4rem;
+		line-height:1.5em;
+	}
+
+	#article_body .list_style ul li span.tag_name{
+		font-size:1rem;
+		color: #555;
+	}
+
+		#article_body .list_style ul li span.tag_name span{
+			font-size:1rem;
+			font-weight:normal;
+			padding:0 10px;
+			margin:0 5px;
+			margin-bottom:5px;
+		}
+
+		#article_body .list_style ul li:hover span.tag_name span{
+			background-color:#fff;
+			border-radius: 20px;
+		}
+
+		#article_body .list_style ul li span.new{
+			border:solid 1px #d59f00;
+			background-color:#ffe495;
+			font-weight:bold;
+			padding:0 5px;
+			font-size:1.4rem;
+			color: #555;
+		}
+
+		#article_body .list_style ul li span.attention{
+			border:solid 1px #d58095;
+			background-color:#ffd5df;
+			font-weight:bold;
+			padding:0 5px;
+			font-size:1rem;
+			color: #555;
+		}
+
+
+/*------to_detail------*/
+
+#to_detail{
+	display:block;
+	height:70px;
+	line-height:1.5em;
+	width:180px;
+	color:#fff;
+	font-weight:bold;
+	font-size:1.4rem;
+	text-align:center;
+	background:url(../image/parts/btn_box_yellow.png) no-repeat;
+}
+
+	#to_detail b{
+		display:block;
+		padding-top:14px;
+	}
+
+		#to_detail:hover{
+			background-position:right top;
+			text-decoration:none;
+		}
+
+		#to_detail:visited{
+			text-decoration:none;
+		}
+
+/*------/to_detail------*/
+
+@charset "utf-8";
+
+.search_box{
+    margin: 0 auto;
+}
+
+.search_hed{
+    background: #022c53;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.search_hed .search{
+    display: flex;
+    flex: 1;
+
+}
+
+.search #first_search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #fff;
+
+    padding-right: 5px;
+    margin-right: 50px;
+    box-sizing: border-box;
+}
+#keyword {
+    padding: 10px 7px;
+    font-size: 1.4rem !important;
+    font-weight: bold;
+    border: none;
+    box-sizing: border-box;
+    flex: 1;
+    outline: none;
+    line-height: 1.2;
+}
+#keyword:focus {background-color: #ffffff;}
+.search #first_search img {
+    position: relative;
+    padding: initial;
+    width: 20px;
+    height: 20px;
+}
+
+
+.search_hed .s_btn{
+    flex: none;
+    display: block;
+    padding: 0 45px 0 50px
+}
+.search_hed .s_btn a{justify-content: center;}
+
+.search_bot{
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+.search_row{
+    border: 1px solid #000;
+    margin-top: -1px;
+}
+.search_row:first-child{margin-top: 0}
+.search_row >*{
+    display: block;
+}
+.search_row .search_title{
+    background: #467491;
+    color: #ffffff;
+    font-size: 1.2rem;
+    min-width: 128px;
+    padding:0 5px;
+}
+.search_row .search_btn{
+    display: flex;
+    flex-wrap: wrap;
+    padding:5px;
+}
+.search_row .search_btn a{
+    padding: 2px;
+    box-sizing: border-box;
+    min-width: 20%;
+    display: block;
+}
+.search_row .search_btn a span{
+    font-size: 1.2rem;
+    background: #002345;
+    color: #ffffff;
+    border-radius: 2px;
+    padding: 5px;
+    box-sizing: border-box;
+    display: block;
+}
+.search_row .search_btn a:hover{
+    text-decoration: none;
+    opacity: .8;
+}
+.dk_container{
+    display: flex;
+}
+@media only screen and (max-width: 896px) {/*デバイスの横幅が896px以下の場合*/
+    .search_row .search_btn a{
+        width: auto;
+        min-width: 20%;
+    }
+    .search_row .search_btn a span{
+        padding: 5px 10px;
+        text-align: center;
+    }
+    .search_hed{
+        display: block;
+    }
+    .search_hed .search{
+        margin: 0 0 20px;
+    }
+}
+@media only screen and (max-width: 700px) {/*デバイスの横幅が700px以下の場合*/
+    .search_row .search_btn{
+
+    }
+    .search_hed .search {
+        display: block;
+    }
+    .search_hed .search >*{
+        margin-bottom: 10px;
+        min-width: 100%;
+    }
+    .dk_container{
+        float: none;
+        width: 100%;
+    }
+    .dk_container a{
+        width: 100% !important;
+    }
+}
+

@@ -45,61 +45,133 @@ const obtainDeckRecipie = async () => {
     return card_list;
 }
 
+// # info area
+const openCardInfoArea = async (cid) => {
+    const df = await obtainDF();
+    const doc_text = await obtainParsedHTML("https://www.db.yugioh-card.com/yugiohdb/card_search.action", { ope: 2, cid: cid, mode: 1, sess: 4 });
+    const div_text = doc_text.querySelector("#article_body");
+    div_text.setAttribute("id", "info_text");
+    div_text.classList.add("info_article");
+    div_text.style.display = "block";
+    const validIds_text = ["CardSet", "update_list", "relationCard"];
+    for (const elm of Array.from(div_text.children)) {
+        if (validIds_text.indexOf(elm.id) !== -1) continue;
+        elm.remove();
+    }
+    div_text.querySelector("#CardSet>div.bottom").remove();
+
+    const cardImgSet = div_text.querySelector("#CardImgSet");
+    cardImgSet.style.width = "50%";
+    cardImgSet.style["max-width"] = "100%";
+    const img = cardImgSet.querySelector("div#card_frame>div.set>a>img");
+    img.classList.remove("none");
+    // img.parentElement.href=`https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=${cid}&mode=1`
+    img.parentElement.removeAttribute("href");
+    img.style.cursor = "pointer";
+    const encImg = df_filter(df, "encImg", ["cid", cid])[0];
+    img.src = `/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid}&ciid=1&enc=${encImg}&osplang=1`
+    div_text.querySelector("#CardSet svg").remove();
+    div_text.querySelector("#CardSet #thumbnail").remove();
+
+    const sort_set = div_text.querySelector("#relationCard>div.sort_set");
+    const info_div = document.querySelector("#info_area>div");
+    const ul = `<div id="faq" class="tablink">
+            <ul>
+                <li class="1 now"><span>Text</span></li>
+                <li class="2"><span>FAQ</span></li>
+            </ul>
+            <select id="text_qa" name="text_qa">
+                <option value="1">Text</option>
+                <option value="2">FAQ</option>
+            </select>
+        </div>\n`;
+
+    const doc_faq = await obtainParsedHTML("https://www.db.yugioh-card.com/yugiohdb/faq_search.action", { ope: 4, cid: cid });
+    const div_faq = doc_faq.querySelector("#article_body");
+    div_faq.setAttribute("id", "info_faq");
+    div_faq.classList.add("info_article");
+    // div_faq.classList.add("none");
+    const validIds_faq = ["card_info", "deck_list"];
+    for (const elm of Array.from(div_faq.children)) {
+        if (validIds_faq.indexOf(elm.id) !== -1) continue;
+        elm.remove();
+    }
+    div_faq.style.display = "none";
+
+    if (sort_set != null) {
+        sort_set.remove();
+        div_text.querySelector("#mode_set").nextElementSibling.setAttribute("id", "card_list");
+        div_text.querySelector("#mode_set").remove();
+        const div_text_new = await remakeSearchResult(div_text)
+        info_div.innerHTML = ul + div_text_new.outerHTML + "\n" + div_faq.outerHTML;
+    } else {
+        info_div.innerHTML = ul + div_text.outerHTML + "\n" + div_faq.outerHTML;
+    }
+
+}
+
+// # functions
+const showHideSearch = (toShowIn = null) => {
+    const card_set_search = $("#card_set");
+    if (toShowIn === null) card_set_search.toggleClass("hide");
+    else if (toShowIn === true) card_set_search.removeClass("hide");
+    else if (toShowIn === false) card_set_search.addClass("hide");
+    const toShow = !$("#card_set").hasClass("hide");
+    [".filter_set_area", "#close_search_area"].map(d => toShow ? $(d).slideDown("fast") : $(d).slideUp("fast")); //, "#submit_area"
+    ["#contents", "footer", "#tsl_notice"].map(d => toShow ? $(d).show() : $(d).hide());
+    //$("html, body").scrollTop(0);
+}
+const obtainMaxPageNum = (body) => {
+    const yaji_max = $("div.page_num>a.yaji.max", body);
+    const a_last = $("div.page_num>a:not(.yaji.max):last", body);
+    if (yaji_max.length > 0) return parseInt($(yaji_max).text());
+    else if (a_last.length > 0) return parseInt($(a_last).text());
+    else return 1;
+}
+const obtainSearchResult = async (page = 1, max_pageIn = null, mode = 1) => {
+    const serialized = $("#form_search").serialize();
+    const url = `https://www.db.yugioh-card.com/yugiohdb/card_search.action?${serialized}`.replaceAll(/&page=\d+|&mode=\d+/g, "") + `&page=${page}&mode=${mode}`;
+    const body = await obtainStreamBody(url);
+    const max_page = max_pageIn || obtainMaxPageNum(body);
+    const search_body = $("#card_list", body);
+    if (page < 3 && max_page > page) return search_body.append($(await obtainSearchResult(parseInt(page) + 1, max_page).then(d => d.prop("innerHTML"))));
+    else return search_body;
+}
+const remakeSearchResult = async (search_result) => {
+    const df = await obtainDF();
+    Array.from($("#card_list>.t_row", search_result)).map(t_row => {
+        // const img = $("div.box_card_img>img", t_row);
+        const img = t_row.querySelector("div.box_card_img>img");
+        const card_name = img.title;
+        const card_url = t_row.querySelector("input.link_value:last-child").value;
+        const card_cid = card_url.match(/cid=(\d+)/)[1];
+        const card_id = df_filter(df, "id", ["cid", card_cid])[0];
+        const card_encImg = df_filter(df, "encImg", ["cid", card_cid])[0];
+        const card_type = judgeCardType(df, ["cid", card_cid], "row");
+        const attr_dic = {
+            card_id: card_id,
+            card_cid: card_cid,
+            card_type: card_type,
+            card_name: card_name,
+            card_url: card_url,
+            loading: "lazy",
+            src: `/yugiohdb/get_image.action?type=1&lang=ja&cid=${card_cid}&ciid=1&enc=${card_encImg}&osplang=1`
+        };
+        //const a_link=$("<a>", {href: card_link});
+        for (const [k, v] of Object.entries(attr_dic)) {
+            img.setAttribute(k, v);
+        }
+        // $(img).attr(attr_dic);
+        img.style.cursor = "pointer";
+        //$(img).after(a_link);
+        //$(a_link).append(img);
+        img.classList.remove("none");
+    });
+    return search_result;
+}
+
 const obtainSearchScript = async () => {
-    // # functions
-    const showHideSearch = (toShowIn = null) => {
-        const card_set_search = $("#card_set");
-        if (toShowIn === null) card_set_search.toggleClass("hide");
-        else if (toShowIn === true) card_set_search.removeClass("hide");
-        else if (toShowIn === false) card_set_search.addClass("hide");
-        const toShow = !$("#card_set").hasClass("hide");
-        [".filter_set_area", "#close_search_area"].map(d => toShow ? $(d).slideDown("fast") : $(d).slideUp("fast")); //, "#submit_area"
-        ["#contents", "footer", "#tsl_notice"].map(d => toShow ? $(d).show() : $(d).hide());
-        //$("html, body").scrollTop(0);
-    }
-    const obtainMaxPageNum = (body) => {
-        const yaji_max = $("div.page_num>a.yaji.max", body);
-        const a_last = $("div.page_num>a:not(.yaji.max):last", body);
-        if (yaji_max.length > 0) return parseInt($(yaji_max).text());
-        else if (a_last.length > 0) return parseInt($(a_last).text());
-        else return 1;
-    }
-    const obtainSearchResult = async (page = 1, max_pageIn = null, mode = 1) => {
-        const serialized = $("#form_search").serialize();
-        const url = `https://www.db.yugioh-card.com/yugiohdb/card_search.action?${serialized}`.replaceAll(/&page=\d+|&mode=\d+/g, "") + `&page=${page}&mode=${mode}`;
-        const body = await obtainStreamBody(url);
-        const max_page = max_pageIn || obtainMaxPageNum(body);
-        const search_body = $("#card_list", body);
-        if (page < 3 && max_page > page) return search_body.append($(await obtainSearchResult(parseInt(page) + 1, max_page).then(d => d.prop("innerHTML"))));
-        else return search_body;
-    }
-    const remakeSearchResult = async (search_result) => {
-        const df = await obtainDF();
-        Array.from($("#card_list>.t_row", search_result)).map(t_row => {
-            const img = $("div.box_card_img>img", t_row);
-            const card_name = $(img).attr("title");
-            const card_url = $("input.link_value:last", t_row).attr("value");
-            const card_cid = card_url.match(/cid=(\d+)/)[1];
-            const card_id = df_filter(df, "id", ["cid", card_cid])[0];
-            const card_encImg = df_filter(df, "encImg", ["cid", card_cid])[0];
-            const card_type = judgeCardType(df, ["cid", card_cid], "row");
-            const attr_dic = {
-                card_id: card_id,
-                card_cid: card_cid,
-                card_type: card_type,
-                card_name: card_name,
-                card_url: card_url,
-                loading: "lazy",
-                src: `/yugiohdb/get_image.action?type=1&lang=ja&cid=${card_cid}&ciid=1&enc=${card_encImg}&osplang=1`
-            };
-            //const a_link=$("<a>", {href: card_link});
-            $(img).attr(attr_dic);
-            //$(img).after(a_link);
-            //$(a_link).append(img);
-            $(img).removeClass("none");
-        });
-        return search_result;
-    }
+
 
     const searchClicked = async () => {
         const div_search_result = $("#search_result");
@@ -605,6 +677,8 @@ const obtainSearchForm = () => {
     <input type="hidden" name="ope" value="1">
     <input type="hidden" name="sess" value="1">
     <input type="hidden" name="rp" value="2000">
+    <input type="hidden" name="mode" value>
+    <input type="hidden" name="sort" value="1">
 
     <div id="search" class="card_s">
         <div class="search_btn_set">
@@ -1058,7 +1132,7 @@ const obtainSearchForm = () => {
                             </span></li>
                             <li class="species_26_ja"><span>
                                 幻想魔族
-                                <input type="checkbox" name="species" class="none" value="28">
+                                <input type="checkbox" name="species" class="none" value="34">
                             </span></li>
 
                         </ul>

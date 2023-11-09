@@ -28,24 +28,26 @@ const defaultTempsString = JSON.stringify(defaultTemps);
 
 const IsLocalTest = (chrome.runtime.id !== "jdgobeohbdmglcmgblpodggmgmponihc");
 
-const svgs={
-    shuffle : `<svg xmlns="http://www.w3.org/2000/svg" height="80%" viewBox="0 -960 960 960"><path d="M560-160v-80h104L537-367l57-57 126 126v-102h80v240H560Zm-344 0-56-56 504-504H560v-80h240v240h-80v-104L216-160Zm151-377L160-744l56-56 207 207-56 56Z"/></svg>`,
-    sort:`<svg xmlns="http://www.w3.org/2000/svg" height="80%" viewBox="0 -960 960 960" ><path d="M120-240v-80h240v80H120Zm0-200v-80h480v80H120Zm0-200v-80h720v80H120Z"/></svg>`,
-    delete:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>`,
-    add:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>`,
-    upload:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>`,
-    download:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>`,
-    save:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"/></svg>`,
-    refresh:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>`,
-    copy:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>`,
-    edit:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z"/></svg>`,
-    backspace:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M360-200q-20 0-37.5-9T294-234L120-480l174-246q11-16 28.5-25t37.5-9h400q33 0 56.5 23.5T840-680v400q0 33-23.5 56.5T760-200H360Zm400-80v-400 400Zm-400 0h400v-400H360L218-480l142 200Zm96-40 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Z"/></svg>`,
-    arrowBack:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>`,
+const svgs = {
+    shuffle: `<svg xmlns="http://www.w3.org/2000/svg" height="80%" viewBox="0 -960 960 960"><path d="M560-160v-80h104L537-367l57-57 126 126v-102h80v240H560Zm-344 0-56-56 504-504H560v-80h240v240h-80v-104L216-160Zm151-377L160-744l56-56 207 207-56 56Z"/></svg>`,
+    sort: `<svg xmlns="http://www.w3.org/2000/svg" height="80%" viewBox="0 -960 960 960" ><path d="M120-240v-80h240v80H120Zm0-200v-80h480v80H120Zm0-200v-80h720v80H120Z"/></svg>`,
+    delete: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>`,
+    add: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>`,
+    upload: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>`,
+    download: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>`,
+    save: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"/></svg>`,
+    refresh: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>`,
+    copy: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>`,
+    edit: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z"/></svg>`,
+    backspace: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M360-200q-20 0-37.5-9T294-234L120-480l174-246q11-16 28.5-25t37.5-9h400q33 0 56.5 23.5T840-680v400q0 33-23.5 56.5T760-200H360Zm400-80v-400 400Zm-400 0h400v-400H360L218-480l142 200Zm96-40 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Z"/></svg>`,
+    arrowBack: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>`,
     abc: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M680-360q-17 0-28.5-11.5T640-400v-160q0-17 11.5-28.5T680-600h120q17 0 28.5 11.5T840-560v40h-60v-20h-80v120h80v-20h60v40q0 17-11.5 28.5T800-360H680Zm-300 0v-240h160q17 0 28.5 11.5T580-560v40q0 17-11.5 28.5T540-480q17 0 28.5 11.5T580-440v40q0 17-11.5 28.5T540-360H380Zm60-150h80v-30h-80v30Zm0 90h80v-30h-80v30Zm-320 60v-200q0-17 11.5-28.5T160-600h120q17 0 28.5 11.5T320-560v200h-60v-60h-80v60h-60Zm60-120h80v-60h-80v60Z"/></svg>`,
     liveHelp: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M476-280q21 0 35.5-14.5T526-330q0-21-14.5-35.5T476-380q-21 0-35.5 14.5T426-330q0 21 14.5 35.5T476-280Zm-36-154h74q0-17 1.5-29t6.5-23q5-11 12.5-20.5T556-530q35-35 49.5-58.5T620-642q0-53-36-85.5T487-760q-55 0-93.5 27T340-658l66 26q7-27 28-43.5t49-16.5q27 0 45 14.5t18 38.5q0 17-11 36t-37 42q-17 14-27.5 27.5T453-505q-7 15-10 31.5t-3 39.5Zm40 394L360-160H200q-33 0-56.5-23.5T120-240v-560q0-33 23.5-56.5T200-880h560q33 0 56.5 23.5T840-800v560q0 33-23.5 56.5T760-160H600L480-40ZM200-240h192l88 88 88-88h192v-560H200v560Zm280-280Z"/></svg>`,
-    style:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="m159-168-34-14q-31-13-41.5-45t3.5-63l72-156v278Zm160 88q-33 0-56.5-23.5T239-160v-240l106 294q3 7 6 13.5t8 12.5h-40Zm206-4q-32 12-62-3t-42-47L243-622q-12-32 2-62.5t46-41.5l302-110q32-12 62 3t42 47l178 488q12 32-2 62.5T827-194L525-84Zm-86-476q17 0 28.5-11.5T479-600q0-17-11.5-28.5T439-640q-17 0-28.5 11.5T399-600q0 17 11.5 28.5T439-560Zm58 400 302-110-178-490-302 110 178 490ZM319-650l302-110-302 110Z"/></svg>`,
-    search:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>`,
-    contancts:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M160-40v-80h640v80H160Zm0-800v-80h640v80H160Zm320 400q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm70-80q45-56 109-88t141-32q77 0 141 32t109 88h70v-480H160v480h70Zm118 0h264q-29-20-62.5-30T480-280q-36 0-69.5 10T348-240Zm132-280q-17 0-28.5-11.5T440-560q0-17 11.5-28.5T480-600q17 0 28.5 11.5T520-560q0 17-11.5 28.5T480-520Zm0 40Z"/></svg>`,
+    style: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="m159-168-34-14q-31-13-41.5-45t3.5-63l72-156v278Zm160 88q-33 0-56.5-23.5T239-160v-240l106 294q3 7 6 13.5t8 12.5h-40Zm206-4q-32 12-62-3t-42-47L243-622q-12-32 2-62.5t46-41.5l302-110q32-12 62 3t42 47l178 488q12 32-2 62.5T827-194L525-84Zm-86-476q17 0 28.5-11.5T479-600q0-17-11.5-28.5T439-640q-17 0-28.5 11.5T399-600q0 17 11.5 28.5T439-560Zm58 400 302-110-178-490-302 110 178 490ZM319-650l302-110-302 110Z"/></svg>`,
+    search: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>`,
+    contancts: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M160-40v-80h640v80H160Zm0-800v-80h640v80H160Zm320 400q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm70-80q45-56 109-88t141-32q77 0 141 32t109 88h70v-480H160v480h70Zm118 0h264q-29-20-62.5-30T480-280q-36 0-69.5 10T348-240Zm132-280q-17 0-28.5-11.5T440-560q0-17 11.5-28.5T480-600q17 0 28.5 11.5T520-560q0 17-11.5 28.5T480-520Zm0 40Z"/></svg>`,
+    scroll: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M320-440v-287L217-624l-57-56 200-200 200 200-57 56-103-103v287h-80ZM600-80 400-280l57-56 103 103v-287h80v287l103-103 57 56L600-80Z"/></svg>`,
+    fullscreen: `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z"/></svg>`
 }
 
 
@@ -982,34 +984,34 @@ const addShuffleButton = (setSpace = true) => {
     //     .append(svg_shuffle);//.append("L:Shuffle/R:Sort");
     // const sort_span = $("<span>", { style: "border:none; height: 24px; min-width: 0px;" })
     //     .append(svg_sort);
-    const flex_dic = { "main": setSpace ? 2.7 : 4, "extra": 4, "side": 4 }
+    const flex_dic = { "main": 4, "extra": 4, "side": 4 } // setSpace ? 2.7 : 
     for (const set_type of ["main", "extra", "side"]) {
         const span_tmp = document.createElement("span")
         for (const [key, val] of Object.entries({
             style: `flex:${flex_dic[set_type]};border:none;`,
             oncontextmenu: "return false;"
-        })){
+        })) {
             span_tmp.setAttribute(key, val);
         }
         const div_top = document.querySelector(`#${set_type}>div.subcatergory>div.top`);
         const h3_tmp = div_top.children[0];
         const span_num_tmp = div_top.children[1];//(`#${set_type}>div.subcatergory>div.top>h3`);
-        h3_tmp.innerHTML=set_type.toUpperCase();
-        h3_tmp.style["min-width"]=0;
+        h3_tmp.innerHTML = set_type.toUpperCase();
+        h3_tmp.style["min-width"] = 0;
 
-        for ( const key of ["shuffle", "sort"]){
+        for (const key of ["shuffle", "sort"]) {
             const span = document.createElement("span");
             span.setAttribute("title", `${key} ${set_type.toUpperCase()}`);
-            span.setAttribute("style","border:none; height: 24px; min-width: 0px;");
-            span.innerHTML+=svgs[key];
+            span.setAttribute("style", "border:none; height: 24px; min-width: 0px;");
+            span.innerHTML += svgs[key];
             const button = document.createElement("a")
-            const attributes={
+            const attributes = {
                 class: `btn hex square red button_${key}`,
                 set_type: set_type,
                 id: `button_${key}_${set_type}`,
                 oncontextmenu: "return false;"
             }
-            for (const [key, val] of Object.entries(attributes)){
+            for (const [key, val] of Object.entries(attributes)) {
                 button.setAttribute(key, val);
             }
             button.appendChild(span);
@@ -1689,14 +1691,14 @@ const operate_searchArea = (toShowIn = null) => {
     $(searchArea).css({ display: toShow ? "table-cell" : "none" });
     const button_operate = $("#button_searchShowHide");
     $(button_operate).toggleClass("red");
-    // $("span", button_operate).html(`Search ` + (toShow ? "HIDE" : "SHOW"));
-    // if (toShow === true) {
-    //     $("#bg>div>article").css({ "max-width": "initial" });
-    //     $("#bg>div>article div#article_body").css({ "width": "35vw" });
-    // } else {
-    //     $("#bg>div>article").css({ "max-width": "" });
-    //     $("#bg>div>article div#article_body").css({ "width": "auto" });
-    // }
+    const visible_cells = Array.from(document.querySelectorAll("article>div>div")).filter(d => d.style.display == "table-cell");
+    if (visible_cells.length != 1) {
+        $("article").css({ "max-width": "initial" });
+        $("#article_body").css({ "max-width": "35vw" });
+    } else {
+        $("article").css({ "max-width": "" });
+        $("#article_body").css({ "max-width": "auto" });
+    }
 }
 
 const operate_infoArea = (toShowIn = null) => {
@@ -1707,15 +1709,69 @@ const operate_infoArea = (toShowIn = null) => {
     const toShow = !$(infoArea).hasClass("none");
     $(infoArea).css({ display: toShow ? "table-cell" : "none" });
     const button_operate = $("#button_infoShowHide");
-    $(button_operate).toggleClass("red");
-    // $("span", button_operate).html(`Search ` + (toShow ? "HIDE" : "SHOW"));
-    // if (toShow === true) {
-    //     $("#bg>div>article").css({ "max-width": "initial" });
-    //     $("#bg>div>article div#article_body").css({ "width": "35vw" });
-    // } else {
-    //     $("#bg>div>article").css({ "max-width": "" });
-    //     $("#bg>div>article div#article_body").css({ "width": "auto" });
-    // }
+    if (toShow === true) $(button_operate).addClass("red");
+    else $(button_operate).removeClass("red");
+    const visible_cells = Array.from(document.querySelectorAll("article>div>div")).filter(d => d.style.display == "table-cell");
+    if (visible_cells.length != 1) {
+        $("article").css({ "max-width": "initial" });
+        $("#article_body").css({ "max-width": "35vw" });
+    } else {
+        $("article").css({ "max-width": "" });
+        $("#article_body").css({ "max-width": "auto" });
+    }
+}
+
+const operate_fixScroll = (toFixIn = null) => {
+    const area = document.querySelector("#bg");
+    if (toFixIn === null) area.classList.toggle("large");
+    else if (toFixIn === true) area.classList.remove("large");
+    else if (toFixIn === false) area.classList.add("large");
+    const toFix = area.classList.contains("large");
+    const button_operate = $("#button_fixScroll");
+    if (toFix === true) $(button_operate).addClass("red");
+    else $(button_operate).removeClass("red");
+    const nav = document.querySelector("nav#title_top_msg");
+    const footer = document.querySelector("footer#footer");
+    const wrapper = document.querySelector("div#wrapper");
+    const header = document.querySelector("#wrapper>header");
+    const spnav = document.querySelector("div#spnav");
+    const pan_nav = document.querySelector("nav#pan_nav");
+    const search_res = document.querySelector("#search_result");
+    const info_area = document.querySelector("#info_area>div");
+    if (toFix === true) {
+        area.style.position = "fixed";
+        area.style.top = "0vh";
+        area.style["min-height"] = "100vh";
+        area.style["width"] = "100%";
+        wrapper.style.height = "100%";
+        search_res.style["max-height"] = "80vh"
+        info_area.style["max-height"] = "90vh"
+        for (const elm of [header, spnav, pan_nav]) {
+            elm.style.display = "none";
+        }
+        for (const elm of [footer, nav]) {
+            elm.style.position = "fixed";
+            elm.style.top = "100vh";
+        }
+    } else {
+        area.style.position = "";
+        area.style.top = "";
+        area.style["min-height"] = "";
+        area.style["width"] = "";
+        footer.style.position = "";
+        footer.style.top = "";
+        for (const elm of [header, spnav, pan_nav]) {
+            elm.style.display = "";
+        }
+        for (const elm of [footer, nav]) {
+            elm.style.position = "";
+            elm.style.top = "";
+        }
+        search_res.style["max-height"] = "70vh"
+        info_area.style["max-height"] = "80vh"
+
+
+    }
 }
 
 // # deck version
