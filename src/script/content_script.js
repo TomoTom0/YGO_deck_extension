@@ -13,7 +13,7 @@ window.onload = async function () {
     const my_cgid = obtainMyCgid();
 
     const settings = await operateStorage({ settings: JSON.stringify({}) }, "sync")
-        .then(items => Object.assign(defaultSettings, JSON.parse(items.settings)));
+        .then(items => Object.assign(defaultSettings, JSON.parse(items.settings), {valid_feature_sideChange: true}));
     // const ytkn = obtain_YGODB_fromHidden("ytkn");
     // const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
     //     .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
@@ -38,7 +38,7 @@ window.onload = async function () {
             headerShowHide: $("<a>", {
                 class: "btn hex red button_visible_header hide", type: "button", id: "button_visible_header",
                 style: "position: relative;user-select: none;"
-            }).append("<span>Header</span>"),
+            }).append($("<span>", {title: "show Header"}).append(svgs.toc)),
             searchShowHide: $("<a>", { class: "btn hex square button_searchShowHide", id: "button_searchShowHide" }
             ).append($("<span>", { title: "show search area" }).append(svgs.search)),
             infoShowHide: $("<a>", { class: "btn hex red square button_infoShowHide", id: "button_infoShowHide" }
@@ -299,20 +299,20 @@ window.onload = async function () {
             $(area).append(button_tmp);
         }
         if (settings.valid_feature_sortShuffle === true) addShuffleButton();
-        if (settings.valid_feature_sideChange === true) {
+        if (true || settings.valid_feature_sideChange === true) {
             const deck_image = $("#deck_image");
             $(deck_image).addClass("deck_image").css({ "min-height": "890px" });
             $("#deck_image div.card_set div.image_set a").css({ "max-width": "max(6.5%, 55px)" });
             $("#deck_image div.card_set").css({ "margin": "0px 0px 0px" });
 
-            const span_tmp = $("<span>", { style: "border:none; line-height: 30px; min-width: 180px;" })
-                .append(`SideChange|L:Reset/R:ON`);
-            const button_sideChange = $("<a>", {
-                class: `btn hex button_sideChange sideChange`,
-                id: "button_sideChange",
-                oncontextmenu: "return false;"
-            }).append(span_tmp.clone());
-            addButtonAfterMainShuffle(button_sideChange);
+            // const span_tmp = $("<span>", { style: "border:none; line-height: 30px; min-width: 180px;" })
+            //     .append(`SideChange|L:Reset/R:ON`);
+            // const button_sideChange = $("<a>", {
+            //     class: `btn hex button_sideChange sideChange`,
+            //     id: "button_sideChange",
+            //     oncontextmenu: "return false;"
+            // }).append(span_tmp.clone());
+            // addButtonAfterMainShuffle(button_sideChange);
 
 
             const card_set_temp = obtainNewCardSet("temp");
@@ -357,7 +357,7 @@ window.onload = async function () {
             /*Array.from($("#deck_image div.card_set")).map(card_set =>{
                 const image_set=$("div.image_set", card_set);
             })*/
-            if (settings.default_sideChange_view === true) operateSideChangeMode("toggle");
+            if (true || settings.default_sideChange_view === true) operateSideChangeMode("toggle");
             //const card_class_arr=
             //    .map(d=>$("img", d).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/)).map(d=>Object({type:d[1], ind1:d[2], ind2:d[3]}));
         }
@@ -493,10 +493,11 @@ window.onload = async function () {
     // ## mousedown
     const df = await obtainDF(obtainLang());
     document.addEventListener("mousedown", async function (e) {
-        const sideChangeOnViewIsValid = ["1", null].indexOf(html_parse_dic.ope) !== -1 &&
-            settings.valid_feature_sideChange === true &&
-            $("#button_sideChange").length > 0 &&
-            $("#button_sideChange").hasClass("on");
+        // const sideChangeOnViewIsValid = ["1", null].indexOf(html_parse_dic.ope) !== -1 &&
+        //     (settings.valid_feature_sideChange === true) &&
+        //     $("#button_sideChange").length > 0 &&
+        //     $("#button_sideChange").hasClass("on");
+        const sideChangeOnViewIsValid = true;
         const clickIsToOpenURL = $("#deck_image").length > 0 &&
             $("#deck_image").hasClass("click_open_url");
         // # ----- button ------
