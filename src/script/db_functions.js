@@ -47,19 +47,24 @@ const obtainDF = async (lang = null) => {
     } else return df;
 }
 
-const fetchParams = async (url, params = null) => {
+const fetchParams = async (url = null, params = null) => {
+    return await fetch(joinUrl(url, params));
+}
+
+const joinUrl = (url = null, params = null) => {
     if (url === null) {
         url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";
     }
     if (params !== null) {
         url = url.replace(/\?$/, "") + "?" +
             Object.entries(params).filter(([_k, v]) => v !== null
+            ).sort((a, b) => a[0] - b[0]
             ).map(([k, v]) => `${k}=${v}`).join("&");
     }
-    return await fetch(url);
+    return url;
 }
 
-const obtainStreamBody = async (url, params = null) => {
+const obtainStreamBody = async (url = null, params = null) => {
     let count_error = 0;
     while (count_error < 3) {
         try {
@@ -82,13 +87,46 @@ const obtainStreamBody = async (url, params = null) => {
     return "";
 }
 
-function parseHTML(str_html) {
+const parseHTML = (str_html) => {
     const tmp = document.implementation.createHTMLDocument("");
     tmp.body.innerHTML = str_html;
     return tmp.body;
 }
 
-function sleep(ms) {
+const obtainParsedHTML = async (url = null, params = null, cache = 1) => {
+    url = joinUrl(url, params);
+    // const cacheHtmls = await operateStorage({ cacheHtmls: JSON.stringify({}) }, "local")
+    //     .then(items => Object.assign({}, JSON.parse(items.cacheHtmls)));
+    // console.log(Object.keys(cacheHtmls));
+    // if (Object.keys(cacheHtmls).indexOf(url) != -1) console.log(cacheHtmls[url].time + cache * 86400 * 1000 > Date.now())
+    // if (cache > 0 && Object.keys(cacheHtmls).indexOf(url) !== -1 && cacheHtmls[url].time + cache * 86400 * 1000 > Date.now()) {
+    //     console.log(url);
+    //     return parseHTML(cacheHtmls[url].html);
+    // }
+    const html_get = await obtainStreamBody(url);
+    // const cacheHtmls_new = Object.assign(cacheHtmls, { [url]: { html: html_get, time: Date.now() } });
+    // await operateStorage({ cacheHtmls: JSON.stringify(cacheHtmls_new) }, "local", "set");
+    return parseHTML(html_get);
+}
+
+const refreshCacheHtml = async (days = 1) => {
+    const now = Date.now()
+    operateStorage({ cacheInfos: JSON.stringify({}) }, "local"
+    ).then(items => Object.assign({}, JSON.parse(items.cacheInfos))
+    ).then(cacheInfos =>
+        Object.assgin(
+            ...Object.entries(cacheInfos
+            ).filter(([k, v]) => v.time + days * 86400 * 1000 > now
+            ).map(([k, v]) => Object({ [k]: v }))
+        )
+    ).then(cahceInfos => operateStorage({ cacheInfos: JSON.stringify(cacheInfos) }, "local", "set"));
+    // const cacheHtmls_new =
+    //     console.log(Object.keys(cacheHtmls_new));
+    // await operateStorage({ cacheInfos: JSON.stringify(cacheHtmls_new) }, "local", "set");
+    // return cacheHtmls_new;
+}
+
+const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 async function gitFetch(url, opts = {}) {
