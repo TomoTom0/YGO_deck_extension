@@ -11,7 +11,7 @@ const defaultRepoInfo = {
     CDB: { user: "ProjectIgnis", repo: "BabelCDB", path: "" },
     ConstantLua: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/constant.lua" },
     StringsConf: { user: "NaimSantos", repo: "DataEditorX", path: "DataEditorX/data/strings.conf" },
-    MyRepo: {user:"TomoTom0", repo:"ygo_db", path:"data/ygo_db.json"}
+    MyRepo: { user: "TomoTom0", repo: "ygo_db", path: "data/ygo_db.json" }
 }
 
 const getSyncStorage = (key = null) => new Promise(resolve => {
@@ -22,27 +22,185 @@ const setSyncStorage = (key = null) => new Promise(resolve => {
     chrome.storage.sync.set(key, resolve);
 });
 
-const operateStorage=(key = null, storageKey="sync", operate="get") => new Promise(resolve => {
+const operateStorage = (key = null, storageKey = "sync", operate = "get") => new Promise(resolve => {
     chrome.storage[storageKey][operate](key, resolve);
 });
 
-const obtainDF=async ()=>{
-    return await operateStorage({df:JSON.stringify({})}, "local").then(items=>JSON.parse(items.df));
+const obtainDF = async (lang = null) => {
+    const df = await operateStorage({ df: JSON.stringify({}) }, "local")
+        .then(items => JSON.parse(items.df))
+        .then(df_tmp => {
+            const name_key = `name_${lang}`
+            if (Object.keys(df_tmp).indexOf(name_key) !== -1) {
+                df_tmp["name"] = df_tmp[name_key];
+            }
+            return df_tmp;
+        });
+    if (Object.keys(df).length === 0) {
+        return await updateDB().then(df_tmp => {
+            const name_key = `name_${lang}`
+            if (Object.keys(df_tmp).indexOf(name_key) !== -1) {
+                df_tmp["name"] = df_tmp[name_key];
+            }
+            return df_tmp;
+        });
+    } else return df;
 }
 
-function sleep(ms) {
+const fetchParams = async (url = null, params = null) => {
+    return await fetch(joinUrl(url, params));
+}
+
+const joinUrl = (url = null, params = null) => {
+    if (url === null) {
+        url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";
+    }
+    if (params !== null) {
+        url = url.replace(/\?$/, "") + "?" +
+            Object.entries(params).filter(([_k, v]) => v !== null
+            ).sort((a, b) => a[0] - b[0]
+            ).map(([k, v]) => `${k}=${v}`).join("&");
+    }
+    return url;
+}
+
+const obtainStreamBody = async (url = null, params = null) => {
+    let count_error = 0;
+    while (count_error < 3) {
+        try {
+            return await fetchParams(url, params).then(d => d.body)
+                .then(d => d.getReader())
+                .then(async reader => {
+                    const readChunk = async (res, longText = "") => {
+                        const return_text = longText + (new TextDecoder("utf-8").decode(res.value) || "")
+                        if (res.done === true) return return_text;
+                        return await reader.read().then(async res => await readChunk(res, return_text));
+                    }
+                    return await reader.read().then(async res => await readChunk(res, ""));
+                });
+        } catch (err) {
+            console.log(err)
+            count_error += 1;
+            continue;
+        }
+    }
+    return "";
+}
+
+const parseHTML = (str_html) => {
+    const tmp = document.implementation.createHTMLDocument("");
+    tmp.body.innerHTML = str_html;
+    return tmp.body;
+}
+
+const obtainParsedHTML = async (url = null, params = null, cache = 1) => {
+    url = joinUrl(url, params);
+    // const cacheHtmls = await operateStorage({ cacheHtmls: JSON.stringify({}) }, "local")
+    //     .then(items => Object.assign({}, JSON.parse(items.cacheHtmls)));
+    // console.log(Object.keys(cacheHtmls));
+    // if (Object.keys(cacheHtmls).indexOf(url) != -1) console.log(cacheHtmls[url].time + cache * 86400 * 1000 > Date.now())
+    // if (cache > 0 && Object.keys(cacheHtmls).indexOf(url) !== -1 && cacheHtmls[url].time + cache * 86400 * 1000 > Date.now()) {
+    //     console.log(url);
+    //     return parseHTML(cacheHtmls[url].html);
+    // }
+    const html_get = await obtainStreamBody(url);
+    // const cacheHtmls_new = Object.assign(cacheHtmls, { [url]: { html: html_get, time: Date.now() } });
+    // await operateStorage({ cacheHtmls: JSON.stringify(cacheHtmls_new) }, "local", "set");
+    return parseHTML(html_get);
+}
+
+const refreshCacheHtml = async (days = 1) => {
+    const now = Date.now()
+    operateStorage({ cacheInfos: JSON.stringify({}) }, "local"
+    ).then(items => Object.assign({}, JSON.parse(items.cacheInfos))
+    ).then(cacheInfos =>
+        Object.assgin(
+            ...Object.entries(cacheInfos
+            ).filter(([k, v]) => v.time + days * 86400 * 1000 > now
+            ).map(([k, v]) => Object({ [k]: v }))
+        )
+    ).then(cahceInfos => operateStorage({ cacheInfos: JSON.stringify(cacheInfos) }, "local", "set"));
+    // const cacheHtmls_new =
+    //     console.log(Object.keys(cacheHtmls_new));
+    // await operateStorage({ cacheInfos: JSON.stringify(cacheHtmls_new) }, "local", "set");
+    // return cacheHtmls_new;
+}
+
+const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-async function gitFetch(url, opts={}){
-    if (!url || typeof opts!=="object") return {status:false};
-    const res=await fetch(url,opts).then(d=>d.json());
-    if (/^API rate limit/.test(res.message)){
-        await sleep(60*1000);
+async function gitFetch(url, opts = {}) {
+    if (!url || typeof opts !== "object") return { status: false };
+    const res = await fetch(url, opts).then(d => d.json());
+    if (/^API rate limit/.test(res.message)) {
+        await sleep(60 * 1000);
         return await fetch(url, opts);
     } else {
-        return {json:()=>res};
+        return { json: () => res };
     }
 }
+
+// -----------------------------
+//           # YGODB
+
+const parse_YGODB_URL_body = (url_now = location.href) => {
+    return url_now.match(/([^\/\?]+)\??[^\/]*$/)[1];
+}
+const parse_YGODB_URL = (url_now = location.href, nullIsValid = false) => {
+    const html_parse_keys = ["ope", "wname", "ytkn", "cgid", "dno", "request_locale"];
+    const html_parse_dic_arr = html_parse_keys.map(key => {
+        const match_tmp = url_now.match(new RegExp(`(?<=${key}=)([^&=]+)`, "g"));
+        if (Array.isArray(match_tmp) && match_tmp.length > 0) {
+            return { [key]: match_tmp[0] };
+        } else return { [key]: obtain_YGODB_fromHidden(key) || null };
+    });
+    if (nullIsValid === false) {
+        return Object.assign(...html_parse_dic_arr.filter(d => Object.values(d)[0] != null));
+    } else return Object.assign(...html_parse_dic_arr);
+}
+
+const obtain_YGODB_fromHidden = (key, body_in = null) => {
+    const body = body_in !== null ? body_in : document.querySelector("body");
+    try {
+        return body.querySelector(`#${key}`).value;
+    } catch (e) {
+        return "";
+    }
+}
+
+const _makeTermTables = async (lang = "ja") => {
+    const request_locale = (lang === null) ? "" : `?request_locale=${lang}`;
+    const url_deck_search = "https://www.db.yugioh-card.com/yugiohdb/deck_search.action" + request_locale;
+
+    const html_deck_search = await fetch(url_deck_search)
+        .then(d => d.body)
+        .then(d => d.getReader())
+        .then(reader => reader.read())
+        .then(res_tmp => new TextDecoder("utf-8").decode(res_tmp.value));
+
+    const parsed_html = $.parseHTML(html_deck_search)
+    return {
+        deck_type: Array.from($("#deck_type>option", parsed_html)).map(d => ({ value: $(d).prop("value"), name: d.text })),
+        deck_style: Array.from($("#deckStyle>option", parsed_html)).map(d => ({ value: $(d).prop("value"), name: d.text })),
+        category: Array.from($("#dckCategoryMst>option", parsed_html)).map(d => ({ value: $(d).prop("value"), name: d.text })),
+        tag: Array.from($("#dckTagMst>option", parsed_html)).map(d => ({ value: $(d).prop("value"), name: d.text }))
+    }
+}
+
+const updateTermTables = async () => {
+    const html_parse_dic = parse_YGODB_URL(location.href, true);
+    const term_tables = _makeTermTables(lang = html_parse_dic.lang)
+    //const term_tables_en=_obtainTermTables(lang="en")
+    await operateStorage({ term_tables: JSON.stringify(term_tables) }, "local", "set");
+    return term_tables;
+}
+
+const obtainTermTables = async () => {
+    const term_tables = await operateStorage({ term_tables: JSON.stringify({}) }, "local").then(items => JSON.parse(items.term_tables));
+    if (Object.keys(term_tables).length === 0) return await updateTermTables();
+    else return term_tables;
+}
+
 // -----------------------------
 //           # parse text
 function split_data(data) {
@@ -51,15 +209,20 @@ function split_data(data) {
 }
 
 function df_filter(df, col_out, array_in, condition = "=") {
+    df.ind = [...Array(df.name.length).keys()];
     const key = array_in[0];
     const val = Array.isArray(array_in[1]) ? array_in[1] : [array_in[1]];
     if (df == {} && Array.isArray(col_out)) return col_out.reduce((acc, key) => Object.assign(acc, { [key]: [] }), {});
     else if (df == {}) return [];
 
-    const indexes_in = df[key].reduce((acc, cur, ind) => {
-        if (condition == "=" && val.indexOf(cur) != -1) return acc.concat([ind]);
-        else if (condition == "in" && val.some(d => cur.indexOf(d) != -1)) return acc.concat([ind]);
-        else return acc;
+    const indexes_in = df[key].reduce((acc, cur_tmp, ind) => {
+        if (cur_tmp == null) return acc;
+        for (const cur of [cur_tmp, isFinite(cur_tmp) && !Number.isInteger(cur_tmp) ? parseInt(cur_tmp) : `${cur_tmp}`]) {
+            if (condition == "=" && val.indexOf(cur) != -1) return acc.concat([ind]);
+            //else if (condition == "=" && isFinite(cur) && val.indexOf(String(cur)) != -1) return acc.concat([ind]);
+            else if (condition == "in" && val.some(d => `${cur}`.indexOf(d) != -1)) return acc.concat([ind]);
+        }
+        return acc;
     }, []);
     if (Array.isArray(col_out)) {
         const dics = col_out.map(key => { return { [key]: Array.from(new Set(indexes_in)).map(d => df[key][d]) }; });
@@ -104,9 +267,9 @@ async function combineDf(args = { display: "", settings: defaultSettings, repoIn
     if (display) $(display).text(defaultDisplay + `\t3/3`);
     //console.log(stringsConf, constantLua)
 
-    const ot_array=["OCG", "TCG", "OCG/TCCG", "ANIME"]
-    const card_ids = datas.id.map(id=>id-0);
-    const card_ots = datas.ot.map(ot=>ot_array[ot-1]);
+    const ot_array = ["OCG", "TCG", "OCG/TCCG", "ANIME"]
+    const card_ids = datas.id.map(id => id - 0);
+    const card_ots = datas.ot.map(ot => ot_array[ot - 1]);
     const card_names = texts.name
     /*const card_ids_onlyOCG=card_ots.map((ot, ind)=>[ot, card_ids[ind]]).filter(d=>d[0]=="OCG").map(d=>d[1]);
     const card_names_onlyOCG=await obtainCardNameFromScript(card_ids_onlyOCG);
@@ -114,7 +277,7 @@ async function combineDf(args = { display: "", settings: defaultSettings, repoIn
         if (card_ots[ind]=="OCG") return card_names_onlyOCG[card_ids[ind]];
         else return nameTmp;
     });*/
-    const card_keys = { complex: ["attribute", "race","type"], others: ["atk", "def"] };
+    const card_keys = { complex: ["attribute", "race", "type"], others: ["atk", "def"] };
     const card_values = {
         complex: Object.assign(...card_keys.complex.map(key => convertCDBData(key, datas, constantLua))),
         others: Object.assign(...card_keys.others.map(key => Object({ [key]: datas[key] })))
@@ -124,11 +287,11 @@ async function combineDf(args = { display: "", settings: defaultSettings, repoIn
     const card_sets = convertSetcode("setcode", datas, stringsConf, "setname")["setname"];
     const PSLevel = datas.level.map(level => (level - 0).toString("16").split("").reverse());
     const card_levels = PSLevel.map(d => {
-        if (parseInt(d[0],16) > 0) return parseInt(d[0],16) - 0;
+        if (parseInt(d[0], 16) > 0) return parseInt(d[0], 16) - 0;
         else return "NaN";
     })
     const card_PS = PSLevel.map(d => {
-        if (d.length > 2 ) return parseInt(d[4], 16) - 0;
+        if (d.length > 2) return parseInt(d[4], 16) - 0;
         else return "NaN";
     })
     const ids_Link = df_filter({ id: card_ids, type: card_values.complex.type }, "id", ["type", "LINK"], "in");
@@ -147,8 +310,8 @@ async function combineDf(args = { display: "", settings: defaultSettings, repoIn
         else return "NaN";
     });;
 
-    const df_tmp = [{ level: card_levels, name: card_names}, card_values.complex,
-         {atk: card_values.others.atk, def: card_def, set: card_sets, PS: card_PS, LMarker: card_LMarker, ot: card_ots ,id: card_ids }];
+    const df_tmp = [{ level: card_levels, name: card_names }, card_values.complex,
+    { atk: card_values.others.atk, def: card_def, set: card_sets, PS: card_PS, LMarker: card_LMarker, ot: card_ots, id: card_ids }];
     const df_new = Object.assign(...df_tmp);
 
     return df_new;
@@ -303,49 +466,49 @@ async function readStringsConf(args = { display: "", settings: defaultSettings, 
 }
 
 // ## obtain card info from ocg-card.com
-async function obtainFromOCGcard (args={form:"id", input:{}}){
-    const formDic={id:"pass", name:"name"};
-    const form=formDic[args.form||"id"];
-    if (typeof args.input!=="object") return {};
-    const query=Object.values(args.input).map((val, ind)=>`${form}_${ind}=${val}&${form}-op_${ind}=3`).join("&");
-    const url=`https://ocg-card.com/list/result/?${query}`;
+async function obtainFromOCGcard(args = { form: "id", input: {} }) {
+    const formDic = { id: "pass", name: "name" };
+    const form = formDic[args.form || "id"];
+    if (typeof args.input !== "object") return {};
+    const query = Object.values(args.input).map((val, ind) => `${form}_${ind}=${val}&${form}-op_${ind}=3`).join("&");
+    const url = `https://ocg-card.com/list/result/?${query}`;
     const reader = await fetch(url).then(d => d.body)
         .then(d => d.getReader());
-    const contents = await readStream(reader, []).then(d=>d.join(""))
-    const results = $("tr.status-height, tr.spell-height", $(contents)).map((ind,obj)=>{
+    const contents = await readStream(reader, []).then(d => d.join(""))
+    const results = $("tr.status-height, tr.spell-height", $(contents)).map((ind, obj) => {
         const cardName = $("td:eq(1)", $(obj)).html().replace(/<div.*\/div>/, "");
-        const cardId = $("td:eq(3)", $(obj) ).html().match(/\d+/);
-        const cid_db = ($("td.card-info", $(obj)).html()||`<a href="cid=0">公式`).match(/(?<=<a href="[^"]*cid=)\d+(?=[^"]*">公式)/)[0];
-        return {id: (cardId||[""])[0], name:cardName, cid:cid_db};
+        const cardId = $("td:eq(3)", $(obj)).html().match(/\d+/);
+        const cid_db = ($("td.card-info", $(obj)).html() || `<a href="cid=0">公式`).match(/(?<=<a href="[^"]*cid=)\d+(?=[^"]*">公式)/)[0];
+        return { id: (cardId || [""])[0], name: cardName, cid: cid_db };
     }).toArray();
 
     return Object.assign(...results
-        .filter(d=>form==="pass" || Object.keys(args.input).indexOf(form==="pass" ? d.id : d.cid)!=-1)
-        .map(d=>({[form==="pass" ? d.id : d.cid]:d})).concat({}) );
+        .filter(d => form === "pass" || Object.keys(args.input).indexOf(form === "pass" ? d.id : d.cid) != -1)
+        .map(d => ({ [form === "pass" ? d.id : d.cid]: d })).concat({}));
 }
 
 
 // ## obtain card Name from script
-async function obtainCardNameFromScript(cardIds=[], args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
-    if (cardIds.length==0) return [];
+async function obtainCardNameFromScript(cardIds = [], args = { display: "", settings: defaultSettings, repoInfos: defaultEmptyRepoInfo }) {
+    if (cardIds.length == 0) return [];
     //const repoInfo = (!args.settings.changeStringsConfRepo) ? defaultRepoInfo.StringsConf : args.repoInfos.StringsConf;
     const repoInfo = defaultRepoInfo.CardScripts;
 
-    const fileNames = cardIds.map(id=>`c${id}.lua`);
-    const res_gitUrls=await Promise.all(fileNames.map(async filename=>{
+    const fileNames = cardIds.map(id => `c${id}.lua`);
+    const res_gitUrls = await Promise.all(fileNames.map(async filename => {
         const header_auth = { "Accept": "application/vnd.github.v3+json" };
         const git_content_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/contents/official/${filename}`;
         return await gitFetch(git_content_url, { method: "GET", headers: header_auth }).then(d => d.json());
     }));
 
     const cardNameDics = await Promise.all(res_gitUrls
-        .map(async (resIn, ind)=>{
-            const data = await gitFetch(resIn.git_url).then(d => d.json()).then(res=>atob(res.content));
+        .map(async (resIn, ind) => {
+            const data = await gitFetch(resIn.git_url).then(d => d.json()).then(res => atob(res.content));
             if (!data || !restIn.name) return "";
             else {
-                const cardId=(resIn.name||fileNames[ind]).match(/(?<=c)\d+(?=\.lua)/);
-                const cardNameTmp=split_data(data)[0].replace(/^[-\s]*/, "");
-                return {[cardId - 0] :decodeURI(escape(cardNameTmp))};
+                const cardId = (resIn.name || fileNames[ind]).match(/(?<=c)\d+(?=\.lua)/);
+                const cardNameTmp = split_data(data)[0].replace(/^[-\s]*/, "");
+                return { [cardId - 0]: decodeURI(escape(cardNameTmp)) };
             };
         }));
     console.log(cardNameDics);
@@ -353,24 +516,37 @@ async function obtainCardNameFromScript(cardIds=[], args = { display: "", settin
 }
 
 // # update DB renewal
-async function updateDB(){
-    const repoInfo=defaultRepoInfo.MyRepo;
+async function updateDB() {
+    const repoInfo = defaultRepoInfo.MyRepo;
     const header_auth = { "Accept": "application/vnd.github.v3+json" };
 
     const git_content_url = `https://api.github.com/repos/${repoInfo.user}/${repoInfo.repo}/contents/data`;
-    const res_content = await fetch(git_content_url, { method: "GET", headers: header_auth }).then(d=>d.json());
-    const git_data_url = res_content.filter(d=>d.path===repoInfo.path)[0].git_url;
-    const content = await fetch(git_data_url, { method: "GET", headers: header_auth }).then(d=>d.json())
-        .then(res=>atob(res.content));
+    const res_content = await fetch(git_content_url, { method: "GET", headers: header_auth }).then(d => d.json());
+    const git_data_url = res_content.filter(d => d.path === repoInfo.path)[0].git_url;
+    const content = await fetch(git_data_url, { method: "GET", headers: header_auth }).then(d => d.json())
+        .then(res => atob(res.content));
     console.log("Database has been updated.");
-    let df_new=JSON.parse(content).all;
-    df_new.id=df_new.id.map(d=>d-0);
-    df_new.cid=df_new.cid.map(d=>d-0);
-    await operateStorage({df:JSON.stringify(df_new), lastModifiedDate:Date.now()}, "local", "set");
+    let df_new = { id: [10000], cid: ["14809"] };
+    const text_tmp = content;//.replace(/(,?\s*)NaN(\s*,?)/g, `$1"NaN"$2`);
+    try {
+
+        console.log(JSON.parse(text_tmp));
+        df_new = JSON.parse(text_tmp).all;
+        df_new.id = df_new.id.map(d => d);
+        df_new.cid = df_new.cid.map(d => d);
+    } catch (err) {
+        console.log("Error on parsing Card Data Base string as json\n" + err);
+        const ind = 710328;
+        console.log(text_tmp.slice(ind - 20, ind + 20));
+        df_new = { id: [10000], cid: ["14809"] };
+
+    }
+    await operateStorage({ df: JSON.stringify(df_new), lastModifiedDate: Date.now() }, "local", "set");
     return df_new;
+
 }
 
 
-$(async function(){
-    await operateStorage({df:JSON.stringify({})}, "sync", "set");
+$(async function () {
+    await operateStorage({ df: JSON.stringify({}) }, "sync", "set");
 })

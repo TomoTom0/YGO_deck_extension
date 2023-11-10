@@ -1,0 +1,391 @@
+@charset "utf-8";
+
+.a_set{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.a_set a{margin: 0 5px;}
+
+.fixed_variable{
+	line-height: 1.5;
+    background: #888;
+    text-align: center;
+    font-weight: bold;
+    COLOR: #fff;
+    font-size: 1.6rem;
+    min-width: 100%;
+}
+ .p_url{
+	width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    line-height: 1.2;
+    margin: 0;
+	cursor:pointer;
+    resize: none;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    height: 30px;
+    border: none;
+}
+.likes_my{display: none}
+.box_default .box_default_table dd{
+
+    
+}
+.mark_btn_set{
+    display: flex;
+    flex-wrap: wrap;
+}
+.comment{
+    min-width: 100%;
+    margin-top: 20px;
+}
+.biko{
+    white-space: break-spaces;
+}
+.box_default .box_default_table dd .mark_btn{
+    flex: none;
+}
+.box_default .box_default_table dd .num{
+    flex: none;
+    min-width: 100px;
+    min-height: 30px;
+    font-weight: bold;
+    padding-right: 10px;
+}
+.box_default .box_default_table  dd >span{
+    padding: 2px 5px 2px;
+    line-height: 1.2;
+}
+.box_default .box_default_table .mark_btn{
+    margin: 0 5px;
+}
+.mark_btn input{display: none}
+.flex_1{flex: 1 !important;}
+.flex_2{flex: 2 !important;}
+
+.btn path,.btn polygon{
+    fill:#000;
+}
+.forbidden_limited .btn path{
+    fill:#fff;
+}
+
+	#message {
+        padding: 10px;
+        background: #ffeaef;
+        border: solid 1px red;
+        color: red;
+        clear: both;
+        line-height: 1.5;
+        margin: 10px 0;
+	}
+
+		#message ul li{
+			list-style-type: disc;
+			margin-left:20px;
+		}
+
+.image_set{
+    display: flex;
+    flex-wrap: wrap;
+    border: 2px solid #000;
+    padding: 1px;
+}
+.image_set a{
+    max-width: 10%;
+    padding: 1px;
+    box-sizing: border-box;
+    display: block;
+}
+.image_set a img{width: 100%;}
+
+.image_set a span{
+    display: block;
+    position: relative;
+}
+.image_set a span >div{
+    /* position: absolute; */
+    /* width: 100%; */
+    /* height: 100%; */
+    /* box-sizing: border-box; */
+    /* display: block; */
+    /* border: 3px solid transparent; */
+    /* top: 0; */
+}
+.image_set a .forbidden >div{border-color: #b40000;}
+.image_set a .limited >div{border-color:#ff780a;}
+.image_set a .semi_limited >div{border-color:#ffa508;}
+.image_set a span >div span{
+    display: block;
+    width: 100%;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
+    background-size: auto 80%;
+    background-repeat: no-repeat;
+    background-position: center 3px;
+}
+.image_set a .forbidden >div span{       background-image:url(../image/parts/svg/icon_forb_unlim.svg);     background-color: #dc0000;}
+.image_set a .limited >div span{         background-image:url(../image/parts/svg/icon_limit_unlim.svg);     background-color: #fb8c32;}
+.image_set a .semi_limited >div span{    background-image:url(../image/parts/svg/icon_slim_unlim.svg);     background-color: #fbb830;}
+
+@media only screen and (max-width: 896px) {/*デバイスの横幅が896px以下の場合*/
+    .image_set a{
+        max-width: 12.5%;
+    }
+}
+@media only screen and (max-width: 680px) {/*デバイスの横幅が650px以下の場合*/
+    .image_set a{
+        max-width: 14.28%;
+    }
+}
+@media only screen and (max-width: 500px) {/*デバイスの横幅が500px以下の場合*/
+    .image_set a{
+        max-width: 16.65%;
+    }
+}
+
+
+/*----change_dispaly_place----*/
+.deck_set{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 10px 0 40px;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.deck_set >*{
+    width: 33%;
+    margin: 0;
+}
+.deck_set table{
+    border: 2px solid #000;
+    background: #ffffff;
+    border-collapse: collapse;
+
+}
+.deck_set th,.deck_set td{
+    border-top: 1px solid #2e4e62;
+    vertical-align: middle;
+    line-height: 1;
+    padding: 2px 4px;
+}
+.deck_set th{
+    background-color: #4f4f4f;
+    color: #ffffff;
+}
+.deck_set td{
+    height: 30px;
+    font-size: 1.2rem;
+}
+.deck_set .row_num{
+    width: 24px;
+    text-align: center;
+    background-color: #b3b3b3;
+    color: #ffffff;
+}
+.deck_set .c_img{
+    width: 24px;
+    text-align: center;
+    padding: 2px 0;
+}
+.deck_set .card_name{
+    font-weight: bold;
+}
+.deck_set .num{
+    width: 30px;
+}
+.deck_set .num span{
+    display: block;
+    padding: 2px ;
+    border: 1px solid #888;
+    background-color: #ffffff;
+    text-align: center;
+    color: #000000;
+}
+
+@media only screen and (max-width: 896px) {/*デバイスの横幅が896px以下の場合*/
+    .deck_set{
+        padding: 0;
+    }
+    .deck_set >*{
+        width: 48%;
+    }
+    .deck_set table{
+        margin: 10px 0;
+    }
+}
+@media only screen and (max-width: 600px) {/*デバイスの横幅が600px以下の場合*/
+.deck_set >*{
+    width: 100%;
+}
+}
+/*----/change_dispaly_place----*/
+
+
+/*----deck_text----*/
+
+
+
+		#deck_text .deck_list tr.row:hover{
+			background:#6ec0ff;
+			color: #fff;
+		}
+
+		#deck_text .deck_list tr.row:hover span{
+			color: #555;
+		}
+
+		#deck_text .deck_list tr.forbidden,
+		#deck_detailtext .deck_list tr.forbidden td:not(:first-child){
+			background:#ffaaaa;
+		}
+
+		#deck_text .deck_list tr.limited,
+		#deck_detailtext .deck_list tr.limited td:not(:first-child) {
+			background:#fbcd72;
+		}
+
+		#deck_text .deck_list tr.semi_limited,
+		#deck_detailtext .deck_list tr.semi_limited td:not(:first-child) {
+			background:#ffe99b;
+		}
+
+
+
+.subcatergory {
+    padding: 10px 0 5px;
+}
+.subcatergory .top{
+    padding: 1px 7px 1px 10px;
+}
+.subcatergory .top span{
+    border: 1px solid;
+    padding: 0px 5px;
+    min-width: 30px;
+    box-sizing: border-box;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.card_set{
+    margin: 0 0 50px;
+}
+
+#deck_detailtext .list .t_haed{
+    justify-content: space-around;
+    align-items: center;
+}
+#deck_detailtext .list .t_haed .status{
+    align-items: center;
+    text-align: left;
+    font-weight: bold;
+}
+#deck_detailtext .card_count{
+    width: 24px;
+    min-width: 24px;
+    text-align: center;
+    background-color: #b3b3b3;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#deck_detailtext .list .t_row{
+    display: flex;
+}
+#deck_detailtext .deck_detailtext .list .c_simple .inside{
+    flex: 1;
+}
+#deck_detailtext .list .cards_num_set {
+    min-width: 40px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    color: #000;
+}
+#deck_detailtext .list .cards_num_set span{
+    padding: 0px 5px;
+    border: 1px solid #888888;
+    min-width: 30px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 1.4rem;
+    background: #ffffff;
+}
+#deck_detailtext .list .t_row{
+    
+}
+
+
+
+		#deck_detailtext .list .t_row.forbidden{
+			background:#ffaaaa;
+		}
+
+		#deck_detailtext .list .t_row.limited{
+			background:#fbcd72;
+		}
+
+		#deck_detailtext .list .t_row.semi_limited {
+			background:#ffe99b;
+		}
+
+		#deck_detailtext .list .t_row.forbidden .element,
+		#deck_detailtext .list .t_row.limited .element,
+		#deck_detailtext .list .t_row.semi_limited .element{
+			border-top: 1px solid rgb(255,255,255,.8);
+		}
+
+@media only screen and (max-width: 500px) {/*デバイスの横幅が500px以下の場合*/
+    .list .c_simple .num_set div span{width: auto;}
+    .list .c_simple .element span {
+        min-width: auto;
+    }
+    
+}
+.sns_btn {
+}
+
+#num_total{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    padding: 0 0 10px;
+}
+#num_total a{
+    margin: 5px;
+}
+#deck_image,#deck_detailtext,#deck_text{display: none;}
+#btnarea_cd{
+    display: flex;
+    justify-content: center;
+}
+
+
+.regist_category,.regist_tag{
+    flex-wrap: wrap;
+    
+}
+.regist_category span,.regist_tag span{
+    font-weight: bold;
+    vertical-align: middle;
+    white-space: nowrap;
+    background: #d8f2d9;
+    display: inline-block;
+    padding: 4px 10px;
+    margin: 2px;
+    border: 1px solid #579c57;
+    flex: none !important;
+    font-size: 1.2rem;
+}
+.regist_tag span{
+    background: #d8f1f2;
+    border-color: #579a9c;
+}

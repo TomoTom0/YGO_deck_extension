@@ -1,0 +1,288 @@
+@charset "utf-8";
+
+@import "FaqSearchCondition.css";
+
+article #broad_title h1 {
+    font-size: 2rem;
+    line-height: 1.5em;
+}
+
+/*----qa_box----*/
+
+#qa_box {
+    font-size: 1.4rem;
+    padding: 5px;
+    background-color: #ffffff;
+    border: solid 2px #000000;
+
+}
+
+#qa_box img {
+    display: block;
+    max-width: 100%;
+}
+
+#qa_box .keyword {
+    margin: 0 10px 50px;
+}
+
+#qa_box a {
+    text-decoration: none;
+}
+
+#qa_box a:hover {
+    text-decoration: underline !important;
+}
+
+#qa_box a:visited {
+    text-decoration: none;
+}
+
+#qa_box .tag .btn:hover {
+    text-decoration: none !important
+}
+
+/*----/qa_box----*/
+
+
+/*----question----*/
+
+#question,
+#answer {
+    font-size: 2rem;
+    font-weight: bold;
+    border-bottom: solid 1px #bacbd6;
+    line-height: 1.5;
+    margin: 0 0 10px 0;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+#question {
+    color: #555;
+}
+
+#answer {
+    color: #aa0000;
+}
+
+/*----/answer----*/
+
+#question_text,
+#answer_text {
+    line-height: 1.5em;
+    color: #000;
+}
+
+/*----tag_update----*/
+
+#tag_update {
+    margin-top: 30px;
+    font-size: 1.2rem;
+    color: #555;
+    border-top: solid 1px #ccc;
+    display: flex;
+    padding: 5px 0 0;
+}
+
+#tag_update .tag {
+    flex: 1;
+    display: flex;
+}
+
+#tag_update .tag .fag_detail {
+    font-weight: bold;
+    background: none;
+    color: #000000;
+}
+
+#tag_update .tag div {
+    display: flex;
+    flex: 1;
+    padding: 0 10px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+#tag_update .tag div span {
+    padding: 0 5px 5px;
+    box-sizing: border-box;
+}
+
+#tag_update .tag div a {
+    background: #467491;
+    color: #ffffff;
+    padding: 0px 10px;
+    border-radius: 5px;
+    display: block;
+    text-align: center;
+}
+
+/*----tag_update----*/
+
+@charset "utf-8";
+
+.search_box {
+    margin: 0 auto;
+}
+
+.search_hed {
+    background: #022c53;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.search_hed .search {
+    display: flex;
+    flex: 1;
+
+}
+
+.search #first_search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #fff;
+
+    padding-right: 5px;
+    margin-right: 50px;
+    box-sizing: border-box;
+}
+
+#keyword {
+    padding: 10px 7px;
+    font-size: 1.4rem !important;
+    font-weight: bold;
+    border: none;
+    box-sizing: border-box;
+    flex: 1;
+    outline: none;
+    line-height: 1.2;
+}
+
+#keyword:focus {
+    background-color: #ffffff;
+}
+
+.search #first_search img {
+    position: relative;
+    padding: initial;
+    width: 20px;
+    height: 20px;
+}
+
+
+.search_hed .s_btn {
+    flex: none;
+    display: block;
+    padding: 0 45px 0 50px
+}
+
+.search_hed .s_btn a {
+    justify-content: center;
+}
+
+.search_bot {
+    border: 1px solid #000000;
+    box-sizing: border-box;
+}
+
+.search_row {
+    border: 1px solid #000;
+    margin-top: -1px;
+}
+
+.search_row:first-child {
+    margin-top: 0
+}
+
+.search_row>* {
+    display: block;
+}
+
+.search_row .search_title {
+    background: #467491;
+    color: #ffffff;
+    font-size: 1.2rem;
+    min-width: 128px;
+    padding: 0 5px;
+}
+
+.search_row .search_btn {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 5px;
+}
+
+.search_row .search_btn a {
+    padding: 2px;
+    box-sizing: border-box;
+    min-width: 20%;
+    display: block;
+}
+
+.search_row .search_btn a span {
+    font-size: 1.2rem;
+    background: #002345;
+    color: #ffffff;
+    border-radius: 2px;
+    padding: 5px;
+    box-sizing: border-box;
+    display: block;
+}
+
+.search_row .search_btn a:hover {
+    text-decoration: none;
+    opacity: .8;
+}
+
+.dk_container {
+    display: flex;
+}
+
+@media only screen and (max-width: 896px) {
+
+    /*デバイスの横幅が896px以下の場合*/
+    .search_row .search_btn a {
+        width: auto;
+        min-width: 20%;
+    }
+
+    .search_row .search_btn a span {
+        padding: 5px 10px;
+        text-align: center;
+    }
+
+    .search_hed {
+        display: block;
+    }
+
+    .search_hed .search {
+        margin: 0 0 20px;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+
+    /*デバイスの横幅が700px以下の場合*/
+    .search_row .search_btn {}
+
+    .search_hed .search {
+        display: block;
+    }
+
+    .search_hed .search>* {
+        margin-bottom: 10px;
+        min-width: 100%;
+    }
+
+    .dk_container {
+        float: none;
+        width: 100%;
+    }
+
+    .dk_container a {
+        width: 100% !important;
+    }
+}

@@ -1,0 +1,523 @@
+<script type="text/javascript">
+    <!--
+
+    $(document).ready(function(){
+
+        var isTouch = ('ontouchstart' in window);
+        
+        var star_array	= new Array("","0","1","2","3","4","5","6","7","8","9","10","11","12","");
+        
+        var atk_array	= new Array("","?","0","100","200","300","400","500","600","700","800","900","1000","1100","1200","1300","1400","1500","1600","1700","1800","1900","2000","2100","2200","2300","2400","2500","2600","2700","2800","2900","3000","3100","3200","3300","3400","3500","3600","3700","3800","3900","4000","4100","4200","4300","4400","4500","4600","4700","4800","4900","5000","");
+        var def_array	= new Array("","?","0","100","200","300","400","500","600","700","800","900","1000","1100","1200","1300","1400","1500","1600","1700","1800","1900","2000","2100","2200","2300","2400","2500","2600","2700","2800","2900","3000","3100","3200","3300","3400","3500","3600","3700","3800","3900","4000","4100","4200","4300","4400","4500","4600","4700","4800","4900","5000","");
+        var link_array	= new Array("","1","2","3","4","5","6","7","8","");
+        
+        var pscale_array	= new Array("","0","1","2","3","4","5","6","7","8","9","10","11","12","13","");
+        var focus_flg	= false;
+
+
+
+
+
+                cc_num = "4"; 
+        
+        var eventset = function(event){
+
+            if (!focus_flg) {
+                $("#ctype").val("").trigger("change");
+                focus_flg = true;
+            }else{
+                cc_num = "4";
+            }
+        }
+
+        
+        var footerclose = function(event){
+            $("#contents").hide();
+            $("footer").hide();
+            $("#tsl_notice").hide();
+        }
+
+
+        
+        $("#keyword_delete").click(function(){
+            $(this).parent().children("input").val("");
+        });
+
+        
+        $("#closely_check").click(function(){
+            if ($("#ctype_show").is(':hidden')) {
+                if(cc_num == "4"){
+                    $("#ctype").val("1").trigger("change"); 
+                }else{
+                    $("#ctype").val(cc_num).trigger("change");
+                }
+            } else {
+
+                if(cc_num == "4"){
+                }else{
+                    $('#filter_set_monster').find(':input').prop('disabled', true);
+                    $('#filter_set_magic').find(':input').prop('disabled', true);
+                    $('#filter_set_trap').find(':input').prop('disabled', true);
+                }
+            }
+        });
+
+
+
+
+
+
+        
+        $(".fliter_btns li:not(.untick)").click(function(){
+            if($(this).hasClass("check")){
+                $(this).removeClass("check");
+                $(':checkbox', this).prop('checked', false);
+            }else{
+                $(this).addClass("check");
+                $(':checkbox', this).prop('checked', true);
+            }
+        });
+
+        
+        $(".type1").click(function(){
+            $(this).parents().nextAll(".fliter_btns").children("li").removeClass("check");
+            $(this).parents().nextAll(".fliter_btns").children("li").children(':checkbox').prop('checked', false);
+        });
+
+        
+        $("#close_search_area span").click(function(){
+            $(".filter_set_area").slideUp("fast");
+            $("#submit_area").slideUp("fast");
+            $("#close_search_area").slideUp("fast");
+            $("#search_area_mask").hide();
+            $("#choice_card_area").hide();
+            //$("#first_search").hide();
+            $("#contents").show();
+            $("footer").show();
+            $("#tsl_notice").show();
+            $('html, body').scrollTop(0);
+        });
+
+
+        
+        $(".min_tab").bind({
+
+            "touchstart mousedown":function(e){
+                event.preventDefault();
+                $(this).addClass("ontouch");
+                $(this).css("z-index","13");
+                $(this).next(".max_tab").css("z-index","12");
+                this.touched = true;
+
+                box_id = $(this).parent().parent().parent().attr("id");
+
+                scale_wid = get_scale(box_id);
+
+                min_X = this.pageX = (isTouch ? event.changedTouches[0].pageX : e.pageX);
+                this.left = $(this).position().left;
+            },
+
+            "touchmove mousemove":function(e){
+                if(!this.touched){return;}
+                e.preventDefault();
+                this.left = this.left - (min_X - (isTouch ? event.changedTouches[0].pageX : e.pageX) );
+
+                if(this.left<= 0){ this.left = 0;}//下限
+                if(this.left>= bar_width){ this.left = bar_width;}//上限
+                $(this).css("left",this.left);
+
+                min_X = this.pageX = (isTouch ? event.changedTouches[0].pageX : e.pageX);
+
+                //maxが連動して動く
+                if(this.left >= $(this).next(".max_tab").position().left){
+                    $(this).next(".max_tab").css("left",this.left);
+                    change_values(this.left,box_id,"max");
+                }
+                change_values(this.left,box_id,"min");
+            },
+
+            "touchend mouseup":function(e){
+                if(!this.touched){return;}
+                this.touched = false;
+                $(this).removeClass("ontouch");
+            }
+        });
+
+
+        $(".max_tab").bind({
+
+            "touchstart mousedown":function(e){
+                event.preventDefault();
+                $(this).addClass("ontouch");
+                $(this).css("z-index","13");
+                $(this).prev(".min_tab").css("z-index","12");
+                this.touched = true;
+
+                box_id = $(this).parent().parent().parent().attr("id");
+
+                scale_wid = get_scale(box_id);
+
+                max_X = (isTouch ? event.changedTouches[0].pageX : e.pageX);
+                this.left = $(this).position().left;
+            },
+
+            "touchmove mousemove":function(e){
+                if(!this.touched){return;}
+                e.preventDefault();
+                this.left = this.left - (max_X - (isTouch ? event.changedTouches[0].pageX : e.pageX) );
+
+                if(this.left<= 0){ this.left = 0;}//下限
+                if(this.left>= bar_width){ this.left = bar_width;}//上限
+                $(this).css("left",this.left);
+
+                max_X = (isTouch ? event.changedTouches[0].pageX : e.pageX);
+
+                //minが連動して動く
+                if(this.left <= $(this).prev(".min_tab").position().left){
+                    $(this).prev(".min_tab").css("left",this.left);
+                    change_values(this.left,box_id,"min");
+                }
+                change_values(this.left,box_id,"max");
+            },
+
+            "touchend mouseup":function(e){
+                if(!this.touched){return;}
+                this.touched = false;
+                $(this).removeClass("ontouch");
+            }
+        });
+
+
+        //windowサイズ変更で実行
+        var resizeTimer = null;
+        $(window).bind("resize", function() {
+        if (resizeTimer) clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(bar_set,50);
+
+        });
+
+        //.barとツマミの位置設定
+        function bar_set(){
+            bar_width = $(".bar").width();
+
+            now_star_min = $("#starfr").val();
+            now_star_max = $("#starto").val();
+            now_atk_min  = $("#atkfr").val();
+            now_atk_max  = $("#atkto").val();
+            now_def_min  = $("#deffr").val();
+            now_def_max  = $("#defto").val();
+
+            
+            now_link_min  = $("#linkmarkerfr").val();
+            now_link_max  = $("#linkmarkerto").val();
+            now_pscale_min  = $("#pscalefr").val();
+            now_pscale_max  = $("#pscaleto").val();
+
+            $("#starfr_view").text(now_star_min);
+            $("#starto_view").text(now_star_max);
+            $("#atkfr_view").text(now_atk_min);
+            $("#atkto_view").text(now_atk_max);
+            $("#deffr_view").text(now_def_min);
+            $("#defto_view").text(now_def_max);
+            
+            $("#linkfr_view").text(now_link_min);
+            $("#linkto_view").text(now_link_max);
+            $("#pscalefr_view").text(now_pscale_min);
+            $("#pscaleto_view").text(now_pscale_max);
+
+            
+            
+            star_scale_wid = get_scale("filter_star");
+            for(i=0 ; i <= star_array.length - 1 ; i++){
+                if(star_array[i] == now_star_min){
+                    if(i == 0){pos_star_min = 0;
+                    }else if(i == star_array.length-1){pos_star_min = bar_width;
+                    }else{pos_star_min = (i * star_scale_wid) - (star_scale_wid / 2);
+                    }
+                    break;
+                }
+            }
+            for(i=star_array.length - 1 ; 0 <= i ; i--){
+                if(star_array[i] == now_star_max){
+                    if(i == 0){pos_star_max = 0;
+                    }else if(i == star_array.length-1){pos_star_max = bar_width;
+                    }else{pos_star_max = (i * star_scale_wid) - (star_scale_wid / 2);
+                    }
+                    break;
+                }
+            }
+            
+
+
+            
+            
+            link_scale_wid = get_scale("filter_link");
+            for(i=0 ; i <= link_array.length - 1 ; i++){
+                if(link_array[i] == now_link_min){
+                    if(i == 0){pos_link_min = 0;
+                    }else if(i == link_array.length-1){pos_link_min = bar_width;
+                    }else{pos_link_min = (i * link_scale_wid) - (link_scale_wid / 2);
+                    }
+                    break;
+                }
+            }
+            for(i=link_array.length - 1 ; 0 <= i ; i--){
+                if(i==10){
+                }
+                if(link_array[i] == now_link_max){
+                    if(i == 0){pos_link_max = 0;
+                    }else if(i == link_array.length-1){pos_link_max = bar_width;
+                    }else{pos_link_max = (i * link_scale_wid) - (link_scale_wid / 2);
+                    }
+                    break;
+                }
+            }
+
+            atk_scale_wid = get_scale("filter_atk");
+            for(i=0 ; i <= atk_array.length - 1 ; i++){
+                if(atk_array[i] == now_atk_min){
+                    if(i == 0){pos_atk_min = 0;
+                    }else if(i == atk_array.length-1){pos_atk_min = bar_width;
+                    }else{pos_atk_min = (i * atk_scale_wid) - (atk_scale_wid / 2);
+                    }
+                    break;
+                }
+            }
+            for(i=atk_array.length - 1 ; 0 <= i ; i--){
+                if(atk_array[i] == now_atk_max){
+                    if(i == 0){pos_atk_max = 0;
+                    }else if(i == atk_array.length-1){pos_atk_max = bar_width;
+                    }else{pos_atk_max = (i * atk_scale_wid) - (atk_scale_wid / 2);
+                    }
+                    break;
+                }
+            }
+            
+            def_scale_wid = get_scale("filter_def");
+            for(i=0 ; i <= def_array.length - 1 ; i++){
+                if(def_array[i] == now_def_min){
+                    if(i == 0){pos_def_min = 0;
+                    }else if(i == def_array.length-1){pos_def_min = bar_width;
+                    }else{pos_def_min = (i * def_scale_wid) - (def_scale_wid / 2);
+                    }
+                    break;
+                }
+
+            }
+            for(i=def_array.length - 1 ; 0 <= i  ; i--){
+                if(def_array[i] == now_def_max){
+                    if(i == 0){pos_def_max = 0;
+                    }else if(i == def_array.length-1){pos_def_max = bar_width;
+                    }else{pos_def_max = (i * def_scale_wid) - (def_scale_wid / 2);
+                    }
+                    break;
+                }
+            }
+
+            pscale_scale_wid = get_scale("filter_pscale");
+            for(i=0 ; i <= pscale_array.length - 1 ; i++){
+                if(pscale_array[i] == now_pscale_min){
+                    if(i == 0){pos_pscale_min = 0;
+                    }else if(i == pscale_array.length-1){pos_pscale_min = bar_width;
+                    }else{pos_pscale_min = (i * pscale_scale_wid) - (pscale_scale_wid / 2);
+                    }
+                    break;
+                }
+            }
+            for(i= pscale_array.length - 1 ; 0 <= i ; i--){
+                if(pscale_array[i] == now_pscale_max){
+                    if(i == 0){pos_pscale_max = 0;
+                    }else if(i == pscale_array.length-1){pos_pscale_max = bar_width;
+                    }else{pos_pscale_max = (i * pscale_scale_wid) - (pscale_scale_wid / 2);
+                    }
+                    break;
+                }
+            }
+
+
+            $("#filter_star .min_tab").css("left",pos_star_min);
+            $("#filter_star .max_tab").css("left",pos_star_max);
+            $("#filter_atk .min_tab").css("left",pos_atk_min);
+            $("#filter_atk .max_tab").css("left",pos_atk_max);
+            $("#filter_def .min_tab").css("left",pos_def_min);
+            $("#filter_def .max_tab").css("left",pos_def_max);
+
+
+            $("#filter_link .min_tab").css("left",pos_link_min);
+            $("#filter_link .max_tab").css("left",pos_link_max);
+            $("#filter_pscale .min_tab").css("left",pos_pscale_min);
+            $("#filter_pscale .max_tab").css("left",pos_pscale_max);
+        }
+
+        function get_scale(box_id){
+            switch(box_id){
+                case "filter_star": scale_count = star_array.length; break;
+                case "filter_atk" : scale_count = atk_array.length; break;
+                case "filter_def" : scale_count = def_array.length; break;
+
+
+                
+                case "filter_link" : scale_count = link_array.length; break;
+                
+                
+                case "filter_pscale" : scale_count = pscale_array.length; break;
+            }
+            return bar_width / (scale_count-2);
+        }
+
+
+        function change_values(leftpos,box_id,type){
+
+            if(leftpos == 0){
+                now_value = 0;
+            }else if(leftpos == bar_width){
+                now_value = scale_count-1;
+            }else{
+                now_value = Math.ceil(leftpos / scale_wid);
+            }
+
+            if(box_id == "filter_star" && type == "min"){
+                $("#starfr").val(star_array[now_value]);
+                $("#starfr_view").text(star_array[now_value]);
+            }else if(box_id == "filter_star" && type == "max"){
+                $("#starto").val(star_array[now_value]);
+                $("#starto_view").text(star_array[now_value]);
+            }else if(box_id == "filter_atk" && type == "min"){
+                $("#atkfr").val(atk_array[now_value]);
+                $("#atkfr_view").text(atk_array[now_value]);
+            }else if(box_id == "filter_atk" && type == "max"){
+                $("#atkto").val(atk_array[now_value]);
+                $("#atkto_view").text(atk_array[now_value]);
+            }else if(box_id == "filter_def" && type == "min"){
+                $("#deffr").val(def_array[now_value]);
+                $("#deffr_view").text(def_array[now_value]);
+            }else if(box_id == "filter_def" && type == "max"){
+                $("#defto").val(def_array[now_value]);
+                $("#defto_view").text(def_array[now_value]);
+                
+            }else if(box_id == "filter_link" && type == "min"){
+                $("#linkmarkerfr").val(link_array[now_value]);
+                $("#linkfr_view").text(link_array[now_value]);
+            }else if(box_id == "filter_link" && type == "max"){
+                $("#linkmarkerto").val(link_array[now_value]);
+                $("#linkto_view").text(link_array[now_value]);
+            }else if(box_id == "filter_pscale" && type == "min"){
+                $("#pscalefr").val(pscale_array[now_value]);
+                $("#pscalefr_view").text(pscale_array[now_value]);
+            }else if(box_id == "filter_pscale" && type == "max"){
+                $("#pscaleto").val(pscale_array[now_value]);
+                $("#pscaleto_view").text(pscale_array[now_value]);
+            }
+        }
+
+        
+
+        $(".type2").on("click", function (evt) {
+
+            //チェックボックスをOFFにする（チェックを外す）。
+            $(this).parents().nextAll(".sab").children().children("input").prop('checked', false).change();
+        });
+
+
+        
+        $("#ctype").change(function hoge(){
+            view_search_type = $("option:selected",this).attr("value");
+            $("#ctype_show_set div").removeClass('choice');
+
+            switch(view_search_type){
+                case "" : 
+                    $('.filter_set_monster,.filter_effect').find(':input').prop('disabled', false);
+
+
+                    $("#filter_effect_set,.filter_set_monster,.filter_effect").show();
+                    $('.filter_effect_magic,.filter_effect_trap').find(':input').prop('disabled', true);
+
+                    $(".filter_effect_trap,.filter_effect_magic").hide();
+                    $('#ctype_set li').addClass("now");
+                    $('#ctype_set li.1,#ctype_set li.2,#ctype_set li.3').removeClass("now");
+
+                    bar_set();
+
+                    cc_num = "4";
+                    break;
+                case "1" : 
+                    $('.filter_set_monster').find(':input').prop('disabled', false);
+                    $('.filter_set_monster').show();
+
+                    bar_set();
+                    cc_num = "1";
+
+
+                    $('#filter_effect_set').hide();
+                    $('.filter_effect_magic,.filter_effect_trap,.filter_effect').find(':input').prop('disabled', true);
+
+
+
+                    $('#ctype_set li.1').addClass("now");
+                    break;
+                case "2" : 
+                    $("#filter_effect_set,.filter_effect_magic").show();
+                    $('.filter_effect_magic').find(':input').prop('disabled', false);
+
+                    $('.filter_set_monster,.filter_effect_trap,.filter_effect').hide();
+                    $('.filter_set_monster,.filter_effect_trap,.filter_effect').find(':input').prop('disabled', true);
+
+
+                    cc_num = "2";
+
+
+
+                    $('#ctype_set li.2').addClass("now");
+                    break;
+                case "3": 
+                    $("#filter_effect_set,.filter_effect_trap").show();
+                    $('.filter_effect_trap').find(':input').prop('disabled', false);
+
+                    $('.filter_set_monster,.filter_effect_magic,.filter_effect').hide();
+                    $('.filter_set_monster,.filter_effect_magic,.filter_effect').find(':input').prop('disabled', true);
+
+
+                    cc_num = "3";
+
+
+                    $('#ctype_set li.3').addClass("now");
+                    break;
+            }
+            $("option:selected",this).addClass('choice');
+
+        }).trigger("change");
+
+        
+        $('#ctype_set li').click(function(){
+            $('#ctype_set li').removeClass("now");
+            clm = $(this).attr("class");
+
+            $('#ctype').val(clm).trigger('change');
+        });
+
+        
+        $('#form_search input:text').keypress(function(e){
+            if (e.keyCode == 13) {
+                Search();
+            }
+        });
+
+    });
+
+    
+
+
+
+    
+    function Search(value) {
+        if ($('#keyword').css('color') == '#bbb' || $('#keyword').css('color') == 'rgb(187, 187, 187)') {
+            $('#keyword').val('');
+        }
+
+        $('#form_search').get(0).submit();
+    }
+
+
+
+    //-->
+</script>

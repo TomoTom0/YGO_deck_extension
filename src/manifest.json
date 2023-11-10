@@ -1,21 +1,52 @@
 {
-  "name": "遊戯王デッキサポート(インポート/エクスポート/ソート)",
-  "author":"TomoTomo",
-  "version": "0.9.0.0",
+  "name": "遊戯王DBデッキサポート",
+  "author": "TomoTomo",
+  "version": "1.3.0.0",
   "manifest_version": 3,
-  "icons":{
-    "16":"img/icon-16.png",
-    "48":"img/icon-48.png",
-    "128":"img/icon-128.png"
+  "icons": {
+    "16": "images/icon-16.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
   },
-  "content_scripts": [{
-    "matches": ["https://www.db.yugioh-card.com/yugiohdb/*"],
-    "js": ["js/jquery-3.5.1.min.js", "js/async.min.js", "script/content_script.js", "js/sql-wasm.min.js", "script/db_functions.js"]
-  }],
-  "permissions":["storage", "unlimitedStorage"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.db.yugioh-card.com/yugiohdb/*"
+      ],
+      "js": [
+        "js/jquery-3.6.0.min.js",
+        "js/async.min.js",
+        "script/main_functions.js",
+        "script/content_script.js",
+        "script/db_functions.js",
+        "script/card_search_script.js",
+        "script/listen.js"
+      ],
+      "css": [
+        "css/content_script.css",
+        "css/card_search.css",
+        "css/card_details.css",
+        "css/Faq_details.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://www.db.yugioh-card.com/*"
+      ],
+      "resources": [
+        "images/*"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "unlimitedStorage"
+  ],
   "options_ui": {
     "page": "script/options.html",
     "open_in_tab": true
   },
-  "description": "公式カードデータベースのデッキ表示画面にエクスポート・インポート・ソートボタンを追加します。"
+  "description": "公式カードデータベースのデッキ画面にMouseUIモードやExport / Import / Sort / Shuffleボタンを追加します。"
 }
