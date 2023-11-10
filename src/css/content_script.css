@@ -80,6 +80,7 @@
 .deck_image .image_set span.forbidden>div>span {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_forb_unlim.svg);
     background-color: #dc0000;
+    background-size: 50%;
 }
 
 .deck_image .image_set span.limited>div span {
@@ -116,10 +117,13 @@
     background-color: chartreuse;
 }
 
-.hex.square:before, .hex.square:after, #deck_image .hex.square:before, #deck_image .hex.square:after  {
+.hex.square:before,
+.hex.square:after,
+#deck_image .hex.square:before,
+#deck_image .hex.square:after {
     width: 0px;
     margin: 2px;
-    filter:none;
+    filter: none;
 }
 
 
@@ -143,3 +147,13 @@
 /* div#bg {
     background: url(chrome-extension://__MSG_@@extension_id__/images/parts/hexagon_02.png); #fff
 } */
+
+#bottom_btn_set a.square.button {
+    margin: 2px 2px;
+    filter: "none";
+}
+
+#and_or>span>label>span,
+#and_or2 label>span {
+    font-size: 0.9rem;
+}

@@ -9,16 +9,18 @@ const defaultSettings = {
     valid_feature_sortShuffle: true,
     valid_feature_deckHeader: true,
     valid_feature_deckEditImage: true,
-    valid_feature_sideChange: true,
+    // valid_feature_sideChange: true, // always true
     valid_feature_deckManager: true,
-    valid_feature_infoArea: true,
     default_visible_header: true,
     default_deck_edit_image: true,
     default_deck_edit_search: true,
-    default_sideChange_view: true,
+    //default_sideChange_view: true,// always true
     default_searchArea_visible: true,
-    value_defaultLang: "ja"
-}; // , changeCDBRepo: false, showColor: true
+    default_infoArea_visible: true,
+    default_fit_edit: false,
+    value_defaultLang: "ja",
+    value_clickMode: 2
+};
 const defaultString = JSON.stringify(defaultSettings);
 
 const defaultTemps = {
@@ -48,7 +50,7 @@ const svgs = {
     contancts: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M160-40v-80h640v80H160Zm0-800v-80h640v80H160Zm320 400q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm70-80q45-56 109-88t141-32q77 0 141 32t109 88h70v-480H160v480h70Zm118 0h264q-29-20-62.5-30T480-280q-36 0-69.5 10T348-240Zm132-280q-17 0-28.5-11.5T440-560q0-17 11.5-28.5T480-600q17 0 28.5 11.5T520-560q0 17-11.5 28.5T480-520Zm0 40Z"/></svg>`,
     scroll: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M320-440v-287L217-624l-57-56 200-200 200 200-57 56-103-103v287h-80ZM600-80 400-280l57-56 103 103v-287h80v287l103-103 57 56L600-80Z"/></svg>`,
     fullscreen: `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z"/></svg>`,
-    toc:`<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M120-280v-80h560v80H120Zm0-160v-80h560v80H120Zm0-160v-80h560v80H120Zm680 320q-17 0-28.5-11.5T760-320q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320q0 17-11.5 28.5T800-280Zm0-160q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440Zm0-160q-17 0-28.5-11.5T760-640q0-17 11.5-28.5T800-680q17 0 28.5 11.5T840-640q0 17-11.5 28.5T800-600Z"/></svg>`
+    toc: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M120-280v-80h560v80H120Zm0-160v-80h560v80H120Zm0-160v-80h560v80H120Zm680 320q-17 0-28.5-11.5T760-320q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320q0 17-11.5 28.5T800-280Zm0-160q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440Zm0-160q-17 0-28.5-11.5T760-640q0-17 11.5-28.5T800-680q17 0 28.5 11.5T840-640q0 17-11.5 28.5T800-600Z"/></svg>`
 }
 
 
@@ -77,7 +79,7 @@ const obtainMyYtkn = async (flag_fetch = false, params_in = null) => {
     const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
         .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
     if (flag_fetch === false && params_in === null) return temps.ytkn;
-    const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action"
+    const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";
     const my_cgid = obtainMyCgid();
     const params = Object.assign({
         ope: "4",
@@ -111,7 +113,7 @@ const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
     // onView false => Edit mode
     const onView_dic = { "1": true, "2": false, null: true, "8": false };
     const onView = onViewIn === null ? onView_dic[html_parse_dic.ope] : onViewIn;
-    const deck_text = deck_textIn !== null ? deck_textIn : document.querySelector("#deck_text");
+    const deck_text = deck_textIn !== null ? deck_textIn : document.getElementById("deck_text");
     return Object.assign(...Array.from(deck_text.querySelectorAll("table[id$='_list']")).map(table_list => {
         const row_name = table_list.id.match(/^(\S+)_list/)[1];
         const input_span = (onView === true) ? "span" : "input";
@@ -365,14 +367,14 @@ const guessDeckCategory = async (lower_limit = 4, kwargsIn = {}) => {
 const showMessage = (content = null) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     if (html_parse_dic.ope === "1" && $("#message").length === 0) {
-        const header_box = document.querySelector("#header_box");
+        const header_box = document.getElementById("header_box");
         const span = document.createElement("span");
         span.setAttribute("id", "test");
         header_box.after(span);
         // $("div.sort_set div.pulldown").prepend($("<span>", { id: "message" }));
     }
 
-    const message_area = document.querySelector("#message");
+    const message_area = document.getElementById("message");
     if (content === null) {
         message_area.classList.add("none");
     } else {
@@ -720,10 +722,11 @@ const load_deckOfficial = async (df, deck_dno, settings, my_cgid = null) => {
     const input_dno = document.querySelector("input#dno");
     input_dno.value = deck_dno;
     if (settings.valid_feature_deckManager === true) {
-        document.querySelector("#deck_dno_opened").innerText = deck_dno;
-        document.querySelector("#deck_name_opened").innerText = deck_name;
+        document.getElementById("deck_dno_opened").innerText = deck_dno;
+        document.getElementById("dnm").setAttribute("placeholder", deck_name);
+        document.getElementById("dnm").value = "";
     }
-    document.querySelector("#dnm").value = deck_name;
+    document.getElementById("dnm").value = deck_name;
     // import
     importDeck(row_results);
     if (settings.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
@@ -973,7 +976,7 @@ const resetSortDeckImgs = (cards_pre) => {
 
 const addShuffleButton = (setSpace = true) => {
     $("#deck_image").addClass("shuffle");
-    $("#deck_image div.card_set div.image_set a").css({ "max-width": "max(6.5%, 55px)" });
+    $("#deck_image div.card_set div.image_set a").css({ "max-width": "min(6.5%, 55px)" });
     $("#deck_image div.card_set").css({ "margin": "0px 0px 0px" });
     // const img_shuffle=document.createElement("img");
     // img_shuffle.setAttribute("src", chrome.runtime.getURL("images/svg/sort_FILL0_wght400_GRAD0_opsz24.svg"));
@@ -1003,7 +1006,7 @@ const addShuffleButton = (setSpace = true) => {
         for (const key of ["shuffle", "sort"]) {
             const span = document.createElement("span");
             span.setAttribute("title", `${key} ${set_type.toUpperCase()}`);
-            span.setAttribute("style", "border:none; height: 28px; width: 28px; padding: 2px");
+            span.setAttribute("style", "border:none; height: 24px; width: 24px; padding: 2px");
             span.innerHTML += svgs[key];
             const button = document.createElement("a")
             const attributes = {
@@ -1016,11 +1019,11 @@ const addShuffleButton = (setSpace = true) => {
                 button.setAttribute(key, val);
             }
             button.appendChild(span);
-            // h3_tmp.after(button);
-            span_num_tmp.before(button);
+            h3_tmp.after(button);
+            // span_num_tmp.before(button);
             // $(button).after(span_tmp);
         }
-        span_num_tmp.before(span_tmp);
+        // span_num_tmp.before(span_tmp);
 
     }
 }
@@ -1029,17 +1032,18 @@ const addShuffleButton = (setSpace = true) => {
 //         # export
 
 async function exportAs(form = "id") {
+    const html_parse_dic = parse_YGODB_URL(location.href, true);
     let exceptions = [];
 
     //const rows_num = $("#deck_text [id$='_list']").length;
     //const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id").match(/^\S*(?=_list)/)[0]);
 
     // const obtainRowResults
+    const df = await obtainDF(obtainLang());
 
-    const row_results = obtainRowResults();
+    const row_results = obtainRowResults(df);
     console.log(row_results);
 
-    const df = await obtainDF(obtainLang());
     const keys = ["#main", "#extra", "!side"];
     let result_outputs = keys.map(_ => []);
     let result_exception_counts = keys.map(_ => 0);
@@ -1083,7 +1087,10 @@ async function exportAs(form = "id") {
     const blob = new Blob([bom, content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    const deck_name = $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_"); // after 2022/4/18
+    const dnm = document.getElementById("dnm");
+    const deck_name = [1].indexOf(html_parse_dic.ope) !== -1 ?
+        $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_") :
+        (dnm.value || dnm.getAttribute("placeholder")); // after 2022/4/18
     const ext_dic = { "id": ".ydk", "name": "_name.txt", "cid": "_cid.txt" }
     const file_name = deck_name + ext_dic[form];
     a.download = file_name;
@@ -1244,6 +1251,26 @@ async function sortSaveClicked() {
     }, false);*/
 }
 
+const reloadSort = async () => {
+    const df = await obtainDF(obtainLang());
+    if ($("#deck_text").css("display") !== "none") return;
+    const row_results = obtainRowResults(df);//obtainRowResults_Edit(df);
+    const row_results_new = await sortCards(row_results);
+    importDeck(row_results_new);
+    insertDeckImg(df, row_results_new);
+    showMessage("Reloaded and Sorted");
+}
+
+const backToView = async () => {
+    const html_parse_dic = parse_YGODB_URL(location.href, true);
+    const my_cgid = obtainMyCgid();
+    const dno = $("#dno").val();
+    const lang = obtainLang();
+    const sps = { ope: "1", wname: html_parse_dic.wname, cgid: my_cgid, dno: dno, request_locale: lang };
+    const url = joinUrl(`https://www.db.yugioh-card.com/yugiohdb/member_deck.action`, sps);
+    location.href = url;
+};
+
 // # deck header show / hide
 const toggleVisible_deckHeader = (toShow_in = null) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
@@ -1254,6 +1281,13 @@ const toggleVisible_deckHeader = (toShow_in = null) => {
     $(button).removeClass(showHide[toShow]);
     $(button).addClass(showHide[!toShow]);
     $(button).toggleClass("red");
+    // const button_fit=document.querySelector("#button_fixScroll");
+    // if (button_fit!==null && button_fit.classList.contains("red")){
+    //     const button_area=document.querySelectorAll("div.div_officialButton.div_otherButtons");
+    //     if (toShow === true){
+
+    //     }
+    // }
     // $("span", button).text("Header " + showHide[!toShow].toUpperCase());
     const dls = Array.from($("#deck_header>div>div>dl:not(.alwaysShow)"));
     for (const dl_tmp of dls) {
@@ -1311,7 +1345,7 @@ const showSelectedOption = () => {
 // # insert deck image
 const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: null }, card_class_ind = "0_1", card_limit = "not_limited") => {
     const span = $("<span>", {
-        style: "max-width: max(6.5%, 35px); padding:1px; box-sizing:border-box; display: block;position: relative;"
+        style: "max-width: min(6.8%, 45px); padding:1px; box-sizing:border-box; display: block;position: relative;"
     });
 
     const card_input = Object.assign({ name: null, cid: null }, card_name_cid);
@@ -1372,7 +1406,7 @@ const insertDeckImg = (df, row_results, displayIsValid = true, div_deck_imageSet
     const deck_image = (div_deck_imageSet_old.length > 0) ? div_deck_imageSet_old : $("<div>", {
         id: "deck_image",
         class: "deck_image",
-        style: `display:${dislapy_style}; max-width:980px;min-height: 576px;`,
+        style: `display:${dislapy_style}; min-height: fit-content;`,
         oncontextmenu: "return false;",
         wheelClick: "return false;"
     })
@@ -1683,23 +1717,33 @@ const updateDeckCount = () => {
     })
 }
 
-const operate_searchArea = (toShowIn = null) => {
-    const searchArea = $("#search_area");
-    if (toShowIn === null) $(searchArea).toggleClass("none");
-    else if (toShowIn === true) $(searchArea).removeClass("none");
-    else if (toShowIn === false) $(searchArea).addClass("none");
-    const toShow = !$(searchArea).hasClass("none");
-    $(searchArea).css({ display: toShow ? "table-cell" : "none" });
-    const button_operate = $("#button_searchShowHide");
-    $(button_operate).toggleClass("red");
-    const visible_cells = Array.from(document.querySelectorAll("article>div>div")).filter(d => d.style.display == "table-cell");
-    if (visible_cells.length != 1) {
-        $("article").css({ "max-width": "initial" });
-        $("#article_body").css({ "max-width": "35vw" });
+// # operate area
+
+const setArticleWidth = (flag_narrow = true) => {
+    const article = document.getElementsByTagName("article")[0];
+    const article_body = document.getElementById("article_body");
+    if (flag_narrow === true) {
+        article.style["max-width"] = "initial";
+        // article_body.style["max-width"] = "35vw";
     } else {
-        $("article").css({ "max-width": "" });
-        $("#article_body").css({ "max-width": "auto" });
+        article.style["max-width"] = "";
+        article_body.style["max-width"] = "auto";
     }
+}
+
+const operate_searchArea = (toShowIn = null) => {
+    const searchArea = document.getElementById("search_area");
+    const classList = searchArea.classList;
+    if (toShowIn === null) classList.toggle("none");
+    else if (toShowIn === true) classList.remove("none");
+    else if (toShowIn === false) classList.add("none");
+    const toShow = !classList.contains("none");
+    searchArea.style.display = toShow ? "block" : "none";
+    const button_operate = document.getElementById("button_searchShowHide");
+    if (toShow === true) button_operate.classList.add("red");
+    else button_operate.classList.remove("red");
+    const visible_cells = Array.from(document.querySelectorAll("article>div>div")).filter(d => d.style.display != "none");
+    setArticleWidth(visible_cells.length != 1);
 }
 
 const operate_infoArea = (toShowIn = null) => {
@@ -1708,22 +1752,17 @@ const operate_infoArea = (toShowIn = null) => {
     else if (toShowIn === true) $(infoArea).removeClass("none");
     else if (toShowIn === false) $(infoArea).addClass("none");
     const toShow = !$(infoArea).hasClass("none");
-    $(infoArea).css({ display: toShow ? "table-cell" : "none" });
-    const button_operate = $("#button_infoShowHide");
-    if (toShow === true) $(button_operate).addClass("red");
-    else $(button_operate).removeClass("red");
-    const visible_cells = Array.from(document.querySelectorAll("article>div>div")).filter(d => d.style.display == "table-cell");
-    if (visible_cells.length != 1) {
-        $("article").css({ "max-width": "initial" });
-        $("#article_body").css({ "max-width": "35vw" });
-    } else {
-        $("article").css({ "max-width": "" });
-        $("#article_body").css({ "max-width": "auto" });
-    }
+    $(infoArea).css({ display: toShow ? "block" : "none" });
+    const button_operate = document.getElementById("button_infoShowHide");
+    if (toShow === true) button_operate.classList.add("red");
+    else button_operate.classList.remove("red");
+    const visible_cells = Array.from(document.querySelectorAll("article>div>div")).filter(d => d.style.display != "none");
+    setArticleWidth(visible_cells.length != 1)
+
 }
 
 const operate_fixScroll = (toFixIn = null) => {
-    const area = document.querySelector("#bg");
+    const area = document.getElementById("bg");
     if (toFixIn === null) area.classList.toggle("large");
     else if (toFixIn === true) area.classList.remove("large");
     else if (toFixIn === false) area.classList.add("large");
@@ -1737,17 +1776,41 @@ const operate_fixScroll = (toFixIn = null) => {
     const header = document.querySelector("#wrapper>header");
     const spnav = document.querySelector("div#spnav");
     const pan_nav = document.querySelector("nav#pan_nav");
+    const footer_nav = document.querySelector("nav#footer_icon");
     const search_res = document.querySelector("#search_result");
-    const info_area = document.querySelector("#info_area>div");
+    const areas_selector = { search: "#search_area", info: "#info_area>div", deck: "#article_body" };
+    const areas_elm = Object.assign(
+        ...Object.entries(areas_selector
+        ).map(([k, v]) => [k, document.querySelector(v)]
+        ).filter(([k, v]) => v.style.display !== "none"
+        ).map(([k, v]) => Object({ [k]: v })))
+    // const search_area = document.querySelector();
+    // const info_area = document.querySelector();
+    // const deck_area = document.querySelector();
+    const all_width = Object.values(areas_elm).map(d => d.clientWidth).reduce((acc, cur) => acc + cur, 0);
+    const ratios = Object.assign(...Object.entries(areas_elm).map(([k, v]) => Object({ [k]: v.clientWidth / all_width })));
     if (toFix === true) {
         area.style.position = "fixed";
         area.style.top = "0vh";
         area.style["min-height"] = "100vh";
         area.style["width"] = "100%";
         wrapper.style.height = "100%";
-        search_res.style["max-height"] = "80vh"
-        info_area.style["max-height"] = "90vh"
-        for (const elm of [header, spnav, pan_nav]) {
+        search_res.style["max-height"] = "90vh"
+        areas_elm.info.style["max-height"] = "95vh"
+        areas_elm.deck.style["height"] = "100vh"
+        areas_elm.deck.style["overflow-y"] = "visible"
+        for (const [k, elm] of Object.entries(areas_elm)) {
+            if (k == "deck") {
+                const ratio = 0.98 * window.innerHeight / elm.scrollHeight;
+                const valid_width = Math.max(elm.scrollWidth * ratio, ratios[k] * ratio * window.innerWidth);
+                elm.style["transform-origin"] = `top`;
+                elm.style["transform"] = `scale( ${ratio}, ${valid_width / elm.scrollWidth})`; // calc( 0.98 * 100vh / 100% )
+                elm.style["flex-basis"] = `${valid_width}px`;
+                // elm.style["gap"]="5px 5px";
+                // console.log(ratio, valid_width, elm.scrollHeight, elm.scrollWidth, window.innerHeight, window.innerWidth)
+            } else elm.style["flex-basis"] = `${ratios[k] * 100}vw`;
+        }
+        for (const elm of [header, spnav, pan_nav, footer_nav]) {
             elm.style.display = "none";
         }
         for (const elm of [footer, nav]) {
@@ -1761,15 +1824,25 @@ const operate_fixScroll = (toFixIn = null) => {
         area.style["width"] = "";
         footer.style.position = "";
         footer.style.top = "";
-        for (const elm of [header, spnav, pan_nav]) {
+        areas_elm.deck.style["overflow-y"] = "scroll"
+        for (const elm of [header, spnav, pan_nav, footer_nav]) {
             elm.style.display = "";
         }
         for (const elm of [footer, nav]) {
             elm.style.position = "";
             elm.style.top = "";
         }
+        for (const [k, elm] of Object.entries(areas_elm)) {
+            elm.style["flex-basis"] = `30vw`;
+            elm.style["transform"] = ``;
+            // elm.style["max-width"]=`none`;
+            // elm.style["min-width"]=`none`;
+        }
+        wrapper.style.height = "fit-content";
         search_res.style["max-height"] = "70vh"
-        info_area.style["max-height"] = "80vh"
+        areas_elm["info"].style["max-height"] = "80vh"
+        areas_elm["deck"].style["max-height"] = ""
+        areas_elm["deck"].style["flex-basis"] = "35vw"
 
 
     }

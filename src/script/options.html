@@ -46,39 +46,49 @@
                             <div class="form-group divDB">
                                 <span class="h4 displayUpdateDB" id="displayUpdateDB_0">...</span>
                                 <div class="col-lg-10 col-lg-offset-2">
-                                    <button type="button" class="btnUpdateDB btn btn-primary">Update DB Right Now</button>
+                                    <button type="button" class="btnUpdateDB btn btn-primary">Update DB Right
+                                        Now</button>
                                     <button type="button" class="btnShowDB btn btn-primary">Show DB on Console</button>
                                     <!--<button type="button" class="btnClearStorage btn btn-primary">Clear Storage</button>-->
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_autoUpdateDB">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_autoUpdateDB">
                                     <label class="custom-control-label">Auto Update DB</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_importExport">
-                                    <label class="custom-control-label">Validate Features about Import and Export</label>
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_valid_feature_importExport">
+                                    <label class="custom-control-label">Validate Features about Import and
+                                        Export</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_sortShuffle">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_valid_feature_sortShuffle">
                                     <label class="custom-control-label">Validate Features about Sort and Shuffle</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_deckHeader">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_valid_feature_deckHeader">
                                     <label class="custom-control-label">Validate Features about Deck Header</label>
                                 </div>
-                                <div class="custom-control custom-checkbox">
+                                <!-- <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_sideChange">
                                     <label class="custom-control-label">Validate Features about Side Change in View Mode</label>
+                                </div> -->
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_valid_feature_deckEditImage">
+                                    <label class="custom-control-label">Validate Features about Deck Edit with Image in
+                                        Edit Mode</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_deckEditImage">
-                                    <label class="custom-control-label">Validate Features about Deck Edit with Image in Edit Mode</label>
-                                </div>
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_valid_feature_deckManager">
-                                    <label class="custom-control-label">Validate Features about Deck Manager in Edit Mode</label>
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_valid_feature_deckManager">
+                                    <label class="custom-control-label">Validate Features about Deck Manager in Edit
+                                        Mode</label>
                                 </div>
                                 <!--
                                 <div class="custom-control custom-checkbox">
@@ -136,24 +146,45 @@
                                     <label class="custom-control-label">Default Language</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_addDate">
-                                    <label class="custom-control-label">Add Date to the Name When Importing a Deck</label>
+                                    <select class="custom-control value_settings" id="value_clickMode"></select>
+                                    <label class="custom-control-label">Click Mode in Edit Mode</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_default_visible_header">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_addDate">
+                                    <label class="custom-control-label">Add Date to the Name When Importing a
+                                        Deck</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_default_visible_header">
                                     <label class="custom-control-label">Show Deck Header as Default in Edit Mode</label>
                                 </div>
-                                <div class="custom-control custom-checkbox">
+                                <!-- <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings" id="check_default_sideChange_view">
                                     <label class="custom-control-label">Side Change Mode as Default in View Mode</label>
+                                </div> -->
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_default_deck_edit_image">
+                                    <label class="custom-control-label">Deck Image Edit Mode as Default in Edit
+                                        Mode</label>
                                 </div>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_default_deck_edit_image">
-                                    <label class="custom-control-label">Deck Image Edit Mode as Default in Edit Mode</label>
-                                </div>
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input check_settings" id="check_default_searchArea_visible">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_default_searchArea_visible">
                                     <label class="custom-control-label">Show Search Area as Default in Edit Mode</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_default_infoArea_visible">
+                                    <label class="custom-control-label">Show Information Area as Default in Edit
+                                        Mode</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_default_enlarge_edit">
+                                    <label class="custom-control-label">Enlarge View as Default in Edit Mode</label>
                                 </div>
                                 <!--
                                 <div class="custom-control custom-checkbox">
@@ -173,20 +204,26 @@
                     </div>
 
                     <h2 class="operateDeckVersionSection">Operate Deck in Cache</h2>
-                    <div class="well bs-component" >
+                    <div class="well bs-component">
                         <form class="form-horizontal">
                             <div class="form-group divDeckVersion">
-                                <div id="area_for_buttonDeckVersionImportExport" class="deckVersionName" style="margin:10px;"></div>
+                                <div id="area_for_buttonDeckVersionImportExport" class="deckVersionName"
+                                    style="margin:10px;"></div>
                                 <div class="col-lg-10 col-lg-offset-2">
                                     <span class="">
-                                        <input type="text" placeholder="deck name" style="width:200px;" id="deck_version_name" class="input_deckVersion_name" list="deckVersion_nameList"></input>
-                                        <input type="text" style="display: none;"></input>
+                                        <input type="text" placeholder="deck name" style="width:200px;"
+                                            id="deck_version_name" class="input_deckVersion_name"
+                                            list="deckVersion_nameList">
+                                        <input type="text" style="display: none;">
                                         <datalist id="deckVersion_nameList"></datalist>
                                     </span>
-                                    <span id="area_for_buttonDeckVersionName" class="deckVersionName" style="margin:10px;"></span>
+                                    <span id="area_for_buttonDeckVersionName" class="deckVersionName"
+                                        style="margin:10px;"></span>
                                 </div>
-                                <span id="area_for_buttonDeckVersionTagAll" class="deckVersionTagAll" style="padding:5px;margin:10px;display:none;background-color:#c0eb90">
-                                    <span id="deck_version_name_loaded" style="font-weight:bold;"></span><span>: For Checked Versions </span>
+                                <span id="area_for_buttonDeckVersionTagAll" class="deckVersionTagAll"
+                                    style="padding:5px;margin:10px;display:none;background-color:#c0eb90">
+                                    <span id="deck_version_name_loaded" style="font-weight:bold;"></span><span>: For
+                                        Checked Versions </span>
                                 </span>
                             </div>
                         </form>
@@ -200,8 +237,9 @@
                                 <div class="col-lg-10 col-lg-offset-2">
                                     <span class="spanSearchKV">
                                         <select type="text" style="width:80px;" class="selectSearchKey"></select>
-                                        <input type="text" placeholder="a word or value" style="width:200px;" class="inputSearchVal" list="selectSearchList_0"></input>
-                                        <input type="text" style="display: none;"></input>
+                                        <input type="text" placeholder="a word or value" style="width:200px;"
+                                            class="inputSearchVal" list="selectSearchList_0">
+                                        <input type="text" style="display: none;">
                                         <datalist id="selectSearchList_0"></datalist>
                                     </span>
                                     <button type="button" class="btnSearchClear btn btn-primary">X</button>

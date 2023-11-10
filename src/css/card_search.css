@@ -40,7 +40,7 @@
 }
 
 #submit_area {
-    padding: 0 45px 0 50px;
+    padding: 0 5px 0 5px;
 }
 
 @media only screen and (max-width: 896px) {
@@ -116,11 +116,12 @@
 
 #search .fliter_btns li>span,
 .filter_set_monster .updw span {
-    font-size: 1.2rem;
+    /* font-size: 1.2rem; */
+    font-size: 1.0rem;
     background: #002345;
     color: #ffffff;
     border-radius: 2px;
-    padding: 2px 5px;
+    padding: 1px 1px;
     box-sizing: border-box;
     display: block;
     text-align: center
@@ -173,7 +174,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-start;
-    min-width: 120px;
+    width: 80px;
 }
 
 @media only screen and (max-width: 700px) {
@@ -198,7 +199,8 @@
 
     #search .fliter_btns li {
         width: auto;
-        min-width: 10.28%;
+        /* min-width: 10.28%; */
+        min-width: 7.28%;
     }
 
     .filter_set_monster .updw label,
@@ -430,7 +432,8 @@
     background: #fff no-repeat url(chrome-extension://__MSG_@@extension_id__/images/parts/mark_more.png);
     background-position: 2px center;
     margin: 2px;
-    min-width: 60px;
+    min-width: "auto";
+    /* min-width: 60px; */
 }
 
 #search .filter_set>.atkdef #atkto,
@@ -662,8 +665,8 @@
     overflow: hidden;
     border-radius: 5px;
     position: relative;
-    width: 94px;
-    height: 94px;
+    width: 47px;
+    height: 47px;
     display: block;
     margin: 0 10px 0 0;
 }
@@ -695,20 +698,20 @@
 #link_set .link_m label.linkbtn9,
 #link_set .link_m label.linkbtn1,
 #link_set .link_m label.linkbtn3 {
-    width: 32px;
-    height: 32px;
+    width: 16px;
+    height: 16px;
 }
 
 #link_set .link_m label.linkbtn8,
 #link_set .link_m label.linkbtn2 {
-    width: 44px;
-    height: 24px;
+    width: 22px;
+    height: 12px;
 }
 
 #link_set .link_m label.linkbtn4,
 #link_set .link_m label.linkbtn6 {
-    width: 24px;
-    height: 44px;
+    width: 12px;
+    height: 22px;
 }
 
 #link_set .link_m label.linkbtn1 {
