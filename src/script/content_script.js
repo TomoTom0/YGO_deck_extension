@@ -291,7 +291,7 @@ window.onload = async function () {
             $(table).append(div_article_body);
 
             const div_body = $("<div>", {
-                style: "padding:5px;flex: 2 5 27vw;min-width: 10vw;",//max-width:30vw;
+                style: "padding:5px;flex: 1 5 30vw;min-width: 10vw;",//max-width:30vw;
                 class: "",
                 id: "search_area"
             });
@@ -506,10 +506,11 @@ window.onload = async function () {
 
 
     $("#button_test").on("click", async function () {
-        const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=4&cgid=87999bd183514004b8aa8afa1ff1bdb9"
-        const body = await obtainStreamBody(url);
-        //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
-        console.log(body);
+        // const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=4&cgid=87999bd183514004b8aa8afa1ff1bdb9"
+        // const body = await obtainStreamBody(url);
+        // //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
+        // console.log(body);
+        refreshCacheHtml(0);
     });
 
 

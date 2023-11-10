@@ -17,20 +17,21 @@ const listen_clickAndDbclick = async () => {
     // }
     let clicked = false;
     document.addEventListener("mousedown", async (e) => {
-        // if (clicked === true) {
-        //     console.log("dbclicked");
-        //     clicked = false;
-        //     return;
-        // }
-        // clicked = true;
-        // setTimeout(async () => {
-        //     if (clicked === true) {
-        //         console.log("clicked");
-        //         await listen_mousedown(e);
-        //         await listen_click(e);
-        //     }
-        //     clicked = false;
-        // }, 200);
+        if (clicked === true) {
+            console.log("dbclicked");
+            listen_dbclick(e);
+            clicked = false;
+            return;
+        }
+        clicked = true;
+        setTimeout(async () => {
+            if (clicked === true) {
+                console.log("clicked");
+                await listen_mousedown(e);
+                await listen_click(e);
+            }
+            clicked = false;
+        }, 200);
         // const sel = document.getSelection()
         // if (sel.rangeCount > 0) {
         //     const ran = sel.getRangeAt(0)
@@ -41,9 +42,9 @@ const listen_clickAndDbclick = async () => {
         //     [0,4].indexOf(d.compareDocumentPosition(ran["endContainer"]))!==-1)
         //     console.log(spans)
         // }
-        await listen_mousedown(e);
-        await listen_click(e);
-        return false;
+        // await listen_mousedown(e);
+        // await listen_click(e);
+        // return false;
     })
     // const spliters=document.querySelectorAll("div.flex_splitter");
     // function resize(e) {
@@ -65,7 +66,15 @@ const listen_clickAndDbclick = async () => {
 
 }
 
-const listen_clickAndMousedown = async (e) => {
+const listen_dbclick = async (e) => {
+    if (e.target.matches("#card_frame img, span:has(img.img_chex),span:has(img.img_chex) *, div.box_card_img:has(img), div.box_card_img:has(img) *")) {
+        // console.log(e.target.parentElement.querySelector("img"))
+        const img = e.target.closest("#card_frame, div.box_card_img, span:has(img.img_chex)").querySelector("img");
+        if (img === null) return;
+        const cid = img.getAttribute("card_cid");
+        if (cid === null) return false;
+        openCardInfoArea(cid);
+    }
 
 }
 
@@ -251,26 +260,35 @@ const listen_mousedown = async (e) => {
         const mode_sideChange = (e.button === 2) ? "toggle" : "reset";
         if (mode_sideChange === "reset" && !sideChangeOnViewIsValid) return;
         operateSideChangeMode(mode_sideChange, df);
-    } else if (e.target.matches("#info_area *")) {
-        e.preventDefault();
-        if (e.target.matches("#faq>ul>li, #faq>ul>li *")) {
-            const main_target = (e.target).matches("li") ? e.target : e.target.closest("li");
-            const ul = main_target.parentElement;
-            // console.log(main_target, ul)
-            if (main_target.classList.contains("now")) return;
-            for (const li of ul.children) {
-                li.classList.toggle("now");
-            }
-            for (const div_article of ul.parentElement.parentElement.querySelectorAll("div.info_article")) {
-                // console.log(div_article.style.display, div_article.style.display=="none", div_article.style.display=="block")
-                if (div_article.style.display == "none") div_article.style.display = "block";
-                else div_article.style.display = "none";
-                // div_article.classList.toggle("none");
-            }
-            return;
-        } else {
-            console.log(e.target);
-            return;
+    } else if (e.target.matches("#faq>ul>li, #faq>ul>li *")) {
+        const main_target = (e.target).matches("li") ? e.target : e.target.closest("li");
+        const ul = main_target.parentElement;
+        // console.log(main_target, ul)
+        if (main_target.classList.contains("now")) return;
+        for (const li of ul.children) {
+            li.classList.toggle("now");
+        }
+        for (const div_article of ul.parentElement.parentElement.querySelectorAll("div.info_article")) {
+            // console.log(div_article.style.display, div_article.style.display=="none", div_article.style.display=="block")
+            if (div_article.style.display == "none") div_article.style.display = "block";
+            else div_article.style.display = "none";
+            // div_article.classList.toggle("none");
+        }
+        return;
+    } else if (e.target.matches("#info_faq div.t_body>div.t_row, #info_faq div.t_body>div.t_row *")) {
+        const input_link = e.target.closest("div.t_row").querySelector("input.link_value");
+        // console.log(input_link)
+        const fid = input_link.value.match(/fid=([^&]+)/)[1];
+        openFaqInfoArea(fid);
+    } else if (e.target.matches("#info_faq a")) {
+        const target = e.target;
+        const link = target.getAttribute("_href");
+        const cid_match = link.match(/cid=([^&]+)/);
+        const fid_match = link.match(/fid=([^&]+)/);
+        if (cid_match !== null) {
+            openCardInfoArea(cid_match[1]);
+        } else if (fid_match !== null) {
+            openFaqInfoArea(fid_match[1]);
         }
 
         // # ------- deck image --------
@@ -339,7 +357,7 @@ const listen_mousedown = async (e) => {
             const change_now = (from_set_type === "temp") ? 1 : 0;
             if (num_now + change_now <= 3) sideChange_deck(df, img_target, onEdit);
         }
-    } else if (e.target.matches("#search_result #card_list .t_row img")) {
+    } else if (e.target.matches("#search_result #card_list .t_row img, #info_text img.img_chex, #info_text img.img_frame")) {
         e.preventDefault();
         const img_target = e.target;
         const cardInfo_tmp = ["name", "id", "cid", "type", "url"].map(d => Object({ [d]: $(img_target).attr(`card_${d}`) }));

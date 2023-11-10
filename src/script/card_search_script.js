@@ -47,8 +47,55 @@ const obtainDeckRecipie = async () => {
     return card_list;
 }
 
+const openFaqInfoArea = async (fid, days = 0) => {
+    const info_div = document.querySelector("#info_area>div");
+    const info_key = info_div.getAttribute("info_key");
+    if (info_key == `faq_${fid}`) return true;
+    else info_div.setAttribute("info_key", `faq_${fid}`);
+    // /yugiohdb/faq_search.action?ope=5&fid=13592&keyword=&tag=-1
+    const url_faq = joinUrl("https://www.db.yugioh-card.com/yugiohdb/faq_search.action", { ope: 5, fid: fid, keyword: "", tag: -1 });
+    const cacheInfos = await operateStorage({ cacheInfos: JSON.stringify({}) }, "local")
+        .then(items => Object.assign({}, JSON.parse(items.cacheInfos)));
+    // console.log(Object.keys(cacheHtmls));
+    // if (Object.keys(cacheHtmls).indexOf(url) != -1) console.log(cacheHtmls[url].time + cache * 86400 * 1000 > Date.now())
+    if (days > 0 && Object.keys(cacheInfos).indexOf(url_faq) !== -1 && cacheInfos[url_faq].time + days * 86400 * 1000 > Date.now()) {
+        console.log("recovered from cache: " + url_faq);
+        info_div.innerHTML = cacheInfos[url_faq].html;
+        info_div.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        return true;
+    }
+    const doc_faq = await obtainParsedHTML(url_faq);
+    const div_faq = doc_faq.querySelector("#article_body");
+    div_faq.setAttribute("id", "info_faq");
+    div_faq.classList.add("info_article");
+
+    const validIds_text = ["qa_box"];
+    for (const elm of Array.from(div_faq.children)) {
+        if (validIds_text.indexOf(elm.id) !== -1) continue;
+        elm.remove();
+    }
+
+    const title = doc_faq.querySelector("#broad_title>div>h1").textContent;
+    div_faq.querySelector("#question").innerHTML += ": " + title;
+    for (const elm of div_faq.querySelectorAll("a")) {
+        elm.setAttribute("_href", elm.getAttribute("href"));
+        elm.removeAttribute("href");
+
+    }
+
+    info_div.innerHTML = div_faq.outerHTML;
+    info_div.scrollTo(0, 0, "smooth");
+    const cacheInfos_new = Object.assign(cacheInfos, { [url_faq]: { html: info_div.innerHTML, time: Date.now() } });
+    operateStorage({ cacheInfos: JSON.stringify(cacheInfos_new) }, "local", "set"); // await
+    return true;
+
+
+
+
+}
+
 // # info area
-const openCardInfoArea = async (cid, days = 1) => {
+const openCardInfoArea = async (cid, days = 0) => {
     const info_div = document.querySelector("#info_area>div");
     const info_key = info_div.getAttribute("info_key");
     if (info_key == `card_${cid}`) return true;
@@ -62,6 +109,8 @@ const openCardInfoArea = async (cid, days = 1) => {
     if (days > 0 && Object.keys(cacheInfos).indexOf(url_text) !== -1 && cacheInfos[url_text].time + days * 86400 * 1000 > Date.now()) {
         console.log("recovered from cache: " + url_text);
         info_div.innerHTML = cacheInfos[url_text].html;
+        info_div.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+
         return true;
     }
     // const html_get = await obtainStreamBody(url);
@@ -85,14 +134,37 @@ const openCardInfoArea = async (cid, days = 1) => {
     cardImgSet.style["max-width"] = "100%";
     const img = cardImgSet.querySelector("div#card_frame>div.set>a>img");
     img.classList.remove("none");
-    img.setAttribute("card_cid", cid);
-    img.setAttribute("card_name", img.getAttribute("title"));
+    const card_url = joinUrl("/yugiohdb/card_search.action", { ope: 2, cid: cid });
+    const card_cid = cid;
+    const card_id = df_filter(df, "id", ["cid", card_cid])[0];
+    const card_encImg = df_filter(df, "encImg", ["cid", card_cid])[0];
+    const card_type = judgeCardType(df, ["cid", card_cid], "row");
+    const attr_dic = {
+        card_id: card_id,
+        card_cid: card_cid,
+        card_type: card_type,
+        card_name: img.getAttribute("title"),
+        card_url: card_url,
+        loading: "lazy",
+        src: `/yugiohdb/get_image.action?type=1&lang=ja&cid=${card_cid}&ciid=1&enc=${card_encImg}&osplang=1`
+    };
+    //const a_link=$("<a>", {href: card_link});
+    for (const [k, v] of Object.entries(attr_dic)) {
+        img.setAttribute(k, v);
+    }
+    // img.setAttribute("card_cid", cid);
+    // img.setAttribute("card_name", img.getAttribute("title"));
+    // img.setAttribute("card_id", img.getAttribute("title"));
+    // img.setAttribute("card_url", img.getAttribute("title"));
+    // img.setAttribute("card_type", img.getAttribute("title"));
+    img.classList.add("img_chex");
+    img.classList.add("img_frame");
     img.style["max-width"] = "none";
     // img.parentElement.href=`https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=${cid}&mode=1`
     img.parentElement.removeAttribute("href");
     img.style.cursor = "pointer";
-    const encImg = df_filter(df, "encImg", ["cid", cid])[0];
-    img.src = `/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid}&ciid=1&enc=${encImg}&osplang=1`
+    // const encImg = df_filter(df, "encImg", ["cid", cid])[0];
+    // img.src = `/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid}&ciid=1&enc=${encImg}&osplang=1`
     div_text.querySelector("#CardSet svg").remove();
     div_text.querySelector("#CardSet #thumbnail").remove();
 
@@ -119,6 +191,12 @@ const openCardInfoArea = async (cid, days = 1) => {
         elm.remove();
     }
     div_faq.style.display = "none";
+    for (const elm of div_faq.querySelectorAll("a")) {
+        elm.setAttribute("_href", elm.getAttribute("href"));
+        elm.removeAttribute("href");
+
+    }
+
 
     if (sort_set != null) {
         sort_set.remove();
@@ -129,6 +207,7 @@ const openCardInfoArea = async (cid, days = 1) => {
     } else {
         info_div.innerHTML = ul + div_text.outerHTML + "\n" + div_faq.outerHTML;
     }
+    info_div.scrollTo(0, 0, "smooth");
     const cacheInfos_new = Object.assign(cacheInfos, { [url_text]: { html: info_div.innerHTML, time: Date.now() } });
     operateStorage({ cacheInfos: JSON.stringify(cacheInfos_new) }, "local", "set"); // await
     return true;
@@ -168,7 +247,7 @@ const remakeSearchResult = async (search_result) => {
         // const img = $("div.box_card_img>img", t_row);
         const img = t_row.querySelector("div.box_card_img>img");
         const card_name = img.title;
-        const card_url = t_row.querySelector("input.link_value:last-child").value;
+        const card_url = $("input.link_value:last", t_row).attr("value");
         const card_cid = card_url.match(/cid=(\d+)/)[1];
         const card_id = df_filter(df, "id", ["cid", card_cid])[0];
         const card_encImg = df_filter(df, "encImg", ["cid", card_cid])[0];
@@ -190,7 +269,9 @@ const remakeSearchResult = async (search_result) => {
         img.style.cursor = "pointer";
         //$(img).after(a_link);
         //$(a_link).append(img);
+        img.classList.add("img_chex");
         img.classList.remove("none");
+
     });
     return search_result;
 }

@@ -25,7 +25,8 @@
       "css": [
         "css/content_script.css",
         "css/card_search.css",
-        "css/card_details.css"
+        "css/card_details.css",
+        "css/Faq_details.css"
       ]
     }
   ],

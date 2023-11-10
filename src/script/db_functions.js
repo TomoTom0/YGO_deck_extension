@@ -109,18 +109,21 @@ const obtainParsedHTML = async (url = null, params = null, cache = 1) => {
     return parseHTML(html_get);
 }
 
-const refreshCacheHtml = async (cache = 1) => {
-    const cacheHtmls = await operateStorage({ cacheHtmls: JSON.stringify({}) }, "local")
-        .then(items => Object.assign({}, JSON.parse(items.cacheHtmls)));
+const refreshCacheHtml = async (days = 1) => {
     const now = Date.now()
-    const cacheHtmls_new = Object.assgin(
-        ...Object.entries(cacheHtmls
-        ).filter(([k, v]) => v.time + cache * 86400 * 1000 > now
-        ).map(([k, v]) => Object({ [k]: v }))
-    )
-    console.log(Object.keys(cacheHtmls_new));
-    await operateStorage({ cacheHtmls: JSON.stringify(cacheHtmls_new) }, "local", "set");
-    return cacheHtmls_new;
+    operateStorage({ cacheInfos: JSON.stringify({}) }, "local"
+    ).then(items => Object.assign({}, JSON.parse(items.cacheInfos))
+    ).then(cacheInfos =>
+        Object.assgin(
+            ...Object.entries(cacheInfos
+            ).filter(([k, v]) => v.time + days * 86400 * 1000 > now
+            ).map(([k, v]) => Object({ [k]: v }))
+        )
+    ).then(cahceInfos => operateStorage({ cacheInfos: JSON.stringify(cacheInfos) }, "local", "set"));
+    // const cacheHtmls_new =
+    //     console.log(Object.keys(cacheHtmls_new));
+    // await operateStorage({ cacheInfos: JSON.stringify(cacheHtmls_new) }, "local", "set");
+    // return cacheHtmls_new;
 }
 
 const sleep = (ms) => {

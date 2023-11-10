@@ -1345,7 +1345,7 @@ const showSelectedOption = () => {
 // # insert deck image
 const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: null }, card_class_ind = "0_1", card_limit = "not_limited") => {
     const span = $("<span>", {
-        style: "max-width: min(6.8%, 45px); padding:1px; box-sizing:border-box; display: block;position: relative;"
+        style: "max-width: min(6.7%, 65px); padding:1px; box-sizing:border-box; display: block;position: relative;"
     });
 
     const card_input = Object.assign({ name: null, cid: null }, card_name_cid);
@@ -1355,7 +1355,7 @@ const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: 
     const encImg_now = df_filter(df, "encImg", ["cid", cid_now])[0];
     //const id_now=df_filter(df, "id", ["cid", cid_now])[0];
     const img_tmp = $("<img>", {
-        class: `card_image_${card_type}_${card_class_ind} ui-draggable ui-draggable-handle`,
+        class: `card_image_${card_type}_${card_class_ind} ui-draggable ui-draggable-handle img_chex`,
         alt: name_now,
         title: name_now,//card_id:id_now,
         card_cid: cid_now,
