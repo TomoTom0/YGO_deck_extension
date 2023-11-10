@@ -285,6 +285,10 @@ const listen_mousedown = async (e) => {
         const link = target.getAttribute("_href");
         const cid_match = link.match(/cid=([^&]+)/);
         const fid_match = link.match(/fid=([^&]+)/);
+        if (e.button === 1) {
+            window.open(link, "_blank");
+            return;
+        }
         if (cid_match !== null) {
             openCardInfoArea(cid_match[1]);
         } else if (fid_match !== null) {
