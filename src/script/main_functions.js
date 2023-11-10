@@ -19,7 +19,9 @@ const defaultSettings = {
     default_infoArea_visible: true,
     default_fit_edit: false,
     value_defaultLang: "ja",
-    value_clickMode: 2
+    // value_clickMode: 2,
+    flag_showCacheDeck: true,
+    flag_showFooterIcons: true
 };
 const defaultString = JSON.stringify(defaultSettings);
 
@@ -339,9 +341,10 @@ const operateRowResults = (
 }
 
 const guessDeckCategory = async (lower_limit = 4, kwargsIn = {}) => {
+    const df = await obtainDF();
     //const kwargs_default={count:true, value:true};
     //const kwargs=Object.assign(kwargs_default, kwargsIn);
-    const row_results = obtainRowResults();
+    const row_results = obtainRowResults(df);
     const url = "https://www.db.yugioh-card.com/yugiohdb/deck_search.action"
     const body = await obtainStreamBody(url);
     const cats = Array.from($("select#dckCategoryMst>option:not([value=''])", body))
@@ -1209,6 +1212,7 @@ async function importFromYdk() {
 
 // # sortSave
 async function sortSaveClicked() {
+    const df = await obtainDF();
     const url_now = location.href;
     const html_parse_dic = Object.assign(parse_YGODB_URL(url_now), { ope: 2 });
     //console.log(html_parse_dic);
@@ -1217,14 +1221,17 @@ async function sortSaveClicked() {
     }
     //const url_ope2 = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" +
     //    (new URLSearchParams(html_parse_dic)).toString();
-    const row_results = obtainRowResults();
+    const row_results = obtainRowResults(df);
     const row_results_new = await sortCards(row_results);
     const serialized_dic = {
         ope: "ope=3",
+        wname: "wanme=" + obtain_YGODB_fromHidden("wname"),
+        ytkn: "ytkn=" + obtain_YGODB_fromHidden("ytkn"),
         header: await obtainDeckHeader_edit(html_parse_dic),
         deck: serializeRowResults(row_results_new)
     }
     const serialized_data = Object.values(serialized_dic).join("&");
+    console.log(serialized_data)
     //console.log(serialized_data);
     //return; // test
     await _Regist_fromYGODB(html_parse_dic, serialized_data).then(async res => {
@@ -1364,7 +1371,7 @@ const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: 
         card_url: `https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=${cid_now}`,
         loading: "lazy",
         src: `https://www.db.yugioh-card.com/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid_now}&ciid=1&enc=${encImg_now}&osplang=1`,
-        style: "position: relative;width: 100%;"
+        style: "position: relative; width: 100%; cursor:pointer;"
     });
     span.attr("title", name_now);
     span.append(img_tmp);

@@ -1,5 +1,7 @@
 "use strict";
 
+const CACHE_DAYS = 7;
+
 const _obtainDeckRecipie = async (cgid, dno, lang, ope = "2") => {
     const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=${ope}&cgid=${cgid}&dno=${dno}&request_locale=${lang}`;
     const body = await obtainStreamBody(url);
@@ -47,87 +49,195 @@ const obtainDeckRecipie = async () => {
     return card_list;
 }
 
-const openFaqInfoArea = async (fid, days = 0) => {
-    const info_div = document.querySelector("#info_area>div");
-    const info_key = info_div.getAttribute("info_key");
-    if (info_key == `faq_${fid}`) return true;
-    else info_div.setAttribute("info_key", `faq_${fid}`);
-    // /yugiohdb/faq_search.action?ope=5&fid=13592&keyword=&tag=-1
-    const url_faq = joinUrl("https://www.db.yugioh-card.com/yugiohdb/faq_search.action", { ope: 5, fid: fid, keyword: "", tag: -1 });
-    const cacheInfos = await operateStorage({ cacheInfos: JSON.stringify({}) }, "local")
-        .then(items => Object.assign({}, JSON.parse(items.cacheInfos)));
-    // console.log(Object.keys(cacheHtmls));
-    // if (Object.keys(cacheHtmls).indexOf(url) != -1) console.log(cacheHtmls[url].time + cache * 86400 * 1000 > Date.now())
-    if (days > 0 && Object.keys(cacheInfos).indexOf(url_faq) !== -1 && cacheInfos[url_faq].time + days * 86400 * 1000 > Date.now()) {
-        console.log("recovered from cache: " + url_faq);
-        info_div.innerHTML = cacheInfos[url_faq].html;
-        info_div.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-        return true;
-    }
-    const doc_faq = await obtainParsedHTML(url_faq);
-    const div_faq = doc_faq.querySelector("#article_body");
-    div_faq.setAttribute("id", "info_faq");
-    div_faq.classList.add("info_article");
+const backNextInfoArea = async (change = -1) => {
+    operateStorage({ urlHistory: JSON.stringify({}) }, "local", "get"
+    ).then(items => Object.assign({ urls: [], pos: -1 }, JSON.parse(items.urlHistory))
+    ).then(urlHistory => {
+        const pos = urlHistory.pos;
+        const pos_new = pos + change;
+        // console.log(pos_new)
+        // urlHistory.urls.push(url_text);
+        if (pos_new < 0 || pos_new >= urlHistory.urls.length) return null;
+        urlHistory.pos = pos_new;
+        const url = urlHistory.urls[pos_new];
+        console.log(JSON.stringify(urlHistory))
+        openUrlInfoArea(url, CACHE_DAYS, false);
+        operateStorage({ urlHistory: JSON.stringify(urlHistory) }, "local", "set");
+    })
+}
 
-    const validIds_text = ["qa_box"];
-    for (const elm of Array.from(div_faq.children)) {
-        if (validIds_text.indexOf(elm.id) !== -1) continue;
-        elm.remove();
-    }
-
-    const title = doc_faq.querySelector("#broad_title>div>h1").textContent;
-    div_faq.querySelector("#question").innerHTML += ": " + title;
-    for (const elm of div_faq.querySelectorAll("a")) {
-        elm.setAttribute("_href", elm.getAttribute("href"));
-        elm.removeAttribute("href");
-
-    }
-
-    info_div.innerHTML = div_faq.outerHTML;
-    info_div.scrollTo(0, 0, "smooth");
-    const cacheInfos_new = Object.assign(cacheInfos, { [url_faq]: { html: info_div.innerHTML, time: Date.now() } });
-    operateStorage({ cacheInfos: JSON.stringify(cacheInfos_new) }, "local", "set"); // await
-    return true;
-
-
-
+const addUrlHistory = async (url) => {
+    operateStorage({ urlHistory: JSON.stringify({}) }, "local", "get"
+    ).then(items => Object.assign({ urls: [], pos: -1 }, JSON.parse(items.urlHistory))
+    ).then(urlHistory => {
+        const pos = urlHistory.pos;
+        urlHistory.urls.slice(0, pos + 1);
+        if (urlHistory.urls[pos] === url) return;
+        urlHistory.pos = pos + 1;
+        urlHistory.urls.push(url);
+        // console.log(JSON.stringify(urlHistory))
+        operateStorage({ urlHistory: JSON.stringify(urlHistory) }, "local", "set");
+    })
 
 }
 
-// # info area
-const openCardInfoArea = async (cid, days = 0) => {
-    const info_div = document.querySelector("#info_area>div");
-    const info_key = info_div.getAttribute("info_key");
-    if (info_key == `card_${cid}`) return true;
-    else info_div.setAttribute("info_key", `card_${cid}`);
+const openUrlInfoArea = async (url_in, days = CACHE_DAYS, history_add = true, key_in = null, params_in = null) => {
+    const info_dics = {
+        faq: {
+            func: openFaqInfoArea,
+            patterns: [
+                {
+                    conds: [/faq_search.action\?/, /ope=5/],
+                    args: [/(fid)=(\d+)/]
+                }],
+            obtainUrl: params => joinUrl(
+                "https://www.db.yugioh-card.com/yugiohdb/faq_search.action",
+                Object.assign({ ope: 5, keyword: "", tag: -1 }, params))
+        },
+        text: {
+            func: openCardInfoArea,
+            patterns: [
+                {
+                    conds: [/card_search.action\?/, /ope=2/],
+                    args: [/(cid)=(\d+)/]
+                }, {
+                    conds: [/faq_search.action\?/, /ope=4/],
+                    args: [/(cid)=(\d+)/]
+                }],
+            obtainUrl: params => joinUrl(
+                "https://www.db.yugioh-card.com/yugiohdb/card_search.action",
+                Object.assign({ ope: 2, mode: 1, sess: 4 }, params))
+        },
+        product: {
+            func: openProductInfoArea,
+            patterns: [
+                {
+                    conds: [/card_search.action\?/, /ope=1/, /sess=1/],
+                    args: [/(pid)=(\d+)/]
+                }
+            ],
+            obtainUrl: params => joinUrl(
+                "https://www.db.yugioh-card.com/yugiohdb/card_search.action",
+                Object.assign({ ope: 1, rp: 99999, sess: 1 }, params))
+        }
+    }
+    for (const [key, info] of Object.entries(info_dics)) {
+        for (const pattern of info.patterns) {
+            if ((key !== key_in) &&
+                !(pattern.conds.every(d => d.test(url_in)) &&
+                    pattern.args.every(d => d.test(url_in)))) {
+                continue;
+            }
+            const params = params_in || Object.assign(
+                ...pattern.args.map(d => Object(
+                    { [url_in.match(d)[1]]: url_in.match(d)[2] }
+                )));
+            const url = info.obtainUrl(params);
+            const info_div = document.querySelector("#info_area>div");
+            const info_url = info_div.getAttribute("info_url");
 
-    const url_text = joinUrl("https://www.db.yugioh-card.com/yugiohdb/card_search.action", { ope: 2, cid: cid, mode: 1, sess: 4 });
+            if (info_url === url) break;
+            if (history_add === true) addUrlHistory(url);
+            const cacheInfos = await operateStorage({ cacheInfos: JSON.stringify({}) }, "local")
+                .then(items => Object.assign({}, JSON.parse(items.cacheInfos)));
+            if (days > 0 &&
+                Object.keys(cacheInfos).indexOf(url) !== -1 &&
+                cacheInfos[url].time + days * 86400 * 1000 > Date.now()) {
+
+                info_div.innerHTML = cacheInfos[url].html;
+                info_div.scrollTo(0, 0, "smooth");
+            } else {
+                info_div.setAttribute("info_url", url);
+                _openUrlInfoArea(url, key, params).then(() => {
+                    info_div.scrollTo(0, 0, "smooth");
+                });
+            }
+            break;
+        }
+    }
+}
+// # info area
+const _openUrlInfoArea = async (url, key, params = {}) => {
+    const info_div = document.querySelector("#info_area>div");
+
     const cacheInfos = await operateStorage({ cacheInfos: JSON.stringify({}) }, "local")
         .then(items => Object.assign({}, JSON.parse(items.cacheInfos)));
-    // console.log(Object.keys(cacheHtmls));
-    // if (Object.keys(cacheHtmls).indexOf(url) != -1) console.log(cacheHtmls[url].time + cache * 86400 * 1000 > Date.now())
-    if (days > 0 && Object.keys(cacheInfos).indexOf(url_text) !== -1 && cacheInfos[url_text].time + days * 86400 * 1000 > Date.now()) {
-        console.log("recovered from cache: " + url_text);
-        info_div.innerHTML = cacheInfos[url_text].html;
-        info_div.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 
-        return true;
+    // const df = await obtainDF();
+    const doc_article = await obtainParsedHTML(url);
+    const div_article = doc_article.querySelector("#article_body");
+    div_article.setAttribute("id", `info_${key}`);
+    div_article.classList.add("info_article");
+
+    div_article.style.display = "block";
+    const validIds_text_dic = {
+        product: ["card_list"],
+        faq: ["qa_box"],
+        text: ["CardSet", "update_list", "relationCard"]
     }
-    // const html_get = await obtainStreamBody(url);
-    // const cacheHtmls_new = Object.assign(cacheHtmls, { [url]: { html: html_get, time: Date.now() } });
-    // await operateStorage({ cacheHtmls: JSON.stringify(cacheHtmls_new) }, "local", "set");
-    const df = await obtainDF();
-    const doc_text = await obtainParsedHTML(url_text);
-    const div_text = doc_text.querySelector("#article_body");
-    div_text.setAttribute("id", "info_text");
-    div_text.classList.add("info_article");
-    div_text.style.display = "block";
-    const validIds_text = ["CardSet", "update_list", "relationCard"];
-    for (const elm of Array.from(div_text.children)) {
+    const validIds_text = validIds_text_dic[key];
+    for (const elm of Array.from(div_article.children)) {
         if (validIds_text.indexOf(elm.id) !== -1) continue;
         elm.remove();
     }
+    for (const elm of div_article.querySelectorAll("a")) {
+        elm.setAttribute("_href", elm.getAttribute("href"));
+        elm.removeAttribute("href");
+    }
+
+    let article_text = "";
+    if (["product", "faq"].indexOf(key) !== -1) {
+        const broad_title = document.createElement("div");
+        broad_title.setAttribute("id", "broad_title");
+        broad_title.innerHTML = doc_article.querySelector("header#broad_title").innerHTML;
+        article_text += broad_title.outerHTML
+    }
+    if (key === "text") {
+        const ul = `<div id="faq" class="tablink">
+            <ul>
+                <li class="1 now"><span>Text</span></li>
+                <li class="2"><span>FAQ</span></li>
+            </ul>
+            <select id="text_qa" name="text_qa">
+                <option value="1">Text</option>
+                <option value="2">FAQ</option>
+            </select>
+        </div>\n`;
+        article_text += ul +
+            (await _convertDivText(div_article, params.cid)).outerHTML +
+            (await _obtainFaqForText(params.cid)).outerHTML;
+    } else {
+        if (div_article.querySelector("#card_list") !== null) {
+            const div_article_new = await remakeSearchResult(div_article);
+            article_text += div_article_new.outerHTML;
+        } else {
+            article_text += div_article.outerHTML;
+        }
+    }
+    info_div.innerHTML = article_text;
+
+    const cacheInfos_new = Object.assign(
+        cacheInfos,
+        { [url]: { html: info_div.innerHTML, time: Date.now() } });
+    operateStorage({ cacheInfos: JSON.stringify(cacheInfos_new) }, "local", "set"); // await
+    return article_text;
+}
+
+const _convertDivText = async (div_text, cid) => {
+    const df = await obtainDF();
+
     div_text.querySelector("#CardSet>div.bottom").remove();
+
+    const card_text_frames = div_text.querySelectorAll("#CardTextSet > div.CardText:first-child > div.frame");
+    if (card_text_frames !== null && card_text_frames.length >= 3) { } {
+        const div_frame = card_text_frames[0];
+        const div_frame_new = document.createElement("div");
+        div_frame_new.setAttribute("class", "frame imgset");
+        if (div_frame.children[1] !== undefined) {
+            div_frame_new.append(div_frame.children[1]);
+            div_frame.after(div_frame_new);
+        }
+    }
 
     const cardImgSet = div_text.querySelector("#CardImgSet");
     cardImgSet.style.width = "50%";
@@ -148,38 +258,60 @@ const openCardInfoArea = async (cid, days = 0) => {
         loading: "lazy",
         src: `/yugiohdb/get_image.action?type=1&lang=ja&cid=${card_cid}&ciid=1&enc=${card_encImg}&osplang=1`
     };
-    //const a_link=$("<a>", {href: card_link});
     for (const [k, v] of Object.entries(attr_dic)) {
         img.setAttribute(k, v);
     }
-    // img.setAttribute("card_cid", cid);
-    // img.setAttribute("card_name", img.getAttribute("title"));
-    // img.setAttribute("card_id", img.getAttribute("title"));
-    // img.setAttribute("card_url", img.getAttribute("title"));
-    // img.setAttribute("card_type", img.getAttribute("title"));
     img.classList.add("img_chex");
     img.classList.add("img_frame");
     img.style["max-width"] = "none";
-    // img.parentElement.href=`https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=${cid}&mode=1`
     img.parentElement.removeAttribute("href");
     img.style.cursor = "pointer";
-    // const encImg = df_filter(df, "encImg", ["cid", cid])[0];
-    // img.src = `/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid}&ciid=1&enc=${encImg}&osplang=1`
+    const div_flex = document.createElement("div");
+    div_flex.style.display = "flex";
+    const div_frame = cardImgSet.querySelector("#card_frame");
+    div_frame.style.flex = "2 1 45%"
+    div_frame.style.display = "block";
+    div_flex.append(div_frame);
+    const div_cardText = div_text.querySelector("#CardTextSet>div.CardText");
+    div_cardText.style.flex = "2 5 45%";
+    div_cardText.style.height = "fit-content";
+    div_flex.append(div_cardText);
+
+    div_text.querySelector("#CardTextSet").prepend(div_flex);
     div_text.querySelector("#CardSet svg").remove();
     div_text.querySelector("#CardSet #thumbnail").remove();
+    div_text.querySelector("#CardImgSet").remove();
 
-    const sort_set = div_text.querySelector("#relationCard>div.sort_set");
-    const ul = `<div id="faq" class="tablink">
-            <ul>
-                <li class="1 now"><span>Text</span></li>
-                <li class="2"><span>FAQ</span></li>
-            </ul>
-            <select id="text_qa" name="text_qa">
-                <option value="1">Text</option>
-                <option value="2">FAQ</option>
-            </select>
-        </div>\n`;
+    for (const div_inside of div_text.querySelectorAll("#update_list div.t_row div.inside")) {
+        div_inside.style.display = "block";
+        const div_flex = document.createElement("div");
+        div_flex.style.display = "flex";
+        div_flex.append(div_inside.querySelector("div.time"));
+        const div_card_num = div_inside.querySelector("div.card_number")
+        div_card_num.style.padding = "5px";
+        div_flex.append(div_card_num);
+        div_flex.append(div_inside.querySelector("input.link_value"));
+        div_flex.append(div_inside.querySelector("div.icon"));
+        div_inside.prepend(div_flex);
+        const div_pack_name = div_inside.querySelector("div.pack_name")
+        div_pack_name.style = "font-weight:bold;text-align:center;"
+        div_flex.after(div_pack_name);
 
+    }
+
+    if (div_text.querySelector("#relationCard") !== null) {
+        const sort_set = div_text.querySelector("#relationCard>div.sort_set");
+        if (sort_set != null) {
+            sort_set.remove();
+        }
+        div_text.querySelector("#mode_set").nextElementSibling.setAttribute("id", "card_list");
+        div_text.querySelector("#mode_set").remove();
+
+        return await remakeSearchResult(div_text);
+    } else return div_text;
+}
+
+const _obtainFaqForText = async (cid) => {
     const doc_faq = await obtainParsedHTML("https://www.db.yugioh-card.com/yugiohdb/faq_search.action", { ope: 4, cid: cid });
     const div_faq = doc_faq.querySelector("#article_body");
     div_faq.setAttribute("id", "info_faq");
@@ -194,10 +326,128 @@ const openCardInfoArea = async (cid, days = 0) => {
     for (const elm of div_faq.querySelectorAll("a")) {
         elm.setAttribute("_href", elm.getAttribute("href"));
         elm.removeAttribute("href");
+    }
+    return div_faq
+}
 
+// # info area
+const openProductInfoArea = async (pid = null, days = CACHE_DAYS, url_in = null) => {
+    const info_div = document.querySelector("#info_area>div");
+    const info_url = info_div.getAttribute("info_url");
+    const url = joinUrl("https://www.db.yugioh-card.com/yugiohdb/card_search.action", { ope: 1, pid: pid, rp: 99999, sess: 1 });
+
+    if (info_url == url) return true;
+    else info_div.setAttribute("info_url", url);
+
+    const cacheInfos = await operateStorage({ cacheInfos: JSON.stringify({}) }, "local")
+        .then(items => Object.assign({}, JSON.parse(items.cacheInfos)));
+    if (days > 0 && Object.keys(cacheInfos).indexOf(url) !== -1 && cacheInfos[url].time + days * 86400 * 1000 > Date.now()) {
+        info_div.innerHTML = cacheInfos[url].html;
+        info_div.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        addUrlHistory(url);
+        return true;
+    }
+    // const df = await obtainDF();
+    const doc_article = await obtainParsedHTML(url);
+    const div_article = doc_article.querySelector("#article_body");
+    div_article.setAttribute("id", "info_text");
+    div_article.classList.add("info_article");
+    div_article.style.display = "block";
+    const validIds_text = ["card_list"];
+    for (const elm of Array.from(div_article.children)) {
+        if (validIds_text.indexOf(elm.id) !== -1) continue;
+        elm.remove();
+    }
+    const broad_title = document.createElement("div");
+    broad_title.setAttribute("id", "broad_title");
+    broad_title.innerHTML = doc_article.querySelector("header#broad_title").innerHTML;
+
+    if (div_article.querySelector("#card_list") !== null) {
+        const div_article_new = await remakeSearchResult(div_article)
+        info_div.innerHTML = broad_title.outerHTML + div_article_new.outerHTML;
+    } else {
+        info_div.innerHTML = broad_title.outerHTML + div_article.outerHTML;
+    }
+    info_div.scrollTo(0, 0, "smooth");
+    const cacheInfos_new = Object.assign(cacheInfos, { [url]: { html: info_div.innerHTML, time: Date.now() } });
+    operateStorage({ cacheInfos: JSON.stringify(cacheInfos_new) }, "local", "set"); // await
+    addUrlHistory(url);
+    return true;
+}
+
+const openFaqInfoArea = async (fid = null, days = CACHE_DAYS, url_in = null) => {
+    if (url_in === null) {
+        const info_div = document.querySelector("#info_area>div");
+        const info_url = info_div.getAttribute("info_url");
+        const url_faq = joinUrl("https://www.db.yugioh-card.com/yugiohdb/faq_search.action", { ope: 5, fid: fid, keyword: "", tag: -1 });
+
+        if (info_url == url_faq) return true;
+        else info_div.setAttribute("info_url", url_faq);
+        const cacheInfos = await operateStorage({ cacheInfos: JSON.stringify({}) }, "local")
+            .then(items => Object.assign({}, JSON.parse(items.cacheInfos)));
+        if (days > 0 && Object.keys(cacheInfos).indexOf(url_faq) !== -1 && cacheInfos[url_faq].time + days * 86400 * 1000 > Date.now()) {
+            console.log("recovered from cache: " + url_faq);
+            info_div.innerHTML = cacheInfos[url_faq].html;
+            info_div.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+            addUrlHistory(url_faq);
+            return true;
+        }
+    } else if (fid === null) return;
+    const url_faq = url_in || joinUrl("https://www.db.yugioh-card.com/yugiohdb/faq_search.action", { ope: 5, fid: fid, keyword: "", tag: -1 });
+    const doc_faq = await obtainParsedHTML(url_faq);
+    const div_faq = doc_faq.querySelector("#article_body");
+    div_faq.setAttribute("id", "info_faq");
+    div_faq.classList.add("info_article");
+
+    const validIds_text = ["qa_box"];
+    for (const elm of Array.from(div_faq.children)) {
+        if (validIds_text.indexOf(elm.id) !== -1) continue;
+        elm.remove();
     }
 
+    const title = doc_faq.querySelector("#broad_title>div>h1").textContent;
+    div_faq.querySelector("#question").innerHTML += ": " + title;
+    for (const elm of div_faq.querySelectorAll("a")) {
+        elm.setAttribute("_href", elm.getAttribute("href"));
+        elm.removeAttribute("href");
+    }
 
+    info_div.innerHTML = div_faq.outerHTML;
+    info_div.scrollTo(0, 0, "smooth");
+    const cacheInfos_new = Object.assign(cacheInfos, { [url_faq]: { html: info_div.innerHTML, time: Date.now() } });
+    operateStorage({ cacheInfos: JSON.stringify(cacheInfos_new) }, "local", "set"); // await
+    addUrlHistory(url_faq);
+    return true;
+
+}
+
+// # info area
+const openCardInfoArea = async (cid = null, days = CACHE_DAYS, url_in = null) => {
+    const info_div = document.querySelector("#info_area>div");
+    const info_url = info_div.getAttribute("info_url");
+    const url_text = joinUrl("https://www.db.yugioh-card.com/yugiohdb/card_search.action", { ope: 2, cid: cid, mode: 1, sess: 4 });
+
+    if (info_url == url_text) return true;
+    else info_div.setAttribute("info_url", url_text);
+
+    const cacheInfos = await operateStorage({ cacheInfos: JSON.stringify({}) }, "local")
+        .then(items => Object.assign({}, JSON.parse(items.cacheInfos)));
+    if (days > 0 && Object.keys(cacheInfos).indexOf(url_text) !== -1 && cacheInfos[url_text].time + days * 86400 * 1000 > Date.now()) {
+        info_div.innerHTML = cacheInfos[url_text].html;
+        info_div.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+        addUrlHistory(url_text);
+        return true;
+    }
+    const doc_text = await obtainParsedHTML(url_text);
+    const div_text = doc_text.querySelector("#article_body");
+    div_text.setAttribute("id", "info_text");
+    div_text.classList.add("info_article");
+    div_text.style.display = "block";
+    const validIds_text = ["CardSet", "update_list", "relationCard"];
+    for (const elm of Array.from(div_text.children)) {
+        if (validIds_text.indexOf(elm.id) !== -1) continue;
+        elm.remove();
+    }
     if (sort_set != null) {
         sort_set.remove();
         div_text.querySelector("#mode_set").nextElementSibling.setAttribute("id", "card_list");
@@ -210,8 +460,8 @@ const openCardInfoArea = async (cid, days = 0) => {
     info_div.scrollTo(0, 0, "smooth");
     const cacheInfos_new = Object.assign(cacheInfos, { [url_text]: { html: info_div.innerHTML, time: Date.now() } });
     operateStorage({ cacheInfos: JSON.stringify(cacheInfos_new) }, "local", "set"); // await
+    addUrlHistory(url_text);
     return true;
-
 }
 
 // # functions
@@ -243,7 +493,7 @@ const obtainSearchResult = async (page = 1, max_pageIn = null, mode = 1) => {
 }
 const remakeSearchResult = async (search_result) => {
     const df = await obtainDF();
-    Array.from($("#card_list>.t_row", search_result)).map(t_row => {
+    for (const t_row of $("#card_list>.t_row", search_result)) {
         // const img = $("div.box_card_img>img", t_row);
         const img = t_row.querySelector("div.box_card_img>img");
         const card_name = img.title;
@@ -272,45 +522,66 @@ const remakeSearchResult = async (search_result) => {
         img.classList.add("img_chex");
         img.classList.remove("none");
 
-    });
+        const dl = t_row.querySelector("dl.flex_1");
+        if (dl === null) continue;
+        const dd_orig = dl.querySelector("dd.box_card_spec.flex_1");
+        if (dd_orig === null) continue;
+        const spans_atkdef = dd_orig.querySelectorAll("span.atk_power, span.def_power");
+        if (spans_atkdef.length > 0) {
+            const dd_new = document.createElement("dd");
+            dd_new.setAttribute("class", "box_card_spec flex_1");
+            for (const span of spans_atkdef) {
+                dd_new.append(span);
+            }
+            dd_orig.after(dd_new);
+        }
+        const span_other = dd_orig.querySelector("span.card_info_species_and_other_item");
+        if (span_other !== null) {
+            const dd_new = document.createElement("dd");
+            dd_new.setAttribute("class", "box_card_spec flex_1");
+            dd_new.append(span_other);
+            dd_orig.after(dd_new);
+        }
+
+    };
     return search_result;
+}
+
+const searchClicked = async () => {
+    const div_search_result = $("#search_result");
+    div_search_result.empty();
+    showHideSearch(false);
+    const search_result = ($("#stype").val() == "deck") ? await obtainDeckRecipie() : await obtainSearchResult();
+    console.log(search_result);
+    div_search_result.append($(search_result).prop("outerHTML"));
+    const stype = document.querySelector("select#stype").value;
+    const num_found = $(".t_row>div.box_card_img", search_result).length;
+    let message = ""
+    if (stype == "deck") {
+        const cgid = obtainMyCgid();
+        const lang = obtainLang();
+        const dno_tmp = $("#keyword").val().match(/#(\d+)$/);
+        const dno = dno_tmp[1];
+
+        const deck_name = document.querySelector("#keyword").value;
+        const url = joinUrl(`https://www.db.yugioh-card.com/yugiohdb/member_deck.action`, { ope: 1, cgid: cgid, dno: dno, request_locale: lang });
+        message = `${num_found} Kinds in ${deck_name}: to open new tab, <a href="${url}" target="_blank">click here</a>`;
+
+    } else {
+        const serialized = $("#form_search").serialize();
+        const page = 1;
+        const mode = 1;
+        const url = `https://www.db.yugioh-card.com/yugiohdb/card_search.action?${serialized}`.replaceAll(/&page=\d+|&mode=\d+/g, "") + `&page=${page}&mode=${mode}`;
+        message = `${num_found} Cards Found: to open new tab, <a href="${url}" target="_blank">click here</a>`;
+
+    }
+    $("#choice_card_area>span:first").text(num_found);
+    showMessage(message);
+    await remakeSearchResult(div_search_result);
 }
 
 const obtainSearchScript = async () => {
 
-
-    const searchClicked = async () => {
-        const div_search_result = $("#search_result");
-        div_search_result.empty();
-        showHideSearch(false);
-        const search_result = ($("#stype").val() == "deck") ? await obtainDeckRecipie() : await obtainSearchResult();
-        console.log(search_result);
-        div_search_result.append($(search_result).prop("outerHTML"));
-        const stype = document.querySelector("select#stype").value;
-        const num_found = $(".t_row>div.box_card_img", search_result).length;
-        let message = ""
-        if (stype == "deck") {
-            const cgid = obtainMyCgid();
-            const lang = obtainLang();
-            const dno_tmp = $("#keyword").val().match(/#(\d+)$/);
-            const dno = dno_tmp[1];
-
-            const deck_name = document.querySelector("#keyword").value;
-            const url = joinUrl(`https://www.db.yugioh-card.com/yugiohdb/member_deck.action`, { ope: 1, cgid: cgid, dno: dno, request_locale: lang });
-            message = `${num_found} Kinds in ${deck_name}: to open new tab, <a href="${url}" target="_blank">click here</a>`;
-
-        } else {
-            const serialized = $("#form_search").serialize();
-            const page = 1;
-            const mode = 1;
-            const url = `https://www.db.yugioh-card.com/yugiohdb/card_search.action?${serialized}`.replaceAll(/&page=\d+|&mode=\d+/g, "") + `&page=${page}&mode=${mode}`;
-            message = `${num_found} Cards Found: to open new tab, <a href="${url}" target="_blank">click here</a>`;
-
-        }
-        $("#choice_card_area>span:first").text(num_found);
-        showMessage(message);
-        await remakeSearchResult(div_search_result);
-    }
     // # document
     $(document).ready(async function () {
         $(search_result).addClass("search_result");
@@ -804,7 +1075,7 @@ const obtainSearchForm = () => {
     return `<form id="form_search" action="/yugiohdb/card_search.action" method="GET" autocomplete="off" style="margin-top:0px;">
     <input type="hidden" name="ope" value="1">
     <input type="hidden" name="sess" value="1">
-    <input type="hidden" name="rp" value="2000">
+    <input type="hidden" name="rp" value="99999">
     <input type="hidden" name="mode" value>
     <input type="hidden" name="sort" value="1">
 

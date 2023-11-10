@@ -25,7 +25,9 @@ window.onload = async function () {
         });
 
 
-    $("#footer_icon svg").css({ height: "min(5vh, 30px)" })
+    if (settings.flag_showFooterIcons === false) {
+        document.getElementById("footer_icon").style.display = "none";
+    } else document.querySelector("#footer_icon svg").style.height = "min(5vh, 30px)";
     if (html_parse_dic.ope == "8") {
         guess_clicked(); // await 
     }
@@ -43,10 +45,9 @@ window.onload = async function () {
                 class: "btn hex red square button_visible_header hide", type: "button", id: "button_visible_header",
                 style: "position: relative;user-select: none;"
             }).append($("<span>", { title: "show Header" }).append(svgs.toc)),
-            // test: $("<a>", { class: "btn hex square red button_sort", id: "button_test" }).append("<span>Test</span>"),
+            test: $("<a>", { class: "btn hex square red button_sort", id: "button_test" }).append("<span>Test</span>"),
             export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
                 .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name"))// "<span>Export (L:id/M:cid/R:Name)</span>"),
-
         };
 
         for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
@@ -71,30 +72,6 @@ window.onload = async function () {
             area_bottom.append(label);
 
         }
-
-        if (settings.valid_feature_deckHeader === true) {
-            toggleVisible_deckHeader(settings.default_visible_header || IsCopyMode);
-
-            // deck header
-            const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
-            ["category", "tag", "comment"].map(ctc_name => {
-                const ctc_now = $(`#${header_ids_dic[ctc_name]}`);
-                const isCT = ["category", "tag"].indexOf(ctc_name) != -1;
-                const ctc_span = $("dt>span", (isCT) ? ctc_now.parent().parent().parent() : ctc_now.parent().parent());
-                const button = $("<a>", {
-                    class: `btn hex button_size_header ${ctc_name} ` + (isCT ? " isCT" : " isComment"),
-                    type: "button", id: `button_size_header_${ctc_name}`,
-                    style: "position: relative;user-select: none;min-width: 0;"
-                }).append("<span>Size</span>");
-                $(ctc_span).append(button);
-                const ctc_ind_size = 0;
-                changeSize_deckHeader(ctc_name, ctc_ind_size - 1);
-            })
-            const button_guess = $("<a>", { class: "btn hex red button_guess", id: "button_guess" }).append("<span>Guess</span>");
-            $(`#button_size_header_category`).after(button_guess);
-            $(".box_default .box_default_table dt span").css({ "min-width": "0" });
-            showSelectedOption();
-        }
         if (html_parse_dic.ope !== "8" && settings.valid_feature_deckManager === true) {
             const header_box = $("div#deck_header>div#header_box");
             const dl_deck_name = $("dl:has(dd>input#dnm)", header_box);
@@ -102,8 +79,8 @@ window.onload = async function () {
                 class: "ui-draggable ui-draggable-handle button_delete_keyword",
                 style: "flex:none;width:20px;height:20px;cursor:pointer;"
             }).append(svgs.backspace);
-
-            const dl_deck_version = $("<dl>", { class: "tab_mh100 alwaysShow", id: "deck_version_box" });
+            const class_deck_version = "tab_mh100" + (settings.flag_showCacheDeck === true ? " alwaysShow" : "")
+            const dl_deck_version = $("<dl>", { class: class_deck_version, id: "deck_version_box" });
             const dt = $("<dt>").append($("<span>", { style: "min-width:0px;" }).append("Deck in Cache"));
             const dd = $("<dd>");
             //input_version_name=$("<select>", {id:"deck_version_name"});
@@ -207,6 +184,29 @@ window.onload = async function () {
             //$(dnm).attr({list:"deck_nameList"});
             await setDeckNames(datalist_deckName);
             showMessage(`Loaded`);
+        }
+        if (settings.valid_feature_deckHeader === true) {
+            toggleVisible_deckHeader(settings.default_visible_header || IsCopyMode);
+
+            // deck header
+            const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
+            ["category", "tag", "comment"].map(ctc_name => {
+                const ctc_now = $(`#${header_ids_dic[ctc_name]}`);
+                const isCT = ["category", "tag"].indexOf(ctc_name) != -1;
+                const ctc_span = $("dt>span", (isCT) ? ctc_now.parent().parent().parent() : ctc_now.parent().parent());
+                const button = $("<a>", {
+                    class: `btn hex button_size_header ${ctc_name} ` + (isCT ? " isCT" : " isComment"),
+                    type: "button", id: `button_size_header_${ctc_name}`,
+                    style: "position: relative;user-select: none;min-width: 0;"
+                }).append("<span>Size</span>");
+                $(ctc_span).append(button);
+                const ctc_ind_size = 0;
+                changeSize_deckHeader(ctc_name, ctc_ind_size - 1);
+            })
+            const button_guess = $("<a>", { class: "btn hex red button_guess", id: "button_guess" }).append("<span>Guess</span>");
+            $(`#button_size_header_category`).after(button_guess);
+            $(".box_default .box_default_table dt span").css({ "min-width": "0" });
+            showSelectedOption();
         }
         if (settings.valid_feature_deckEditImage === true) {
             $("#article_body").attr({ oncontextmenu: "return false;" })
@@ -332,15 +332,11 @@ window.onload = async function () {
             $(table).prepend(div_info_body);
             operate_infoArea(settings.default_infoArea_visible && !IsCopyMode);
 
-
-
+            operate_fixScroll(settings.default_fit_edit && !IsCopyMode);
 
             //openCardInfoArea();
 
         }
-
-
-
 
     }
     else if (["1", null].indexOf(html_parse_dic.ope) != -1) {
@@ -351,10 +347,10 @@ window.onload = async function () {
         const area = (edit_area.length > 0) ? edit_area : $("<span>", { id: "bottom_btn_set" }).appendTo($("#deck_header"));
         //console.log(area)
         const button_dic = {
-            export: $("<a>", { class: "btn hex red button_export", oncontextmenu: "return false;" })
-                .append("<span>Export (L:id/M:cid/R:Name)</span>"),
-            sortSave: $("<a>", { class: "btn hex red button_sort", id: "button_sortSave" })
-                .append("<span>Sort & Save</span>"),
+            export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
+                .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name")),
+            sortSave: $("<a>", { class: "btn hex red square button_sort", id: "button_sortSave" })
+                .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
         };
         for (const [button_type, button_tmp] of Object.entries(button_dic)) {
@@ -510,7 +506,17 @@ window.onload = async function () {
         // const body = await obtainStreamBody(url);
         // //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
         // console.log(body);
-        refreshCacheHtml(0);
+        // refreshCacheHtml(0);
+        await operateStorage({ urlHistory: JSON.stringify({}) }, "local", "set");
+        await operateStorage({ cacheInfos: JSON.stringify({}) }, "local", "set");
+
+        // await addUrlHistory("https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=17069")
+        // operateStorage({ urlHistory: JSON.stringify({}) }, "local", "get"
+        // ).then(items => Object.assign({ urls: [], pos: -1 }, JSON.parse(items.urlHistory))
+        // ).then(urlHistory => {
+        //     console.log(JSON.stringify(urlHistory))
+        // })
+        // backNextInfoArea(-1);
     });
 
 

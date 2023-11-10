@@ -157,3 +157,21 @@
 #and_or2 label>span {
     font-size: 0.9rem;
 }
+
+#deck_image div.image_set span:hover img,
+#search_result div:hover>img.img_chex,
+#info_area div:hover>img.img_chex,
+#card_frame>div>a:hover>img {
+    cursor: pointer;
+    opacity: 0.8;
+    zoom: 1;
+}
+
+#search_result .list .c_normal .box_card_img,
+#info_area .list .c_normal .box_card_img {
+    width: 96px;
+    min-height: 140px;
+    background: #ffffff;
+    background-size: 100%;
+    margin: 5px;
+}

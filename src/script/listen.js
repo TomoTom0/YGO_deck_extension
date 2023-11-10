@@ -8,8 +8,6 @@ const deleteKeyword = async (e) => {
 }
 
 const listen_clickAndDbclick = async () => {
-
-
     // for (const [k, v] of Object.entries(Object.assign(callId2Func, callId2Func_await))) {
     //     const button = document.getElementById(k.slice(1));
     //     if (button !== null) button.addEventListener("click", v);
@@ -18,7 +16,7 @@ const listen_clickAndDbclick = async () => {
     let clicked = false;
     document.addEventListener("mousedown", async (e) => {
         if (clicked === true) {
-            console.log("dbclicked");
+            // console.log("dbclicked");
             listen_dbclick(e);
             clicked = false;
             return;
@@ -26,9 +24,9 @@ const listen_clickAndDbclick = async () => {
         clicked = true;
         setTimeout(async () => {
             if (clicked === true) {
-                console.log("clicked");
-                await listen_mousedown(e);
-                await listen_click(e);
+                // console.log("clicked");
+                listen_mousedown(e);
+                listen_click(e);
             }
             clicked = false;
         }, 200);
@@ -67,14 +65,38 @@ const listen_clickAndDbclick = async () => {
 }
 
 const listen_dbclick = async (e) => {
-    if (e.target.matches("#card_frame img, span:has(img.img_chex),span:has(img.img_chex) *, div.box_card_img:has(img), div.box_card_img:has(img) *")) {
+    if (e.button === 0 && e.target.matches("#card_frame img, span:has(img.img_chex),span:has(img.img_chex) *, div.box_card_img:has(img), div.box_card_img:has(img) *")) {
         // console.log(e.target.parentElement.querySelector("img"))
         const img = e.target.closest("#card_frame, div.box_card_img, span:has(img.img_chex)").querySelector("img");
         if (img === null) return;
-        const cid = img.getAttribute("card_cid");
-        if (cid === null) return false;
-        openCardInfoArea(cid);
-    }
+        const url = img.getAttribute("card_url");
+        if (url === null) return false;
+        // openCardInfoArea(cid);
+        openUrlInfoArea(url);
+    } else if (e.button === 2) {
+        // let isIntextMenuOpen = false;
+
+        // document.addEventListener("contextmenu", function (e) {
+        //     console.log(e);
+
+        //     isIntextMenuOpen = true
+        // });
+        // function hideContextmenu(e) {
+        //     if (isIntextMenuOpen) {
+        //         console.log(e);
+        //     }
+
+        //     isIntextMenuOpen = false;
+        // }
+        // $(window).blur(hideContextmenu);
+
+        // $(document).click(hideContextmenu);
+        // e.preventDefault();
+        backNextInfoArea(-1);
+        // e.stopPropagation();
+        // console.log(e);
+        // console.log(document.getElementById('contextMenuId'))
+    } else if (e.button === 0) backNextInfoArea(1);
 
 }
 
@@ -278,22 +300,26 @@ const listen_mousedown = async (e) => {
     } else if (e.target.matches("#info_faq div.t_body>div.t_row, #info_faq div.t_body>div.t_row *")) {
         const input_link = e.target.closest("div.t_row").querySelector("input.link_value");
         // console.log(input_link)
-        const fid = input_link.value.match(/fid=([^&]+)/)[1];
-        openFaqInfoArea(fid);
-    } else if (e.target.matches("#info_faq a")) {
+        // const fid = input_link.value.match(/fid=([^&]+)/)[1];
+        openUrlInfoArea(input_link.value)
+        // openFaqInfoArea(fid);
+    } else if (e.target.matches("#info_faq a, #update_list>div.t_body>div.t_row>div.inside, #update_list>div.t_body>div.t_row>div.inside *")) {
         const target = e.target;
-        const link = target.getAttribute("_href");
-        const cid_match = link.match(/cid=([^&]+)/);
-        const fid_match = link.match(/fid=([^&]+)/);
+        const link = target.getAttribute("_href") || target.closest("div.inside").querySelector("input.link_value").value;
+
+        // const cid_match = link.match(/cid=([^&]+)/);
+        // const fid_match = link.match(/fid=([^&]+)/);
+        if (link === null) return;
         if (e.button === 1) {
             window.open(link, "_blank");
             return;
         }
-        if (cid_match !== null) {
-            openCardInfoArea(cid_match[1]);
-        } else if (fid_match !== null) {
-            openFaqInfoArea(fid_match[1]);
-        }
+        openUrlInfoArea("https://www.db.yugioh-card.com" + link.replace("https://www.db.yugioh-card.com", ""));
+        // if (cid_match !== null) {
+        //     openCardInfoArea(cid_match[1]);
+        // } else if (fid_match !== null) {
+        //     openFaqInfoArea(fid_match[1]);
+        // }
 
         // # ------- deck image --------
     } else if (e.target.matches("#deck_image div.image_set span:has(img), #deck_image div.image_set span:has(img) *")) {
@@ -315,8 +341,9 @@ const listen_mousedown = async (e) => {
             window.open(url);
 
             return;
-        } else if (([0].indexOf(e.button) !== -1 && e.ctrlKey) && $(img_target).attr("card_cid") !== undefined) {
-            await openCardInfoArea($(img_target).attr("card_cid"));
+        } else if (([0].indexOf(e.button) !== -1 && e.ctrlKey) && $(img_target).attr("card_url") !== undefined) {
+            // await openCardInfoArea($(img_target).attr("card_url"));
+            openUrlInfoArea($(img_target).attr("card_url"))
             return;
         }
         else if (!e.target.matches("div.image_set_MouseUI *") && !sideChangeOnViewIsValid) return;

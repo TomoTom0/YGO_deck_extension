@@ -42,7 +42,8 @@
   ],
   "permissions": [
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "contextMenus"
   ],
   "options_ui": {
     "page": "script/options.html",
