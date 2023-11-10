@@ -43,7 +43,7 @@ window.onload = async function () {
                 class: "btn hex red square button_visible_header hide", type: "button", id: "button_visible_header",
                 style: "position: relative;user-select: none;"
             }).append($("<span>", { title: "show Header" }).append(svgs.toc)),
-            test: $("<a>", { class: "btn hex square red button_sort", id: "button_test" }).append("<span>Test</span>"),
+            // test: $("<a>", { class: "btn hex square red button_sort", id: "button_test" }).append("<span>Test</span>"),
             export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
                 .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name"))// "<span>Export (L:id/M:cid/R:Name)</span>"),
 
@@ -252,8 +252,8 @@ window.onload = async function () {
                 ).append($("<span>", { title: "show info area" }).append(svgs.contancts)),
                 fixScroll: $("<a>", { class: "btn hex square show button_fixScroll", id: "button_fixScroll" })
                     .append($("<span>", { title: "fit editor" }).append(svgs.fullscreen)),
-                hoverName: $("<a>", { class: "btn hex square red show button_toggleHoverName", id: "button_toggleHoverName" })
-                    .append($("<span>", { title: "show card names on mouse hovering" }).append(svgs.liveHelp)),
+                // hoverName: $("<a>", { class: "btn hex square red show button_toggleHoverName", id: "button_toggleHoverName" })
+                //     .append($("<span>", { title: "show card names on mouse hovering" }).append(svgs.liveHelp)),
                 reloadSort: $("<a>", { class: "btn hex square red button_reloadSort", id: "button_reloadSort" })
                     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             };
