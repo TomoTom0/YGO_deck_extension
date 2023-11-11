@@ -591,7 +591,7 @@ class YGO_DB_Updater:
         }
         return soup, enc_cid_dic
 
-    # def obtainCardInfo_fromYGODB(self, page: int, lang: str = "ja", rp: int = 99999) -> dict:
+    # def obtainCardInfo_fromYGODB(self, page: int, lang: str = "ja", rp: int = 2000) -> dict:
     #     sort = "21"
     #     url = (
     #         f"https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=1&sess=1&rp={rp}"
@@ -621,7 +621,7 @@ class YGO_DB_Updater:
         self,
         page: int,
         lang: str = "ja",
-        rp: int = 99999,
+        rp: int = 2000,
         flag_allowLack: bool = True,
         term_dic: dict = {},
     ):
@@ -758,7 +758,7 @@ class YGO_DB_Updater:
         return cardInfo
 
     def _updateCardInfosAll_Lang(
-        self, lang: str, cardInfos_old: dict, rp: int = 99999, term_dic: dict = {}
+        self, lang: str, cardInfos_old: dict, rp: int = 2000, term_dic: dict = {}
     ) -> dict:
         cards_num = self.obtainCardsNum(lang=lang)
         print(lang, cards_num)

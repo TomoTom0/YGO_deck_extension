@@ -193,6 +193,29 @@ const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
         }))*/
 }
 
+const obtainEditImg_RowResults = () => {
+    const row_names = ["monster", "spell", "trap", "extra", "side"];
+    let row_results = Object.assign(
+        ...row_names.map(row_name => Object({
+            [row_name]: { names: [], nums: [], cids: [], limits: [] }
+        })
+        ));
+
+    for (const img of document.querySelectorAll("div.image_set_MouseUI span[style*='display: block;']>img")) {
+        const card_cid = img.getAttribute("card_cid");
+        const card_type = img.getAttribute("card_type");
+        const card_name = img.getAttribute("card_name");
+        if (row_results[card_type].cids.indexOf(card_cid) !== -1) continue;
+        // document.querySelectorAll("div.image_set_MouseUI span[style*='display: block;']>img")
+        const card_num = document.querySelectorAll(`div.image_set_MouseUI:not(.image_set_temp) span[style*='display: block;']:has(img[card_type='${card_type}'][card_cid='${card_cid}'])`).length
+        row_results[card_type].names.push(card_name);
+        row_results[card_type].cids.push(card_cid);
+        row_results[card_type].nums.push(card_num);
+        row_results[card_type].limits.push(img.parentElement.classList[0]);
+    }
+    return row_results;
+}
+
 // from edit mode
 /*const obtainRowResults_Edit = (df = null) => {
     return obtainRowResults(df);
@@ -258,7 +281,7 @@ const _obtainHiddenHeader = (html_edit) => {
     return Object.assign(...["dno", "pflg", "deck_type", "deckStyle"]
         .map(k => {
             const match_res = html_edit.match(new RegExp(`\\(\'#${k}\'\\)\.val\\(\'([^\\)]*)\'\\)`));
-            return { [k]: (match_res == null || match_res.length < 1) ? "" : match_res[1] };
+            return { [decodeURI(k)]: (match_res == null || match_res.length < 1) ? "" : decodeURI(match_res[1]) };
         }))
 }
 
@@ -268,7 +291,8 @@ const _obtainSerializedHeader = (serialized_header, html_edit) => {
     return sps_par.toString();
 }
 
-const obtainDeckHeader_edit = async (html_parse_dic, html_editIn = null) => {
+const obtainDeckHeader_edit = async (html_parse_dic = null, html_editIn = null) => {
+    html_parse_dic = html_parse_dic !== null ? html_parse_dic : parse_YGODB_URL()
     const my_cgid = obtainMyCgid();
     if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return null;
     else if (html_parse_dic.cgid != my_cgid) return null;
@@ -549,20 +573,18 @@ const _Regist_fromYGODB = async (
     retry_count = 0) => {
     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
-    const lang = obtainLang()
+    const lang = obtainLang();
     const request_locale = lang != null ? `&request_locale=` + lang : "";
     if (serialized_data_in === null && $("#form_regist").length === 0) return;
     // const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
     // console.log("ope=3&" + $("#form_regist").serialize());
+    const dnm = document.getElementById("dnm");
+    if (dnm.value.length === 0) dnm.value = dnm.getAttribute("value");
     const serialized_data = (serialized_data_in || "ope=3&" + $("#form_regist").serialize());
     const dno = serialized_data.match(/dno=(\d+)/)[1];
-    const deck_name = decodeURI(serialized_data.match(/dnm=([^&]+)/)[1]);
-    // const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
-    //     .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
-    // console.log(temps.ytkn, obtain_YGODB_fromHidden("ytkn"))
-    // const ytkn = temps.ytkn || obtain_YGODB_fromHidden("ytkn");
+    const dnm_match = serialized_data.match(/dnm=([^&]+)/);
+    const deck_name = decodeURI(dnm_match[1]);
     const ytkn = await obtainMyYtkn(true, { dno: dno, ope: 2 });
-    // console.log(ytkn);
     const serialized_data_ytkn = serialized_data.replace(/ytkn=[^&]+/, "ytkn=" + ytkn);
     // console.log(serialized_data_ytkn)
     // const sps=new URLSearchParams(serialized_data);
@@ -727,9 +749,11 @@ const load_deckOfficial = async (df, deck_dno, settings, my_cgid = null) => {
     if (settings.valid_feature_deckManager === true) {
         document.getElementById("deck_dno_opened").innerText = deck_dno;
         document.getElementById("dnm").setAttribute("placeholder", deck_name);
+        document.getElementById("dnm").setAttribute("value", deck_name);
         document.getElementById("dnm").value = "";
+
     }
-    document.getElementById("dnm").value = deck_name;
+    // document.getElementById("dnm").value = deck_name;
     // import
     importDeck(row_results);
     if (settings.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
@@ -1091,8 +1115,9 @@ async function exportAs(form = "id") {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     const dnm = document.getElementById("dnm");
-    const deck_name = [1].indexOf(html_parse_dic.ope) !== -1 ?
-        $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_") :
+    const deck_name = dnm === null ?
+        document.querySelector("meta[name='description']").getAttribute("content").replace(/ \| 遊戯王 オフィシャルカードゲーム デュエルモンスターズ カードデータベース　デッキ詳細$/, "") :
+        // $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_") :
         (dnm.value || dnm.getAttribute("placeholder")); // after 2022/4/18
     const ext_dic = { "id": ".ydk", "name": "_name.txt", "cid": "_cid.txt" }
     const file_name = deck_name + ext_dic[form];
@@ -1115,78 +1140,88 @@ async function exportAs(form = "id") {
 //         # import
 
 async function importFromYdk() {
+    const df = await obtainDF();
     const import_file = $("#button_importFromYdk_input").prop("files")[0];
+    // console.log(import_file)
+    const file_name = import_file.name;
+    const keys = ["name", "id", "cid"];
     const data_tmp = await import_file.text();
     const data_array = split_data(data_tmp);
     const imported_rows = obtain_deck_splited(data_array);
 
-    const row_names = ["monster", "spell", "trap", "extra", "side"];
-    let row_results = Object.assign(
-        ...row_names.map(row_name => Object({
-            [row_name]: { names: [], nums: [], cids: [], limits: [] }
-        })
-        ));
-    const df = await obtainDF(obtainLang());
-    let exceptions = [];
-    // guess file type => id, Jap, Eng
-    /*const encoder=new TextEncoder("utf8");
-    const data_type_judges={
-        includeJap: data_array.filter(d=>!/^#|^!/.test(d))
-            .some(data=>Array.from(data).some(d=>{
-                const bytes=encoder.encode(d);
-                const isKana= (bytes[0]==227 && bytes[1]>=129 && bytes[1]<=131);
-                const isZenAlphabet= (bytes[0]==239 && bytes[1]>=188 && bytes[1]<=190);
-                return isKana || isZenAlphabet;
-        })),
-        onlyNumbers: data_array.filter(d=>!/^#|^!/.test(d)).every(data=>isFinite(data))}
-    const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
-    for (const [ind_import, rows] of Object.entries(imported_rows)) {
-        for (const row of Array.from(new Set(rows)).map(d => d.trim()).filter(d => d.length > 0)) {
-            // const isID = /^\d+$/.test(id_tmp);
-            if (row.length === 0) continue;
-            let name_tmp = "";
-            const id = (/^\d+$/.test(row)) ? parseInt(row) : null; //isFinite(row) && 
-            const card_name = (id !== null) ? df_filter(df, "name", ["id", id])[0] : row;
-            const cid = (id !== null) ? df_filter(df, "cid", ["id", id])[0] : undefined;
-            // // id
-            // if (/^\d+$/.test(id) && id) {
-            //     name_tmp = df_filter(df, "name", ["id", id])[0];
-            // }
-            // // name
-            // else if (!/^\d+$/.test(id) && id) {
-            //     name_tmp = id.split("\t")[0];
-            // }
-            //console.log(id,id_tmp, name_tmp, ids.map(d => d.split("\t")[0]).filter(d => d == id), ids.map(d => d.split("\t")[0]).filter(d => d == id_tmp));
+    const interpretRowResults = (df, imported_rows, key = "id") => {
+        const row_names = ["monster", "spell", "trap", "extra", "side"];
+        let row_results = Object.assign(
+            ...row_names.map(row_name => Object({
+                [row_name]: { names: [], nums: [], cids: [], limits: [] }
+            })
+            ));
 
-            const num_tmp = rows.map(d => d.split("\t")[0]).filter(d => d == row).length;
-            if (!card_name) exceptions.push(`${id} ${card_name}`);
-            else {
-                let row_ind = 0;
-                let row_name = "";
-                if (ind_import == 0) {
-                    try {
-                        const types_tmp = df_filter(df, "type", ["id", id])[0];
-                        const main_row = ["monster", "spell", "trap"].map(d => d.slice(0, 1).toUpperCase() + d.slice(1));
-                        row_name = main_row.filter(d => types_tmp.split(",").some(dd => dd == d))[0].toLowerCase();
-                        row_ind = row_names.indexOf(row_name);
-                    } catch {
-                        exceptions.push(`${id} ${name_tmp}`);
-                        continue;
+        let exceptions = [];
+        const key2 = ["id", "cid"].filter(d => d !== key)[0];
+        const keys = ["id", "cid", "name"];
+        for (const [ind_import, rows] of Object.entries(imported_rows)) {
+            for (const row of Array.from(new Set(rows)
+            ).map(d => d.trim()).filter(d => d.length > 0)) {
+                if (row.length === 0) continue;
+                // let name_tmp = "";
+                // const val = (/^\d+$/.test(row)) ? parseInt(row) : row; //isFinite(row) && 
+                // const card_name = (val !== null) ? df_filter(df, "name", [key, val])[0] : row;
+                // const val2 = (val !== null) ? df_filter(df, key2, [key, val])[0] : undefined;
+                const vals = Object.assign(...keys.map(d => {
+                    if (d === key) return { [key]: row }
+                    else return { [d]: df_filter(df, d, [key, row])[0] }
+                }))
+
+                const num_tmp = rows.map(d => d.split("\t")[0]).filter(d => d == row).length;
+                if (!vals.name) exceptions.push(`${row} ${vals.name}`);
+                else {
+                    let row_ind = 0;
+                    let row_name = "";
+                    if (ind_import == 0) {
+                        try {
+                            const types_tmp = df_filter(df, "type", ["id", vals.id])[0];
+                            const main_row = ["monster", "spell", "trap"
+                            ].map(d => d.slice(0, 1).toUpperCase() + d.slice(1));
+                            row_name = main_row.filter(d => types_tmp.split(","
+                            ).some(dd => dd == d))[0].toLowerCase();
+                            row_ind = row_names.indexOf(row_name);
+                        } catch {
+                            exceptions.push(`${vals.id} ${vals.name}`);
+                            continue;
+                        }
+                    } else {
+                        row_ind = parseInt(ind_import) + 2;
+                        row_name = row_names[row_ind];
                     }
-                } else {
-                    row_ind = parseInt(ind_import) + 2;
-                    row_name = row_names[row_ind];
+                    row_results[row_name].names.push(vals.name);
+                    row_results[row_name].nums.push(num_tmp);
+                    row_results[row_name].cids.push(vals.cid);
+                    row_results[row_name].limits.push("not_limited");
                 }
-                row_results[row_name].names.push(card_name);
-                row_results[row_name].nums.push(num_tmp);
-                row_results[row_name].cids.push(cid);
-                row_results[row_name].limits.push("not_limited");
             }
         }
+        return { row_results: row_results, exceptions: exceptions, exceptions_num: exceptions.length };
     }
+
+    const flags = keys.filter(d => RegExp(`_${d}\.ydk\$`).test(file_name));
+
+    const res_dic = flags.length > 0 ?
+        { [flags[0]]: interpretRowResults(df, imported_rows, flags[0]) } :
+        await Object.assign(...keys.map(
+            (d) => Object({ [d]: interpretRowResults(df, imported_rows, d) })));
+    console.log(res_dic);
+
+    const num_min = Math.min(...Object.values(res_dic).map(d => d.exceptions_num));
+    const res = Object.values(res_dic).filter(d => d.exceptions_num === num_min)[0];
+    const exceptions = res.exceptions;
+    const row_results = res.row_results;
+
     // deck_name
-    const settings_tmp = await getSyncStorage({ settings: defaultString }).then(items => Object.assign(defaultSettings, JSON.parse(items.settings)));
-    const deck_name = import_file.name.replace(/(?<=^[^(@@)]+)@@.*\.ydk$|\.ydk$/, "") + (settings_tmp.addDate ? "@@" + new Date().toLocaleDateString() : "");
+    const settings_tmp = await getSyncStorage({ settings: defaultString }
+    ).then(items => Object.assign(defaultSettings, JSON.parse(items.settings)));
+    const deck_name = import_file.name.replace(/(?<=^[^(@@)]+)@@.*\.ydk$|\.ydk$/, "") +
+        (settings_tmp.addDate ? "@@" + new Date().toLocaleDateString() : "");
     // input deck name
     $("#dnm").val(deck_name);
     console.log(row_results);
@@ -1202,12 +1237,12 @@ async function importFromYdk() {
     if (exceptions.length > 0 && !exceptions.every(d => /^\s*$/.test(d))) {
         const error_message = "一部のカードが変換できませんでした。\n" + exceptions.join(", ");
         console.log(error_message);
-        alert(error_message + "\n" + message_forImportedData);
+        showMessage(error_message + "\n" + message_forImportedData);
     } else {
         console.log(message_forImportedData);
-        alert(message_forImportedData);
+        showMessage(`Imported ${deck_name}; ` + message_forImportedData);
     }
-    showMessage(`Imported ${deck_name}`);
+    // showMessage(`Imported ${deck_name}`);
 }
 
 // # sortSave
@@ -1225,7 +1260,7 @@ async function sortSaveClicked() {
     const row_results_new = await sortCards(row_results);
     const serialized_dic = {
         ope: "ope=3",
-        wname: "wanme=" + obtain_YGODB_fromHidden("wname"),
+        wname: "wname=" + obtain_YGODB_fromHidden("wname"),
         ytkn: "ytkn=" + obtain_YGODB_fromHidden("ytkn"),
         header: await obtainDeckHeader_edit(html_parse_dic),
         deck: serializeRowResults(row_results_new)
@@ -1479,7 +1514,7 @@ const modifyDeckImg = (img_target, change = +1, to_set_type = null) => {
     if (change === -1) {
         const span_tmp = $(img_target).parents("span")[0];
         $(span_tmp).addClass("del_card");
-        $(span_tmp).css({ display: "none" });
+        // $(span_tmp).css({ display: "none" });
         if (to_set_type !== null) {
             const span_clone = $(span_tmp).clone()[0];
             const image_set_now = $(`.image_set[set_type='${to_set_type}']`);
@@ -1487,6 +1522,7 @@ const modifyDeckImg = (img_target, change = +1, to_set_type = null) => {
             $(span_clone).addClass("add_card").removeClass("del_card").css({ display: "block", position: "relative" });
             $(image_set_now).append(span_clone);
         }
+        span_tmp.remove();
     } else if (change === +1) {
         const span_tmp = $(img_target).parents("span")[0];
         const span_clone = $(span_tmp).clone()[0];
@@ -1498,6 +1534,7 @@ const modifyDeckImg = (img_target, change = +1, to_set_type = null) => {
             $(image_set_now).append(span_clone);
         }
     }
+    // resizeDeckArea();
     //else if (num_old === 0 && card_type!==null){
     // new kind
     //    console.log("comnig soon")
@@ -1738,12 +1775,15 @@ const setArticleWidth = (flag_narrow = null) => {
         article.style["max-width"] = "";
         article_body.style["max-width"] = "auto";
     }
+    resizeDeckArea();
+}
+
+const resizeDeckArea = () => {
     if (document.getElementById("button_fixScroll").classList.contains("red")) {
         const elm = document.getElementById("article_body");
         const ratio = 0.98 * window.innerHeight / elm.scrollHeight;
         elm.style["transform-origin"] = `top`;
         elm.style["transform"] = `scale(${ratio})`
-
     }
 }
 

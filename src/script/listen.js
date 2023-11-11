@@ -8,15 +8,9 @@ const deleteKeyword = async (e) => {
 }
 
 const listen_clickAndDbclick = async () => {
-    // for (const [k, v] of Object.entries(Object.assign(callId2Func, callId2Func_await))) {
-    //     const button = document.getElementById(k.slice(1));
-    //     if (button !== null) button.addEventListener("click", v);
-    //     else console.log(k.slice(1))
-    // }
     let clicked = false;
     document.addEventListener("mousedown", async (e) => {
         if (clicked === true) {
-            // console.log("dbclicked");
             listen_dbclick(e);
             clicked = false;
             return;
@@ -24,44 +18,26 @@ const listen_clickAndDbclick = async () => {
         clicked = true;
         setTimeout(async () => {
             if (clicked === true) {
-                // console.log("clicked");
                 listen_mousedown(e);
-                listen_click(e);
             }
             clicked = false;
         }, 200);
-        setArticleWidth();
-        // const sel = document.getSelection()
-        // if (sel.rangeCount > 0) {
-        //     const ran = sel.getRangeAt(0)
-        //     console.log(ran["startContainer"], ran["endContainer"])
-        //     const imset = ran["startContainer"].closest("div.image_set, div#card_list")
-        //     const spans = Array.from(imset.querySelectorAll("span:has(img), div:has(img)")
-        //     ).filter(d => [0,2].indexOf(d.compareDocumentPosition(ran["startContainer"]))!==-1 &&
-        //     [0,4].indexOf(d.compareDocumentPosition(ran["endContainer"]))!==-1)
-        //     console.log(spans)
-        // }
-        // await listen_mousedown(e);
-        // await listen_click(e);
-        // return false;
     })
-    // const spliters=document.querySelectorAll("div.flex_splitter");
-    // function resize(e) {
-    //     const target = e.target.matches("div.flex_splitter") ? e.target : e.target.closest("div.flex_splitter");
-    //     const left= document.getElementById(target.getAttribute("left-id"))//.previousElementSibling;
-    //     // console.log(e,target, left)
-    //     const size = `${e.x -9}px`; // 8 = スプリッタの幅の半分
-    //     left.style["flex-basis"] = "calc("+size+" - 4rem)";
-    // }
-    // for (const splitter of spliters){
-    //     splitter.addEventListener("mousedown", (event) => {
-    //         document.addEventListener("mousemove", resize, false);
-    //         document.addEventListener("mouseup", () => {
-    //             document.removeEventListener("mousemove", resize, false);
-    //         }, false);
-    //       });    
-    // }
 
+    let clicked2 = false;
+    document.addEventListener("click", async (e) => {
+        if (clicked2 === true) {
+            clicked2 = false;
+            return;
+        }
+        clicked2 = true;
+        setTimeout(async () => {
+            if (clicked2 === true) {
+                await listen_click(e);
+            }
+            clicked2 = false;
+        }, 200);
+    })
 
 }
 
@@ -111,7 +87,6 @@ const listen_click = async (e) => {
     }
     const callId2Func_await = {
         "#button_guess": guess_clicked,
-        "#button_importFromYdk": importFromYdk,
         "#button_sortSave": sortSaveClicked,
         "#button_backToView": backToView,
         "#button_reloadSort": reloadSort,
@@ -199,8 +174,22 @@ const listen_click = async (e) => {
         if (target_class.contains("button_save")) {
             const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
             const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
-            const row_results = obtainRowResults(df);
-            const res = await _Regist_fromYGODB(html_parse_dic);
+            const row_results = obtainEditImg_RowResults();
+            importDeck(row_results);
+            // console.log(row_results);
+            const html_parse_dic = parse_YGODB_URL();
+            //const url_ope2 = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" +
+            //    (new URLSearchParams(html_parse_dic)).toString();
+            const serialized_dic = {
+                ope: "ope=3",
+                wname: "wanme=" + obtain_YGODB_fromHidden("wname"),
+                ytkn: "ytkn=" + obtain_YGODB_fromHidden("ytkn"),
+                header: $("#deck_header input, #deck_header select, #deck_header textarea").serialize(),
+                deck: serializeRowResults(row_results)
+            }
+            const serialized_data = Object.values(serialized_dic).join("&");
+            // console.log(serialized_data);
+            const res = await _Regist_fromYGODB(html_parse_dic); // , serialized_data
             if (res.error) {
                 console.log("Failed to save");
             }
@@ -387,6 +376,7 @@ const listen_mousedown = async (e) => {
             const change_now = (from_set_type === "temp") ? 1 : 0;
             if (num_now + change_now <= 3) sideChange_deck(df, img_target, onEdit);
         }
+        // # ------ search result, info area ---------
     } else if (e.target.matches("#search_result #card_list .t_row img, #info_area img.img_chex")) {
         e.preventDefault();
         const img_target = e.target;

@@ -177,3 +177,10 @@
     background-size: 100%;
     margin: 5px;
 }
+
+#dnm::-webkit-input-placeholder {
+    font-size: 1.2rem;
+    /* color: #4444bb; */
+    /* opacity: 80%; */
+    /* font-family: "メイリオ"; */
+}

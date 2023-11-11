@@ -1,6 +1,8 @@
 ﻿"use strict";
 
 
+const news_message = " / New Updates about Info Area are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension\" target=\"_blank\">Read Here</a>"
+
 //------------------------------------
 //         #  on loading
 
@@ -183,7 +185,7 @@ window.onload = async function () {
             //$(dnm).after($(img_delete).clone());
             //$(dnm).attr({list:"deck_nameList"});
             await setDeckNames(datalist_deckName);
-            showMessage(`Loaded`);
+            showMessage(`Loaded ${news_message}`);
         }
         if (settings.valid_feature_deckHeader === true) {
             toggleVisible_deckHeader(settings.default_visible_header || IsCopyMode);
@@ -349,8 +351,8 @@ window.onload = async function () {
         const button_dic = {
             export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
                 .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name")),
-            sortSave: $("<a>", { class: "btn hex red square button_sort", id: "button_sortSave" })
-                .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
+            // sortSave: $("<a>", { class: "btn hex red square button_sort", id: "button_sortSave" })
+            //     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
         };
         for (const [button_type, button_tmp] of Object.entries(button_dic)) {
@@ -456,9 +458,9 @@ window.onload = async function () {
         }
     })
     // ## button id
-    // $("#button_importFromYdk").on("change", async function () {
-    //     await importFromYdk();
-    // });
+    $("#button_importFromYdk").on("change", async function () {
+        await importFromYdk();
+    });
     // $("#button_sortSave").on("click", async function () {
     //     await sortSaveClicked();
     // });
@@ -507,8 +509,12 @@ window.onload = async function () {
         // //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
         // console.log(body);
         // refreshCacheHtml(0);
-        await operateStorage({ urlHistory: JSON.stringify({}) }, "local", "set");
-        await operateStorage({ cacheInfos: JSON.stringify({}) }, "local", "set");
+        // await operateStorage({ urlHistory: JSON.stringify({}) }, "local", "set");
+        // await operateStorage({ cacheInfos: JSON.stringify({}) }, "local", "set");
+        // const df = await obtainDF(obtainLang());
+        // const row_results = await obtainRowResults(df);
+
+        // console.log(row_results)
 
         // await addUrlHistory("https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=17069")
         // operateStorage({ urlHistory: JSON.stringify({}) }, "local", "get"

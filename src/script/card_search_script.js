@@ -60,7 +60,7 @@ const backNextInfoArea = async (change = -1) => {
         if (pos_new < 0 || pos_new >= urlHistory.urls.length) return null;
         urlHistory.pos = pos_new;
         const url = urlHistory.urls[pos_new];
-        console.log(JSON.stringify(urlHistory))
+        // console.log(JSON.stringify(urlHistory))
         openUrlInfoArea(url, CACHE_DAYS, false);
         operateStorage({ urlHistory: JSON.stringify(urlHistory) }, "local", "set");
     })
@@ -257,7 +257,9 @@ const _convertDivText = async (div_text, cid) => {
         card_name: img.getAttribute("title"),
         card_url: card_url,
         loading: "lazy",
-        src: `/yugiohdb/get_image.action?type=1&lang=ja&cid=${card_cid}&ciid=1&enc=${card_encImg}&osplang=1`
+        src: `/yugiohdb/get_image.action?type=1&lang=ja&cid=${card_cid}&ciid=1&enc=${card_encImg}&osplang=1`,
+        oncontextmenu: "return false;"
+
     };
     for (const [k, v] of Object.entries(attr_dic)) {
         img.setAttribute(k, v);
@@ -318,7 +320,7 @@ const _obtainFaqForText = async (cid) => {
     div_faq.setAttribute("id", "info_faq");
     div_faq.classList.add("info_article");
     // div_faq.classList.add("none");
-    const validIds_faq = ["card_info", "deck_list"];
+    const validIds_faq = ["card_info", "pen_info", "deck_list"];
     for (const elm of Array.from(div_faq.children)) {
         if (validIds_faq.indexOf(elm.id) !== -1) continue;
         elm.remove();
