@@ -136,7 +136,7 @@ CARDS_NINE_ORDER = {
 
 CARD_INFO_TYPE_MODIFY = {"Xyz": "XYZ"}
 
-LANGS_ALL = ["ja", "en", "de", "fr", "it", "es", "pt", "ko"]#, "ae"
+LANGS_ALL = ["ja", "en", "de", "fr", "it", "es", "pt", "ko"]  # , "ae"
 ZERO_DATE = "1990-01-01"
 
 CARD_INFO_KEYS = [
@@ -253,12 +253,12 @@ class YGO_DB_Updater:
                 repoInfo["user"], repoInfo["repo"], sha[0]
             )
             res = requests.get(git_data_url, headers=header_auth)
-            if res.status_code!=200:
+            if res.status_code != 200:
                 title = "Failed to get with GitHub API"
                 content = json.dumps(repoInfo) + "\n" + json.dumps(res.json())
                 self.postLog(title=title, content=content)
                 return {}
-            res_data=res.json()
+            res_data = res.json()
             content = base64.b64decode(res_data["content"]).decode()
             return json.loads(content)
         elif method == "upload":
@@ -297,12 +297,12 @@ class YGO_DB_Updater:
             res = requests.put(
                 git_put_url, headers=header_put, data=json.dumps(body, allow_nan=False)
             )
-            if res.status_code!=200:
+            if res.status_code != 200:
                 title = "Failed to post with GitHub API"
                 content = json.dumps(repoInfo) + "\n" + json.dumps(res.json())
                 self.postLog(title=title, content=content)
                 return {}
-            res_json=res.json()
+            res_json = res.json()
             return res_json
 
     # # ---- make db_base with db.ygoprodeck.com/api/v7 ---------
@@ -335,12 +335,7 @@ class YGO_DB_Updater:
                 for s in infoIn["misc_info"][0]["formats"][::-1]
                 if s in ["OCG", "TCG"]
             ]
-            LMarkerDic = {
-                "Bottom": "D",
-                "Left": "L",
-                "Right": "R",
-                "Top": "U"
-                }
+            LMarkerDic = {"Bottom": "D", "Left": "L", "Right": "R", "Top": "U"}
             LMarkerDic2 = {
                 "LD": "1",
                 "D": "2",
@@ -359,9 +354,10 @@ class YGO_DB_Updater:
                     for info in infoIn["misc_info"]
                     for k in ["ocg_date", "tcg_date"]
                 ]
-                IsOnSale=any(
+                IsOnSale = any(
                     s is not None
-                    and (datetime.datetime.strptime(s, "%Y-%m-%d").date() - dt_td).days <= 0
+                    and (datetime.datetime.strptime(s, "%Y-%m-%d").date() - dt_td).days
+                    <= 0
                     for s in dates
                 )
                 if IsOnSale is False:
@@ -931,8 +927,7 @@ class YGO_DB_Updater:
         df_withoudCid = df_base[df_base["cid"].isna()]
 
         message = "2 / 3: obtain info of {} cards from ocg-card.com\n\t{}".format(
-            len(df_withoudCid),
-            "\n\t".join(df_withoudCid["name"])
+            len(df_withoudCid), "\n\t".join(df_withoudCid["name"])
         )
         print(message)
         if len(df_withoudCid) > 0:

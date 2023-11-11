@@ -81,17 +81,19 @@
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_forb_unlim.svg);
     background-color: #dc0000;
     background-size: 50%;
+    max-height: 30%;
 }
 
 .deck_image .image_set span.limited>div span {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_limit_unlim.svg);
     background-color: #fb8c32;
+    max-height: 30%;
 }
 
 .deck_image .image_set span.semi_limited>div>span {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_slim_unlim.svg);
     background-color: #fbb830;
-
+    max-height: 30%;
 }
 
 .deck_image .image_set span>div span {
@@ -156,4 +158,29 @@
 #and_or>span>label>span,
 #and_or2 label>span {
     font-size: 0.9rem;
+}
+
+#deck_image div.image_set span:hover img,
+#search_result div:hover>img.img_chex,
+#info_area div:hover>img.img_chex,
+#card_frame>div>a:hover>img {
+    cursor: pointer;
+    opacity: 0.8;
+    zoom: 1;
+}
+
+#search_result .list .c_normal .box_card_img,
+#info_area .list .c_normal .box_card_img {
+    width: 96px;
+    min-height: 140px;
+    background: #ffffff;
+    background-size: 100%;
+    margin: 5px;
+}
+
+#dnm::-webkit-input-placeholder {
+    font-size: 1.2rem;
+    /* color: #4444bb; */
+    /* opacity: 80%; */
+    /* font-family: "メイリオ"; */
 }

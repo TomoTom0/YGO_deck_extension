@@ -8,17 +8,9 @@ const deleteKeyword = async (e) => {
 }
 
 const listen_clickAndDbclick = async () => {
-
-
-    // for (const [k, v] of Object.entries(Object.assign(callId2Func, callId2Func_await))) {
-    //     const button = document.getElementById(k.slice(1));
-    //     if (button !== null) button.addEventListener("click", v);
-    //     else console.log(k.slice(1))
-    // }
     let clicked = false;
     document.addEventListener("mousedown", async (e) => {
         if (clicked === true) {
-            console.log("dbclicked");
             listen_dbclick(e);
             clicked = false;
             return;
@@ -26,55 +18,60 @@ const listen_clickAndDbclick = async () => {
         clicked = true;
         setTimeout(async () => {
             if (clicked === true) {
-                console.log("clicked");
-                await listen_mousedown(e);
-                await listen_click(e);
+                listen_mousedown(e);
             }
             clicked = false;
         }, 200);
-        // const sel = document.getSelection()
-        // if (sel.rangeCount > 0) {
-        //     const ran = sel.getRangeAt(0)
-        //     console.log(ran["startContainer"], ran["endContainer"])
-        //     const imset = ran["startContainer"].closest("div.image_set, div#card_list")
-        //     const spans = Array.from(imset.querySelectorAll("span:has(img), div:has(img)")
-        //     ).filter(d => [0,2].indexOf(d.compareDocumentPosition(ran["startContainer"]))!==-1 &&
-        //     [0,4].indexOf(d.compareDocumentPosition(ran["endContainer"]))!==-1)
-        //     console.log(spans)
-        // }
-        // await listen_mousedown(e);
-        // await listen_click(e);
-        // return false;
     })
-    // const spliters=document.querySelectorAll("div.flex_splitter");
-    // function resize(e) {
-    //     const target = e.target.matches("div.flex_splitter") ? e.target : e.target.closest("div.flex_splitter");
-    //     const left= document.getElementById(target.getAttribute("left-id"))//.previousElementSibling;
-    //     // console.log(e,target, left)
-    //     const size = `${e.x -9}px`; // 8 = スプリッタの幅の半分
-    //     left.style["flex-basis"] = "calc("+size+" - 4rem)";
-    // }
-    // for (const splitter of spliters){
-    //     splitter.addEventListener("mousedown", (event) => {
-    //         document.addEventListener("mousemove", resize, false);
-    //         document.addEventListener("mouseup", () => {
-    //             document.removeEventListener("mousemove", resize, false);
-    //         }, false);
-    //       });    
-    // }
 
+    let clicked2 = false;
+    document.addEventListener("click", async (e) => {
+        if (clicked2 === true) {
+            clicked2 = false;
+            return;
+        }
+        clicked2 = true;
+        setTimeout(async () => {
+            if (clicked2 === true) {
+                await listen_click(e);
+            }
+            clicked2 = false;
+        }, 200);
+    })
 
 }
 
 const listen_dbclick = async (e) => {
-    if (e.target.matches("#card_frame img, span:has(img.img_chex),span:has(img.img_chex) *, div.box_card_img:has(img), div.box_card_img:has(img) *")) {
-        // console.log(e.target.parentElement.querySelector("img"))
+    if (e.button === 0 && e.target.matches("#card_frame img, span:has(img.img_chex),span:has(img.img_chex) *, div.box_card_img:has(img), div.box_card_img:has(img) *")) {
         const img = e.target.closest("#card_frame, div.box_card_img, span:has(img.img_chex)").querySelector("img");
         if (img === null) return;
-        const cid = img.getAttribute("card_cid");
-        if (cid === null) return false;
-        openCardInfoArea(cid);
-    }
+        const url = img.getAttribute("card_url");
+        if (url === null) return false;
+        openUrlInfoArea(url);
+    } else if (e.button === 2) {
+        // let isIntextMenuOpen = false;
+
+        // document.addEventListener("contextmenu", function (e) {
+        //     console.log(e);
+
+        //     isIntextMenuOpen = true
+        // });
+        // function hideContextmenu(e) {
+        //     if (isIntextMenuOpen) {
+        //         console.log(e);
+        //     }
+
+        //     isIntextMenuOpen = false;
+        // }
+        // $(window).blur(hideContextmenu);
+
+        // $(document).click(hideContextmenu);
+        // e.preventDefault();
+        backNextInfoArea(-1);
+        // e.stopPropagation();
+        // console.log(e);
+        // console.log(document.getElementById('contextMenuId'))
+    } else if (e.button === 0) backNextInfoArea(1);
 
 }
 
@@ -90,7 +87,6 @@ const listen_click = async (e) => {
     }
     const callId2Func_await = {
         "#button_guess": guess_clicked,
-        "#button_importFromYdk": importFromYdk,
         "#button_sortSave": sortSaveClicked,
         "#button_backToView": backToView,
         "#button_reloadSort": reloadSort,
@@ -178,8 +174,22 @@ const listen_click = async (e) => {
         if (target_class.contains("button_save")) {
             const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
             const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
-            const row_results = obtainRowResults(df);
-            const res = await _Regist_fromYGODB(html_parse_dic);
+            const row_results = obtainEditImg_RowResults();
+            importDeck(row_results);
+            // console.log(row_results);
+            const html_parse_dic = parse_YGODB_URL();
+            //const url_ope2 = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" +
+            //    (new URLSearchParams(html_parse_dic)).toString();
+            const serialized_dic = {
+                ope: "ope=3",
+                wname: "wanme=" + obtain_YGODB_fromHidden("wname"),
+                ytkn: "ytkn=" + obtain_YGODB_fromHidden("ytkn"),
+                header: $("#deck_header input, #deck_header select, #deck_header textarea").serialize(),
+                deck: serializeRowResults(row_results)
+            }
+            const serialized_data = Object.values(serialized_dic).join("&");
+            // console.log(serialized_data);
+            const res = await _Regist_fromYGODB(html_parse_dic); // , serialized_data
             if (res.error) {
                 console.log("Failed to save");
             }
@@ -278,22 +288,26 @@ const listen_mousedown = async (e) => {
     } else if (e.target.matches("#info_faq div.t_body>div.t_row, #info_faq div.t_body>div.t_row *")) {
         const input_link = e.target.closest("div.t_row").querySelector("input.link_value");
         // console.log(input_link)
-        const fid = input_link.value.match(/fid=([^&]+)/)[1];
-        openFaqInfoArea(fid);
-    } else if (e.target.matches("#info_faq a")) {
+        // const fid = input_link.value.match(/fid=([^&]+)/)[1];
+        openUrlInfoArea(input_link.value)
+        // openFaqInfoArea(fid);
+    } else if (e.target.matches("#info_faq a, #update_list>div.t_body>div.t_row>div.inside, #update_list>div.t_body>div.t_row>div.inside *")) {
         const target = e.target;
-        const link = target.getAttribute("_href");
-        const cid_match = link.match(/cid=([^&]+)/);
-        const fid_match = link.match(/fid=([^&]+)/);
+        const link = target.getAttribute("_href") || target.closest("div.inside").querySelector("input.link_value").value;
+
+        // const cid_match = link.match(/cid=([^&]+)/);
+        // const fid_match = link.match(/fid=([^&]+)/);
+        if (link === null) return;
         if (e.button === 1) {
             window.open(link, "_blank");
             return;
         }
-        if (cid_match !== null) {
-            openCardInfoArea(cid_match[1]);
-        } else if (fid_match !== null) {
-            openFaqInfoArea(fid_match[1]);
-        }
+        openUrlInfoArea("https://www.db.yugioh-card.com" + link.replace("https://www.db.yugioh-card.com", ""));
+        // if (cid_match !== null) {
+        //     openCardInfoArea(cid_match[1]);
+        // } else if (fid_match !== null) {
+        //     openFaqInfoArea(fid_match[1]);
+        // }
 
         // # ------- deck image --------
     } else if (e.target.matches("#deck_image div.image_set span:has(img), #deck_image div.image_set span:has(img) *")) {
@@ -315,8 +329,9 @@ const listen_mousedown = async (e) => {
             window.open(url);
 
             return;
-        } else if (([0].indexOf(e.button) !== -1 && e.ctrlKey) && $(img_target).attr("card_cid") !== undefined) {
-            await openCardInfoArea($(img_target).attr("card_cid"));
+        } else if (([0].indexOf(e.button) !== -1 && e.ctrlKey) && $(img_target).attr("card_url") !== undefined) {
+            // await openCardInfoArea($(img_target).attr("card_url"));
+            openUrlInfoArea($(img_target).attr("card_url"))
             return;
         }
         else if (!e.target.matches("div.image_set_MouseUI *") && !sideChangeOnViewIsValid) return;
@@ -361,7 +376,8 @@ const listen_mousedown = async (e) => {
             const change_now = (from_set_type === "temp") ? 1 : 0;
             if (num_now + change_now <= 3) sideChange_deck(df, img_target, onEdit);
         }
-    } else if (e.target.matches("#search_result #card_list .t_row img, #info_text img.img_chex, #info_text img.img_frame")) {
+        // # ------ search result, info area ---------
+    } else if (e.target.matches("#search_result #card_list .t_row img, #info_area img.img_chex")) {
         e.preventDefault();
         const img_target = e.target;
         const cardInfo_tmp = ["name", "id", "cid", "type", "url"].map(d => Object({ [d]: $(img_target).attr(`card_${d}`) }));
@@ -375,7 +391,10 @@ const listen_mousedown = async (e) => {
                     else return null;
                 }).filter(d => d !== null)[0];
         const cardInfo = Object.assign(...cardInfo_tmp, { limit: card_limit });
-        if ([0, 2].indexOf(e.button) !== -1) {
+        if (([0].indexOf(e.button) !== -1 && e.ctrlKey) && $(img_target).attr("card_url") !== undefined) {
+            openUrlInfoArea($(img_target).attr("card_url"))
+            return;
+        } else if ([0, 2].indexOf(e.button) !== -1) {
             const row_results = obtainRowResults(df)//obtainRowResults_Edit();
             const num_now_dic = {
                 text: () => Object.values(row_results).map((d, ind) => {
