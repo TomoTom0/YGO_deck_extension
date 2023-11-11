@@ -1,7 +1,6 @@
 ﻿"use strict";
 
-
-const news_message = " / New Updates about Info Area are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension\" target=\"_blank\">Read Here</a>"
+const news_message = " / New Updates about Info Area are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension/blob/5df4dcd0c8e38069576ad58d0c617599b10b97d6/intro/NEWS_v2p1.md\" target=\"_blank\">Read Here</a>"
 
 //------------------------------------
 //         #  on loading
