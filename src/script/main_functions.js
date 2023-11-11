@@ -1352,7 +1352,7 @@ const showSelectedOption = () => {
 // # insert deck image
 const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: null }, card_class_ind = "0_1", card_limit = "not_limited") => {
     const span = $("<span>", {
-        style: "max-width: min(6.7%, 65px); padding:1px; box-sizing:border-box; display: block;position: relative;"
+        style: "max-width: min(6.5%, 65px); padding:1px; box-sizing:border-box; display: block;position: relative;"
     });
 
     const card_input = Object.assign({ name: null, cid: null }, card_name_cid);
@@ -1371,7 +1371,8 @@ const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: 
         card_url: `https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=${cid_now}`,
         loading: "lazy",
         src: `https://www.db.yugioh-card.com/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid_now}&ciid=1&enc=${encImg_now}&osplang=1`,
-        style: "position: relative; width: 100%; cursor:pointer;"
+        style: "position: relative; width: 100%; cursor:pointer;",
+        oncontextmenu: "return false;"
     });
     span.attr("title", name_now);
     span.append(img_tmp);
@@ -1726,7 +1727,8 @@ const updateDeckCount = () => {
 
 // # operate area
 
-const setArticleWidth = (flag_narrow = true) => {
+const setArticleWidth = (flag_narrow = null) => {
+    flag_narrow = flag_narrow !== null ? flag_narrow : Array.from(document.querySelectorAll("article>div>div")).filter(d => d.style.display != "none").length != 1;
     const article = document.getElementsByTagName("article")[0];
     const article_body = document.getElementById("article_body");
     if (flag_narrow === true) {
@@ -1735,6 +1737,13 @@ const setArticleWidth = (flag_narrow = true) => {
     } else {
         article.style["max-width"] = "";
         article_body.style["max-width"] = "auto";
+    }
+    if (document.getElementById("button_fixScroll").classList.contains("red")) {
+        const elm = document.getElementById("article_body");
+        const ratio = 0.98 * window.innerHeight / elm.scrollHeight;
+        elm.style["transform-origin"] = `top`;
+        elm.style["transform"] = `scale(${ratio})`
+
     }
 }
 
@@ -1794,8 +1803,8 @@ const operate_fixScroll = (toFixIn = null) => {
     // const search_area = document.querySelector();
     // const info_area = document.querySelector();
     // const deck_area = document.querySelector();
-    const all_width = Object.values(areas_elm).map(d => d.clientWidth).reduce((acc, cur) => acc + cur, 0);
-    const ratios = Object.assign(...Object.entries(areas_elm).map(([k, v]) => Object({ [k]: v.clientWidth / all_width })));
+    // const all_width = Object.values(areas_elm).map(d => d.clientWidth).reduce((acc, cur) => acc + cur, 0);
+    // const ratios = Object.assign(...Object.entries(areas_elm).map(([k, v]) => Object({ [k]: v.clientWidth / all_width })));
     if (toFix === true) {
         area.style.position = "fixed";
         area.style.top = "0vh";
@@ -1804,18 +1813,21 @@ const operate_fixScroll = (toFixIn = null) => {
         wrapper.style.height = "100%";
         search_res.style["max-height"] = "90vh"
         areas_elm.info.style["max-height"] = "95vh"
-        areas_elm.deck.style["height"] = "100vh"
+        // areas_elm.deck.style["height"] = "100vh"
         areas_elm.deck.style["overflow-y"] = "visible"
         for (const [k, elm] of Object.entries(areas_elm)) {
             if (k == "deck") {
-                const ratio = 0.98 * window.innerHeight / elm.scrollHeight;
-                const valid_width = Math.max(elm.scrollWidth * ratio, ratios[k] * ratio * window.innerWidth);
+                const ratio = 0.98 * Math.min(1, window.innerHeight / elm.scrollHeight);
+                // const valid_width = Math.max(elm.scrollWidth * ratio, ratios[k] * ratio * window.innerWidth);
                 elm.style["transform-origin"] = `top`;
-                elm.style["transform"] = `scale( ${ratio}, ${valid_width / elm.scrollWidth})`; // calc( 0.98 * 100vh / 100% )
-                elm.style["flex-basis"] = `${valid_width}px`;
+                elm.style["transform"] = `scale(${ratio})`
+                // elm.style["transform"] = `scale(  calc( 98vh / 100% ) )`; // calc( 0.98 * 100vh / 100% )
+                // elm.style["object-fit"] = "contain"
+                // elm.style["flex-basis"] = `${valid_width}px`;
                 // elm.style["gap"]="5px 5px";
                 // console.log(ratio, valid_width, elm.scrollHeight, elm.scrollWidth, window.innerHeight, window.innerWidth)
-            } else elm.style["flex-basis"] = `${ratios[k] * 100}vw`;
+            }
+            // else elm.style["flex-basis"] = `${ratios[k] * 100}vw`;
         }
         for (const elm of [header, spnav, pan_nav, footer_nav]) {
             elm.style.display = "none";
@@ -1831,7 +1843,7 @@ const operate_fixScroll = (toFixIn = null) => {
         area.style["width"] = "";
         footer.style.position = "";
         footer.style.top = "";
-        areas_elm.deck.style["overflow-y"] = "scroll"
+        // areas_elm.deck.style["overflow-y"] = "scroll"
         for (const elm of [header, spnav, pan_nav, footer_nav]) {
             elm.style.display = "";
         }
@@ -1840,7 +1852,7 @@ const operate_fixScroll = (toFixIn = null) => {
             elm.style.top = "";
         }
         for (const [k, elm] of Object.entries(areas_elm)) {
-            elm.style["flex-basis"] = `30vw`;
+            // elm.style["flex-basis"] = `30vw`;
             elm.style["transform"] = ``;
             // elm.style["max-width"]=`none`;
             // elm.style["min-width"]=`none`;
@@ -1849,7 +1861,7 @@ const operate_fixScroll = (toFixIn = null) => {
         search_res.style["max-height"] = "70vh"
         areas_elm["info"].style["max-height"] = "80vh"
         areas_elm["deck"].style["max-height"] = ""
-        areas_elm["deck"].style["flex-basis"] = "35vw"
+        // areas_elm["deck"].style["flex-basis"] = "30vw"
 
 
     }

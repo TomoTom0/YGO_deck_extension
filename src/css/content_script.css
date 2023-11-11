@@ -81,17 +81,19 @@
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_forb_unlim.svg);
     background-color: #dc0000;
     background-size: 50%;
+    max-height: 30%;
 }
 
 .deck_image .image_set span.limited>div span {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_limit_unlim.svg);
     background-color: #fb8c32;
+    max-height: 30%;
 }
 
 .deck_image .image_set span.semi_limited>div>span {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_slim_unlim.svg);
     background-color: #fbb830;
-
+    max-height: 30%;
 }
 
 .deck_image .image_set span>div span {

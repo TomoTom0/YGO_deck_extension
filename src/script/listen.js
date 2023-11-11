@@ -30,6 +30,7 @@ const listen_clickAndDbclick = async () => {
             }
             clicked = false;
         }, 200);
+        setArticleWidth();
         // const sel = document.getSelection()
         // if (sel.rangeCount > 0) {
         //     const ran = sel.getRangeAt(0)
@@ -66,12 +67,10 @@ const listen_clickAndDbclick = async () => {
 
 const listen_dbclick = async (e) => {
     if (e.button === 0 && e.target.matches("#card_frame img, span:has(img.img_chex),span:has(img.img_chex) *, div.box_card_img:has(img), div.box_card_img:has(img) *")) {
-        // console.log(e.target.parentElement.querySelector("img"))
         const img = e.target.closest("#card_frame, div.box_card_img, span:has(img.img_chex)").querySelector("img");
         if (img === null) return;
         const url = img.getAttribute("card_url");
         if (url === null) return false;
-        // openCardInfoArea(cid);
         openUrlInfoArea(url);
     } else if (e.button === 2) {
         // let isIntextMenuOpen = false;
@@ -388,7 +387,7 @@ const listen_mousedown = async (e) => {
             const change_now = (from_set_type === "temp") ? 1 : 0;
             if (num_now + change_now <= 3) sideChange_deck(df, img_target, onEdit);
         }
-    } else if (e.target.matches("#search_result #card_list .t_row img, #info_text img.img_chex, #info_text img.img_frame")) {
+    } else if (e.target.matches("#search_result #card_list .t_row img, #info_area img.img_chex")) {
         e.preventDefault();
         const img_target = e.target;
         const cardInfo_tmp = ["name", "id", "cid", "type", "url"].map(d => Object({ [d]: $(img_target).attr(`card_${d}`) }));
@@ -402,7 +401,10 @@ const listen_mousedown = async (e) => {
                     else return null;
                 }).filter(d => d !== null)[0];
         const cardInfo = Object.assign(...cardInfo_tmp, { limit: card_limit });
-        if ([0, 2].indexOf(e.button) !== -1) {
+        if (([0].indexOf(e.button) !== -1 && e.ctrlKey) && $(img_target).attr("card_url") !== undefined) {
+            openUrlInfoArea($(img_target).attr("card_url"))
+            return;
+        } else if ([0, 2].indexOf(e.button) !== -1) {
             const row_results = obtainRowResults(df)//obtainRowResults_Edit();
             const num_now_dic = {
                 text: () => Object.values(row_results).map((d, ind) => {

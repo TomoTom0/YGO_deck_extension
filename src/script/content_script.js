@@ -276,7 +276,7 @@ window.onload = async function () {
             const article = $("article");
             article.css({ "max-width": "initial", "scroll-snap-type": "y" });
             const div_article_body = $("div#article_body");
-            $(div_article_body).css({ "flex": "5 1 35vw", minWidth: "10vw", "overflow-y": "scroll" });//, "max-width": "35vw"
+            $(div_article_body).css({ "flex": "5 1 35vw", minWidth: "10vw" });//, "max-width": "35vw"
 
             const div_search = parseHTML(obtainSearchForm());
             div_search.querySelector("#submit_area").style.flex = "2 0 10%";
