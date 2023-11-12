@@ -39,6 +39,11 @@ const listen_clickAndDbclick = async () => {
         }, 200);
     })
 
+    // longPress.init({
+    //     el: "#info_area",
+    //     second: 1
+    // })
+
 }
 
 const listen_dbclick = async (e) => {
@@ -105,7 +110,14 @@ const listen_click = async (e) => {
     const settings = await operateStorage({ settings: JSON.stringify({}) }, "sync")
         .then(items => Object.assign(defaultSettings, JSON.parse(items.settings), { valid_feature_sideChange: true }));
 
-
+    const callId2Func_base = {
+        "#button_searchShowHide": operate_searchArea,
+        "#button_infoShowHide": operate_infoArea,
+        "#button_fixScroll": operate_fixScroll,
+    }
+    const callId2Func_await = {
+    }
+    const callId2Func = Object.assign(callId2Func_base, callId2Func_await)
     // else if (e.target.matches(Object.keys(callId2Func).map(d => `${d}, ${d} *`).join(", "))) {
     //     const selector = Object.keys(callId2Func).join(", ");
     //     const target = (e.target.matches(selector)) ? e.target : e.target.closest(selector);
@@ -140,6 +152,10 @@ const listen_click = async (e) => {
         const button_target = e.target;
         button_target.previousElementSibling.value = "";
         // if (button_target.matches("#deck_header dl#deck_version_box *")) await setDeckVersionTagList(false);
+    } else if (e.target.matches(Object.keys(callId2Func).map(d => `${d}, ${d} *`).join(", "))) {
+        const selector = Object.keys(callId2Func).join(", ");
+        const target = (e.target.matches(selector)) ? e.target : e.target.closest(selector);
+        callId2Func["#" + target.id](e);
     } else if (e.target.matches("#header_box a.button_deckVersion, #header_box a.button_deckVersion *")) {
         const button_target = e.target.matches("a.button_deckVersion") ? e.target : $(e.target).parents("a.button_deckVersion")[0];
         $(button_target).toggleClass("red");
@@ -247,9 +263,6 @@ const listen_click = async (e) => {
 
 const listen_mousedown = async (e) => {
     const callId2Func_base = {
-        "#button_searchShowHide": operate_searchArea,
-        "#button_infoShowHide": operate_infoArea,
-        "#button_fixScroll": operate_fixScroll,
         "#button_visible_header": toggleVisible_deckHeader
     }
     const callId2Func_await = {
@@ -259,6 +272,7 @@ const listen_mousedown = async (e) => {
         "#button_reloadSort": reloadSort,
         // "#button_delete_keyword":deleteKeyword
     }
+
     const callId2Func = Object.assign(callId2Func_base, callId2Func_await)
     const df = await obtainDF(obtainLang());
     // const sideChangeOnViewIsValid = ["1", null].indexOf(html_parse_dic.ope) !== -1 &&
@@ -297,13 +311,11 @@ const listen_mousedown = async (e) => {
     } else if (e.target.matches("#faq>ul>li, #faq>ul>li *")) {
         const main_target = (e.target).matches("li") ? e.target : e.target.closest("li");
         const ul = main_target.parentElement;
-        // console.log(main_target, ul)
         if (main_target.classList.contains("now")) return;
         for (const li of ul.children) {
             li.classList.toggle("now");
         }
         for (const div_article of ul.parentElement.parentElement.querySelectorAll("div.info_article")) {
-            // console.log(div_article.style.display, div_article.style.display=="none", div_article.style.display=="block")
             if (div_article.style.display == "none") div_article.style.display = "block";
             else div_article.style.display = "none";
             // div_article.classList.toggle("none");
@@ -311,27 +323,16 @@ const listen_mousedown = async (e) => {
         return;
     } else if (e.target.matches("#info_faq div.t_body>div.t_row, #info_faq div.t_body>div.t_row *")) {
         const input_link = e.target.closest("div.t_row").querySelector("input.link_value");
-        // console.log(input_link)
-        // const fid = input_link.value.match(/fid=([^&]+)/)[1];
         openUrlInfoArea(input_link.value)
-        // openFaqInfoArea(fid);
     } else if (e.target.matches("#info_faq a, #update_list>div.t_body>div.t_row>div.inside, #update_list>div.t_body>div.t_row>div.inside *")) {
         const target = e.target;
         const link = target.getAttribute("_href") || target.closest("div.inside").querySelector("input.link_value").value;
-
-        // const cid_match = link.match(/cid=([^&]+)/);
-        // const fid_match = link.match(/fid=([^&]+)/);
         if (link === null) return;
         if (e.button === 1) {
             window.open(link, "_blank");
             return;
         }
         openUrlInfoArea("https://www.db.yugioh-card.com" + link.replace("https://www.db.yugioh-card.com", ""));
-        // if (cid_match !== null) {
-        //     openCardInfoArea(cid_match[1]);
-        // } else if (fid_match !== null) {
-        //     openFaqInfoArea(fid_match[1]);
-        // }
 
         // # ------- deck image --------
     } else if (e.target.matches("#deck_image div.image_set span:has(img), #deck_image div.image_set span:has(img) *")) {
@@ -456,5 +457,45 @@ const listen_mousedown = async (e) => {
     ).then(temps => temps.script_initial_count);
     if (script_initial_count !== null) {
         $(`script[type='text/javascript']:gt(${script_initial_count - 1})`).remove();
+    }
+}
+
+
+const longPress = {
+    //プロパティ
+    el: "",
+    count: 0,
+    second: 1,
+    interval: 10,
+    timerId: 0,
+
+    //メソッド
+    init: function (param) {
+        //引数のパラメータ取得
+        this.el = document.querySelector(param.el);
+        this.second = param.second;
+        //イベントリスナー
+        this.el.addEventListener('mousedown', () => { this.start() }, false);
+        this.el.addEventListener('mouseup', () => { this.end() }, false);
+    },
+    start: function () {
+        this.timerId = setInterval(() => {
+
+            this.count++;
+
+            if (this.count / 100 === this.second) {
+                //長押し判定時の処理
+                this.myFunc();
+                this.end();
+            }
+
+        }, this.interval);
+    },
+    end: function () {
+        clearInterval(this.timerId);
+        this.count = 0;
+    },
+    myFunc: function () {
+        console.log('ボタンを' + this.second + '秒長押ししました！');
     }
 }

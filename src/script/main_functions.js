@@ -590,7 +590,6 @@ const _Regist_fromYGODB = async (
         dh_copy.innerHTML = dh.innerHTML;
         document.getElementById("form_regist").prepend(dh_copy);
     }
-    // toggleVisible_deckHeader(false);
 
     const serialized_data = (serialized_data_in || "ope=3&" + $("#form_regist").serialize());
     dh_copy.remove();
@@ -1328,15 +1327,14 @@ const backToView = async () => {
 
 // # deck header show / hide
 const toggleVisible_deckHeader = (e = null, toShow_in = null) => {
-    const e_button = e === null ? 0 : e.button;
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     if (["2", "8"].indexOf(html_parse_dic.ope) === -1) return;
-    const button = $("#button_visible_header");
-    const toShow = (typeof (toShow_in) !== "boolean") ? $(button).hasClass("show") : toShow_in;
+    const button = document.querySelector("#button_visible_header");
+    const toShow = (typeof (toShow_in) !== "boolean") ? button.classList.contains("show") : toShow_in;
     const showHide = { true: "show", false: "hide" };
-    $(button).removeClass(showHide[toShow]);
-    $(button).addClass(showHide[!toShow]);
-    $(button).toggleClass("red");
+    button.classList.remove(showHide[toShow]);
+    button.classList.add(showHide[!toShow]);
+    button.classList.toggle("red");
     // const button_fit=document.querySelector("#button_fixScroll");
     // if (button_fit!==null && button_fit.classList.contains("red")){
     //     const button_area=document.querySelectorAll("div.div_officialButton.div_otherButtons");
@@ -1353,6 +1351,13 @@ const toggleVisible_deckHeader = (e = null, toShow_in = null) => {
             $(dl_tmp).css({ display: "" }) // relativeにするとnoneで固定された
         }
     }
+    move_deckHeader(e, toShow);
+}
+const move_deckHeader = (e = null, toShow_in = null) => {
+    const button = document.querySelector("#button_visible_header");
+    const toShow = (typeof (toShow_in) !== "boolean") ? button.classList.contains("red") : toShow_in;
+    const e_button = e === null ? 0 : e.button;
+
     const button_fit = document.getElementById("button_fixScroll");
     const deck_body = document.getElementById("article_body");
     const header = document.getElementById("deck_header");
@@ -1851,19 +1856,19 @@ const setArticleWidth = (flag_narrow = null) => {
         article_body.style["max-width"] = "auto";
     }
     resizeDeckArea();
-    toggleVisible_deckHeader();
+    move_deckHeader();
 }
 
 const resizeDeckArea = () => {
     if (document.getElementById("button_fixScroll").classList.contains("red")) {
         const elm = document.getElementById("article_body");
-        const ratio = 0.98 * window.innerHeight / elm.scrollHeight;
+        const ratio = 0.98 * Math.min(1, window.innerHeight / elm.scrollHeight);
         elm.style["transform-origin"] = `top`;
         elm.style["transform"] = `scale(${ratio})`
     }
 }
 
-const operate_searchArea = (toShowIn = null) => {
+const operate_searchArea = (e = null, toShowIn = null) => {
     const searchArea = document.getElementById("search_area");
     const classList = searchArea.classList;
     if (toShowIn === null) classList.toggle("none");
@@ -1878,7 +1883,7 @@ const operate_searchArea = (toShowIn = null) => {
     setArticleWidth(visible_cells.length != 1);
 }
 
-const operate_infoArea = (toShowIn = null) => {
+const operate_infoArea = (e = null, toShowIn = null) => {
     const infoArea = $("#info_area");
     if (toShowIn === null) $(infoArea).toggleClass("none");
     else if (toShowIn === true) $(infoArea).removeClass("none");
@@ -1893,7 +1898,7 @@ const operate_infoArea = (toShowIn = null) => {
 
 }
 
-const operate_fixScroll = (toFixIn = null) => {
+const operate_fixScroll = (s = null, toFixIn = null) => {
     const area = document.getElementById("bg");
     if (toFixIn === null) area.classList.toggle("large");
     else if (toFixIn === true) area.classList.remove("large");

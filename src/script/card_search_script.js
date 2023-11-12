@@ -57,6 +57,7 @@ const backNextInfoArea = async (change = -1) => {
         const pos_new = pos + change;
         // console.log(pos_new)
         // urlHistory.urls.push(url_text);
+        console.log(pos, urlHistory.urls)
         if (pos_new < 0 || pos_new >= urlHistory.urls.length) return null;
         urlHistory.pos = pos_new;
         const url = urlHistory.urls[pos_new];
@@ -107,7 +108,7 @@ const openUrlInfoArea = async (url_in, days = CACHE_DAYS, history_add = true, ke
                 }],
             obtainUrl: params => joinUrl(
                 "https://www.db.yugioh-card.com/yugiohdb/card_search.action",
-                Object.assign({ ope: 2, mode: 1, sess: 4 }, params))
+                Object.assign({ ope: 2, mode: 1, sess: 4, rp: 2000 }, params))
         },
         product: {
             // func: openProductInfoArea,
@@ -198,6 +199,11 @@ const _openUrlInfoArea = async (url, key, params = {}) => {
         broad_title.innerHTML = doc_article.querySelector("header#broad_title").innerHTML;
         article_text += broad_title.outerHTML
     }
+    const title = (doc_article.querySelector("meta[name='title']") ||
+        doc_article.querySelector("meta[property='og:title']")
+    ).getAttribute("content").replace(
+        / \| 遊戯王 オフィシャルカードゲーム デュエルモンスターズ - カードデータベース/,
+        "");
     if (key === "text") {
         const ul = `<div id="faq" class="tablink">
             <ul>
@@ -224,7 +230,7 @@ const _openUrlInfoArea = async (url, key, params = {}) => {
 
     const cacheInfos_new = Object.assign(
         cacheInfos,
-        { [url]: { html: info_div.innerHTML, time: Date.now() } });
+        { [url]: { html: info_div.innerHTML, time: Date.now(), title: title } });
     operateStorage({ cacheInfos: JSON.stringify(cacheInfos_new) }, "local", "set"); // await
     return article_text;
 }
@@ -248,6 +254,7 @@ const _convertDivText = async (div_text, cid) => {
     const cardImgSet = div_text.querySelector("#CardImgSet");
     cardImgSet.style.width = "50%";
     cardImgSet.style["max-width"] = "100%";
+    cardImgSet.querySelector("div#card_frame>div.set").style.background = "#ffffff";
     const img = cardImgSet.querySelector("div#card_frame>div.set>a>img");
     img.classList.remove("none");
     const card_url = joinUrl("/yugiohdb/card_search.action", { ope: 2, cid: cid });
