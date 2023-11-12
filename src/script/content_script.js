@@ -1,7 +1,6 @@
 ﻿"use strict";
 
-
-const news_message = " / New Updates about Info Area are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension\" target=\"_blank\">Read Here</a>"
+const news_message = " / New Updates about Info Area are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension/blob/5df4dcd0c8e38069576ad58d0c617599b10b97d6/intro/NEWS_v2p1.md\" target=\"_blank\">Read Here</a>"
 
 //------------------------------------
 //         #  on loading
@@ -188,7 +187,7 @@ window.onload = async function () {
             showMessage(`Loaded ${news_message}`);
         }
         if (settings.valid_feature_deckHeader === true) {
-            toggleVisible_deckHeader(settings.default_visible_header || IsCopyMode);
+            toggleVisible_deckHeader(null, settings.default_visible_header || IsCopyMode);
 
             // deck header
             const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
@@ -209,6 +208,12 @@ window.onload = async function () {
             $(`#button_size_header_category`).after(button_guess);
             $(".box_default .box_default_table dt span").css({ "min-width": "0" });
             showSelectedOption();
+            const header = document.getElementById("deck_header");
+            // header.style.overflowY = "scroll"
+            const header_bottom = header.querySelector("#bottom_btn_set");
+            const header_table = header.querySelector("div.box_default_table");
+            header_table.before(header_bottom);
+
         }
         if (settings.valid_feature_deckEditImage === true) {
             $("#article_body").attr({ oncontextmenu: "return false;" })
@@ -260,7 +265,7 @@ window.onload = async function () {
                     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             };
             const main_span_num = document.querySelector("#main > div.subcatergory > div.top > span:last-child");
-            console.log(main_span_num)
+            // console.log(main_span_num)
 
             for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
                 if (settings.valid_feature_deckManager === false && !IsCopyMode && ["back"].indexOf(button_type) !== -1) continue;
@@ -299,7 +304,7 @@ window.onload = async function () {
             });
             const div_search_result = $("<div>", {
                 id: "search_result",
-                style: "max-height:70vh;overflow-y:scroll;",
+                style: "max-height:calc(95vh - 160px);overflow-y:scroll;",
                 oncontextmenu: "return false;"
             });
             $(div_body).append(div_search.outerHTML);
@@ -523,6 +528,11 @@ window.onload = async function () {
         //     console.log(JSON.stringify(urlHistory))
         // })
         // backNextInfoArea(-1);
+        const canvas = await html2canvas(document.querySelector("#deck_image"))
+        console.log(canvas)
+        // .then(res => {
+        //     document.querySelector("#info_area").innerHTML = res.outerHTML
+        // })
     });
 
 

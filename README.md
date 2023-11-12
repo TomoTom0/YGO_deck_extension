@@ -86,12 +86,12 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
 - <img src="src/images/svg/download_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピをExportする
 - <img src="src/images/svg/upload_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピをImportする
 
-<img src="intro/imgs/tutorial_importExport.gif" style="width:60vw;">
+<img src="intro/imgs/tutorial_exportImport.gif" style="width:60vw;">
 
 ## Option Page
 
 - [拡張機能のOptionページ](chrome-extension://jdgobeohbdmglcmgblpodggmgmponihc/script/options.html)で各種設定を変更できます。
-- キャッシュに保存したデッキレシピを確認、削除、Exportすることができます。
+- キャッシュに保存したデッキレシピを確認、削除することができます。
 
 <img src="intro/imgs/tutorial_optionPage.png" style="width:60vw;">
 

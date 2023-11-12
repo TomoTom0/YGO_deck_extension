@@ -122,6 +122,11 @@ const openUrlInfoArea = async (url_in, days = CACHE_DAYS, history_add = true, ke
                 Object.assign({ ope: 1, rp: 99999, sess: 1 }, params))
         }
     }
+    const header = document.getElementById("deck_header");
+    // const form = document.getElementById("form_regist");
+    // const info_area = document.getElementById("info_area");
+    if (header.matches("#info_area *")) return;
+
     for (const [key, info] of Object.entries(info_dics)) {
         for (const pattern of info.patterns) {
             if ((key !== key_in) &&
