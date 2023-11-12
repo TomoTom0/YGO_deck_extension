@@ -146,7 +146,8 @@ async function gitFetch(url, opts = {}) {
 const parse_YGODB_URL_body = (url_now = location.href) => {
     return url_now.match(/([^\/\?]+)\??[^\/]*$/)[1];
 }
-const parse_YGODB_URL = (url_now = location.href, nullIsValid = false) => {
+const parse_YGODB_URL = (url_now = null, nullIsValid = false) => {
+    url_now = url_now !== null ? url_now : location.href;
     const html_parse_keys = ["ope", "wname", "ytkn", "cgid", "dno", "request_locale"];
     const html_parse_dic_arr = html_parse_keys.map(key => {
         const match_tmp = url_now.match(new RegExp(`(?<=${key}=)([^&=]+)`, "g"));
@@ -547,6 +548,6 @@ async function updateDB() {
 }
 
 
-$(async function () {
-    await operateStorage({ df: JSON.stringify({}) }, "sync", "set");
-})
+// $(async function () {
+//     await operateStorage({ df: JSON.stringify({}) }, "sync", "set");
+// })

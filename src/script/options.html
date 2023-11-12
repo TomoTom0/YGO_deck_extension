@@ -145,10 +145,10 @@
                                     <select class="custom-control value_settings" id="value_defaultLang"></select>
                                     <label class="custom-control-label">Default Language</label>
                                 </div>
-                                <div class="custom-control custom-checkbox">
+                                <!-- <div class="custom-control custom-checkbox">
                                     <select class="custom-control value_settings" id="value_clickMode"></select>
                                     <label class="custom-control-label">Click Mode in Edit Mode</label>
-                                </div>
+                                </div> -->
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input check_settings"
                                         id="check_addDate">
@@ -185,6 +185,16 @@
                                     <input type="checkbox" class="custom-control-input check_settings"
                                         id="check_default_enlarge_edit">
                                     <label class="custom-control-label">Enlarge View as Default in Edit Mode</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_flag_showCacheDeck">
+                                    <label class="custom-control-label">Not Hide Cache Deck Row in Edit Mode</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input check_settings"
+                                        id="check_flag_showFooterIcons">
+                                    <label class="custom-control-label">Show Footer Icons in Edit Mode</label>
                                 </div>
                                 <!--
                                 <div class="custom-control custom-checkbox">
@@ -258,7 +268,7 @@
         </div>
     </div>
 
-    <script src="../js/jquery-3.5.1.min.js"></script>
+    <script src="../js/jquery-3.6.0.min.js"></script>
     <!--<script src="../js/sql-wasm.min.js"></script>-->
     <script src="../script/main_functions.js"></script>
     <script src="../script/db_functions.js"></script>

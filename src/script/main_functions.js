@@ -19,7 +19,10 @@ const defaultSettings = {
     default_infoArea_visible: true,
     default_fit_edit: false,
     value_defaultLang: "ja",
-    value_clickMode: 2
+    // value_clickMode: 2,
+    flag_showCacheDeck: true,
+    flag_showFooterIcons: true,
+    // flag_headerReplaceInfoArea: true // false => search area
 };
 const defaultString = JSON.stringify(defaultSettings);
 
@@ -191,6 +194,29 @@ const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
         }))*/
 }
 
+const obtainEditImg_RowResults = () => {
+    const row_names = ["monster", "spell", "trap", "extra", "side"];
+    let row_results = Object.assign(
+        ...row_names.map(row_name => Object({
+            [row_name]: { names: [], nums: [], cids: [], limits: [] }
+        })
+        ));
+
+    for (const img of document.querySelectorAll("div.image_set_MouseUI span[style*='display: block;']>img")) {
+        const card_cid = img.getAttribute("card_cid");
+        const card_type = img.getAttribute("card_type");
+        const card_name = img.getAttribute("card_name");
+        if (row_results[card_type].cids.indexOf(card_cid) !== -1) continue;
+        // document.querySelectorAll("div.image_set_MouseUI span[style*='display: block;']>img")
+        const card_num = document.querySelectorAll(`div.image_set_MouseUI:not(.image_set_temp) span[style*='display: block;']:has(img[card_type='${card_type}'][card_cid='${card_cid}'])`).length
+        row_results[card_type].names.push(card_name);
+        row_results[card_type].cids.push(card_cid);
+        row_results[card_type].nums.push(card_num);
+        row_results[card_type].limits.push(img.parentElement.classList[0]);
+    }
+    return row_results;
+}
+
 // from edit mode
 /*const obtainRowResults_Edit = (df = null) => {
     return obtainRowResults(df);
@@ -256,7 +282,7 @@ const _obtainHiddenHeader = (html_edit) => {
     return Object.assign(...["dno", "pflg", "deck_type", "deckStyle"]
         .map(k => {
             const match_res = html_edit.match(new RegExp(`\\(\'#${k}\'\\)\.val\\(\'([^\\)]*)\'\\)`));
-            return { [k]: (match_res == null || match_res.length < 1) ? "" : match_res[1] };
+            return { [decodeURI(k)]: (match_res == null || match_res.length < 1) ? "" : decodeURI(match_res[1]) };
         }))
 }
 
@@ -266,7 +292,8 @@ const _obtainSerializedHeader = (serialized_header, html_edit) => {
     return sps_par.toString();
 }
 
-const obtainDeckHeader_edit = async (html_parse_dic, html_editIn = null) => {
+const obtainDeckHeader_edit = async (html_parse_dic = null, html_editIn = null) => {
+    html_parse_dic = html_parse_dic !== null ? html_parse_dic : parse_YGODB_URL()
     const my_cgid = obtainMyCgid();
     if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return null;
     else if (html_parse_dic.cgid != my_cgid) return null;
@@ -339,9 +366,10 @@ const operateRowResults = (
 }
 
 const guessDeckCategory = async (lower_limit = 4, kwargsIn = {}) => {
+    const df = await obtainDF();
     //const kwargs_default={count:true, value:true};
     //const kwargs=Object.assign(kwargs_default, kwargsIn);
-    const row_results = obtainRowResults();
+    const row_results = obtainRowResults(df);
     const url = "https://www.db.yugioh-card.com/yugiohdb/deck_search.action"
     const body = await obtainStreamBody(url);
     const cats = Array.from($("select#dckCategoryMst>option:not([value=''])", body))
@@ -389,7 +417,7 @@ const showMessage = (content = null) => {
 
 const guess_clicked = async (card_num = 4) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
-    if (html_parse_dic.ope === "1" && $("#message").length === 0) $("div.sort_set div.pulldown").prepend($("<span>", { id: "message" }));
+    // if (html_parse_dic.ope === "1" && $("#message").length === 0) $("div.sort_set div.pulldown").prepend($("<span>", { id: "message" }));
     // const message_area = $("#message");
     // $(message_area).removeClass("none");
     // $(message_area).css({ width: "97%" });
@@ -403,11 +431,13 @@ const guess_clicked = async (card_num = 4) => {
         cat_guessed.map(catInfo => {
             const option = $(`option[value=${catInfo.value}]`, select);
             $(option).prop("selected", true);
+            option[0].setAttribute("selected", true);
             //$(option).attr("checked", true);
             $(option).addClass("guessed");
         });
         const dnm = $("#dnm");
         if ($(dnm).val() === "") $(dnm).val(cat_guessed.map(d => d.name).join(""));
+        showSelectedOption();
     }
 }
 
@@ -546,20 +576,28 @@ const _Regist_fromYGODB = async (
     retry_count = 0) => {
     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
-    const lang = obtainLang()
+    const lang = obtainLang();
     const request_locale = lang != null ? `&request_locale=` + lang : "";
     if (serialized_data_in === null && $("#form_regist").length === 0) return;
     // const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
     // console.log("ope=3&" + $("#form_regist").serialize());
+    const dnm = document.getElementById("dnm");
+    if (dnm.value.length === 0) dnm.value = dnm.getAttribute("value");
+    const dh = document.getElementById("deck_header");
+    const dh_copy = document.createElement("div");
+    dh_copy.style.display = "none";
+    if (dh.matches("#form_regist *") === false) {
+        dh_copy.innerHTML = dh.innerHTML;
+        document.getElementById("form_regist").prepend(dh_copy);
+    }
+    // toggleVisible_deckHeader(false);
+
     const serialized_data = (serialized_data_in || "ope=3&" + $("#form_regist").serialize());
+    dh_copy.remove();
     const dno = serialized_data.match(/dno=(\d+)/)[1];
-    const deck_name = decodeURI(serialized_data.match(/dnm=([^&]+)/)[1]);
-    // const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
-    //     .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
-    // console.log(temps.ytkn, obtain_YGODB_fromHidden("ytkn"))
-    // const ytkn = temps.ytkn || obtain_YGODB_fromHidden("ytkn");
+    const dnm_match = serialized_data.match(/dnm=([^&]+)/);
+    const deck_name = decodeURI(dnm_match[1]);
     const ytkn = await obtainMyYtkn(true, { dno: dno, ope: 2 });
-    // console.log(ytkn);
     const serialized_data_ytkn = serialized_data.replace(/ytkn=[^&]+/, "ytkn=" + ytkn);
     // console.log(serialized_data_ytkn)
     // const sps=new URLSearchParams(serialized_data);
@@ -724,9 +762,11 @@ const load_deckOfficial = async (df, deck_dno, settings, my_cgid = null) => {
     if (settings.valid_feature_deckManager === true) {
         document.getElementById("deck_dno_opened").innerText = deck_dno;
         document.getElementById("dnm").setAttribute("placeholder", deck_name);
+        document.getElementById("dnm").setAttribute("value", deck_name);
         document.getElementById("dnm").value = "";
+
     }
-    document.getElementById("dnm").value = deck_name;
+    // document.getElementById("dnm").value = deck_name;
     // import
     importDeck(row_results);
     if (settings.valid_feature_deckEditImage === true) insertDeckImg(df, row_results);
@@ -1088,8 +1128,9 @@ async function exportAs(form = "id") {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     const dnm = document.getElementById("dnm");
-    const deck_name = [1].indexOf(html_parse_dic.ope) !== -1 ?
-        $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_") :
+    const deck_name = dnm === null ?
+        document.querySelector("meta[name='description']").getAttribute("content").replace(/ \| 遊戯王 オフィシャルカードゲーム デュエルモンスターズ カードデータベース　デッキ詳細$/, "") :
+        // $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_") :
         (dnm.value || dnm.getAttribute("placeholder")); // after 2022/4/18
     const ext_dic = { "id": ".ydk", "name": "_name.txt", "cid": "_cid.txt" }
     const file_name = deck_name + ext_dic[form];
@@ -1112,78 +1153,88 @@ async function exportAs(form = "id") {
 //         # import
 
 async function importFromYdk() {
+    const df = await obtainDF();
     const import_file = $("#button_importFromYdk_input").prop("files")[0];
+    // console.log(import_file)
+    const file_name = import_file.name;
+    const keys = ["name", "id", "cid"];
     const data_tmp = await import_file.text();
     const data_array = split_data(data_tmp);
     const imported_rows = obtain_deck_splited(data_array);
 
-    const row_names = ["monster", "spell", "trap", "extra", "side"];
-    let row_results = Object.assign(
-        ...row_names.map(row_name => Object({
-            [row_name]: { names: [], nums: [], cids: [], limits: [] }
-        })
-        ));
-    const df = await obtainDF(obtainLang());
-    let exceptions = [];
-    // guess file type => id, Jap, Eng
-    /*const encoder=new TextEncoder("utf8");
-    const data_type_judges={
-        includeJap: data_array.filter(d=>!/^#|^!/.test(d))
-            .some(data=>Array.from(data).some(d=>{
-                const bytes=encoder.encode(d);
-                const isKana= (bytes[0]==227 && bytes[1]>=129 && bytes[1]<=131);
-                const isZenAlphabet= (bytes[0]==239 && bytes[1]>=188 && bytes[1]<=190);
-                return isKana || isZenAlphabet;
-        })),
-        onlyNumbers: data_array.filter(d=>!/^#|^!/.test(d)).every(data=>isFinite(data))}
-    const data_type=data_type_judges.includeJap ? "Jap" : data_type_judges.onlyNumbers ? "id" : "Eng"; */
-    for (const [ind_import, rows] of Object.entries(imported_rows)) {
-        for (const row of Array.from(new Set(rows)).map(d => d.trim()).filter(d => d.length > 0)) {
-            // const isID = /^\d+$/.test(id_tmp);
-            if (row.length === 0) continue;
-            let name_tmp = "";
-            const id = (/^\d+$/.test(row)) ? parseInt(row) : null; //isFinite(row) && 
-            const card_name = (id !== null) ? df_filter(df, "name", ["id", id])[0] : row;
-            const cid = (id !== null) ? df_filter(df, "cid", ["id", id])[0] : undefined;
-            // // id
-            // if (/^\d+$/.test(id) && id) {
-            //     name_tmp = df_filter(df, "name", ["id", id])[0];
-            // }
-            // // name
-            // else if (!/^\d+$/.test(id) && id) {
-            //     name_tmp = id.split("\t")[0];
-            // }
-            //console.log(id,id_tmp, name_tmp, ids.map(d => d.split("\t")[0]).filter(d => d == id), ids.map(d => d.split("\t")[0]).filter(d => d == id_tmp));
+    const interpretRowResults = (df, imported_rows, key = "id") => {
+        const row_names = ["monster", "spell", "trap", "extra", "side"];
+        let row_results = Object.assign(
+            ...row_names.map(row_name => Object({
+                [row_name]: { names: [], nums: [], cids: [], limits: [] }
+            })
+            ));
 
-            const num_tmp = rows.map(d => d.split("\t")[0]).filter(d => d == row).length;
-            if (!card_name) exceptions.push(`${id} ${card_name}`);
-            else {
-                let row_ind = 0;
-                let row_name = "";
-                if (ind_import == 0) {
-                    try {
-                        const types_tmp = df_filter(df, "type", ["id", id])[0];
-                        const main_row = ["monster", "spell", "trap"].map(d => d.slice(0, 1).toUpperCase() + d.slice(1));
-                        row_name = main_row.filter(d => types_tmp.split(",").some(dd => dd == d))[0].toLowerCase();
-                        row_ind = row_names.indexOf(row_name);
-                    } catch {
-                        exceptions.push(`${id} ${name_tmp}`);
-                        continue;
+        let exceptions = [];
+        const key2 = ["id", "cid"].filter(d => d !== key)[0];
+        const keys = ["id", "cid", "name"];
+        for (const [ind_import, rows] of Object.entries(imported_rows)) {
+            for (const row of Array.from(new Set(rows)
+            ).map(d => d.trim()).filter(d => d.length > 0)) {
+                if (row.length === 0) continue;
+                // let name_tmp = "";
+                // const val = (/^\d+$/.test(row)) ? parseInt(row) : row; //isFinite(row) && 
+                // const card_name = (val !== null) ? df_filter(df, "name", [key, val])[0] : row;
+                // const val2 = (val !== null) ? df_filter(df, key2, [key, val])[0] : undefined;
+                const vals = Object.assign(...keys.map(d => {
+                    if (d === key) return { [key]: row }
+                    else return { [d]: df_filter(df, d, [key, row])[0] }
+                }))
+
+                const num_tmp = rows.map(d => d.split("\t")[0]).filter(d => d == row).length;
+                if (!vals.name) exceptions.push(`${row} ${vals.name}`);
+                else {
+                    let row_ind = 0;
+                    let row_name = "";
+                    if (ind_import == 0) {
+                        try {
+                            const types_tmp = df_filter(df, "type", ["id", vals.id])[0];
+                            const main_row = ["monster", "spell", "trap"
+                            ].map(d => d.slice(0, 1).toUpperCase() + d.slice(1));
+                            row_name = main_row.filter(d => types_tmp.split(","
+                            ).some(dd => dd == d))[0].toLowerCase();
+                            row_ind = row_names.indexOf(row_name);
+                        } catch {
+                            exceptions.push(`${vals.id} ${vals.name}`);
+                            continue;
+                        }
+                    } else {
+                        row_ind = parseInt(ind_import) + 2;
+                        row_name = row_names[row_ind];
                     }
-                } else {
-                    row_ind = parseInt(ind_import) + 2;
-                    row_name = row_names[row_ind];
+                    row_results[row_name].names.push(vals.name);
+                    row_results[row_name].nums.push(num_tmp);
+                    row_results[row_name].cids.push(vals.cid);
+                    row_results[row_name].limits.push("not_limited");
                 }
-                row_results[row_name].names.push(card_name);
-                row_results[row_name].nums.push(num_tmp);
-                row_results[row_name].cids.push(cid);
-                row_results[row_name].limits.push("not_limited");
             }
         }
+        return { row_results: row_results, exceptions: exceptions, exceptions_num: exceptions.length };
     }
+
+    const flags = keys.filter(d => RegExp(`_${d}\.ydk\$`).test(file_name));
+
+    const res_dic = flags.length > 0 ?
+        { [flags[0]]: interpretRowResults(df, imported_rows, flags[0]) } :
+        await Object.assign(...keys.map(
+            (d) => Object({ [d]: interpretRowResults(df, imported_rows, d) })));
+    console.log(res_dic);
+
+    const num_min = Math.min(...Object.values(res_dic).map(d => d.exceptions_num));
+    const res = Object.values(res_dic).filter(d => d.exceptions_num === num_min)[0];
+    const exceptions = res.exceptions;
+    const row_results = res.row_results;
+
     // deck_name
-    const settings_tmp = await getSyncStorage({ settings: defaultString }).then(items => Object.assign(defaultSettings, JSON.parse(items.settings)));
-    const deck_name = import_file.name.replace(/(?<=^[^(@@)]+)@@.*\.ydk$|\.ydk$/, "") + (settings_tmp.addDate ? "@@" + new Date().toLocaleDateString() : "");
+    const settings_tmp = await getSyncStorage({ settings: defaultString }
+    ).then(items => Object.assign(defaultSettings, JSON.parse(items.settings)));
+    const deck_name = import_file.name.replace(/(?<=^[^(@@)]+)@@.*\.ydk$|\.ydk$/, "") +
+        (settings_tmp.addDate ? "@@" + new Date().toLocaleDateString() : "");
     // input deck name
     $("#dnm").val(deck_name);
     console.log(row_results);
@@ -1199,16 +1250,17 @@ async function importFromYdk() {
     if (exceptions.length > 0 && !exceptions.every(d => /^\s*$/.test(d))) {
         const error_message = "一部のカードが変換できませんでした。\n" + exceptions.join(", ");
         console.log(error_message);
-        alert(error_message + "\n" + message_forImportedData);
+        showMessage(error_message + "\n" + message_forImportedData);
     } else {
         console.log(message_forImportedData);
-        alert(message_forImportedData);
+        showMessage(`Imported ${deck_name}; ` + message_forImportedData);
     }
-    showMessage(`Imported ${deck_name}`);
+    // showMessage(`Imported ${deck_name}`);
 }
 
 // # sortSave
 async function sortSaveClicked() {
+    const df = await obtainDF();
     const url_now = location.href;
     const html_parse_dic = Object.assign(parse_YGODB_URL(url_now), { ope: 2 });
     //console.log(html_parse_dic);
@@ -1217,14 +1269,17 @@ async function sortSaveClicked() {
     }
     //const url_ope2 = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?" +
     //    (new URLSearchParams(html_parse_dic)).toString();
-    const row_results = obtainRowResults();
+    const row_results = obtainRowResults(df);
     const row_results_new = await sortCards(row_results);
     const serialized_dic = {
         ope: "ope=3",
+        wname: "wname=" + obtain_YGODB_fromHidden("wname"),
+        ytkn: "ytkn=" + obtain_YGODB_fromHidden("ytkn"),
         header: await obtainDeckHeader_edit(html_parse_dic),
         deck: serializeRowResults(row_results_new)
     }
     const serialized_data = Object.values(serialized_dic).join("&");
+    console.log(serialized_data)
     //console.log(serialized_data);
     //return; // test
     await _Regist_fromYGODB(html_parse_dic, serialized_data).then(async res => {
@@ -1272,7 +1327,8 @@ const backToView = async () => {
 };
 
 // # deck header show / hide
-const toggleVisible_deckHeader = (toShow_in = null) => {
+const toggleVisible_deckHeader = (e = null, toShow_in = null) => {
+    const e_button = e === null ? 0 : e.button;
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     if (["2", "8"].indexOf(html_parse_dic.ope) === -1) return;
     const button = $("#button_visible_header");
@@ -1296,6 +1352,65 @@ const toggleVisible_deckHeader = (toShow_in = null) => {
         } else {
             $(dl_tmp).css({ display: "" }) // relativeにするとnoneで固定された
         }
+    }
+    const button_fit = document.getElementById("button_fixScroll");
+    const deck_body = document.getElementById("article_body");
+    const header = document.getElementById("deck_header");
+    const form = document.getElementById("form_regist");
+    const info_area = document.getElementById("info_area");
+    const info_div = document.querySelector("#info_area>div");
+    const search_area = document.getElementById("search_area");
+
+    const infos = {
+        0: {
+            cond: info_area !== null && info_area.style.display !== "none",
+            insert: () => {
+                info_div.innerHTML = "";
+                info_div.append(header)
+            }
+        },
+        1: {
+            cond: true, insert: () => {
+                deck_body.style.overflowY = "scroll"
+                deck_body.style.maxHeight = "95vh"
+            }
+        },
+        2: {
+            cond: search_area !== null && search_area.style.display !== "none",
+            insert: () => {
+                // const div = document.createElement("div");
+                // div.style.overflowY = "scroll"
+                // div.style.maxHeight = "95vh"
+                // div.setAttribute("class", "")
+                search_area.prepend(header);
+                search_area.querySelector("#form_search").style.display = "none";
+                search_area.querySelector("#search_result").style.display = "none";
+                search_area.style.overflowY = "scroll"
+                search_area.style.maxHeight = "95vh"
+            }
+        }
+    }
+    const info = infos[e_button]
+    if (toShow === true && button_fit !== null && button_fit.classList.contains("red") && info.cond) {
+        // deck_body.style.overflowY = "scroll";
+        header.querySelectorAll("#category_set>div.table_l").forEach(d => d.style.flex = "none");
+
+        info.insert();
+
+    } else {
+        form.prepend(header);
+        // header_table.before(header_bottom);
+        // header_table.after(header_bottom);
+        header.querySelectorAll("#category_set>div.table_l").forEach(d => d.style.flex = "1");
+        deck_body.style.overflowY = "visible"
+        deck_body.style.maxHeight = ""
+        if (search_area !== null) {
+            search_area.style.overflowY = "visible";
+            search_area.style.maxHeight = ""
+            search_area.querySelector("#form_search").style.display = "block";
+            search_area.querySelector("#search_result").style.display = "block";
+        }
+        // deck_body.style.overflowY = "visible";
     }
 }
 
@@ -1329,13 +1444,12 @@ const showSelectedOption = () => {
         if (old_div.length > 0) $(old_div).empty();
         const div = old_div.length > 0 ? old_div : $("<div>", { class: "selected_options" });
         Array.from($("select option[selected]", table))
-            .map(d => $(d).text())
             .map(d => {
                 const css_dic = {
                     border: "1px solid #579c57", background: "#d8f2d9", "font-weight": "bold",
                     "vertical-align": "middle"
                 }
-                const span = $("<span>").append(d).css(css_dic);
+                const span = $("<span>", { chex_text: d.textContent, chex_value: d.value }).append(d.textContent).css(css_dic);
                 div.append(span);
             })
         $(table).append(div);
@@ -1345,7 +1459,7 @@ const showSelectedOption = () => {
 // # insert deck image
 const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: null }, card_class_ind = "0_1", card_limit = "not_limited") => {
     const span = $("<span>", {
-        style: "max-width: min(6.7%, 65px); padding:1px; box-sizing:border-box; display: block;position: relative;"
+        style: "max-width: min(6.5%, 65px); padding:1px; box-sizing:border-box; display: block;position: relative;"
     });
 
     const card_input = Object.assign({ name: null, cid: null }, card_name_cid);
@@ -1364,7 +1478,8 @@ const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: 
         card_url: `https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=${cid_now}`,
         loading: "lazy",
         src: `https://www.db.yugioh-card.com/yugiohdb/get_image.action?type=1&lang=ja&cid=${cid_now}&ciid=1&enc=${encImg_now}&osplang=1`,
-        style: "position: relative;width: 100%;"
+        style: "position: relative; width: 100%; cursor:pointer;",
+        oncontextmenu: "return false;"
     });
     span.attr("title", name_now);
     span.append(img_tmp);
@@ -1462,27 +1577,30 @@ const insertDeckImg = (df, row_results, displayIsValid = true, div_deck_imageSet
     updateDeckCount();
 }
 
-
-
 // ## modify
-const modifyDeckImg = (img_target, change = +1, to_set_type = null) => {
+const modifyDeckImg = async (img_target, change = +1, to_set_type = null) => {
     //const num_new=Math.max(0, Math.min(3, num_old+change));
     //if ( (num_old===0 && change<=0) || (num_old===3 && change>=0)) return;
     if (change === -1) {
         const span_tmp = $(img_target).parents("span")[0];
         $(span_tmp).addClass("del_card");
-        $(span_tmp).css({ display: "none" });
+        // $(span_tmp).css({ display: "none" });
         if (to_set_type !== null) {
             const span_clone = $(span_tmp).clone()[0];
             const image_set_now = $(`.image_set[set_type='${to_set_type}']`);
             if (image_set_now.length === 0) return;
-            $(span_clone).addClass("add_card").removeClass("del_card").css({ display: "block", position: "relative" });
+            $(span_clone).addClass("add_card").removeClass("del_card").css({
+                display: "block", position: "relative"
+            });
             $(image_set_now).append(span_clone);
         }
+        span_tmp.remove();
     } else if (change === +1) {
         const span_tmp = $(img_target).parents("span")[0];
         const span_clone = $(span_tmp).clone()[0];
-        $(span_clone).addClass("add_card").removeClass("del_card").css({ display: "block", position: "relative" });
+        $(span_clone).addClass("add_card").removeClass("del_card").css({
+            display: "block", position: "relative"
+        });
         if (to_set_type === null) $(span_tmp).after(span_clone);
         else {
             const image_set_now = $(`.image_set[set_type='${to_set_type}']`);
@@ -1490,6 +1608,8 @@ const modifyDeckImg = (img_target, change = +1, to_set_type = null) => {
             $(image_set_now).append(span_clone);
         }
     }
+    // importDeck(await obtainEditImg_RowResults());
+    // resizeDeckArea();
     //else if (num_old === 0 && card_type!==null){
     // new kind
     //    console.log("comnig soon")
@@ -1719,7 +1839,8 @@ const updateDeckCount = () => {
 
 // # operate area
 
-const setArticleWidth = (flag_narrow = true) => {
+const setArticleWidth = (flag_narrow = null) => {
+    flag_narrow = flag_narrow !== null ? flag_narrow : Array.from(document.querySelectorAll("article>div>div")).filter(d => d.style.display != "none").length != 1;
     const article = document.getElementsByTagName("article")[0];
     const article_body = document.getElementById("article_body");
     if (flag_narrow === true) {
@@ -1728,6 +1849,17 @@ const setArticleWidth = (flag_narrow = true) => {
     } else {
         article.style["max-width"] = "";
         article_body.style["max-width"] = "auto";
+    }
+    resizeDeckArea();
+    toggleVisible_deckHeader();
+}
+
+const resizeDeckArea = () => {
+    if (document.getElementById("button_fixScroll").classList.contains("red")) {
+        const elm = document.getElementById("article_body");
+        const ratio = 0.98 * window.innerHeight / elm.scrollHeight;
+        elm.style["transform-origin"] = `top`;
+        elm.style["transform"] = `scale(${ratio})`
     }
 }
 
@@ -1787,28 +1919,31 @@ const operate_fixScroll = (toFixIn = null) => {
     // const search_area = document.querySelector();
     // const info_area = document.querySelector();
     // const deck_area = document.querySelector();
-    const all_width = Object.values(areas_elm).map(d => d.clientWidth).reduce((acc, cur) => acc + cur, 0);
-    const ratios = Object.assign(...Object.entries(areas_elm).map(([k, v]) => Object({ [k]: v.clientWidth / all_width })));
+    // const all_width = Object.values(areas_elm).map(d => d.clientWidth).reduce((acc, cur) => acc + cur, 0);
+    // const ratios = Object.assign(...Object.entries(areas_elm).map(([k, v]) => Object({ [k]: v.clientWidth / all_width })));
     if (toFix === true) {
         area.style.position = "fixed";
         area.style.top = "0vh";
         area.style["min-height"] = "100vh";
         area.style["width"] = "100%";
         wrapper.style.height = "100%";
-        search_res.style["max-height"] = "90vh"
+        // search_res.style["max-height"] = "90vh"
         areas_elm.info.style["max-height"] = "95vh"
-        areas_elm.deck.style["height"] = "100vh"
+        // areas_elm.deck.style["height"] = "100vh"
         areas_elm.deck.style["overflow-y"] = "visible"
         for (const [k, elm] of Object.entries(areas_elm)) {
             if (k == "deck") {
-                const ratio = 0.98 * window.innerHeight / elm.scrollHeight;
-                const valid_width = Math.max(elm.scrollWidth * ratio, ratios[k] * ratio * window.innerWidth);
+                const ratio = 0.98 * Math.min(1, window.innerHeight / elm.scrollHeight);
+                // const valid_width = Math.max(elm.scrollWidth * ratio, ratios[k] * ratio * window.innerWidth);
                 elm.style["transform-origin"] = `top`;
-                elm.style["transform"] = `scale( ${ratio}, ${valid_width / elm.scrollWidth})`; // calc( 0.98 * 100vh / 100% )
-                elm.style["flex-basis"] = `${valid_width}px`;
+                elm.style["transform"] = `scale(${ratio})`
+                // elm.style["transform"] = `scale(  calc( 98vh / 100% ) )`; // calc( 0.98 * 100vh / 100% )
+                // elm.style["object-fit"] = "contain"
+                // elm.style["flex-basis"] = `${valid_width}px`;
                 // elm.style["gap"]="5px 5px";
                 // console.log(ratio, valid_width, elm.scrollHeight, elm.scrollWidth, window.innerHeight, window.innerWidth)
-            } else elm.style["flex-basis"] = `${ratios[k] * 100}vw`;
+            }
+            // else elm.style["flex-basis"] = `${ratios[k] * 100}vw`;
         }
         for (const elm of [header, spnav, pan_nav, footer_nav]) {
             elm.style.display = "none";
@@ -1824,7 +1959,7 @@ const operate_fixScroll = (toFixIn = null) => {
         area.style["width"] = "";
         footer.style.position = "";
         footer.style.top = "";
-        areas_elm.deck.style["overflow-y"] = "scroll"
+        // areas_elm.deck.style["overflow-y"] = "scroll"
         for (const elm of [header, spnav, pan_nav, footer_nav]) {
             elm.style.display = "";
         }
@@ -1833,16 +1968,16 @@ const operate_fixScroll = (toFixIn = null) => {
             elm.style.top = "";
         }
         for (const [k, elm] of Object.entries(areas_elm)) {
-            elm.style["flex-basis"] = `30vw`;
+            // elm.style["flex-basis"] = `30vw`;
             elm.style["transform"] = ``;
             // elm.style["max-width"]=`none`;
             // elm.style["min-width"]=`none`;
         }
         wrapper.style.height = "fit-content";
-        search_res.style["max-height"] = "70vh"
+        // search_res.style["max-height"] = "70vh"
         areas_elm["info"].style["max-height"] = "80vh"
         areas_elm["deck"].style["max-height"] = ""
-        areas_elm["deck"].style["flex-basis"] = "35vw"
+        // areas_elm["deck"].style["flex-basis"] = "30vw"
 
 
     }

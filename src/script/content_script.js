@@ -1,5 +1,6 @@
 ﻿"use strict";
 
+const news_message = " / New Updates about Info Area are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension/blob/5df4dcd0c8e38069576ad58d0c617599b10b97d6/intro/NEWS_v2p1.md\" target=\"_blank\">Read Here</a>"
 
 //------------------------------------
 //         #  on loading
@@ -25,7 +26,9 @@ window.onload = async function () {
         });
 
 
-    $("#footer_icon svg").css({ height: "min(5vh, 30px)" })
+    if (settings.flag_showFooterIcons === false) {
+        document.getElementById("footer_icon").style.display = "none";
+    } else document.querySelector("#footer_icon svg").style.height = "min(5vh, 30px)";
     if (html_parse_dic.ope == "8") {
         guess_clicked(); // await 
     }
@@ -46,7 +49,6 @@ window.onload = async function () {
             test: $("<a>", { class: "btn hex square red button_sort", id: "button_test" }).append("<span>Test</span>"),
             export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
                 .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name"))// "<span>Export (L:id/M:cid/R:Name)</span>"),
-
         };
 
         for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
@@ -71,30 +73,6 @@ window.onload = async function () {
             area_bottom.append(label);
 
         }
-
-        if (settings.valid_feature_deckHeader === true) {
-            toggleVisible_deckHeader(settings.default_visible_header || IsCopyMode);
-
-            // deck header
-            const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
-            ["category", "tag", "comment"].map(ctc_name => {
-                const ctc_now = $(`#${header_ids_dic[ctc_name]}`);
-                const isCT = ["category", "tag"].indexOf(ctc_name) != -1;
-                const ctc_span = $("dt>span", (isCT) ? ctc_now.parent().parent().parent() : ctc_now.parent().parent());
-                const button = $("<a>", {
-                    class: `btn hex button_size_header ${ctc_name} ` + (isCT ? " isCT" : " isComment"),
-                    type: "button", id: `button_size_header_${ctc_name}`,
-                    style: "position: relative;user-select: none;min-width: 0;"
-                }).append("<span>Size</span>");
-                $(ctc_span).append(button);
-                const ctc_ind_size = 0;
-                changeSize_deckHeader(ctc_name, ctc_ind_size - 1);
-            })
-            const button_guess = $("<a>", { class: "btn hex red button_guess", id: "button_guess" }).append("<span>Guess</span>");
-            $(`#button_size_header_category`).after(button_guess);
-            $(".box_default .box_default_table dt span").css({ "min-width": "0" });
-            showSelectedOption();
-        }
         if (html_parse_dic.ope !== "8" && settings.valid_feature_deckManager === true) {
             const header_box = $("div#deck_header>div#header_box");
             const dl_deck_name = $("dl:has(dd>input#dnm)", header_box);
@@ -102,8 +80,8 @@ window.onload = async function () {
                 class: "ui-draggable ui-draggable-handle button_delete_keyword",
                 style: "flex:none;width:20px;height:20px;cursor:pointer;"
             }).append(svgs.backspace);
-
-            const dl_deck_version = $("<dl>", { class: "tab_mh100 alwaysShow", id: "deck_version_box" });
+            const class_deck_version = "tab_mh100" + (settings.flag_showCacheDeck === true ? " alwaysShow" : "")
+            const dl_deck_version = $("<dl>", { class: class_deck_version, id: "deck_version_box" });
             const dt = $("<dt>").append($("<span>", { style: "min-width:0px;" }).append("Deck in Cache"));
             const dd = $("<dd>");
             //input_version_name=$("<select>", {id:"deck_version_name"});
@@ -206,7 +184,36 @@ window.onload = async function () {
             //$(dnm).after($(img_delete).clone());
             //$(dnm).attr({list:"deck_nameList"});
             await setDeckNames(datalist_deckName);
-            showMessage(`Loaded`);
+            showMessage(`Loaded ${news_message}`);
+        }
+        if (settings.valid_feature_deckHeader === true) {
+            toggleVisible_deckHeader(null, settings.default_visible_header || IsCopyMode);
+
+            // deck header
+            const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
+            ["category", "tag", "comment"].map(ctc_name => {
+                const ctc_now = $(`#${header_ids_dic[ctc_name]}`);
+                const isCT = ["category", "tag"].indexOf(ctc_name) != -1;
+                const ctc_span = $("dt>span", (isCT) ? ctc_now.parent().parent().parent() : ctc_now.parent().parent());
+                const button = $("<a>", {
+                    class: `btn hex button_size_header ${ctc_name} ` + (isCT ? " isCT" : " isComment"),
+                    type: "button", id: `button_size_header_${ctc_name}`,
+                    style: "position: relative;user-select: none;min-width: 0;"
+                }).append("<span>Size</span>");
+                $(ctc_span).append(button);
+                const ctc_ind_size = 0;
+                changeSize_deckHeader(ctc_name, ctc_ind_size - 1);
+            })
+            const button_guess = $("<a>", { class: "btn hex red button_guess", id: "button_guess" }).append("<span>Guess</span>");
+            $(`#button_size_header_category`).after(button_guess);
+            $(".box_default .box_default_table dt span").css({ "min-width": "0" });
+            showSelectedOption();
+            const header = document.getElementById("deck_header");
+            // header.style.overflowY = "scroll"
+            const header_bottom = header.querySelector("#bottom_btn_set");
+            const header_table = header.querySelector("div.box_default_table");
+            header_table.before(header_bottom);
+
         }
         if (settings.valid_feature_deckEditImage === true) {
             $("#article_body").attr({ oncontextmenu: "return false;" })
@@ -252,13 +259,13 @@ window.onload = async function () {
                 ).append($("<span>", { title: "show info area" }).append(svgs.contancts)),
                 fixScroll: $("<a>", { class: "btn hex square show button_fixScroll", id: "button_fixScroll" })
                     .append($("<span>", { title: "fit editor" }).append(svgs.fullscreen)),
-                hoverName: $("<a>", { class: "btn hex square red show button_toggleHoverName", id: "button_toggleHoverName" })
-                    .append($("<span>", { title: "show card names on mouse hovering" }).append(svgs.liveHelp)),
+                // hoverName: $("<a>", { class: "btn hex square red show button_toggleHoverName", id: "button_toggleHoverName" })
+                //     .append($("<span>", { title: "show card names on mouse hovering" }).append(svgs.liveHelp)),
                 reloadSort: $("<a>", { class: "btn hex square red button_reloadSort", id: "button_reloadSort" })
                     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             };
             const main_span_num = document.querySelector("#main > div.subcatergory > div.top > span:last-child");
-            console.log(main_span_num)
+            // console.log(main_span_num)
 
             for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
                 if (settings.valid_feature_deckManager === false && !IsCopyMode && ["back"].indexOf(button_type) !== -1) continue;
@@ -276,7 +283,7 @@ window.onload = async function () {
             const article = $("article");
             article.css({ "max-width": "initial", "scroll-snap-type": "y" });
             const div_article_body = $("div#article_body");
-            $(div_article_body).css({ "flex": "5 1 35vw", minWidth: "10vw", "overflow-y": "scroll" });//, "max-width": "35vw"
+            $(div_article_body).css({ "flex": "5 1 35vw", minWidth: "10vw" });//, "max-width": "35vw"
 
             const div_search = parseHTML(obtainSearchForm());
             div_search.querySelector("#submit_area").style.flex = "2 0 10%";
@@ -297,7 +304,7 @@ window.onload = async function () {
             });
             const div_search_result = $("<div>", {
                 id: "search_result",
-                style: "max-height:70vh;overflow-y:scroll;",
+                style: "max-height:calc(95vh - 160px);overflow-y:scroll;",
                 oncontextmenu: "return false;"
             });
             $(div_body).append(div_search.outerHTML);
@@ -332,15 +339,11 @@ window.onload = async function () {
             $(table).prepend(div_info_body);
             operate_infoArea(settings.default_infoArea_visible && !IsCopyMode);
 
-
-
+            operate_fixScroll(settings.default_fit_edit && !IsCopyMode);
 
             //openCardInfoArea();
 
         }
-
-
-
 
     }
     else if (["1", null].indexOf(html_parse_dic.ope) != -1) {
@@ -351,10 +354,10 @@ window.onload = async function () {
         const area = (edit_area.length > 0) ? edit_area : $("<span>", { id: "bottom_btn_set" }).appendTo($("#deck_header"));
         //console.log(area)
         const button_dic = {
-            export: $("<a>", { class: "btn hex red button_export", oncontextmenu: "return false;" })
-                .append("<span>Export (L:id/M:cid/R:Name)</span>"),
-            sortSave: $("<a>", { class: "btn hex red button_sort", id: "button_sortSave" })
-                .append("<span>Sort & Save</span>"),
+            export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
+                .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name")),
+            // sortSave: $("<a>", { class: "btn hex red square button_sort", id: "button_sortSave" })
+            //     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
         };
         for (const [button_type, button_tmp] of Object.entries(button_dic)) {
@@ -460,9 +463,9 @@ window.onload = async function () {
         }
     })
     // ## button id
-    // $("#button_importFromYdk").on("change", async function () {
-    //     await importFromYdk();
-    // });
+    $("#button_importFromYdk").on("change", async function () {
+        await importFromYdk();
+    });
     // $("#button_sortSave").on("click", async function () {
     //     await sortSaveClicked();
     // });
@@ -510,7 +513,26 @@ window.onload = async function () {
         // const body = await obtainStreamBody(url);
         // //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
         // console.log(body);
-        refreshCacheHtml(0);
+        // refreshCacheHtml(0);
+        // await operateStorage({ urlHistory: JSON.stringify({}) }, "local", "set");
+        // await operateStorage({ cacheInfos: JSON.stringify({}) }, "local", "set");
+        // const df = await obtainDF(obtainLang());
+        // const row_results = await obtainRowResults(df);
+
+        // console.log(row_results)
+
+        // await addUrlHistory("https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=17069")
+        // operateStorage({ urlHistory: JSON.stringify({}) }, "local", "get"
+        // ).then(items => Object.assign({ urls: [], pos: -1 }, JSON.parse(items.urlHistory))
+        // ).then(urlHistory => {
+        //     console.log(JSON.stringify(urlHistory))
+        // })
+        // backNextInfoArea(-1);
+        const canvas = await html2canvas(document.querySelector("#deck_image"))
+        console.log(canvas)
+        // .then(res => {
+        //     document.querySelector("#info_area").innerHTML = res.outerHTML
+        // })
     });
 
 
