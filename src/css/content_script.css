@@ -80,7 +80,6 @@
 .deck_image .image_set span.forbidden>div>span {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/parts/svg/icon_forb_unlim.svg);
     background-color: #dc0000;
-    background-size: 50%;
     max-height: 30%;
 }
 

@@ -42,57 +42,69 @@ const listen_clickAndDbclick = async () => {
 }
 
 const listen_dbclick = async (e) => {
-    if (e.button === 0 && e.target.matches("#card_frame img, span:has(img.img_chex),span:has(img.img_chex) *, div.box_card_img:has(img), div.box_card_img:has(img) *")) {
-        const img = e.target.closest("#card_frame, div.box_card_img, span:has(img.img_chex)").querySelector("img");
-        if (img === null) return;
-        const url = img.getAttribute("card_url");
-        if (url === null) return false;
-        openUrlInfoArea(url);
-    } else if (e.button === 2) {
-        // let isIntextMenuOpen = false;
+    const html_parse_dic = parse_YGODB_URL(null, true);
+    // console.log(e.target)
+    if (html_parse_dic.ope == 2) {
+        if (e.button === 0 && e.target.matches("#card_frame img, span:has(img.img_chex),span:has(img.img_chex) *, div.box_card_img:has(img), div.box_card_img:has(img) *")) {
+            const img = e.target.closest("#card_frame, div.box_card_img, span:has(img.img_chex)").querySelector("img");
+            if (img === null) return;
+            const url = img.getAttribute("card_url");
+            if (url === null) return false;
+            openUrlInfoArea(url);
+        } else if (e.button === 0 && e.target.matches("#deck_header .selected_options>span")) {
+            const target = e.target;
+            const option_value = target.getAttribute("chex_value");
+            const option = target.closest("div.table_l").querySelector(`select>option[value="${option_value}"]`);
+            console.log(option_value, option, option.selected)
+            // option.selected = false;
+            option.removeAttribute("selected");
+            showSelectedOption();
 
-        // document.addEventListener("contextmenu", function (e) {
-        //     console.log(e);
+        } else if (e.button === 2) {
+            // let isIntextMenuOpen = false;
 
-        //     isIntextMenuOpen = true
-        // });
-        // function hideContextmenu(e) {
-        //     if (isIntextMenuOpen) {
-        //         console.log(e);
-        //     }
+            // document.addEventListener("contextmenu", function (e) {
+            //     console.log(e);
 
-        //     isIntextMenuOpen = false;
-        // }
-        // $(window).blur(hideContextmenu);
+            //     isIntextMenuOpen = true
+            // });
+            // function hideContextmenu(e) {
+            //     if (isIntextMenuOpen) {
+            //         console.log(e);
+            //     }
 
-        // $(document).click(hideContextmenu);
-        // e.preventDefault();
-        backNextInfoArea(-1);
-        // e.stopPropagation();
-        // console.log(e);
-        // console.log(document.getElementById('contextMenuId'))
-    } else if (e.button === 0) backNextInfoArea(1);
+            //     isIntextMenuOpen = false;
+            // }
+            // $(window).blur(hideContextmenu);
 
+            // $(document).click(hideContextmenu);
+            // e.preventDefault();
+            backNextInfoArea(-1);
+            // e.stopPropagation();
+            // console.log(e);
+            // console.log(document.getElementById('contextMenuId'))
+        } else if (e.button === 0) backNextInfoArea(1);
+    } else if (html_parse_dic.ope == 1) {
+        if (e.button === 0 && e.target.matches("div.image_set span:has(img), div.image_set span:has(img) *")) {
+            const span_tmp = e.target.matches("div.image_set span:has(img)") ?
+                e.target :
+                $(e.target).parents("div.image_set span:has(img)")[0];
+            const img_target = span_tmp.querySelector("img");
+            if (img_target.getAttribute("card_url") !== undefined) {
+                const url = img_target.getAttribute("card_url");
+                window.open(url);
+
+            }
+        }
+
+    }
 }
 
 const listen_click = async (e) => {
     const df = await obtainDF(obtainLang());
     const settings = await operateStorage({ settings: JSON.stringify({}) }, "sync")
         .then(items => Object.assign(defaultSettings, JSON.parse(items.settings), { valid_feature_sideChange: true }));
-    const callId2Func_base = {
-        "#button_searchShowHide": operate_searchArea,
-        "#button_infoShowHide": operate_infoArea,
-        "#button_fixScroll": operate_fixScroll,
-        "#button_visible_header": toggleVisible_deckHeader
-    }
-    const callId2Func_await = {
-        "#button_guess": guess_clicked,
-        "#button_sortSave": sortSaveClicked,
-        "#button_backToView": backToView,
-        "#button_reloadSort": reloadSort,
-        // "#button_delete_keyword":deleteKeyword
-    }
-    const callId2Func = Object.assign(callId2Func_base, callId2Func_await)
+
 
     // else if (e.target.matches(Object.keys(callId2Func).map(d => `${d}, ${d} *`).join(", "))) {
     //     const selector = Object.keys(callId2Func).join(", ");
@@ -120,14 +132,6 @@ const listen_click = async (e) => {
         });
         const key_show = $(li_now).attr("value");
         operate_deckEditVisible(key_show);
-    } else if (e.target.matches(Object.keys(callId2Func).map(d => `${d}, ${d} *`).join(", "))) {
-        const selector = Object.keys(callId2Func).join(", ");
-        const target = (e.target.matches(selector)) ? e.target : e.target.closest(selector);
-        callId2Func["#" + target.id]();
-        // } else if (e.target.matches(Object.keys(callId2Func_await).map(d => `${d}, ${d} *`).join(", "))) {
-        //     const selector = Object.keys(callId2Func_await).join(", ");
-        //     const target = (e.target.matches(selector)) ? e.target : e.target.closest(selector);
-        //     await callId2Func_await["#" + target.id]();
     } else if (e.target.matches("a.button_delete_keyword, a.button_delete_keyword *")) {
         const button_target = e.target.matches("a.button_delete_keyword") ? e.target : e.target.closest("a.button_delete_keyword");
         button_target.previousElementSibling.value = "";
@@ -174,7 +178,8 @@ const listen_click = async (e) => {
         if (target_class.contains("button_save")) {
             const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
             const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
-            const row_results = obtainEditImg_RowResults();
+            // const row_results = obtainEditImg_RowResults();
+            const row_results = await obtainRowResults(df);
             importDeck(row_results);
             // console.log(row_results);
             const html_parse_dic = parse_YGODB_URL();
@@ -241,12 +246,27 @@ const listen_click = async (e) => {
 
 
 const listen_mousedown = async (e) => {
+    const callId2Func_base = {
+        "#button_searchShowHide": operate_searchArea,
+        "#button_infoShowHide": operate_infoArea,
+        "#button_fixScroll": operate_fixScroll,
+        "#button_visible_header": toggleVisible_deckHeader
+    }
+    const callId2Func_await = {
+        "#button_guess": guess_clicked,
+        "#button_sortSave": sortSaveClicked,
+        "#button_backToView": backToView,
+        "#button_reloadSort": reloadSort,
+        // "#button_delete_keyword":deleteKeyword
+    }
+    const callId2Func = Object.assign(callId2Func_base, callId2Func_await)
     const df = await obtainDF(obtainLang());
     // const sideChangeOnViewIsValid = ["1", null].indexOf(html_parse_dic.ope) !== -1 &&
     //     (settings.valid_feature_sideChange === true) &&
     //     $("#button_sideChange").length > 0 &&
     //     $("#button_sideChange").hasClass("on");
-    const sideChangeOnViewIsValid = true;
+    const html_parse_dic = parse_YGODB_URL();
+    const sideChangeOnViewIsValid = ["1", null].indexOf(html_parse_dic.ope) !== -1;
     const clickIsToOpenURL = $("#deck_image").length > 0 &&
         $("#deck_image").hasClass("click_open_url");
     // # ----- button ------
@@ -270,6 +290,10 @@ const listen_mousedown = async (e) => {
         const mode_sideChange = (e.button === 2) ? "toggle" : "reset";
         if (mode_sideChange === "reset" && !sideChangeOnViewIsValid) return;
         operateSideChangeMode(mode_sideChange, df);
+    } else if (e.target.matches(Object.keys(callId2Func).map(d => `${d}, ${d} *`).join(", "))) {
+        const selector = Object.keys(callId2Func).join(", ");
+        const target = (e.target.matches(selector)) ? e.target : e.target.closest(selector);
+        callId2Func["#" + target.id](e);
     } else if (e.target.matches("#faq>ul>li, #faq>ul>li *")) {
         const main_target = (e.target).matches("li") ? e.target : e.target.closest("li");
         const ul = main_target.parentElement;
@@ -320,16 +344,19 @@ const listen_mousedown = async (e) => {
         // };
         // console.log(e.target);
         // e.preventScrolling();
-        const span_tmp = e.target.matches("div.image_set span:has(img)") ? e.target : $(e.target).parents("div.image_set span:has(img)")[0];
+        const span_tmp = e.target.matches("div.image_set span:has(img)") ?
+            e.target :
+            $(e.target).parents("div.image_set span:has(img)")[0];
         const img_target = $("img", span_tmp);
-        if ([1, 2].indexOf(e.button) !== -1 &&
-            (clickIsToOpenURL || e.ctrlKey) &&
+        if ((sideChangeOnViewIsValid || [1, 2].indexOf(e.button) !== -1) &&
+            (e.ctrlKey) &&
             $(img_target).attr("card_url") !== undefined) {
             const url = $(img_target).attr("card_url");
             window.open(url);
 
             return;
-        } else if (([0].indexOf(e.button) !== -1 && e.ctrlKey) && $(img_target).attr("card_url") !== undefined) {
+        } else if (!sideChangeOnViewIsValid && ([0].indexOf(e.button) !== -1 && e.ctrlKey) &&
+            $(img_target).attr("card_url") !== undefined) {
             // await openCardInfoArea($(img_target).attr("card_url"));
             openUrlInfoArea($(img_target).attr("card_url"))
             return;
