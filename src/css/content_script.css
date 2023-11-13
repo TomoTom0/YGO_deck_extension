@@ -183,3 +183,99 @@
     /* opacity: 80%; */
     /* font-family: "メイリオ"; */
 }
+
+:root {
+    --circle-rad: 25px;
+    --circie-2rad: 50px;
+    --cricle-sm-rad: 20px;
+}
+
+.circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    /* background: #333;
+    border-radius: 50%; */
+
+    border-radius: 50%;
+    background: radial-gradient(transparent 50%, #333 .35 51%);
+    text-align: center;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.circle::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -60px;
+    width: 120px;
+    height: 120px;
+    background: #999;
+    transform-origin: right 60px;
+    z-index: 2;
+    animation: rotate-circle-left 2s linear forwards;
+}
+
+.circle::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 60px;
+    width: 120px;
+    height: 120px;
+    background: #999;
+    transform-origin: left 60px;
+    z-index: 3;
+    animation: rotate-circle-right 2s linear forwards;
+}
+
+.circle .circle-inner {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 100px;
+    height: 62px;
+    padding-top: 38px;
+    background: #fff 0.1;
+    border-radius: 50%;
+    z-index: 4;
+}
+
+@keyframes rotate-circle-right {
+    0% {
+        transform: rotate(0deg);
+        background: #999;
+    }
+
+    50% {
+        transform: rotate(180deg);
+        background: #999;
+    }
+
+    50.01% {
+        transform: rotate(360deg);
+        background: #333;
+    }
+
+    100% {
+        transform: rotate(360deg);
+        background: #333;
+    }
+}
+
+@keyframes rotate-circle-left {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(180deg);
+    }
+}

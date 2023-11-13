@@ -39,10 +39,10 @@ const listen_clickAndDbclick = async () => {
         }, 200);
     })
 
-    // longPress.init({
-    //     el: "#info_area",
-    //     second: 1
-    // })
+    longPress.init({
+        el: "#info_area",
+        second: 1
+    })
 
 }
 
@@ -65,30 +65,31 @@ const listen_dbclick = async (e) => {
             option.removeAttribute("selected");
             showSelectedOption();
 
-        } else if (e.button === 2) {
-            // let isIntextMenuOpen = false;
+        }
+        // else if (e.button === 2) {
+        //     // let isIntextMenuOpen = false;
 
-            // document.addEventListener("contextmenu", function (e) {
-            //     console.log(e);
+        //     // document.addEventListener("contextmenu", function (e) {
+        //     //     console.log(e);
 
-            //     isIntextMenuOpen = true
-            // });
-            // function hideContextmenu(e) {
-            //     if (isIntextMenuOpen) {
-            //         console.log(e);
-            //     }
+        //     //     isIntextMenuOpen = true
+        //     // });
+        //     // function hideContextmenu(e) {
+        //     //     if (isIntextMenuOpen) {
+        //     //         console.log(e);
+        //     //     }
 
-            //     isIntextMenuOpen = false;
-            // }
-            // $(window).blur(hideContextmenu);
+        //     //     isIntextMenuOpen = false;
+        //     // }
+        //     // $(window).blur(hideContextmenu);
 
-            // $(document).click(hideContextmenu);
-            // e.preventDefault();
-            backNextInfoArea(-1);
-            // e.stopPropagation();
-            // console.log(e);
-            // console.log(document.getElementById('contextMenuId'))
-        } else if (e.button === 0) backNextInfoArea(1);
+        //     // $(document).click(hideContextmenu);
+        //     // e.preventDefault();
+        //     backNextInfoArea(-1);
+        //     // e.stopPropagation();
+        //     // console.log(e);
+        //     // console.log(document.getElementById('contextMenuId'))
+        // } else if (e.button === 0) backNextInfoArea(1);
     } else if (html_parse_dic.ope == 1) {
         if (e.button === 0 && e.target.matches("div.image_set span:has(img), div.image_set span:has(img) *")) {
             const span_tmp = e.target.matches("div.image_set span:has(img)") ?
@@ -127,6 +128,7 @@ const listen_click = async (e) => {
     //     const target = (e.target.matches(selector)) ? e.target : e.target.closest(selector);
     //     await callId2Func_await["#" + target.id]();
 
+    const info_area = document.getElementById("info_area");
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     if (e.target.matches("#deck_header a.button_size_header, #deck_header a.button_size_header *")) {
         const button = $([$(e.target).children(), e.target]
@@ -447,6 +449,16 @@ const listen_mousedown = async (e) => {
             const url = cardInfo.url;
             window.open(url, "_blank");
         }
+    } else if (e.button === 0 && e.target.matches("#info_area, #info_area *")) {
+        const left_limit = info_area.clientLeft + info_area.clientWidth / 3;
+        const right_limit = info_area.clientLeft + info_area.clientWidth * 2 / 3;
+        console.log(e.clientX, left_limit, right_limit, e)
+        if (e.clientX < left_limit) {
+            backNextInfoArea(-1);
+        } else if (e.clientX > right_limit) {
+            backNextInfoArea(+1);
+        }
+
     }
 
     //if (sideChangeOnViewIsValid===true) 
@@ -463,7 +475,7 @@ const listen_mousedown = async (e) => {
 
 const longPress = {
     //プロパティ
-    el: "",
+    el: '',
     count: 0,
     second: 1,
     interval: 10,
@@ -475,27 +487,36 @@ const longPress = {
         this.el = document.querySelector(param.el);
         this.second = param.second;
         //イベントリスナー
-        this.el.addEventListener('mousedown', () => { this.start() }, false);
-        this.el.addEventListener('mouseup', () => { this.end() }, false);
+        this.el.addEventListener('mousedown', (e) => { this.start(e) }, false);
+        this.el.addEventListener('mouseup', (e) => { this.end(e) }, false);
     },
-    start: function () {
+    start: function (e) {
         this.timerId = setInterval(() => {
 
             this.count++;
 
             if (this.count / 100 === this.second) {
                 //長押し判定時の処理
-                this.myFunc();
-                this.end();
+                this.myFunc(e);
+                this.end(e);
             }
 
         }, this.interval);
     },
-    end: function () {
+    end: function (e) {
         clearInterval(this.timerId);
         this.count = 0;
     },
-    myFunc: function () {
-        console.log('ボタンを' + this.second + '秒長押ししました！');
+    myFunc: function (e) {
+        console.log(e);
+        const div = document.createElement("div");
+        const inner = document.createElement("p");
+        inner.setAttribute("class", "circle-inner")
+        inner.innerHTML = "clicking...";
+        div.setAttribute("class", "circle");
+        div.setAttribute(`style`, `position: fixed; top:${e.clientY - 25}px; left:${e.clientX - 25}px`)
+        div.append(inner)
+        document.querySelector("body").prepend(div);
+
     }
 }

@@ -1936,20 +1936,7 @@ const operate_fixScroll = (s = null, toFixIn = null) => {
         areas_elm.info.style["max-height"] = "95vh"
         // areas_elm.deck.style["height"] = "100vh"
         areas_elm.deck.style["overflow-y"] = "visible"
-        for (const [k, elm] of Object.entries(areas_elm)) {
-            if (k == "deck") {
-                const ratio = 0.98 * Math.min(1, window.innerHeight / elm.scrollHeight);
-                // const valid_width = Math.max(elm.scrollWidth * ratio, ratios[k] * ratio * window.innerWidth);
-                elm.style["transform-origin"] = `top`;
-                elm.style["transform"] = `scale(${ratio})`
-                // elm.style["transform"] = `scale(  calc( 98vh / 100% ) )`; // calc( 0.98 * 100vh / 100% )
-                // elm.style["object-fit"] = "contain"
-                // elm.style["flex-basis"] = `${valid_width}px`;
-                // elm.style["gap"]="5px 5px";
-                // console.log(ratio, valid_width, elm.scrollHeight, elm.scrollWidth, window.innerHeight, window.innerWidth)
-            }
-            // else elm.style["flex-basis"] = `${ratios[k] * 100}vw`;
-        }
+        resizeDeckArea();
         for (const elm of [header, spnav, pan_nav, footer_nav]) {
             elm.style.display = "none";
         }
