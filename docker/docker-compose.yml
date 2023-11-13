@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  app:
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: bash /opt/workdir/script_start.sh
