@@ -321,7 +321,7 @@ window.onload = async function () {
 
             obtainSearchScript();
             $("#deck_image .image_set").css({ "min-height": "min(3.5vw, 45px)" });
-            operate_searchArea(settings.default_searchArea_visible && !IsCopyMode);
+            operate_searchArea(null, settings.default_searchArea_visible && !IsCopyMode);
 
 
             // console.log(doc_get);
@@ -337,9 +337,9 @@ window.onload = async function () {
             // splt_tmp2.setAttribute("right-id", "article_body");
             // table.prepend(splt_tmp2);
             $(table).prepend(div_info_body);
-            operate_infoArea(settings.default_infoArea_visible && !IsCopyMode);
+            operate_infoArea(null, settings.default_infoArea_visible && !IsCopyMode);
 
-            operate_fixScroll(settings.default_fit_edit && !IsCopyMode);
+            operate_fixScroll(null, settings.default_fit_edit && !IsCopyMode);
 
             //openCardInfoArea();
 
@@ -514,7 +514,7 @@ window.onload = async function () {
         // //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
         // console.log(body);
         // refreshCacheHtml(0);
-        // await operateStorage({ urlHistory: JSON.stringify({}) }, "local", "set");
+        await operateStorage({ urlHistory: JSON.stringify({}) }, "local", "set");
         // await operateStorage({ cacheInfos: JSON.stringify({}) }, "local", "set");
         // const df = await obtainDF(obtainLang());
         // const row_results = await obtainRowResults(df);
@@ -528,8 +528,8 @@ window.onload = async function () {
         //     console.log(JSON.stringify(urlHistory))
         // })
         // backNextInfoArea(-1);
-        const canvas = await html2canvas(document.querySelector("#deck_image"))
-        console.log(canvas)
+        // const canvas = await html2canvas(document.querySelector("#deck_image"))
+        // console.log(canvas)
         // .then(res => {
         //     document.querySelector("#info_area").innerHTML = res.outerHTML
         // })
