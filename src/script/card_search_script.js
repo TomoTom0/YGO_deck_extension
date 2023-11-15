@@ -52,12 +52,13 @@ const obtainDeckRecipie = async () => {
 // # -----info area-------
 
 const showInfoHistory = async (modal) => {
+    const df = await obtainDF();
     const urlHistory = await operateStorage({ urlHistory: JSON.stringify({}) }, "local", "get"
     ).then(items => Object.assign({ urlTitles: [], pos: -1 }, JSON.parse(items.urlHistory)));
 
     const pos = urlHistory.pos;
-    const infos = urlHistory.urlTitles.map((d, ind) => [d, ind]
-    ).filter(([d, ind]) => pos - 2 <= ind && ind <= pos + 2);
+    const infos = urlHistory.urlTitles;//.map((d, ind) => [d, ind]
+    // ).filter(([d, ind]) => pos - 2 <= ind && ind <= pos + 2);
     // const pos_min = (urlTitles.length >= 4) ? pos - 2 : 0;
     // const pos_max = (urlTitles)
 
@@ -67,25 +68,40 @@ const showInfoHistory = async (modal) => {
     div_history.setAttribute("class", "info_history area_history will-appear");
     // div_history.style.position = "fixed";
     div_history.style.display = "flex";
+
+    div_history.style.overflowX = "scroll"
     // div_history.style.top = `${co[0]}px`;
     // div_history.style.left = `${co[1]}px`;
-    const div_titles = infos.map(([info, ind]) => {
+    const div_titles = infos.map((info, ind) => {
         const div = document.createElement("div");
+        div.style.display = "flex";
+        div.style.flexDirection = "column";
         const div_num = document.createElement("div");
+        div_num.style.flex = "1";
         // div_num.setAttribute("class", "item_history");
         const span_num = document.createElement("span");
         span_num.append(ind);
         div_num.append(span_num);
         const div_item = document.createElement("span");
         // console.log(info)
-
+        const card_cid_match = info.url.match(/cid=([\d]+)/);
         div_item.append(info.title);
         div_item.setAttribute("_href", info.url);
         div_item.setAttribute("pos_diff", ind - pos);
         div_item.setAttribute("class", "main_info_history");
+        div_item.style.flex = "3";
         div.append(div_num);
-        // div.append(document.querySelector("br"));
         div.append(div_item);
+
+        if (card_cid_match !== null) {
+            const card_cid = card_cid_match[1];
+            const span_img = _generateDeckImgSpan(df, null, { cid: card_cid })[0];
+            const div_img = document.createElement("div");
+            div_img.style.flex = "5";
+            div_img.append(span_img);
+            div.append(div_img);
+        }
+
         if (ind === pos) {
             div.setAttribute("class", "item_history info_history present");
         } else {
@@ -96,6 +112,7 @@ const showInfoHistory = async (modal) => {
     });
     // document.querySelector("#bg").append(div_history);
     modal.append(div_history);
+    div_history.scrollLeft = div_history.querySelector("div.item_history.present").offsetLeft;
 
     // console.log(infos)
 }
@@ -180,6 +197,12 @@ const openUrlInfoArea = async (url_in, days = CACHE_DAYS, history_add = true, ke
     // const form = document.getElementById("form_regist");
     // const info_area = document.getElementById("info_area");
     if (header.matches("#info_area *")) return;
+    const info_div = document.querySelector("#info_area>div");
+    const info_url = info_div.getAttribute("info_url");
+    if (url_in === "command_clear") {
+        info_div.innerHTML = "";
+        return;
+    }
 
     for (const [key, info] of Object.entries(info_dics)) {
         for (const pattern of info.patterns) {
@@ -193,8 +216,6 @@ const openUrlInfoArea = async (url_in, days = CACHE_DAYS, history_add = true, ke
                     { [url_in.match(d)[1]]: url_in.match(d)[2] }
                 )));
             const url = info.obtainUrl(params);
-            const info_div = document.querySelector("#info_area>div");
-            const info_url = info_div.getAttribute("info_url");
 
             if (info_url === url) {
                 if (info_div.style.display !== "none") toggleUndisplayElms([info_div]);
@@ -207,6 +228,7 @@ const openUrlInfoArea = async (url_in, days = CACHE_DAYS, history_add = true, ke
                 cacheInfos[url].time + days * 86400 * 1000 > Date.now()) {
 
                 info_div.innerHTML = cacheInfos[url].html;
+                info_div.setAttribute("info_url", url);
                 info_div.scrollTo(0, 0, "smooth");
             } else {
                 info_div.setAttribute("info_url", url);

@@ -41,7 +41,7 @@ const listen_clickAndDbclick = async () => {
 
     longPress.init({
         el: "#info_area",
-        ms: 800
+        ms: 300
     })
 
 }
@@ -422,6 +422,7 @@ const listen_mousedown = async (e) => {
             return;
         } else if ([0, 2].indexOf(e.button) !== -1) {
             const row_results = obtainRowResults(df)//obtainRowResults_Edit();
+            console.log(row_results.spell.names);
             const num_now_dic = {
                 text: () => Object.values(row_results).map((d, ind) => {
                     const ind_fromCid = d.cids.indexOf(cardInfo.cid);
@@ -458,7 +459,7 @@ const listen_mousedown = async (e) => {
         callDeckHistory(dno, uid, df);
         removeElms(document.querySelectorAll("div.area_history"));
     } else if (e.button === 0 && e.target.matches("#info_area, #info_area *")) {
-        if (document.querySelector("#info_area #deck_header") !== null) return;
+        if (document.querySelector("#info_area>div").getAttribute("info_url") !== null) return;
         const left_limit = info_area.offsetLeft + info_area.offsetWidth / 3;
         const right_limit = info_area.offsetLeft + info_area.offsetWidth * 2 / 3;
         // console.log(e.clientX, left_limit, right_limit, e)
@@ -498,7 +499,7 @@ const longPress = {
         //イベントリスナー
         // let clicked = false;
         this.el.addEventListener("mousedown", async (e) => {
-            this.start(e);
+            if (e.button === 0) this.start(e);
             // if (clicked === true) {
             //     clicked = false;
             //     return;
@@ -583,15 +584,25 @@ const openAreaHistory = (co) => {
     modal.style.top = `${co[0]}px`;
     modal.style.left = `${co[1]}px`;
     modal.setAttribute("class", "modal_history");
-    showInfoHistory(modal);
-    showDeckHistory(modal);
     document.getElementById("bg").append(modal);
-    setTimeout(() => {
-        document.addEventListener("mousedown", async (e) => {
-            if (!e.target.matches("div.area_history, div.area_history *")) {
-                removeElms(document.querySelectorAll("div.area_history"));
-            }
-        }, false);
+    Promise.all([showInfoHistory(modal), showDeckHistory(modal)]).then(() => {
 
-    }, 200)
+        for (const elm of modal.querySelectorAll("div.area_history")) {
+            elm.addEventListener("wheel", (e) => {
+                if (e.deltaX === 0) {
+                    const reg = 1.5;
+                    elm.scrollLeft += e.deltaY * reg;
+                    e.preventDefault();
+                }
+            })
+        }
+        setTimeout(() => {
+            document.addEventListener("mousedown", async (e) => {
+                if (!e.target.matches("div.area_history, div.area_history *")) {
+                    removeElms(document.querySelectorAll("div.area_history"));
+                }
+            }, false);
+        }, 200)
+    })
+
 }

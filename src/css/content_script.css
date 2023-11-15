@@ -314,10 +314,32 @@
     }
 }
 
+div.area_history {
+    max-width: 60vw;
+    /* box-shadow: 10px white inset; */
+    /* gap: 20px; */
+    mask-image: linear-gradient(to right, transparent 2%, black 4%, black 96%, transparent 98%);
+    -webkit-mask-image: linear-gradient(to right, transparent 2%, black 4%, black 96%, transparent 98%);
+    padding-left: 30px;
+    padding-right: 30px;
+    box-sizing: border-box;
+}
+
+div.area_history::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+div.area_history::-webkit-scrollbar-track {
+    background: #42d7eb;
+    border-radius: 5px;
+}
+
 div.item_history {
     cursor: pointer;
     /* background: rgba(33, 180, 153, 0.95); */
     /* background-color: #638025; */
+    min-width: 15vw;
+    max-height: 250px;
     background-size: 16px 16px;
     background-color: #90c6ff;
     opacity: 1;
@@ -367,14 +389,22 @@ div.item_history.present {
 }
 
 div.area_history .item_history:hover {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 div.none {
     display: none;
 }
 
-img.img_chex.img_deck_history.history_item {
+div.area_history img.img_chex {
     max-width: 70px;
     margin: 5px;
+}
+
+#deck_image div.image_set.image_set_MouseUI>span {
+    max-width: min(6.5%, 65px);
+    padding: 1px;
+    box-sizing: border-box;
+    display: block;
+    position: relative;
 }

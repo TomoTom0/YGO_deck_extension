@@ -41,11 +41,11 @@ window.onload = async function () {
         // other buttons for bottom
         const button_bottom_dic = {
             back: $("<a>", { class: "btn hex orn square button_backtoView", id: "button_backToView" })
-                .append($("<span>", { title: "back" }).append(svgs.arrowBack)),
+                .append($("<span>", { title: "Back to Deck View Page" }).append(svgs.arrowBack)),
             headerShowHide: $("<a>", {
                 class: "btn hex red square button_visible_header hide", type: "button", id: "button_visible_header",
                 style: "position: relative;user-select: none;"
-            }).append($("<span>", { title: "show Header" }).append(svgs.toc)),
+            }).append($("<span>", { title: "Toggle Show/Hide Header" }).append(svgs.toc)),
             test: $("<a>", { class: "btn hex square red button_sort", id: "button_test" }).append("<span>Test</span>"),
             export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
                 .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name"))// "<span>Export (L:id/M:cid/R:Name)</span>"),
@@ -88,11 +88,11 @@ window.onload = async function () {
             //input_version_tag=$("<select>", {id:"deck_version_tag"});
             const btns_version = {
                 save: $("<a>", { class: "btn hex red square button_deckVersion button_save", id: "button_deckVersionSave" })
-                    .append($("<span>", { title: "cache save" }).append(svgs.save)),
+                    .append($("<span>", { title: "Save Deck in Cache" }).append(svgs.save)),
                 load: $("<a>", { class: "btn hex red square button_deckVersion button_load", id: "button_deckVersionLoad" })
-                    .append($("<span>", { title: "cache load" }).append(svgs.style)),
+                    .append($("<span>", { title: "Load Deck in Cache" }).append(svgs.style)),
                 delete: $("<a>", { class: "btn hex red square button_deckVersion button_delete", id: "button_deckVersionDelete" })
-                    .append($("<span>", { title: "cache delete" }).append(svgs.delete)),
+                    .append($("<span>", { title: "Delete Deck in Cache" }).append(svgs.delete)),
             };
             ["name", "tag"].map(key => {
                 //const select=$("<select>", {type:"text", class:`select_deck_version ${key}`, style:"flex:1;"});
@@ -144,15 +144,15 @@ window.onload = async function () {
             const datalist_deckName = $("<datalist>", { id: "deck_nameList" });
             const btns_official = {
                 copy: $("<a>", { class: "btn hex orn square button_deckOfficial button_copy", id: "button_deckOfficialCopy" })
-                    .append($("<span>", { title: "official copy" }).append(svgs.copy)),
+                    .append($("<span>", { title: "Copy Deck in Official DB" }).append(svgs.copy)),
                 delete: $("<a>", { class: "btn hex orn square button_deckOfficial button_delete", id: "button_deckOfficialDelete" })
-                    .append($("<span>", { title: "official delete" }).append(svgs.delete)),
+                    .append($("<span>", { title: "Delete Deck in Official DB" }).append(svgs.delete)),
                 new: $("<a>", { class: "btn hex orn square button_deckOfficial button_new", id: "button_deckOfficialNew" })
-                    .append($("<span>", { title: "official new" }).append(svgs.add)),
+                    .append($("<span>", { title: "Generate Empty Deck in Official DB" }).append(svgs.add)),
                 save: $("<a>", { class: "btn hex orn square button_deckOfficial button_save", id: "button_deckOfficialSave" })
-                    .append($("<span>", { title: "official save" }).append(svgs.save)),
+                    .append($("<span>", { title: "Save Deck in Official DB" }).append(svgs.save)),
                 load: $("<a>", { class: "btn hex orn square button_deckOfficial button_load", id: "button_deckOfficialLoad" })
-                    .append($("<span>", { title: "official load" }).append(svgs.style)),
+                    .append($("<span>", { title: "Load Deck in Official DB" }).append(svgs.style)),
 
             };
             $(dnm).css({ width: "auto" });

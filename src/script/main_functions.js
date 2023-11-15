@@ -347,11 +347,12 @@ const serializeRowResults = (row_results) => {
 }
 // ## operate recipie
 const operateRowResults = (
-    row_results = {},
+    row_results_in = {},
     cidIn = 10,
     change = 1,
     to_row_type = null,
     df = null) => {
+    const row_results = structuredClone(row_results_in);
     const num_all = Object.values(row_results).map(row_result => {
         const ind_fromCid = row_result.cids.indexOf(cidIn);
         if (ind_fromCid !== -1) return row_result.nums[ind_fromCid];
@@ -627,7 +628,6 @@ const obtainDiffTimestamp = (ts_old, ts_now) => {
     for (const ind of [...time_units.keys()]) {
         const time_unit = time_units[ind];
         val = parseInt(val / time_unit);
-        console.log(val, before_val, before_unit)
         if (val < 1) break;
         before_val = val;
         before_unit = str_units[ind];
@@ -652,7 +652,7 @@ const addDeckHistory = async (row_results, row_results_old, dno) => {
 
 const obtainDiffRowResults = (row_results, row_results_old) => {
     const row_names = Object.keys(row_results);
-    console.log(row_results.monster.names, row_results_old.monster.names)
+    console.log(row_results.spell.names, row_results_old.spell.names)
     const cids_all = Array.from(new Set([].concat(
         ...[row_results, row_results_old].map(results =>
             [].concat(...Object.values(results).map(result => result.cids))
@@ -722,23 +722,22 @@ const showDeckHistory = async (modal, dno = null) => {
     const pos = uids.indexOf(uid);
     const df = await obtainDF();
 
-    const infos = Object.values(history_now.history).map((d, ind) => [d, ind]
-    ).filter(([_d, ind]) => pos - 2 <= ind && ind <= pos + 2);
+    const infos = Object.values(history_now.history);
     // console.log(infos)
 
     const div_history = document.createElement("div");
     div_history.setAttribute("class", "deck_history area_history will-appear");
     // div_history.style.position = "fixed";
     div_history.style.display = "flex";
+    div_history.style.overflowX = "scroll";
     // div_history.style.bottom = `${co[0]}px`;
     // div_history.style.left = `${co[1]}px`;
     const ts_now = Date.now();
-    const div_titles = infos.map(([info, ind]) => {
+    const div_titles = infos.map(info => {
         const div = document.createElement("div");
         const div_num = document.createElement("span");
         div_num.setAttribute("class", "deck_history")
-        console.log(obtainTimestampFromUid(uid))
-        div_num.append(obtainDiffTimestamp(obtainTimestampFromUid(uid), ts_now));
+        div_num.append(obtainDiffTimestamp(obtainTimestampFromUid(info.uid), ts_now));
         const div_item = document.createElement("div");
         // console.log(info)
         for (const info_card of info.diff) {
@@ -762,7 +761,7 @@ const showDeckHistory = async (modal, dno = null) => {
                 loading: "lazy",
                 src: `/yugiohdb/get_image.action?type=1&lang=ja&cid=${card_cid}&ciid=1&enc=${card_encImg}&osplang=1`,
                 oncontextmenu: "return false;",
-                class: "img_chex img_deck_history history_item"
+                class: "img_chex img_deck_history item_history"
             };
             for (const [k, v] of Object.entries(attr_dic)) {
                 img.setAttribute(k, v);
@@ -812,6 +811,8 @@ const showDeckHistory = async (modal, dno = null) => {
     });
     // document.querySelector("#bg").append(div_history);
     modal.append(div_history);
+    div_history.scrollLeft = (div_history.querySelector("div.item_history.present") ||
+        div_history.querySelector("div.item_history:last-child")).offsetLeft;
     // setTimeout(() => {
     //     document.addEventListener("mousedown", async (e) => {
     //         if (!e.target.matches("div.area_history, div.area_history *")) {
@@ -1740,7 +1741,7 @@ const showSelectedOption = () => {
 // # insert deck image
 const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: null }, card_class_ind = "0_1", card_limit = "not_limited") => {
     const span = $("<span>", {
-        style: "max-width: min(6.5%, 65px); padding:1px; box-sizing:border-box; display: block;position: relative;"
+        style: "" //"max-width: min(6.5%, 65px); padding:1px; box-sizing:border-box; display: block;position: relative;"
     });
 
     const card_input = Object.assign({ name: null, cid: null }, card_name_cid);
