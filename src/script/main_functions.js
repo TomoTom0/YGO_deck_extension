@@ -110,6 +110,23 @@ const shuffleArray = (arr) => {
     }
     return arr;
 }
+const removeElms = (elms) => {
+    for (const elm of elms) {
+        elm.classList.add("will-remove");
+    }
+    setTimeout(() => {
+        for (const elm of elms) {
+            elm.remove();
+        }
+    }, 200);
+}
+const toggleUndisplayElms = (elms) => {
+    for (const elm of elms) {
+        elm.classList.toggle("will-remove");
+        elm.classList.toggle("none");
+        elm.classList.toggle("will-appear");
+    }
+}
 // # ----- obtain Row Results --------
 const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
@@ -532,7 +549,7 @@ const convertRowResults = (df, row_results, toMin = true) => {
 }*/
 
 // import cards
-const importDeck = (row_results) => {
+const importDeck = async (row_results, row_results_old = null, dno = null) => {
     for (const [row_name, row_result] of Object.entries(row_results)) {
         //const row_name = row_names[tab_ind];
         //const tab_ind=row_names.indexOf(row_name);
@@ -563,8 +580,254 @@ const importDeck = (row_results) => {
     main_total.empty();
     const main_total_num = [0, 1, 2].reduce((acc, cur) => acc + Number($(`.main_count:eq(${cur})`).text()), 0);
     main_total.append(main_total_num);
+    if (row_results_old !== null && dno !== null) {
+        addDeckHistory(row_results, row_results_old, dno);
+    }
     return main_total_num;
 }
+
+const int2safeChar = (n, symbols = "") => {
+    const n_valid = n % (61 + symbols.length)
+    if (n_valid <= 35) {
+        return (n_valid).toString(36).toUpperCase()
+    } else if (n_valid <= 61) {
+        return (n_valid - 26).toString(36)
+    } else {
+        return symbols[(n_valid) % (symbols.length)]
+    }
+}
+
+const int2safeChars = (val, symbols = "") => {
+    const base = 61 + symbols.length;
+    let arr_code = [];
+    while (val > 1) {
+        arr_code.push(int2safeChar(val, symbols));
+        val = Math.floor(val / base);
+    }
+    return arr_code.reverse().join("");
+}
+
+
+const obtainUid = () => {
+    const code_time = Date.now().toString(36);
+    const code_rand = (Math.floor(Math.random() * (36 ** 2))).toString(36);
+    return code_time.padStart(9, "0") + code_rand.padStart(2, "0");
+}
+
+const obtainTimestampFromUid = (uid) => {
+    return parseInt(uid.slice(0, 9), 36);
+}
+
+const obtainDiffTimestamp = (ts_old, ts_now) => {
+    let val = ts_now - ts_old;
+    let before_val = null;
+    const time_units = [1000, 60, 60, 24, 7, 4];
+    let str_units = ["seconds", "minutes", "hours", "days", "weeks", null];
+    let before_unit = null;
+    for (const ind of [...time_units.keys()]) {
+        const time_unit = time_units[ind];
+        val = parseInt(val / time_unit);
+        console.log(val, before_val, before_unit)
+        if (val < 1) break;
+        before_val = val;
+        before_unit = str_units[ind];
+    }
+    if (before_unit === null) return (new Date(ts_old)).toLocaleDateString();
+    else return `${before_val} ${before_unit} ago`
+
+}
+
+const addDeckHistory = async (row_results, row_results_old, dno) => {
+    operateStorage({ deckHistory: JSON.stringify({}) }, "local", "get"
+    ).then(items => Object.assign({}, JSON.parse(items.deckHistory))
+    ).then(deckHistory => {
+        if (Object.keys(deckHistory).indexOf(dno) === -1) deckHistory[dno] = { uid: null, history: {} };
+        const uid = obtainUid();
+        deckHistory[dno].uid = uid;
+        const diff_deck = obtainDiffRowResults(row_results, row_results_old);
+        deckHistory[dno].history[uid] = { diff: diff_deck, row_results: row_results, uid: uid };
+        operateStorage({ deckHistory: JSON.stringify(deckHistory) }, "local", "set");
+    });
+}
+
+const obtainDiffRowResults = (row_results, row_results_old) => {
+    const row_names = Object.keys(row_results);
+    console.log(row_results.monster.names, row_results_old.monster.names)
+    const cids_all = Array.from(new Set([].concat(
+        ...[row_results, row_results_old].map(results =>
+            [].concat(...Object.values(results).map(result => result.cids))
+        )
+    )));
+    return cids_all.map(cid => {
+        let name = "";
+        const nums_dic = Object.assign(...row_names.map(key_row => {
+            return {
+                [key_row]: [row_results, row_results_old
+                ].map(results => {
+                    const row_result = results[key_row];
+                    const ind_card = row_result.cids.indexOf(cid);
+                    if (ind_card === -1) return 0;
+                    name = row_result.names[ind_card];
+                    return row_result.nums[ind_card];
+                })
+            }
+        }));
+        const nums_valid = Object.entries(nums_dic).map(([key_row, nums]) => {
+            if (nums[0] == nums[1]) {
+                // console.log(name, key_row, nums)
+                return null;
+            }
+
+            return { [key_row]: [nums[1], nums[0], nums[0] - nums[1]] }
+        }).filter(d => d !== null);
+        if (nums_valid.length == 0) return null;
+        return Object.assign({
+            cid: cid,
+            name: name,
+        }, ...nums_valid);
+    }).filter(d => d !== null);
+}
+
+const callDeckHistory = async (dno, uid, df) => {
+    operateStorage({ deckHistory: JSON.stringify({}) }, "local", "get"
+    ).then(items => Object.assign({}, JSON.parse(items.deckHistory))
+    ).then(deckHistory => {
+        if (Object.keys(deckHistory).indexOf(dno) === -1) return;
+        const history_now = deckHistory[dno].history;
+        if (Object.keys(history_now).indexOf(uid) === -1) return;
+        // console.log(history_now[uid])
+        const row_results = history_now[uid].row_results;
+        // console.log(row_results)
+        importDeck(row_results);
+        insertDeckImg(df, row_results);
+        deckHistory[dno].uid = uid;
+        operateStorage({ deckHistory: JSON.stringify(deckHistory) }, "local", "set");
+    });
+}
+
+
+// # show Deck History
+
+
+const showDeckHistory = async (modal, dno = null) => {
+    dno = dno || document.querySelector("#dno").value;
+    const deckHistory = await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "get"
+    ).then(items => Object.assign({ deckHistory: {} }, JSON.parse(items.deckHistory)));
+    // console.log(deckHistory)
+    if (Object.keys(deckHistory).indexOf(dno) === -1) return;
+    const history_now = deckHistory[dno];
+    const uids = Object.keys(history_now.history)
+    const uid_orig = history_now.uid;
+    const uid = (uids.indexOf(uid_orig) !== -1) ? uid_orig : uids[uids.length - 1];
+    const pos = uids.indexOf(uid);
+    const df = await obtainDF();
+
+    const infos = Object.values(history_now.history).map((d, ind) => [d, ind]
+    ).filter(([_d, ind]) => pos - 2 <= ind && ind <= pos + 2);
+    // console.log(infos)
+
+    const div_history = document.createElement("div");
+    div_history.setAttribute("class", "deck_history area_history will-appear");
+    // div_history.style.position = "fixed";
+    div_history.style.display = "flex";
+    // div_history.style.bottom = `${co[0]}px`;
+    // div_history.style.left = `${co[1]}px`;
+    const ts_now = Date.now();
+    const div_titles = infos.map(([info, ind]) => {
+        const div = document.createElement("div");
+        const div_num = document.createElement("span");
+        div_num.setAttribute("class", "deck_history")
+        console.log(obtainTimestampFromUid(uid))
+        div_num.append(obtainDiffTimestamp(obtainTimestampFromUid(uid), ts_now));
+        const div_item = document.createElement("div");
+        // console.log(info)
+        for (const info_card of info.diff) {
+            const div_card_history = document.createElement("div");
+            div_card_history.style.display = "flex";
+            const div_card = document.createElement("div");
+            div_card.style.display = "flex";
+            const div_img = document.createElement("div");
+            div_img.style.flex = "1 5 30%"
+            const img = document.createElement("img");
+            const card_cid = info_card.cid;
+            const card_name = info_card.name;
+            const card_id = df_filter(df, "id", ["cid", card_cid])[0];
+            const card_encImg = df_filter(df, "encImg", ["cid", card_cid])[0];
+            const attr_dic = {
+                card_id: card_id,
+                card_cid: card_cid,
+                // card_type: card_type,
+                card_name: card_name,
+                card_url: `https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=${card_cid}`,
+                loading: "lazy",
+                src: `/yugiohdb/get_image.action?type=1&lang=ja&cid=${card_cid}&ciid=1&enc=${card_encImg}&osplang=1`,
+                oncontextmenu: "return false;",
+                class: "img_chex img_deck_history history_item"
+            };
+            for (const [k, v] of Object.entries(attr_dic)) {
+                img.setAttribute(k, v);
+            }
+            const div_info_diff = document.createElement("div");
+            const content = ["monster", "spell", "trap", "extra", "side"].map(key_row => {
+                if (Object.keys(info_card).indexOf(key_row) === -1) return null;
+                const nums = info_card[key_row];
+                const div = document.createElement("div");
+                // const span = document.createElement("span");
+                const key_print = ["monster", "spell", "trap"].indexOf(key_row) !== -1 ? "main" : key_row;
+                // span.append(`${key_print.toUpperCase()}<br>${nums[0]} → ${nums[1]}`);
+                const spans = [`${key_print.toUpperCase()}\t${nums[0]}→${nums[1]}`].map(d => {
+                    const div = document.createElement("div");
+                    const span = document.createElement("span");
+                    span.style.whiteSpace = "nowrap";
+                    span.append(d);
+                    div.append(span)
+                    return div;
+                })
+                // console.log(spans)
+                div.append(...spans)
+                return div;
+            }).filter(d => d !== null);
+
+            div_img.append(img)
+            div_card.append(div_img);
+            div_info_diff.append(...content);
+            div_card.append(div_info_diff);
+            div_info_diff.style.flex = "2 1 60%"
+            div_card_history.append(div_card);
+            div_item.append(div_card_history);
+
+        }
+        div_item.setAttribute("deck_history_uid", info.uid);
+        div_item.setAttribute("class", "main_deck_history");
+        div.append(div_num);
+        // div.append(document.querySelector("br"));
+        div.append(div_item);
+        if (info.uid === uid_orig) {
+            div.setAttribute("class", "item_history deck_history present");
+        } else {
+            div.setAttribute("class", "item_history deck_history");
+        }
+        div.style.flex = "1 1 50px"
+        div_history.append(div);
+    });
+    // document.querySelector("#bg").append(div_history);
+    modal.append(div_history);
+    // setTimeout(() => {
+    //     document.addEventListener("mousedown", async (e) => {
+    //         if (!e.target.matches("div.area_history, div.area_history *")) {
+    //             // div_history.classList.add("will-remove");
+    //             removeElms([div_history]);
+    //         }
+    //     }, false);
+
+    // }, 200)
+    // console.log(infos)
+}
+
+
+
+
+
 
 // ## save/regist
 
@@ -710,7 +973,7 @@ const _Regist_fromYGODB = async (
     console.log(html_parse_dic);
     if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return;
     const request_locale = html_parse_dic.request_locale !== null ? `&request_locale=` + html_parse_dic.request_locale : "";
-
+ 
     $('#btn_regist').removeAttr('href');
     $('#message').hide().text('');
     $('#loader').show();
@@ -805,6 +1068,19 @@ const load_deckOfficial = async (df, deck_dno, settings, my_cgid = null) => {
     })
     showSelectedOption();
     showMessage(`Loaded ${deck_name} #${deck_dno}`);
+    unsetDeckHistoryUid(deck_dno)
+}
+
+const unsetDeckHistoryUid = async (dno) => {
+    operateStorage({ deckHistory: JSON.stringify({}) }, "local", "get"
+    ).then(items => Object.assign({}, JSON.parse(items.deckHistory))
+    ).then(deckHistory => {
+        if (Object.keys(deckHistory).indexOf(dno) === -1) {
+            deckHistory[dno] = { uid: null, history: {} }
+        } else deckHistory[dno].uid = null;
+        console.log(deckHistory[dno])
+        operateStorage({ deckHistory: JSON.stringify(deckHistory) }, "local", "set");
+    });
 }
 
 const delete_deckOfficial = async (
@@ -1600,6 +1876,7 @@ const modifyDeckImg = async (img_target, change = +1, to_set_type = null) => {
             $(image_set_now).append(span_clone);
         }
         span_tmp.remove();
+        // removeElms([span_tmp]);
     } else if (change === +1) {
         const span_tmp = $(img_target).parents("span")[0];
         const span_clone = $(span_tmp).clone()[0];
@@ -1648,7 +1925,8 @@ const parseCardClass = (target) => {
     };
 }
 
-const sideChange_deck = (df, img_target, onEdit = true) => {
+const sideChange_deck = (df, img_target, onEdit = true, row_results_old = null) => {
+    const dno = document.querySelector("#dno").value;
     const row_results = obtainRowResults(df); // onEdit===true ? obtainRowResults_Edit(df): obtainRowResults();
     const cid_now = $(img_target).attr("card_cid");
     const from_set_type = $(img_target).parents("div.image_set").attr("set_type");
@@ -1659,7 +1937,8 @@ const sideChange_deck = (df, img_target, onEdit = true) => {
     const from_type = (from_set_type === "main") ? raw_type : from_set_type;
     const row_results_tmp1 = operateRowResults(row_results, cid_now, -1, from_type, df);
     const row_results_tmp2 = operateRowResults(row_results_tmp1, cid_now, +1, to_type, df);
-    if (onEdit === true) importDeck(row_results_tmp2);
+    // console.log(row_results_tmp2.monster.nums, row_results_old.monster.nums)
+    if (onEdit === true) importDeck(row_results_tmp2, row_results_old, dno);
     //modifyDeckImg(img_target, -1);
     const to_set_type = ["monster", "spell", "trap"].indexOf(to_type) !== -1 ? "main" : to_type;
     modifyDeckImg(img_target, -1, to_set_type);
@@ -1763,7 +2042,10 @@ const operateSideChangeMode = (mode = "toggle", df = null) => {
         _operateSideChange(status_new);
     } else if (mode === "reset") {
         //const row_results=obtainRowResults();
-        $("#deck_image div.image_set span.add_card:has(img)").remove();
+        // removeElms(document.querySelectorAll("#deck_image div.image_set span.add_card:has(img)"));
+        for (const elm of document.querySelectorAll("#deck_image div.image_set span.add_card:has(img)")) {
+            elm.remove();
+        }
         const cards_all_exist = Array.from($("#deck_image div.image_set span:has(img):not(.add_card)"));
         $("#deck_image div.image_set span.del_card:has(img)").removeClass("del_card").css({ display: "block" });
         /*Object.entries(row_results).map(([row_name, row_result])=>{
@@ -1777,7 +2059,7 @@ const operateSideChangeMode = (mode = "toggle", df = null) => {
                     return Array(card_num-num_exist).map(_=>$(card_exist[0]).clone());
                 } else if (num_exist < card_num && num_exist===0) {
                     const span_new=_generateDeckImgSpan(df, row_name, {name:card_name, cid:card_cid}, `${card_ind}_1`);
-
+ 
                 }
             })
         })*/

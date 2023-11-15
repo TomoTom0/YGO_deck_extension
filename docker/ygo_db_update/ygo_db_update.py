@@ -990,7 +990,7 @@ class YGO_DB_Updater:
             "all": {k: v.tolist() for k, v in df_upload.items()},
             "id2cid": {**id2cid_old, **id2cid},
             "id2cid_before": id2cid,
-            "from_ocgCardCom": cardInfos_searched,
+            "fromOcgCardCom": cardInfos_searched,
         }
         if self.uploadIsValid is True:
             self.operateGitHub("upload", info_data_new, repoInfo=repoInfos["DB"])

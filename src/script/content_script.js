@@ -341,6 +341,9 @@ window.onload = async function () {
 
             operate_fixScroll(null, settings.default_fit_edit && !IsCopyMode);
 
+            const dno = document.getElementById("dno").value;
+            unsetDeckHistoryUid(dno);
+
             //openCardInfoArea();
 
         }
@@ -466,146 +469,26 @@ window.onload = async function () {
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
     });
-    // $("#button_sortSave").on("click", async function () {
-    //     await sortSaveClicked();
-    // });
-    // $("#button_reloadSort").on("click", async function () {
-    //     const reloadSort = async ()=>{
-    //         if ($("#deck_text").css("display") !== "none") return;
-    //         const row_results = obtainRowResults(df);//obtainRowResults_Edit(df);
-    //         const row_results_new = await sortCards(row_results);
-    //         importDeck(row_results_new);
-    //         insertDeckImg(df, row_results_new);    
-    //     }
-    //     /*for (const set_type of ["main", "extra", "side", "temp"]){
-    //         shuffleCards("reset", set_type);
-    //     }*/
-    //     //await sortClicked();
-    // });
-    // $("#button_searchShowHide").on("click", async function () {
-    //     operate_searchArea();
-    // });
-    // $("#button_infoShowHide").on("click", async function () {
-    //     operate_infoArea();
-    // });
-    // $("#button_fixScroll").on("click", async function () {
-    //     operate_fixScroll();
-    // });
-    // $("#button_visible_header").on("click", function () {
-    //     toggleVisible_deckHeader();
-    // });
-    // $("#button_clickMode").on("click", async function () {
-    //     //operate_clickMode();
-    //     $("#deck_image").toggleClass("click_open_url");
-    //     $(this).toggleClass("red");
-    //     const clickIsToOpenURL = $("#deck_image").hasClass("click_open_url");
-    //     $("span", this).html(`Click|` + (clickIsToOpenURL ? "move card/OPEN URL" : "MOVE CARD/open url"));
-    // });
-
-    // $("#button_guess").on("click", async function () {
-    //     await guess_clicked();
-    // });
 
 
 
     $("#button_test").on("click", async function () {
-        // const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=4&cgid=87999bd183514004b8aa8afa1ff1bdb9"
-        // const body = await obtainStreamBody(url);
-        // //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
-        // console.log(body);
-        // refreshCacheHtml(0);
-        await operateStorage({ urlHistory: JSON.stringify({}) }, "local", "set");
-        // await operateStorage({ cacheInfos: JSON.stringify({}) }, "local", "set");
-        // const df = await obtainDF(obtainLang());
-        // const row_results = await obtainRowResults(df);
+        await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "set");
+        const deckHistory = await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "get"
+        ).then(items => Object.assign({}, JSON.parse(items.deckHistory)))
+        console.log(deckHistory);
 
-        // console.log(row_results)
-
-        // await addUrlHistory("https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=17069")
-        // operateStorage({ urlHistory: JSON.stringify({}) }, "local", "get"
-        // ).then(items => Object.assign({ urls: [], pos: -1 }, JSON.parse(items.urlHistory))
-        // ).then(urlHistory => {
-        //     console.log(JSON.stringify(urlHistory))
-        // })
-        // backNextInfoArea(-1);
-        // const canvas = await html2canvas(document.querySelector("#deck_image"))
-        // console.log(canvas)
-        // .then(res => {
-        //     document.querySelector("#info_area").innerHTML = res.outerHTML
-        // })
     });
 
 
-    // $("#button_backToView").on("click", async function () {
-    //     const html_parse_dic = parse_YGODB_URL(location.href, true);
-    //     const my_cgid = obtainMyCgid();
-    //     const dno = $("#dno").val();
-    //     const lang = obtainLang();
-    //     const sps = { ope: "1", wname: html_parse_dic.wname, cgid: my_cgid, dno: dno, request_locale: lang };
-    //     const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?` + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
-    //     location.href = url;
-    // });
+
 
     // ## change
     $("#deck_version_name").on("change", async function () {
         await setDeckVersionTagList(false);
     });
 
-    /*$("#button_sort").on("click", async function (){
-        const row_results=obtainRowResults(df)//obtainRowResults_Edit(df);
-        //console.log(row_results)
-        const MouseUIIsVisible=$(".tablink_deckEdit ul li.deck_edit_image").hasClass("now");
-        insertDeckImg(df, row_results, MouseUIIsVisible);
-    })*/
-    // ## trigger
-    /*window.addEventListener("message", async function (e) {
-        const content = e.data;
-        if (!/^trigger_/.test(content)) return;
-        //console.log(content);
-        if (/_sortCard/.test(content)) {
-            const json_dumped = content.replace("trigger_sortCard_", "");
-            const row_results_new = JSON.parse(json_dumped);
-            //const row_results_new=await sortCards(row_results);
-            //console.log(row_results_new);
-            const row_names = ["monster", "spell", "trap", "extra", "side"];
-            const row_str_new = JSON.stringify(row_names
-                .map(row_name => ({ [row_name]: { names: row_results_new[row_name].names, nums: row_results_new[row_name].nums.map(d => parseInt(d)) } })))
-            while (true) {
-                importDeck(row_results_new);
-                const row_results = obtainRowResults()//obtainRowResults_Edit();
-                const row_str = JSON.stringify(row_names
-                    .map(row_name => ({ [row_name]: { names: row_results[row_name].names, nums: row_results[row_name].nums } })))
-                if (row_str == row_str_new) {
-                    const regist_btn = $("#btn_regist>span");
-                    const save_text = regist_btn.text();
-                    //document.querySelector("#btn_regist").classList.remove("orn");
-                    //$("#btn_regist").toggleClass("orn");
-                    //$("#btn_regist").toggleClass("pnk");
-                    //regist_btn.text(save_text + " (CLICK HERE)");
-                    await _Regist_fromYGODB().then(async _ => {
-                        await sleep(500);
-                        window.opener.postMessage("trigger_closeWindow", "*");
-                    });
-                    //console.log("Sorted. Please save and close.");
-                    //console.log(window.opener);
-                    //window.opener.postMessage("trigger_closeWindow", "*");
-                    //Regist() // function on YGO
-                    // message on HTML*/
-    /*document.addEventListener("click", async function (e) {
-        if (e.target.matches("#btn_regist *")) {
-            window.opener.postMessage("trigger_closeWindow", "*");
-        }
-    })*//*
-    break;
 
-} else await sleep(500);
-};
-}
-if (/_closeWindow/.test(content)) {
-setTimeout(() => { e.source.close() }, 200);
-setTimeout(() => { location.reload() }, 1000);
-}
-})*/
 };
 //});
 
