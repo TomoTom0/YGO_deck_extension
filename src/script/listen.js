@@ -580,9 +580,9 @@ const setCircle = (e) => {
 
 const openAreaHistory = (co) => {
     const modal = document.createElement("div");
-    modal.style.position = "fixed";
-    modal.style.top = `${co[0]}px`;
-    modal.style.left = `${co[1]}px`;
+    // modal.style.position = "fixed";
+    // modal.style.top = `${co[0]}px`;
+    // modal.style.left = `${co[1]}px`;
     modal.setAttribute("class", "modal_history");
     document.getElementById("bg").append(modal);
     Promise.all([showInfoHistory(modal), showDeckHistory(modal)]).then(() => {

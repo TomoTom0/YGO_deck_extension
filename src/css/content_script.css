@@ -338,7 +338,7 @@ div.item_history {
     cursor: pointer;
     /* background: rgba(33, 180, 153, 0.95); */
     /* background-color: #638025; */
-    min-width: 15vw;
+    min-width: 10vw;
     max-height: 250px;
     background-size: 16px 16px;
     background-color: #90c6ff;
@@ -407,4 +407,10 @@ div.area_history img.img_chex {
     box-sizing: border-box;
     display: block;
     position: relative;
+}
+
+div.modal_history {
+    position: absolute;
+    top: 20vh;
+    left: 20vw;
 }
