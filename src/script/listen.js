@@ -39,10 +39,7 @@ const listen_clickAndDbclick = async () => {
         }, 200);
     })
 
-    longPress.init({
-        el: "#info_area",
-        second: 1
-    })
+
 
 }
 
@@ -272,6 +269,7 @@ const listen_mousedown = async (e) => {
         "#button_sortSave": sortSaveClicked,
         "#button_backToView": backToView,
         "#button_reloadSort": reloadSort,
+        "#button_deckScreenshot": saveDeckScreenshot
         // "#button_delete_keyword":deleteKeyword
     }
 
@@ -340,13 +338,6 @@ const listen_mousedown = async (e) => {
     } else if (e.target.matches("#deck_image div.image_set span:has(img), #deck_image div.image_set span:has(img) *")) {
         e.preventDefault();
 
-        // if (e.button===1) {
-        //     const ke=new KeyboardEvent( "keydown", { code:"Escape" });
-        //     window.dispatchEvent(ke);
-        //     console.log(ke);
-        // };
-        // console.log(e.target);
-        // e.preventScrolling();
         const span_tmp = e.target.matches("div.image_set span:has(img)") ?
             e.target :
             $(e.target).parents("div.image_set span:has(img)")[0];
@@ -367,7 +358,9 @@ const listen_mousedown = async (e) => {
         else if (!e.target.matches("div.image_set_MouseUI *") && !sideChangeOnViewIsValid) return;
         const row_results = obtainRowResults(df)//sideChangeOnViewIsValid ? obtainRowResults(): obtainRowResults_Edit(df);
         const cid_now = $(img_target).attr("card_cid");
-        const classInfo = parseCardClass(img_target);
+        const elm_dno = document.querySelector("#dno");
+        const dno = (elm_dno !== null) ? elm_dno.value : null;
+        // const classInfo = parseCardClass(img_target);
         const from_set_type = $(img_target).parents("div.image_set").attr("set_type");
         const row_type = judgeCardType(df, ["cid", cid_now], "row");
         const set_type_raw = ["monster", "spell", "trap"].indexOf(row_type) !== -1 ? "main" : row_type;
@@ -397,14 +390,15 @@ const listen_mousedown = async (e) => {
             //const to_row_type = (from_set_type === "temp") ? row_type : from_row_type;
             const change_for_image = (from_set_type === "temp") ? Math.abs(change_now) : change_now;
             const row_results_new = operateRowResults(row_results, cid_now, change_for_image, from_row_type, df);
-            if (sideChangeOnViewIsValid === false) importDeck(row_results_new);
+            // console.log(row_results_new, row_results, dno);
+            if (sideChangeOnViewIsValid === false) importDeck(row_results_new, row_results, dno);
             if (num_image == 3 && from_set_type === "temp" && change_now < 0) modifyDeckImg(img_target, change_now, null);
             else if (num_image + change_now <= 3 && (num_now < 3 || from_set_type !== "temp")) modifyDeckImg(img_target, change_now, to_set_type);
             //insertDeckImg(df, row_results_new);
         } else if (e.button === 0 && e.target.matches("#deck_image .image_set *")) {
             const onEdit = !sideChangeOnViewIsValid;
             const change_now = (from_set_type === "temp") ? 1 : 0;
-            if (num_now + change_now <= 3) sideChange_deck(df, img_target, onEdit);
+            if (num_now + change_now <= 3) sideChange_deck(df, img_target, onEdit, row_results);
         }
         // # ------ search result, info area ---------
     } else if (e.target.matches("#search_result #card_list .t_row img, #info_area img.img_chex")) {
@@ -413,6 +407,7 @@ const listen_mousedown = async (e) => {
         const cardInfo_tmp = ["name", "id", "cid", "type", "url"].map(d => Object({ [d]: $(img_target).attr(`card_${d}`) }));
         const card_tRow = $(img_target).parents("#search_result>#card_list>.t_row");
         const card_limit_div = $("dl.flex_1>dd.icon.top_set>div.lr_icon", card_tRow);
+        const dno = document.querySelector("#dno").value;
         const card_limit_dic = { forbidden: "fl_1", limited: "fl_2", semi_limited: "fl_3" };
         const card_limit = card_limit_div.length == 0 ? "not_limited" :
             Object.entries(card_limit_dic)
@@ -439,7 +434,7 @@ const listen_mousedown = async (e) => {
                 const to_row_type = e.button === 0 ? cardInfo.type : "side";
                 const to_set_type = ["monster", "spell", "trap"].indexOf(to_row_type) !== -1 ? "main" : to_row_type;
                 const row_results_new = operateRowResults(row_results, cardInfo.cid, +1, to_row_type, df);
-                importDeck(row_results_new);
+                importDeck(row_results_new, row_results, dno);
                 const row_result = row_results[cardInfo.type];
                 const ind_new = row_result.nums.length;
                 const span = _generateDeckImgSpan(df, cardInfo.type, { name: cardInfo.name, cid: cardInfo.cid }, `${ind_new}_1`, cardInfo.limit);
@@ -449,10 +444,23 @@ const listen_mousedown = async (e) => {
             const url = cardInfo.url;
             window.open(url, "_blank");
         }
+    } else if (e.button === 0 && e.target.matches("div.item_history.info_history, div.item_history.info_history *")) {
+        const target = e.target.matches("div.item_history") ? e.target : e.target.closest("div.item_history");
+        const pos_diff = parseInt(target.querySelector("span.main_info_history").getAttribute("pos_diff"))
+        backNextInfoArea(pos_diff);
+        removeElms(document.querySelectorAll("div.area_history"));
+    } else if (e.button === 0 && e.target.matches("div.item_history.deck_history, div.item_history.deck_history *")) {
+        const target = e.target.matches("div.item_history") ? e.target : e.target.closest("div.item_history");
+        const uid = target.querySelector("div.main_deck_history").getAttribute("deck_history_uid");
+        const dno = document.getElementById("dno").value;
+        // console.log(dno, uid)
+        callDeckHistory(dno, uid, df);
+        removeElms(document.querySelectorAll("div.area_history"));
     } else if (e.button === 0 && e.target.matches("#info_area, #info_area *")) {
-        const left_limit = info_area.clientLeft + info_area.clientWidth / 3;
-        const right_limit = info_area.clientLeft + info_area.clientWidth * 2 / 3;
-        console.log(e.clientX, left_limit, right_limit, e)
+        if (document.querySelector("#info_area>div").getAttribute("info_url") !== null) return;
+        const left_limit = info_area.offsetLeft + info_area.offsetWidth / 3;
+        const right_limit = info_area.offsetLeft + info_area.offsetWidth * 2 / 3;
+        // console.log(e.clientX, left_limit, right_limit, e)
         if (e.clientX < left_limit) {
             backNextInfoArea(-1);
         } else if (e.clientX > right_limit) {
@@ -475,9 +483,9 @@ const listen_mousedown = async (e) => {
 
 const longPress = {
     //プロパティ
-    el: '',
+    el: "",
     count: 0,
-    second: 1,
+    ms: 1000,
     interval: 10,
     timerId: 0,
 
@@ -485,38 +493,114 @@ const longPress = {
     init: function (param) {
         //引数のパラメータ取得
         this.el = document.querySelector(param.el);
-        this.second = param.second;
+        this.ms = param.ms;
         //イベントリスナー
-        this.el.addEventListener('mousedown', (e) => { this.start(e) }, false);
-        this.el.addEventListener('mouseup', (e) => { this.end(e) }, false);
+        // let clicked = false;
+        this.el.addEventListener("mousedown", async (e) => {
+            if (e.button === 0 && document.querySelector("div.model_history") === null) this.start(e);
+            // if (clicked === true) {
+            //     clicked = false;
+            //     return;
+            // }
+            // clicked = true;
+            // setTimeout(async () => {
+            //     if (clicked === true) {
+            //         this.start(e);
+            //     }
+            //     clicked = false;
+            // }, 200);
+        }, false)
+
     },
     start: function (e) {
+        document.addEventListener("mouseup", (e) => { this.end(e) }, false);
         this.timerId = setInterval(() => {
 
             this.count++;
-
-            if (this.count / 100 === this.second) {
-                //長押し判定時の処理
-                this.myFunc(e);
-                this.end(e);
+            if (this.count * this.interval == this.ms) {
+                setCircle(e);
+                clearInterval(this.timerId);
             }
-
         }, this.interval);
     },
     end: function (e) {
         clearInterval(this.timerId);
         this.count = 0;
+        removeProgressingCircle(e);
     },
-    myFunc: function (e) {
-        console.log(e);
-        const div = document.createElement("div");
-        const inner = document.createElement("p");
-        inner.setAttribute("class", "circle-inner")
-        inner.innerHTML = "clicking...";
-        div.setAttribute("class", "circle");
-        div.setAttribute(`style`, `position: fixed; top:${e.clientY - 25}px; left:${e.clientX - 25}px`)
-        div.append(inner)
-        document.querySelector("body").prepend(div);
 
-    }
+}
+
+const removeProgressingCircle = () => {
+    setTimeout(() => {
+        for (const elm of document.querySelectorAll("div.circle.progressing")) {
+            elm.classList.remove("progressing");
+            elm.classList.add("will-remove");
+        }
+    }, 100);
+    setTimeout(() => {
+        for (const elm of document.querySelectorAll("div.circle.will-remove")) {
+            elm.remove();
+        }
+    }, 350);
+
+}
+
+const setCircle = (e) => {
+    console.log(e);
+    const div = document.createElement("div");
+    const inner = document.createElement("p");
+    inner.setAttribute("class", "circle-inner")
+    div.setAttribute("class", "circle progressing will-appear");
+    div.setAttribute(`style`, `position: fixed; top:${e.clientY - 15}px; left:${e.clientX - 15}px`)
+    div.append(inner)
+    document.querySelector("body").prepend(div);
+    setTimeout(() => {
+        for (const elm of document.querySelectorAll("div.circle.progressing")) {
+            elm.classList.remove("progressing");
+            elm.classList.add("finished");
+        }
+    }, 950);
+    setTimeout(() => {
+        const finishedCircles = document.querySelectorAll("div.circle.finished");
+        if (finishedCircles.length == 0) {
+            return;
+        }
+        const co = [finishedCircles[0].offsetLeft + finishedCircles[0].offsetWidth / 2,
+        finishedCircles[0].offsetTop + finishedCircles[0].offsetHeight / 2]
+        for (const elm of finishedCircles) {
+            elm.classList.add("will-remove");
+        }
+        removeProgressingCircle();
+        openAreaHistory(co);
+    }, 1000)
+}
+
+const openAreaHistory = (co) => {
+    const modal = document.createElement("div");
+    // modal.style.position = "fixed";
+    // modal.style.top = `${co[0]}px`;
+    // modal.style.left = `${co[1]}px`;
+    modal.setAttribute("class", "modal_history");
+    document.getElementById("bg").append(modal);
+    Promise.all([showInfoHistory(modal), showDeckHistory(modal)]).then(() => {
+
+        for (const elm of modal.querySelectorAll("div.area_history")) {
+            elm.addEventListener("wheel", (e) => {
+                if (e.deltaX === 0) {
+                    const reg = 1.5;
+                    elm.scrollLeft += e.deltaY * reg;
+                    e.preventDefault();
+                }
+            })
+        }
+        setTimeout(() => {
+            document.addEventListener("mousedown", async (e) => {
+                if (!e.target.matches("div.area_history, div.area_history *")) {
+                    removeElms(document.querySelectorAll("div.area_history"));
+                }
+            }, false);
+        }, 200)
+    })
+
 }

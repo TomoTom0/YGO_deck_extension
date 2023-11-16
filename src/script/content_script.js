@@ -41,11 +41,11 @@ window.onload = async function () {
         // other buttons for bottom
         const button_bottom_dic = {
             back: $("<a>", { class: "btn hex orn square button_backtoView", id: "button_backToView" })
-                .append($("<span>", { title: "back" }).append(svgs.arrowBack)),
+                .append($("<span>", { title: "Back to Deck View Page" }).append(svgs.arrowBack)),
             headerShowHide: $("<a>", {
                 class: "btn hex red square button_visible_header hide", type: "button", id: "button_visible_header",
                 style: "position: relative;user-select: none;"
-            }).append($("<span>", { title: "show Header" }).append(svgs.toc)),
+            }).append($("<span>", { title: "Toggle Show/Hide Header" }).append(svgs.toc)),
             test: $("<a>", { class: "btn hex square red button_sort", id: "button_test" }).append("<span>Test</span>"),
             export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
                 .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name"))// "<span>Export (L:id/M:cid/R:Name)</span>"),
@@ -88,11 +88,11 @@ window.onload = async function () {
             //input_version_tag=$("<select>", {id:"deck_version_tag"});
             const btns_version = {
                 save: $("<a>", { class: "btn hex red square button_deckVersion button_save", id: "button_deckVersionSave" })
-                    .append($("<span>", { title: "cache save" }).append(svgs.save)),
+                    .append($("<span>", { title: "Save Deck in Cache" }).append(svgs.save)),
                 load: $("<a>", { class: "btn hex red square button_deckVersion button_load", id: "button_deckVersionLoad" })
-                    .append($("<span>", { title: "cache load" }).append(svgs.style)),
+                    .append($("<span>", { title: "Load Deck in Cache" }).append(svgs.style)),
                 delete: $("<a>", { class: "btn hex red square button_deckVersion button_delete", id: "button_deckVersionDelete" })
-                    .append($("<span>", { title: "cache delete" }).append(svgs.delete)),
+                    .append($("<span>", { title: "Delete Deck in Cache" }).append(svgs.delete)),
             };
             ["name", "tag"].map(key => {
                 //const select=$("<select>", {type:"text", class:`select_deck_version ${key}`, style:"flex:1;"});
@@ -144,15 +144,15 @@ window.onload = async function () {
             const datalist_deckName = $("<datalist>", { id: "deck_nameList" });
             const btns_official = {
                 copy: $("<a>", { class: "btn hex orn square button_deckOfficial button_copy", id: "button_deckOfficialCopy" })
-                    .append($("<span>", { title: "official copy" }).append(svgs.copy)),
+                    .append($("<span>", { title: "Copy Deck in Official DB" }).append(svgs.copy)),
                 delete: $("<a>", { class: "btn hex orn square button_deckOfficial button_delete", id: "button_deckOfficialDelete" })
-                    .append($("<span>", { title: "official delete" }).append(svgs.delete)),
+                    .append($("<span>", { title: "Delete Deck in Official DB" }).append(svgs.delete)),
                 new: $("<a>", { class: "btn hex orn square button_deckOfficial button_new", id: "button_deckOfficialNew" })
-                    .append($("<span>", { title: "official new" }).append(svgs.add)),
+                    .append($("<span>", { title: "Generate Empty Deck in Official DB" }).append(svgs.add)),
                 save: $("<a>", { class: "btn hex orn square button_deckOfficial button_save", id: "button_deckOfficialSave" })
-                    .append($("<span>", { title: "official save" }).append(svgs.save)),
+                    .append($("<span>", { title: "Save Deck in Official DB" }).append(svgs.save)),
                 load: $("<a>", { class: "btn hex orn square button_deckOfficial button_load", id: "button_deckOfficialLoad" })
-                    .append($("<span>", { title: "official load" }).append(svgs.style)),
+                    .append($("<span>", { title: "Load Deck in Official DB" }).append(svgs.style)),
 
             };
             $(dnm).css({ width: "auto" });
@@ -254,13 +254,15 @@ window.onload = async function () {
 
             const button_bottom_dic = {
                 searchShowHide: $("<a>", { class: "btn hex square button_searchShowHide", id: "button_searchShowHide" }
-                ).append($("<span>", { title: "show search area" }).append(svgs.search)),
+                ).append($("<span>", { title: "Toggle to Show/Hide Search Area" }).append(svgs.search)),
                 infoShowHide: $("<a>", { class: "btn hex red square button_infoShowHide", id: "button_infoShowHide" }
-                ).append($("<span>", { title: "show info area" }).append(svgs.contancts)),
+                ).append($("<span>", { title: "Toggle to Show/Hide Info Area" }).append(svgs.contancts)),
                 fixScroll: $("<a>", { class: "btn hex square show button_fixScroll", id: "button_fixScroll" })
-                    .append($("<span>", { title: "fit editor" }).append(svgs.fullscreen)),
+                    .append($("<span>", { title: "Toggle to Fit Editor Columns" }).append(svgs.fullscreen)),
                 // hoverName: $("<a>", { class: "btn hex square red show button_toggleHoverName", id: "button_toggleHoverName" })
                 //     .append($("<span>", { title: "show card names on mouse hovering" }).append(svgs.liveHelp)),
+                deckScreenshot: $("<a>", { class: "btn hex square red button_deckScreenshot", id: "button_deckScreenshot" })
+                    .append($("<span>", { title: "Take a Screenshot of Deck Recipie" }).append(svgs.screenshot)),
                 reloadSort: $("<a>", { class: "btn hex square red button_reloadSort", id: "button_reloadSort" })
                     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             };
@@ -341,6 +343,13 @@ window.onload = async function () {
 
             operate_fixScroll(null, settings.default_fit_edit && !IsCopyMode);
 
+            const dno = document.getElementById("dno").value;
+            unsetDeckHistoryUid(dno);
+            longPress.init({
+                el: "body",
+                ms: 300
+            })
+
             //openCardInfoArea();
 
         }
@@ -356,6 +365,8 @@ window.onload = async function () {
         const button_dic = {
             export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
                 .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name")),
+            deckScreenshot: $("<a>", { class: "btn hex square red button_deckScreenshot", id: "button_deckScreenshot" })
+                .append($("<span>", { title: "Take a Screenshot of Deck Recipie" }).append(svgs.screenshot)),
             // sortSave: $("<a>", { class: "btn hex red square button_sort", id: "button_sortSave" })
             //     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
@@ -454,158 +465,33 @@ window.onload = async function () {
     // const df = await obtainDF(obtainLang());
     // document.addEventListener("mousedown", listen_mousedown);
 
-    // ## double click
-    document.addEventListener("dblclick", async function (e) {
-        if (e.target.matches("#deck_header dl.category_tag>dd select>option")) {
-            console.log($(e.target).prop("selected"))
-            //$(e.target).prop("selected", !$(e.target).prop("selected"));
-            //$(e.target).toggleClass("clicked");
-        }
-    })
+
     // ## button id
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
     });
-    // $("#button_sortSave").on("click", async function () {
-    //     await sortSaveClicked();
-    // });
-    // $("#button_reloadSort").on("click", async function () {
-    //     const reloadSort = async ()=>{
-    //         if ($("#deck_text").css("display") !== "none") return;
-    //         const row_results = obtainRowResults(df);//obtainRowResults_Edit(df);
-    //         const row_results_new = await sortCards(row_results);
-    //         importDeck(row_results_new);
-    //         insertDeckImg(df, row_results_new);    
-    //     }
-    //     /*for (const set_type of ["main", "extra", "side", "temp"]){
-    //         shuffleCards("reset", set_type);
-    //     }*/
-    //     //await sortClicked();
-    // });
-    // $("#button_searchShowHide").on("click", async function () {
-    //     operate_searchArea();
-    // });
-    // $("#button_infoShowHide").on("click", async function () {
-    //     operate_infoArea();
-    // });
-    // $("#button_fixScroll").on("click", async function () {
-    //     operate_fixScroll();
-    // });
-    // $("#button_visible_header").on("click", function () {
-    //     toggleVisible_deckHeader();
-    // });
-    // $("#button_clickMode").on("click", async function () {
-    //     //operate_clickMode();
-    //     $("#deck_image").toggleClass("click_open_url");
-    //     $(this).toggleClass("red");
-    //     const clickIsToOpenURL = $("#deck_image").hasClass("click_open_url");
-    //     $("span", this).html(`Click|` + (clickIsToOpenURL ? "move card/OPEN URL" : "MOVE CARD/open url"));
-    // });
-
-    // $("#button_guess").on("click", async function () {
-    //     await guess_clicked();
-    // });
 
 
 
     $("#button_test").on("click", async function () {
-        // const url = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=4&cgid=87999bd183514004b8aa8afa1ff1bdb9"
-        // const body = await obtainStreamBody(url);
-        // //const dno_new=$("#bottom_btn>a", body).attr("href").match(/dno=(\d+)/)[1];
-        // console.log(body);
-        // refreshCacheHtml(0);
-        await operateStorage({ urlHistory: JSON.stringify({}) }, "local", "set");
-        // await operateStorage({ cacheInfos: JSON.stringify({}) }, "local", "set");
-        // const df = await obtainDF(obtainLang());
-        // const row_results = await obtainRowResults(df);
+        // await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "set");
+        // const deckHistory = await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "get"
+        // ).then(items => Object.assign({}, JSON.parse(items.deckHistory)))
+        // console.log(deckHistory);
 
-        // console.log(row_results)
 
-        // await addUrlHistory("https://www.db.yugioh-card.com/yugiohdb/card_search.action?ope=2&cid=17069")
-        // operateStorage({ urlHistory: JSON.stringify({}) }, "local", "get"
-        // ).then(items => Object.assign({ urls: [], pos: -1 }, JSON.parse(items.urlHistory))
-        // ).then(urlHistory => {
-        //     console.log(JSON.stringify(urlHistory))
-        // })
-        // backNextInfoArea(-1);
-        // const canvas = await html2canvas(document.querySelector("#deck_image"))
-        // console.log(canvas)
-        // .then(res => {
-        //     document.querySelector("#info_area").innerHTML = res.outerHTML
-        // })
+
     });
 
 
-    // $("#button_backToView").on("click", async function () {
-    //     const html_parse_dic = parse_YGODB_URL(location.href, true);
-    //     const my_cgid = obtainMyCgid();
-    //     const dno = $("#dno").val();
-    //     const lang = obtainLang();
-    //     const sps = { ope: "1", wname: html_parse_dic.wname, cgid: my_cgid, dno: dno, request_locale: lang };
-    //     const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?` + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
-    //     location.href = url;
-    // });
+
 
     // ## change
     $("#deck_version_name").on("change", async function () {
         await setDeckVersionTagList(false);
     });
 
-    /*$("#button_sort").on("click", async function (){
-        const row_results=obtainRowResults(df)//obtainRowResults_Edit(df);
-        //console.log(row_results)
-        const MouseUIIsVisible=$(".tablink_deckEdit ul li.deck_edit_image").hasClass("now");
-        insertDeckImg(df, row_results, MouseUIIsVisible);
-    })*/
-    // ## trigger
-    /*window.addEventListener("message", async function (e) {
-        const content = e.data;
-        if (!/^trigger_/.test(content)) return;
-        //console.log(content);
-        if (/_sortCard/.test(content)) {
-            const json_dumped = content.replace("trigger_sortCard_", "");
-            const row_results_new = JSON.parse(json_dumped);
-            //const row_results_new=await sortCards(row_results);
-            //console.log(row_results_new);
-            const row_names = ["monster", "spell", "trap", "extra", "side"];
-            const row_str_new = JSON.stringify(row_names
-                .map(row_name => ({ [row_name]: { names: row_results_new[row_name].names, nums: row_results_new[row_name].nums.map(d => parseInt(d)) } })))
-            while (true) {
-                importDeck(row_results_new);
-                const row_results = obtainRowResults()//obtainRowResults_Edit();
-                const row_str = JSON.stringify(row_names
-                    .map(row_name => ({ [row_name]: { names: row_results[row_name].names, nums: row_results[row_name].nums } })))
-                if (row_str == row_str_new) {
-                    const regist_btn = $("#btn_regist>span");
-                    const save_text = regist_btn.text();
-                    //document.querySelector("#btn_regist").classList.remove("orn");
-                    //$("#btn_regist").toggleClass("orn");
-                    //$("#btn_regist").toggleClass("pnk");
-                    //regist_btn.text(save_text + " (CLICK HERE)");
-                    await _Regist_fromYGODB().then(async _ => {
-                        await sleep(500);
-                        window.opener.postMessage("trigger_closeWindow", "*");
-                    });
-                    //console.log("Sorted. Please save and close.");
-                    //console.log(window.opener);
-                    //window.opener.postMessage("trigger_closeWindow", "*");
-                    //Regist() // function on YGO
-                    // message on HTML*/
-    /*document.addEventListener("click", async function (e) {
-        if (e.target.matches("#btn_regist *")) {
-            window.opener.postMessage("trigger_closeWindow", "*");
-        }
-    })*//*
-    break;
 
-} else await sleep(500);
-};
-}
-if (/_closeWindow/.test(content)) {
-setTimeout(() => { e.source.close() }, 200);
-setTimeout(() => { location.reload() }, 1000);
-}
-})*/
 };
 //});
 

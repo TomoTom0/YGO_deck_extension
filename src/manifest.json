@@ -1,7 +1,7 @@
 {
   "name": "遊戯王DBデッキサポート",
   "author": "TomoTomo",
-  "version": "2.1.0.0",
+  "version": "2.14.0.0",
   "manifest_version": 3,
   "icons": {
     "16": "images/icon-16.png",
@@ -21,7 +21,8 @@
         "script/content_script.js",
         "script/db_functions.js",
         "script/card_search_script.js",
-        "script/listen.js"
+        "script/listen.js",
+        "js/qrcode.min.js"
       ],
       "css": [
         "css/content_script.css",
