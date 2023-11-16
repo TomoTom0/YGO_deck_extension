@@ -103,7 +103,7 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
     - 公開されているデッキの場合、自動的に画像下部にデッキレシピへのQRコードが追加されます。
 - <img src="src/images/svg/download_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピをExportする
 - <img src="src/images/svg/upload_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピをImportする
-- <img src="src/images/svg/screenshot-keyboard_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピスクリーンショット風の画像を作成する
+- <img src="src/images/svg/screenshot_keyboard_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピスクリーンショット風の画像を作成する
 
 <img src="intro/imgs/deck_recipie_screenshot.jpg" style="height:50vh;">
 

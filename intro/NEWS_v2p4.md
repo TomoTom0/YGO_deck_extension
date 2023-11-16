@@ -40,7 +40,7 @@
 - **Neuronアプリのデッキレシピ風の画像を作成することができます。**
     - 現在、カラーバリエーションは赤と青があり、それぞれ左/右クリックに対応しています。
     - 公開されているデッキの場合、自動的に画像下部にデッキレシピへのQRコードが追加されます。
-- <img src="s../rc/images/svg/screenshot-keyboard_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピスクリーンショット風の画像を作成する
+- <img src="../src/images/svg/screenshot_keyboard_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピスクリーンショット風の画像を作成する
 
 <img src="../intro/imgs/deck_recipie_screenshot.jpg" style="height:50vh;">
 
