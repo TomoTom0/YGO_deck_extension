@@ -855,7 +855,6 @@ const _Regist_fromYGODB = async (
             const select_id = option.closest("select").getAttribute("id");
             const option_val = option.value;
             const option_cpopy = dh_copy.querySelector(`#${select_id} option[value="${option_val}"]`);
-            // console.log(option_val, select_id)
             option_cpopy.selected = true;
             option_cpopy.setAttribute("selected", true);
         })

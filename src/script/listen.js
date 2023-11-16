@@ -421,7 +421,6 @@ const listen_mousedown = async (e) => {
             return;
         } else if ([0, 2].indexOf(e.button) !== -1) {
             const row_results = obtainRowResults(df)//obtainRowResults_Edit();
-            console.log(row_results.spell.names);
             const num_now_dic = {
                 text: () => Object.values(row_results).map((d, ind) => {
                     const ind_fromCid = d.cids.indexOf(cardInfo.cid);
