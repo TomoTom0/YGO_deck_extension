@@ -28,6 +28,20 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
 - <img src="src/images/svg/arrow_back_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキ閲覧画面に戻る
 - <img src="src/images/svg/toc_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> Headerの省略の有無を切り替える
 
+- デッキ編集画面で画面を長押しすることで、履歴モーダルを呼び出すことができます。
+    - モーダルではレシピ編集操作の履歴およびInfoエリアの履歴が表示されます。
+    - いずれかの要素をクリックすると、デッキレシピ編集操作をその時点に遡ったり、そのときのInfoエリアを表示したりできます。
+    - デッキレシピ編集履歴はその操作を行った時間も表示されます。
+    - モーダル上でホイールスクロールを行うと、縦スクロールが横スクロールに変換されます。
+    - モーダル外をクリックすると、モーダルは閉じます。
+
+<img src="intro/imgs/modal_history.png" style="width:60vw;">
+
+- Headerを省略せず表示する際、ボタンの左/ホイール/右クリックに応じて、HeaderがInfoエリア、(従来の)deckエリア、searchエリアで展開されます。
+    - これにより、デッキレシピおよびInfoエリアないしsearchエリアを確認しながらHeaderを編集することができます。
+
+<img src="intro/imgs/headerInInfoArea.png" style="width:60vw;">
+
 ### Deck Manager
 
 - デッキレシピの保存、読み込みなどをページを切り替えることなく行うことができます。
@@ -44,7 +58,6 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
     - デッキを複製して保存しておかずとも、過去のレシピと比較する必要はありません。
 - デッキレシピの保存時や削除時には、`@@Auto`に`_delete_Zoodiac`のようなバージョン名で自動保存されます。
 
-
 ### Search Area
 
 - カード検索エリアをデッキ編集画面右側に追加します。
@@ -56,8 +69,10 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
 
 - 情報エリアをデッキ編集画面左側に追加します。
 - ページを切り替えることなく、各カードの詳細や関連カード、Q&Aを確認できます。
-- 各カード画像をダブルクリックまたはCtrl+左クリックすることで、情報エリアでページを開きます。
-- (カード画像を除く)情報エリア内のリンクを(シングル)クリックすることで、情報エリアでページを開きます。
+    - 各カード画像をダブルクリックまたはCtrl+左クリックすることで、情報エリアでページを開きます。
+    - (カード画像を除く)情報エリア内のリンクを(シングル)クリックすることで、情報エリアでページを開きます。
+    - ホイールクリックすると、新しいタブで開きます。
+- Infoエリアを表示している状態でInfoエリアの左から3分の1をクリックすると1つ前のページに戻り、右から3分の1をクリックすると(存在するなら)1つ先のページを表示します。
 - クリックでのカードの移動に関する説明は、前節の表に含んでいます。
 - <img src="src/images/svg/contacts_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> 情報エリアの表示・非表示を切り替える
 
@@ -83,8 +98,14 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
 - デッキレシピをImport/Exportすることができます。カードのパスワード(id)、カードゲームID(cid)、カード名(Name)の任意の形式を選択することができます。
     - Exportボタンの`id/cid/Name`には、左/Wheel/右クリックがそれぞれ対応しています。
     - Importの際はid、cid、カード名のいずれからなるファイルでも対応しています。(詳細な形式はExportファイルで確認してください。)
+- **Neuronアプリのデッキレシピ風の画像を作成することができます。**
+    - 現在、カラーバリエーションは赤と青があり、それぞれ左/右クリックに対応しています。
+    - 公開されているデッキの場合、自動的に画像下部にデッキレシピへのQRコードが追加されます。
 - <img src="src/images/svg/download_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピをExportする
 - <img src="src/images/svg/upload_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピをImportする
+- <img src="src/images/svg/screenshot-keyboard_FILL0_wght400_GRAD0_opsz24.svg" style="background:#ff9900;height:18px;"> デッキレシピスクリーンショット風の画像を作成する
+
+<img src="intro/imgs/deck_recipie_screenshot.jpg" style="height:50vh;">
 
 <img src="intro/imgs/tutorial_exportImport.gif" style="width:60vw;">
 
@@ -103,6 +124,7 @@ DB作成における古いOCGカードのid収集において、[ocg-card.com](h
 - 2022/05/02: v0.10: Rest APIを用いてデッキレシピを保存するようになりました。DBの作成に公式遊戯王DBの情報を利用するようにしました。
 - 2022/06/01: v1.0: デッキ編集画面にMouseUIモードの導入を行いました。他にもマウス操作に関する機能を多数追加しました。
 - 2023/11/10: v2.0: デッキ編集画面にInfoエリアの導入を行いました。
+- 2023/11/16: v2.4: デッキ編集画面で編集操作の遡り、レシピ画像の作成ができるようになりました。
 
 ## Install
 
@@ -121,8 +143,10 @@ GitHubから本拡張機能をインストールする場合、以下の手順�
 - [x] データベース作成で ocg-card.com 様に依存しないようにする (->日本語・英語以外の言語への対応)
 - [ ] デッキごとのフォルダ分けないしタグ付けによる管理
 - [x] 編集対象のデッキの切り替えをスムーズに
-- [ ] デッキレシピのスクショ作成
+- [x] デッキレシピのスクショ作成
 - [x] デッキ編集画面にinfoエリアを作成し、カード効果の詳細を確認できるようにする
+- [x] デッキ編集操作で戻るを追加する
+- [ ] デッキ編集画面の操作履歴にカーソルを重ねると、そのときのレシピを確認できるようにする
 
 ## Contact
 
