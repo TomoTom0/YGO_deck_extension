@@ -405,10 +405,14 @@ const guessDeckCategory = async (lower_limit = 4, kwargsIn = {}) => {
         value: val,
         num: names.map((card_name, card_ind) => {
             if (card_name.indexOf(cat) === -1) return 0;
-            else return nums[card_ind];
-        }).reduce((acc, cur) => acc + cur)
+            else {
+                // console.log(cat, card_name)
+                return nums[card_ind];
+            }
+        }).reduce((acc, cur) => acc + cur, 0)
     })
-    ).filter(d => d.num >= lower_limit).sort((a, b) => a.num - b.num).slice(-3);
+    ).filter(d => d.num >= lower_limit
+    ).sort((a, b) => a.num - b.num).slice(-3);
 }
 
 const showMessage = (content = null) => {
@@ -434,25 +438,31 @@ const showMessage = (content = null) => {
 
 }
 
-const guess_clicked = async (card_num = 4) => {
+const guess_clicked = async (e = null, lower_lim = 4) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     // if (html_parse_dic.ope === "1" && $("#message").length === 0) $("div.sort_set div.pulldown").prepend($("<span>", { id: "message" }));
     // const message_area = $("#message");
     // $(message_area).removeClass("none");
     // $(message_area).css({ width: "97%" });
-    const cat_guessed = await guessDeckCategory(card_num);
+    const cat_guessed = await guessDeckCategory(lower_lim);
     const content = "Guessed Categories: " + cat_guessed.map(d => d.name).join(", ");
     // console.log(content);
     showMessage(content);
     // $(message_area).html(content);
     if (["2", "8"].indexOf(html_parse_dic.ope) !== -1) {
-        const select = $("select#dckCategoryMst");
+        const select = document.querySelector("select#dckCategoryMst");
+        Array.from(select.querySelectorAll("option")
+        ).map(option => {
+            option.removeAttribute("selected");
+        })
+
         cat_guessed.map(catInfo => {
-            const option = $(`option[value=${catInfo.value}]`, select);
-            $(option).prop("selected", true);
-            option[0].setAttribute("selected", true);
-            //$(option).attr("checked", true);
-            $(option).addClass("guessed");
+            const options = select.querySelectorAll(`option[value="${catInfo.value}"]`);
+            for (const option of options) {
+                option.selected = true;
+                option.setAttribute("selected", true);
+                option.classList.add("guessed");
+            }
         });
         const dnm = $("#dnm");
         if ($(dnm).val() === "") $(dnm).val(cat_guessed.map(d => d.name).join(""));
@@ -1046,11 +1056,9 @@ const load_deckOfficial = async (df, deck_dno, settings, my_cgid = null) => {
             } else if (type === "select") {
                 const select = document.querySelector(`#${dom_id}`);
                 const select_old = deck_body.header.querySelector(`#${dom_id}`);
-                // #/ 全部選択されてる
                 Array.from(select.querySelectorAll("option")
                 ).map(option => {
-                    // option.setAttribute("selected", false);
-                    option.selected = null;
+                    option.removeAttribute("selected");
                 })
                 Array.from(select_old.querySelectorAll(`option[selected]`)
                 ).map(option => {
@@ -1140,20 +1148,6 @@ const delete_deckOfficial = async (
 const generateNewDeck = async (html_parse_dic_in = null) => {
     // const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
     const my_cgid = obtainMyCgid();
-    // const url_decklist = "https://www.db.yugioh-card.com/yugiohdb/member_deck.action";
-    // const params_decklist = {
-    //     ope:"4",
-    //     wname:obtain_YGODB_fromHidden("wname"),
-    //     cgid:my_cgid
-    // }
-    // const body_decklist = parseHTML(await obtainStreamBody(url_decklist, params_decklist));
-    // console.log(body_decklist.innerHTML);
-    // console.log(body_decklist.querySelector("#ytkn").value());
-
-    //const dno = $("#dno").val();
-    // const lang = obtainLang();
-    // const deckList = await obtainDeckListOfficial();
-    //const dno_new=[...Array(deckList.length+1).keys()].map(d=>d+1).filter(dno_cand=>!deckList.some(d=>d.dno==dno_cand))[0];
     const dno_tmp = 1;//Math.max(deckList.map(d => d.dno)) + 1;
     // const ytkn = obtain_YGODB_fromHidden("ytkn", body_decklist)
     const ytkn_decklist = await obtainMyYtkn(true);
@@ -1166,19 +1160,8 @@ const generateNewDeck = async (html_parse_dic_in = null) => {
         // request_locale: lang,
         dno: dno_tmp
     };
-    // 7c47b&cgid=87999bd183514004b8aa8afa1ff1bdb9&dno=1
-    // https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=6&wname=MemberDeck&ytkn=bc4acdcbd5a412c757fe43dc8f31b242444b31d201d1384eb4c8525cad311646&cgid=87999bd183514004b8aa8afa1ff1bdb9&dno=1
     const url = `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?`;// + Object.entries(sps).filter(([k, v]) => v !== null).map(([k, v]) => `${k}=${v}`).join("&");
-    // console.log(url);
     const body = parseHTML(await obtainStreamBody(url, sps));
-    // console.log(body.innerHTML);
-    // const ytkn = body.querySelector("input#ytkn").value;
-    // const temps = await operateStorage({ temps: JSON.stringify({}) }, "local")
-    //     .then(items => Object.assign(defaultTemps, JSON.parse(items.temps)));
-    // const new_temps = Object.assign(temps, { ytkn: ytkn });
-    // await operateStorage({ temps: JSON.stringify(new_temps) }, "local", "set");
-
-    // #/ 動作未確認バグるかも => fixed
     const dnos = Array.from(
         body.querySelectorAll("div.t_body>div.t_row div.inside>input.link_value")
     ).map(d => d.getAttribute("value").match(/dno=(\d+)/)[1]).map(d => parseInt(d))
