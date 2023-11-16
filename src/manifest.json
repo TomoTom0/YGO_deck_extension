@@ -21,7 +21,8 @@
         "script/content_script.js",
         "script/db_functions.js",
         "script/card_search_script.js",
-        "script/listen.js"
+        "script/listen.js",
+        "js/qrcode.min.js"
       ],
       "css": [
         "css/content_script.css",

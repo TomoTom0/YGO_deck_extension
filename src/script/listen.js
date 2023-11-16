@@ -39,10 +39,7 @@ const listen_clickAndDbclick = async () => {
         }, 200);
     })
 
-    longPress.init({
-        el: "#info_area",
-        ms: 300
-    })
+
 
 }
 
@@ -272,6 +269,7 @@ const listen_mousedown = async (e) => {
         "#button_sortSave": sortSaveClicked,
         "#button_backToView": backToView,
         "#button_reloadSort": reloadSort,
+        "#button_deckScreenshot": saveDeckScreenshot
         // "#button_delete_keyword":deleteKeyword
     }
 
@@ -360,7 +358,8 @@ const listen_mousedown = async (e) => {
         else if (!e.target.matches("div.image_set_MouseUI *") && !sideChangeOnViewIsValid) return;
         const row_results = obtainRowResults(df)//sideChangeOnViewIsValid ? obtainRowResults(): obtainRowResults_Edit(df);
         const cid_now = $(img_target).attr("card_cid");
-        const dno = document.querySelector("#dno").value;
+        const elm_dno = document.querySelector("#dno");
+        const dno = (elm_dno !== null) ? elm_dno.value : null;
         // const classInfo = parseCardClass(img_target);
         const from_set_type = $(img_target).parents("div.image_set").attr("set_type");
         const row_type = judgeCardType(df, ["cid", cid_now], "row");
@@ -499,7 +498,7 @@ const longPress = {
         //イベントリスナー
         // let clicked = false;
         this.el.addEventListener("mousedown", async (e) => {
-            if (e.button === 0) this.start(e);
+            if (e.button === 0 && document.querySelector("div.model_history") === null) this.start(e);
             // if (clicked === true) {
             //     clicked = false;
             //     return;

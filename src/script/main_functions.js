@@ -53,7 +53,8 @@ const svgs = {
     contancts: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M160-40v-80h640v80H160Zm0-800v-80h640v80H160Zm320 400q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm70-80q45-56 109-88t141-32q77 0 141 32t109 88h70v-480H160v480h70Zm118 0h264q-29-20-62.5-30T480-280q-36 0-69.5 10T348-240Zm132-280q-17 0-28.5-11.5T440-560q0-17 11.5-28.5T480-600q17 0 28.5 11.5T520-560q0 17-11.5 28.5T480-520Zm0 40Z"/></svg>`,
     scroll: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M320-440v-287L217-624l-57-56 200-200 200 200-57 56-103-103v287h-80ZM600-80 400-280l57-56 103 103v-287h80v287l103-103 57 56L600-80Z"/></svg>`,
     fullscreen: `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z"/></svg>`,
-    toc: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M120-280v-80h560v80H120Zm0-160v-80h560v80H120Zm0-160v-80h560v80H120Zm680 320q-17 0-28.5-11.5T760-320q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320q0 17-11.5 28.5T800-280Zm0-160q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440Zm0-160q-17 0-28.5-11.5T760-640q0-17 11.5-28.5T800-680q17 0 28.5 11.5T840-640q0 17-11.5 28.5T800-600Z"/></svg>`
+    toc: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M120-280v-80h560v80H120Zm0-160v-80h560v80H120Zm0-160v-80h560v80H120Zm680 320q-17 0-28.5-11.5T760-320q0-17 11.5-28.5T800-360q17 0 28.5 11.5T840-320q0 17-11.5 28.5T800-280Zm0-160q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440Zm0-160q-17 0-28.5-11.5T760-640q0-17 11.5-28.5T800-680q17 0 28.5 11.5T840-640q0 17-11.5 28.5T800-600Z"/></svg>`,
+    screenshot: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M480-400q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0 80q66 0 113-47t47-113q0-66-47-113t-113-47q-66 0-113 47t-47 113q0 66 47 113t113 47ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-80h640v-480H160v480Zm0 0v-480 480Z"/></svg>`
 }
 
 
@@ -652,7 +653,7 @@ const addDeckHistory = async (row_results, row_results_old, dno) => {
 
 const obtainDiffRowResults = (row_results, row_results_old) => {
     const row_names = Object.keys(row_results);
-    console.log(row_results.spell.names, row_results_old.spell.names)
+    // console.log(row_results.spell.names, row_results_old.spell.names)
     const cids_all = Array.from(new Set([].concat(
         ...[row_results, row_results_old].map(results =>
             [].concat(...Object.values(results).map(result => result.cids))
@@ -723,6 +724,7 @@ const showDeckHistory = async (modal, dno = null) => {
     const df = await obtainDF();
 
     const infos = Object.values(history_now.history);
+    if (infos.length === 0) return;
     // console.log(infos)
 
     const div_history = document.createElement("div");
@@ -730,8 +732,6 @@ const showDeckHistory = async (modal, dno = null) => {
     // div_history.style.position = "fixed";
     div_history.style.display = "flex";
     div_history.style.overflowX = "scroll";
-    // div_history.style.bottom = `${co[0]}px`;
-    // div_history.style.left = `${co[1]}px`;
     const ts_now = Date.now();
     const div_titles = infos.map(info => {
         const div = document.createElement("div");
@@ -1079,7 +1079,7 @@ const unsetDeckHistoryUid = async (dno) => {
         if (Object.keys(deckHistory).indexOf(dno) === -1) {
             deckHistory[dno] = { uid: null, history: {} }
         } else deckHistory[dno].uid = null;
-        console.log(deckHistory[dno])
+        // console.log(deckHistory[dno])
         operateStorage({ deckHistory: JSON.stringify(deckHistory) }, "local", "set");
     });
 }
@@ -1406,7 +1406,6 @@ async function exportAs(form = "id") {
     const dnm = document.getElementById("dnm");
     const deck_name = dnm === null ?
         document.querySelector("meta[name='description']").getAttribute("content").replace(/ \| 遊戯王 オフィシャルカードゲーム デュエルモンスターズ カードデータベース　デッキ詳細$/, "") :
-        // $("#broad_title>div>h1").html().match(/(?<=\s*).*(?=<br>)/)[0].replace(/^\s*/, "").replace(/\s/, "_") :
         (dnm.value || dnm.getAttribute("placeholder")); // after 2022/4/18
     const ext_dic = { "id": ".ydk", "name": "_name.txt", "cid": "_cid.txt" }
     const file_name = deck_name + ext_dic[form];
@@ -2094,27 +2093,6 @@ const _operateSideChange = (sideChangeIsValid = true) => {
     $("#deck_image div.card_set div.image_set span:has(img)").attr(par_dic[sideChangeIsValid].attr);//:not(.add_card)
     if (sideChangeIsValid === true) $("#deck_image").removeClass("click_open_url");
     else $("#deck_image").addClass("click_open_url");
-    /*Array.from($("#deck_image .image_set span:has(img)")).map(span=>{//:not(.add_card)
-        //const image_set=$(span).parents(".image_set")[0];
-        //const a_span_ident=$(span).attr("a_span")
-        //const card_a=$(`#deck_image div.image_set a[a_span='${a_span_ident}']`);
-        if (sideChangeIsValid===true) {
-            //$(image_set).append(span);
-            //$(card_a).before(span);
-            //$(card_a).css({display:"none"});
-            //$(span).css({"max-width": "6.5%", padding:"1px", "box-sizing":"border-box"});
-            $("img", span).removeClass("url_open");
-            //$("#temp").css({display:"block"});
-        } else {
-            //$(span).css({"max-width": "", padding:"0px", "box-sizing":""});
-            $("img", span).addClass("url_open");
-            //$(card_a).after(span);
-            //$(card_a).append(span);
-            //$(card_a).css({display:"block"});
-            //$("#temp").css({display:"none"});
-        }
-    })*/
-    //if (sideChangeIsValid!==true) $("#deck_image div.image_set a:has(span:has(img):not(.del_card))").css({display:"block"});
 }
 
 const updateDeckCount = () => {
@@ -2124,6 +2102,171 @@ const updateDeckCount = () => {
         span_count.html($("div.image_set span:has(img):not(.del_card)", card_set).length);
     })
 }
+
+const saveDeckScreenshot = async (e) => {
+    async function _saveDeckScreenshot(ratio = 2, img_back = null, img_qr = null) {
+        const colorInfos = {
+            "default": {
+                gradient_all_ne: "#003d76",
+                gradient_all_sw: "#011224",
+                gradient_name_e: "#023051",
+                gradient_name_w: "#0b090c",
+                border_line: "#c7ecfc",
+                line_name: "#1485ed",
+                font: "#ffffff"
+
+            },
+            "red": {
+                gradient_all_ne: "#760f01",
+                gradient_all_sw: "#240202",
+                gradient_name_e: "#510101",
+                gradient_name_w: "#0c0909",
+                border_line: "#fcc4c4",
+                line_name: "#ed1b1b",
+                font: "#ffffff"
+            }
+        }
+        const cinfo = colorInfos[e.button === 0 ? "red" : "default"];
+        const dnm = document.getElementById("dnm");
+        const deck_name = dnm === null ?
+            document.querySelector("meta[name='description']").getAttribute("content").replace(/ \| 遊戯王 オフィシャルカードゲーム デュエルモンスターズ カードデータベース　デッキ詳細$/, "") :
+            (dnm.value || dnm.getAttribute("placeholder")); // after 2022/4/18
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const set_imgs = ["main", "extra", "side"
+        ].map(set_name =>
+            [set_name,
+                document.querySelectorAll(`#deck_image #${set_name}.card_set div.image_set span>img`)]
+        ).filter(([_set_name, imgs]) => imgs.length !== 0
+        );
+        const font_name = "Yu Gothic, ヒラギノ角ゴ";
+
+        const can_width = 750 * ratio;
+        canvas.width = can_width;
+        //1178;
+        const can_height = ratio * (((img_qr !== null) ? 80 : 0) + 65 + 49 + set_imgs.map(
+            ([_set_name, imgs]) => 34 + Math.ceil(imgs.length / 10) * 107)
+            .reduce((acc, cur) => acc + cur, 0));
+        canvas.height = can_height;
+
+        ctx.lineWidth = 3 * ratio;
+
+        const lg_all = ctx.createLinearGradient(can_width, 0, 0, can_height);
+
+        lg_all.addColorStop(0, cinfo.gradient_all_ne);
+        lg_all.addColorStop(1, cinfo.gradient_all_sw);
+
+        ctx.fillStyle = lg_all;
+        ctx.fillRect(0, 0, can_width, can_height);
+        ctx.strokeStyle = cinfo.name_line;
+        ctx.beginPath();
+        ctx.moveTo(1 * ratio, 1 * ratio);
+        ctx.lineTo(1 * ratio, 49 * ratio + 1 * ratio);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.strokeStyle = cinfo.border_line;
+
+        ctx.font = `bold ${28 * ratio}px ${font_name}`;
+        ctx.fillStyle = cinfo.font;
+        ctx.fillText(`${deck_name}`, 7 * ratio, 35 * ratio);
+        let height_now = 49 * ratio;
+        for (const [set_name, imgs] of set_imgs) {
+            ctx.font = `${21 * ratio}px ${font_name}`;
+            // const imgs = document.querySelectorAll(`#deck_image #${set_name}.card_set div.image_set span>img`);
+            // console.log(imgs.length)
+            if (imgs.length === 0) continue;
+
+            const lg_set_name = ctx.createLinearGradient(747, height_now + 17 * ratio, 3 * ratio, height_now + 17 * ratio);
+
+            lg_set_name.addColorStop(0, cinfo.gradient_name_e);
+            lg_set_name.addColorStop(1, cinfo.gradient_name_w);
+
+            ctx.fillStyle = lg_set_name;
+            ctx.fillRect(3 * ratio, height_now + 3 * ratio, can_width - 6 * ratio, 28 * ratio);
+
+            ctx.beginPath();
+            ctx.moveTo(can_width - 1 * ratio, height_now + 1 * ratio);
+            ctx.lineTo(1 * ratio, height_now + 1 * ratio);
+            ctx.lineTo(1 * ratio, height_now + 33 * ratio);
+            ctx.lineTo(can_width - 1 * ratio, height_now + 33 * ratio);
+            ctx.closePath();
+            ctx.stroke();
+
+            if (img_back !== null) ctx.drawImage(img_back, 8 * ratio, height_now + 9 * ratio, 14 * ratio, 17 * ratio);
+
+            ctx.fillStyle = cinfo.font;
+            ctx.fillText(
+                `${set_name.slice(0, 1).toUpperCase() + set_name.slice(1)} Deck: ${imgs.length} Cards`,
+                32 * ratio, height_now + 25 * ratio
+            );
+
+            height_now += 34 * ratio
+            Array.from(imgs).forEach((img, ind) => {
+                // console.log(75 * (ind % 10), height_now + 107 * Math.floor(ind / 10))
+                ctx.drawImage(img,
+                    75 * ratio * (ind % 10), height_now + 107 * ratio * Math.floor(ind / 10),
+                    73 * ratio, 107 * ratio);
+            });
+            height_now += 107 * ratio * Math.floor((imgs.length + 9) / 10);
+        }
+
+        if (img_qr !== null) {
+            ctx.drawImage(img_qr, 8 * ratio, height_now + 8 * ratio, 128 * ratio, 128 * ratio);
+            ctx.lineWidth = 6 * ratio;
+            ctx.strokeStyle = cinfo.gradient_all_ne;
+            ctx.strokeText("Deck URL", 24 * ratio, height_now + 8 * ratio + 72 * ratio);
+            ctx.fillStyle = cinfo.border_line;
+            ctx.fillText("Deck URL", 24 * ratio, height_now + 8 * ratio + 72 * ratio);
+        }
+        ctx.fillStyle = cinfo.font;
+        ctx.direction = "rtl";
+        ctx.fillText(
+            `exported on ${(new Date()).toLocaleDateString()}`,
+            can_width - 10 * ratio, can_height - 12 * ratio
+        );
+        // canvas.height = height_now;//1178;
+        // const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+        canvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            const file_name = deck_name + ".jpg";
+            a.download = file_name;
+            a.href = url;
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        }, "image/jpeg", 0.8);
+    }
+    const ratio = 2;
+    const qrdiv = document.createElement("div");
+    const html_parse_dic = parse_YGODB_URL();
+    const flag_private = document.getElementById("pflg") !== null ?
+        document.getElementById("pflg").value == "0" :
+        ["Private", "非公開"].indexOf(document.querySelector("#broad_title h1").textContent.match(/【([^】]+)】/)[1].trim()) !== -1;
+    const qrcode = new QRCode(
+        qrdiv,
+        {
+            text: `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=1&cgid=${html_parse_dic.cgid}&dno=${html_parse_dic.dno}`,
+            width: 128 * ratio, width: 128 * ratio, correctLevel: QRCode.CorrectLevel.M
+        })
+    const img_qr = qrdiv.querySelector("img");
+    // console.log(2234)
+
+    const img_back = new Image();
+    img_back.src = await chrome.runtime.getURL("images/ja/card_back.png");
+    Promise.all([img_back, img_qr].map(img => new Promise(resolve => {
+        img.addEventListener("load", () => resolve());
+    }))).then(() => _saveDeckScreenshot(ratio, img_back, flag_private ? null : img_qr))
+    // img_back.addEventListener("load", () => {
+    //     img_qr.addEventListener("load", () => {
+    //         console.log(2240)
+    //         func(img_back, img_qr);
+    //     })
+    // })
+    // open ot hide, settings for qr
+}
+
 
 // # operate area
 

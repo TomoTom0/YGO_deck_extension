@@ -254,13 +254,15 @@ window.onload = async function () {
 
             const button_bottom_dic = {
                 searchShowHide: $("<a>", { class: "btn hex square button_searchShowHide", id: "button_searchShowHide" }
-                ).append($("<span>", { title: "show search area" }).append(svgs.search)),
+                ).append($("<span>", { title: "Toggle to Show/Hide Search Area" }).append(svgs.search)),
                 infoShowHide: $("<a>", { class: "btn hex red square button_infoShowHide", id: "button_infoShowHide" }
-                ).append($("<span>", { title: "show info area" }).append(svgs.contancts)),
+                ).append($("<span>", { title: "Toggle to Show/Hide Info Area" }).append(svgs.contancts)),
                 fixScroll: $("<a>", { class: "btn hex square show button_fixScroll", id: "button_fixScroll" })
-                    .append($("<span>", { title: "fit editor" }).append(svgs.fullscreen)),
+                    .append($("<span>", { title: "Toggle to Fit Editor Columns" }).append(svgs.fullscreen)),
                 // hoverName: $("<a>", { class: "btn hex square red show button_toggleHoverName", id: "button_toggleHoverName" })
                 //     .append($("<span>", { title: "show card names on mouse hovering" }).append(svgs.liveHelp)),
+                deckScreenshot: $("<a>", { class: "btn hex square red button_deckScreenshot", id: "button_deckScreenshot" })
+                    .append($("<span>", { title: "Take a Screenshot of Deck Recipie" }).append(svgs.screenshot)),
                 reloadSort: $("<a>", { class: "btn hex square red button_reloadSort", id: "button_reloadSort" })
                     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             };
@@ -343,6 +345,10 @@ window.onload = async function () {
 
             const dno = document.getElementById("dno").value;
             unsetDeckHistoryUid(dno);
+            longPress.init({
+                el: "body",
+                ms: 300
+            })
 
             //openCardInfoArea();
 
@@ -359,6 +365,8 @@ window.onload = async function () {
         const button_dic = {
             export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
                 .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name")),
+            deckScreenshot: $("<a>", { class: "btn hex square red button_deckScreenshot", id: "button_deckScreenshot" })
+                .append($("<span>", { title: "Take a Screenshot of Deck Recipie" }).append(svgs.screenshot)),
             // sortSave: $("<a>", { class: "btn hex red square button_sort", id: "button_sortSave" })
             //     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
             test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
@@ -457,14 +465,7 @@ window.onload = async function () {
     // const df = await obtainDF(obtainLang());
     // document.addEventListener("mousedown", listen_mousedown);
 
-    // ## double click
-    document.addEventListener("dblclick", async function (e) {
-        if (e.target.matches("#deck_header dl.category_tag>dd select>option")) {
-            console.log($(e.target).prop("selected"))
-            //$(e.target).prop("selected", !$(e.target).prop("selected"));
-            //$(e.target).toggleClass("clicked");
-        }
-    })
+
     // ## button id
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
@@ -473,10 +474,12 @@ window.onload = async function () {
 
 
     $("#button_test").on("click", async function () {
-        await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "set");
-        const deckHistory = await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "get"
-        ).then(items => Object.assign({}, JSON.parse(items.deckHistory)))
-        console.log(deckHistory);
+        // await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "set");
+        // const deckHistory = await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "get"
+        // ).then(items => Object.assign({}, JSON.parse(items.deckHistory)))
+        // console.log(deckHistory);
+
+
 
     });
 
