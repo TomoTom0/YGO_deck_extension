@@ -823,22 +823,8 @@ const showDeckHistory = async (modal, dno = null) => {
     modal.append(div_history);
     div_history.scrollLeft = (div_history.querySelector("div.item_history.present") ||
         div_history.querySelector("div.item_history:last-child")).offsetLeft;
-    // setTimeout(() => {
-    //     document.addEventListener("mousedown", async (e) => {
-    //         if (!e.target.matches("div.area_history, div.area_history *")) {
-    //             // div_history.classList.add("will-remove");
-    //             removeElms([div_history]);
-    //         }
-    //     }, false);
 
-    // }, 200)
-    // console.log(infos)
 }
-
-
-
-
-
 
 // ## save/regist
 
@@ -858,11 +844,21 @@ const _Regist_fromYGODB = async (
     const dnm = document.getElementById("dnm");
     if (dnm.value.length === 0) dnm.value = dnm.getAttribute("value");
     const dh = document.getElementById("deck_header");
-    const dh_copy = document.createElement("div");
+    const dh_copy = dh.cloneNode(true);
     dh_copy.style.display = "none";
     if (dh.matches("#form_regist *") === false) {
-        dh_copy.innerHTML = dh.innerHTML;
+        // dh_copy.innerHTML = dh.innerHTML;
         document.getElementById("form_regist").prepend(dh_copy);
+        Array.from(dh.querySelectorAll("div.box_default_table option")
+        ).filter(d => d.selected || d.hasAttribute("selected")
+        ).forEach(option => {
+            const select_id = option.closest("select").getAttribute("id");
+            const option_val = option.value;
+            const option_cpopy = dh_copy.querySelector(`#${select_id} option[value="${option_val}"]`);
+            // console.log(option_val, select_id)
+            option_cpopy.selected = true;
+            option_cpopy.setAttribute("selected", true);
+        })
     }
 
     const serialized_data = (serialized_data_in || "ope=3&" + $("#form_regist").serialize());
@@ -872,17 +868,6 @@ const _Regist_fromYGODB = async (
     const deck_name = decodeURI(dnm_match[1]);
     const ytkn = await obtainMyYtkn(true, { dno: dno, ope: 2 });
     const serialized_data_ytkn = serialized_data.replace(/ytkn=[^&]+/, "ytkn=" + ytkn);
-    // console.log(serialized_data_ytkn)
-    // const sps=new URLSearchParams(serialized_data);
-    // console.log("ope=3&" + $("#form_regist").serialize());
-    // sps.set("ope", "3");
-    // {
-    //     ope:"2",
-    //     wname:html_parse_dic.wname,
-    //     cgid:obtainMyCgid(),
-    //     dno:serialized_data.match(/dno=(\d+)/)[1],
-    //     ytkn:html_parse_dic.ytkn
-    // }
     const url = `/yugiohdb/member_deck.action?cgid=${obtainMyCgid()}&${request_locale}`;
     return await $.ajax({
         type: 'post',
@@ -1051,6 +1036,7 @@ const load_deckOfficial = async (df, deck_dno, settings, my_cgid = null) => {
     for (const [type, arr] of Object.entries(header_names)) {
         for (const dom_id of arr) {
             if (type === "input") {
+                console
                 const old_val = deck_body.header.querySelector(`#${dom_id}`).value;
                 document.querySelector(`#${dom_id}`).value = old_val;
             } else if (type === "select") {
