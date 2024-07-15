@@ -18,7 +18,7 @@ argparse = ">=1.4.0"
 urllib3 = "^2.2.2"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.10.1"
+black = "^24.3.0"
 
 [build-system]
 requires = ["poetry-core", "setuptools"]
