@@ -748,6 +748,10 @@ const showDeckHistory = async (modal, dno = null) => {
         const div_num = document.createElement("span");
         div_num.setAttribute("class", "deck_history")
         div_num.append(obtainDiffTimestamp(obtainTimestampFromUid(info.uid), ts_now));
+        const div_button = document.createElement("div");
+        const span_button = document.createAttribute("span");
+        span_button.append("Check Recipe!");
+        div_button.append(span_button);
         const div_item = document.createElement("div");
         // console.log(info)
         for (const info_card of info.diff) {
@@ -809,6 +813,7 @@ const showDeckHistory = async (modal, dno = null) => {
         div_item.setAttribute("deck_history_uid", info.uid);
         div_item.setAttribute("class", "main_deck_history");
         div.append(div_num);
+        div.append(div_button);
         // div.append(document.querySelector("br"));
         div.append(div_item);
         if (info.uid === uid_orig) {
@@ -2096,9 +2101,11 @@ const saveDeckScreenshot = async (e) => {
         }
         const cinfo = colorInfos[e.button === 0 ? "red" : "default"];
         const dnm = document.getElementById("dnm");
-        const deck_name = dnm === null ?
-            document.querySelector("meta[name='description']").getAttribute("content").replace(/ \| 遊戯王 オフィシャルカードゲーム デュエルモンスターズ カードデータベース　デッキ詳細$/, "") :
-            (dnm.value || dnm.getAttribute("placeholder")); // after 2022/4/18
+        // const deck_name = dnm === null ?
+        //     document.querySelector("meta[name='description']").getAttribute("content").replace(/ \| 遊戯王 オフィシャルカードゲーム デュエルモンスターズ カードデータベース　デッキ詳細$/, "") :
+        //     (dnm.value || dnm.getAttribute("placeholder")); // after 2022/4/18
+        const deck_name = dnm === null ? document.querySelector("#broad_title h1").innerHTML.split("<br>")[0].split("】")[1].trim() :
+            (dnm.value || dnm.getAttribute("placeholder")); // after 2024/9/11
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         const set_imgs = ["main", "extra", "side"
@@ -2188,8 +2195,10 @@ const saveDeckScreenshot = async (e) => {
         }
         ctx.fillStyle = cinfo.font;
         ctx.direction = "rtl";
+        const date = new Date();
+        const tail_date = date.toISOString().replace(/[:]/g, "-").replace(/\..+/, "");
         ctx.fillText(
-            `exported on ${(new Date()).toLocaleDateString()}`,
+            `exported on ${date.toLocaleDateString()}`,
             can_width - 10 * ratio, can_height - 12 * ratio
         );
         // canvas.height = height_now;//1178;
@@ -2198,7 +2207,7 @@ const saveDeckScreenshot = async (e) => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
 
-            const file_name = deck_name + ".jpg";
+            const file_name = deck_name + "_" + tail_date + ".jpg";
             a.download = file_name;
             a.href = url;
             a.click();

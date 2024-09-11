@@ -21,5 +21,6 @@ WORKDIR /opt/workdir
 RUN curl -sSL https://install.python-poetry.org | python3 - \
 && . /home/${name}/.profile \
 && cd /opt/workdir \
+&& poetry lock --no-update \
 && poetry install \
 && echo ". /home/${name}/.profile && cd /opt/workdir && poetry run python3 ygo_db_update/ygo_db_update.py" >> /opt/workdir/script_start.sh

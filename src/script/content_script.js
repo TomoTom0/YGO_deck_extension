@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-const news_message = " / New Updates@v2.4 about History and Screenshot are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension/blob/develop/intro/NEWS_v2p4.md\" target=\"_blank\">Read Here</a>"
+const news_message = " / New Updates@v2.4.1 disable long press / about History and Screenshot are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension/blob/develop/intro/NEWS_v2p4.md\" target=\"_blank\">Read Here</a>"
 
 //------------------------------------
 //         #  on loading
@@ -345,10 +345,10 @@ window.onload = async function () {
 
             const dno = document.getElementById("dno").value;
             unsetDeckHistoryUid(dno);
-            longPress.init({
-                el: "body",
-                ms: 300
-            })
+            // longPress.init({
+            //     el: "body",
+            //     ms: 300
+            // })
 
             //openCardInfoArea();
 
