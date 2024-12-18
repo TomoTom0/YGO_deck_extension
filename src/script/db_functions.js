@@ -114,7 +114,7 @@ const refreshCacheHtml = async (days = 1) => {
     operateStorage({ cacheInfos: JSON.stringify({}) }, "local"
     ).then(items => Object.assign({}, JSON.parse(items.cacheInfos))
     ).then(cacheInfos =>
-        Object.assgin(
+        Object.assign(
             ...Object.entries(cacheInfos
             ).filter(([k, v]) => v.time + days * 86400 * 1000 > now
             ).map(([k, v]) => Object({ [k]: v }))
@@ -144,7 +144,8 @@ async function gitFetch(url, opts = {}) {
 //           # YGODB
 
 const parse_YGODB_URL_body = (url_now = location.href) => {
-    return url_now.match(/([^\/\?]+)\??[^\/]*$/)[1];
+    const match = url_now.match(/([^\/\?]+)\??[^\/]*$/);
+    return match !== null ? match[1] : "";
 }
 const parse_YGODB_URL = (url_now = null, nullIsValid = false) => {
     url_now = url_now !== null ? url_now : location.href;

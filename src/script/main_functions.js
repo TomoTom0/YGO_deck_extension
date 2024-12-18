@@ -57,6 +57,39 @@ const svgs = {
     screenshot: `<svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" ><path d="M480-400q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0 80q66 0 113-47t47-113q0-66-47-113t-113-47q-66 0-113 47t-47 113q0 66 47 113t113 47ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-80h640v-480H160v480Zm0 0v-480 480Z"/></svg>`
 }
 
+const createElement = (tag, attr = {}, append = null, flag_forceAppend = false) => {
+    const el = document.createElement(tag);
+    Object.entries(attr).forEach(([key, value]) => el.setAttribute(key, value));
+    const flag_isObj = (typeof append === "object");
+    // console.log(append, flag_isString, flag_forceAppend || !flag_isString);
+    if (append && (flag_forceAppend || flag_isObj)) el.append(append);
+    else if (append) el.innerHTML = append;
+    return el;
+}
+
+const addStyle = (element, style_dic) => {
+    Object.entries(style_dic).forEach(([key, value]) => element.style[key] = value);
+    return element;
+}
+
+const addAttr = (element, attr_dic) => {
+    Object.entries(attr_dic).forEach(([key, value]) => element.setAttribute(key, value));
+    return element;
+}
+
+const emptyChildren = (element) => {
+    try {
+        if (element === null) return;
+        for (const child of element.querySelectorAll("&>*")) {
+            child.remove();
+        }
+
+    } catch (e) {
+        // console.log(e)
+        console.log(element.children)
+    }
+}
+
 
 // ----------------------------------
 //       # parse text funtions
@@ -73,7 +106,7 @@ function obtain_deck_splited(data_array) {
 };
 
 const obtainMyCgid = () => {
-    const my_deck_btn = $("#header_menu>nav>div.bottom>ul.main_menu>li.my.menu_my_decks>ul>li>a:eq(0)");
+    const my_deck_btn = ("#header_menu>nav>div.bottom>ul.main_menu>li.my.menu_my_decks>ul>li>a:eq(0)");
     if (my_deck_btn.length == 0) {
         return null;
     } else return $(my_deck_btn).prop("href").match(/cgid=([^\&=]+)/)[1];
@@ -152,7 +185,7 @@ const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
         //     .map(d => (onView) ? $(d).text() : d.value);
         const nums = Array.from(
             table_list.querySelectorAll(
-                `tbody>tr>${td_dic.num}>${input_span}`)
+                `tbody>tr>${td_dic.num}>${input_span}:first-child`)
         ).map(d => (onView) ? d.innerText.trim() : d.value
         ).filter(d => d.length > 0);
 
@@ -422,7 +455,6 @@ const showMessage = (content = null) => {
         const span = document.createElement("span");
         span.setAttribute("id", "test");
         header_box.after(span);
-        // $("div.sort_set div.pulldown").prepend($("<span>", { id: "message" }));
     }
 
     const message_area = document.getElementById("message");
@@ -440,15 +472,9 @@ const showMessage = (content = null) => {
 
 const guess_clicked = async (e = null, lower_lim = 4) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
-    // if (html_parse_dic.ope === "1" && $("#message").length === 0) $("div.sort_set div.pulldown").prepend($("<span>", { id: "message" }));
-    // const message_area = $("#message");
-    // $(message_area).removeClass("none");
-    // $(message_area).css({ width: "97%" });
     const cat_guessed = await guessDeckCategory(lower_lim);
     const content = "Guessed Categories: " + cat_guessed.map(d => d.name).join(", ");
-    // console.log(content);
     showMessage(content);
-    // $(message_area).html(content);
     if (["2", "8"].indexOf(html_parse_dic.ope) !== -1) {
         const select = document.querySelector("select#dckCategoryMst");
         Array.from(select.querySelectorAll("option")
@@ -491,75 +517,6 @@ const convertRowResults = (df, row_results, toMin = true) => {
     }))
 }
 
-// obtain df tmp
-
-/*const obtainDFDeck = () => {
-    const obtainCardInfoFromTable = (t_row) => {
-        const card_name = $("div.inside>div.card_name.flex_1>span.name", t_row).text().replaceAll(/^\s*|\s*$/g, "");
-        const card_type_icon = $("div.inside>div.card_name.flex_1>img.ui-draggable:eq(0)", t_row).prop("src").match(/card_icon_(\S+)\.\w+$/)[1];
-        const card_attr = $("div.inside>div.element>div.item_set>span:eq(0)>img.ui-draggable:eq(0)", t_row).prop("src").match(/attribute_icon_(\S+)\.\w+$/)[1];
-        const card_attr2 = card_attr.slice(0, 1).toUpperCase() + card_attr.slice(1,).toLowerCase();
-        //const card_num=parseInt($("div.cards_num_set>span", t_row).text().replaceAll(/^\s*|\s*$/g, ""));
-        const flex_st = $("div.inside>div.element>div.flex_3.other", t_row);
-        const flex_mon = $("div.inside>div.element>div.flex_2.other", t_row);
-        const flex_mon_stat = $("div.inside>div.element>div.num_set.flex_1", t_row);
-
-        // optionで編集できるように?
-        const card_type_dic_dic = {
-            spell: { "通常": "Normal", "速攻": "Quick-Play", "永続": "Continuous", "装備": "Equip", "フィールド": "Field" },
-            trap: { "通常": "Normal", "永続": "Continuous", "カウンター": "Counter" },
-            monster: { "効果": "Effect", "通常": "Non-Effect", "チューナー": "Tuner", "ペンデュラム": "Pendulumn", "融合": "Fusion", "シンクロ": "Synchro", "エクシーズ": "XYZ", "リンク": "Link" },
-            monster_race: {}
-        }
-        const obtainCardType = (type_raw, card_type_dic, card_type_base) => {
-            const card_type_base2 = card_type_base.slice(0, 1).toUpperCase() + card_type_base.slice(1,).toLowerCase();
-            let card_type_tmp = Object.entries(card_type_dic).map(kv => {
-                const content = kv[1];
-                if (type_raw.indexOf(kv[0]) != -1 || type_raw.indexOf(kv[1]) != -1) {
-                    return [true, content];
-                } else {
-                    return [false, content]
-                }
-            }).filter(d => d[0]).map(d => d[1]);
-            card_type_tmp.push(card_type_base2);
-            return card_type_tmp;
-        }
-        const df_keys = ["name", "type", "race", "atk", "def", "attribute", "scale", "level", "ot", "cid", "id"]
-        const df_base = Object.assign(...df_keys.map(d => ({ [d]: null })));
-        if (flex_st.length > 0) {
-            // spell and trap
-            const card_type_base = ["spell", "trap"].filter(d => card_type_icon.indexOf(d) != -1)[0];
-            const card_type_dic = card_type_dic_dic[card_type_base]
-            const card_type_raw = $("span:eq(0)", flex_st).text().replaceAll(/^\s*|【\s*|\s*】|\s*$/g, "");
-            const card_type = obtainCardType(card_type_raw, card_type_dic, card_type_base);
-            const df_now = { name: card_name, type: card_type.join(","), ot: "OCG+" }
-            return Object.assign(df_base, df_now);
-        } else if (flex_mon.length > 0 && flex_mon_stat.length > 0) {
-            // monster
-            const card_type_base = "monster";
-            const card_type_dic = card_type_dic_dic[card_type_base]
-            const card_type_raw = $("span:eq(0)", flex_mon).text().replaceAll(/^\s*|【\s*|\s*】|\s*$/g, "");
-            const card_type = obtainCardType(card_type_raw, card_type_dic, card_type_base);
-            const card_stat_par_dic = { level: "span:eq(0)", scale: "span:eq(1)", atk: "div:eq(0)>span:eq(0)", def: "div:eq(0)>span:eq(1)" }
-            const card_stat = Object.assign(...Object.entries(card_stat_par_dic).map(kv => {
-                const par_cand = $(kv[1], flex_mon_stat).text().match(/\d+/g)
-                if (Array.isArray(par_cand)) return { [kv[0]]: par_cand[0] }
-                else return { [kv[0]]: null }
-            }))
-            const df_now = {
-                name: card_name, type: card_type.join(","),
-                atk: card_stat.atk, def: card_simportDeckinsertat.def,
-                attribute: card_attr2, scale: card_stat.scale,
-                level: card_stat.level, ot: "OCG+"
-            };
-            return Object.assign(df_base, df_now);
-        }
-    }
-    const df_arr = Array.from($("#main_m_list>div.t_body>div.t_row.c_simple"))
-        .map(t_row => obtainCardInfoFromTable(t_row))
-    return Object.assign(...Object.keys(df_arr[0]).map(k => ({ [k]: df_arr.map(d => d[k]) })))
-}*/
-
 // import cards
 const importDeck = async (row_results, row_results_old = null, dno = null) => {
     for (const [row_name, row_result] of Object.entries(row_results)) {
@@ -568,29 +525,38 @@ const importDeck = async (row_results, row_results_old = null, dno = null) => {
         const row_short_name = row_name.slice(0, 2);
         // reset
         [...Array(60).keys()].forEach(ind2 => {
-            $(`#${row_name}_list #${row_short_name}nm_${ind2 + 1}`).val("");
-            $(`#${row_name}_list #${row_short_name}num_${ind2 + 1}`).val("");
+            const elm_nm = document.querySelector(`#${row_name}_list #${row_short_name}nm_${ind2 + 1}`);
+            if (elm_nm) elm_nm.setAttribute("value", "");
+            const elm_num = document.querySelector(`#${row_name}_list #${row_short_name}num_${ind2 + 1}`);
+            if (elm_num) elm_num.setAttribute("value", "");
         })
         if (row_result.names.length == 0) continue;
         const card_names = row_result.names;
         const card_nums = row_result.nums;
         //input name and number
         card_names.forEach((name, ind2) => {
-            $(`#${row_name}_list #${row_short_name}nm_${ind2 + 1}`).val(name);
-            $(`#${row_name}_list #${row_short_name}num_${ind2 + 1}`).val(card_nums[ind2]);
+            const elm_nm = document.querySelector(`#${row_name}_list #${row_short_name}nm_${ind2 + 1}`);
+            if (elm_nm) elm_nm.setAttribute("value", name);
+            const elm_num = document.querySelector(`#${row_name}_list #${row_short_name}num_${ind2 + 1}`);
+            if (elm_num) elm_num.setAttribute("value", card_nums[ind2]);
         })
         //input count
         const sum_num = card_nums.reduce((acc, cur) => acc + parseInt(cur), 0);
         [0, 1].forEach(d => {
-            const total_count = $(`.${row_name}_total:eq(${d})`);
-            total_count.empty();
+            const total_count = document.querySelector(`.${row_name}_total:nth-of-type(${d})`);
+            if (total_count === null) return;
+            emptyChildren(total_count);
             total_count.append(sum_num);
         })
     }
     //input main_total
-    const main_total = $(".main_total");
-    main_total.empty();
-    const main_total_num = [0, 1, 2].reduce((acc, cur) => acc + Number($(`.main_count:eq(${cur})`).text()), 0);
+    const main_total = document.querySelector(".main_total");
+    emptyChildren(main_total);
+    // const main_total_num = [0, 1, 2].reduce((acc, cur) => acc + Number(document.querySelector(`.main_count:nth-of-type(${cur})`).innerText), 0);
+    let main_total_num = 0;
+    for (const elm of document.querySelectorAll(".main_count")) {
+        main_total_num += Number(elm.innerText);
+    }
     main_total.append(main_total_num);
     if (row_results_old !== null && dno !== null) {
         addDeckHistory(row_results, row_results_old, dno);
@@ -843,9 +809,7 @@ const _Regist_fromYGODB = async (
     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
     const lang = obtainLang();
     const request_locale = lang != null ? `&request_locale=` + lang : "";
-    if (serialized_data_in === null && $("#form_regist").length === 0) return;
-    // const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
-    // console.log("ope=3&" + $("#form_regist").serialize());
+    if (serialized_data_in === null && document.getElementById("form_regist") === null) return;
     const dnm = document.getElementById("dnm");
     if (dnm.value.length === 0) dnm.value = dnm.getAttribute("value");
     const dh = document.getElementById("deck_header");
@@ -876,15 +840,15 @@ const _Regist_fromYGODB = async (
     return await $.ajax({
         type: 'post',
         url: url,
-        data: serialized_data_ytkn,//"ope=3&" + $("#form_regist").serialize(),//sps.toString(),
+        data: serialized_data_ytkn,
         dataType: 'json',
         beforeSend: () => {
-            $('#btn_regist').removeAttr('href');
+            document.getElementById('btn_regist').removeAttr('href');
             // $('#message').hide().text('');
-            $('#loader').show();
+            document.getElementById('loader').show();
         },
         complete: () => {
-            $('#loader').hide();
+            document.getElementById('loader').hide();
         },
         success: (data, dataType) => {
             if (data.result) {
@@ -894,118 +858,14 @@ const _Regist_fromYGODB = async (
                 showMessage(`Failed to save as ${deck_name} #${dno}`);
                 if (data.error) {
                     console.log("Register falied: ", data.error);
-                    /*var lst = [];
-                    $.each(data.error, function(index, value){
-                        lst.push($.escapeHTML(value));
-                    });
-                    console.log(lst);*/
-                    //$('#message').append('<ul><li>' + lst.join('</li><li>') + '</li></ul>').show();
                 } else console.log("Register falied: ", data);
-                //$('#btn_regist').attr('href', 'javascript:Regist();');
             }
         },
         error: async function (xhr, status, error) {
-            // console.log(url);
-            // console.log(serialized_data);
-            // console.log(serialized_data_ytkn);
             console.log(error);
-            // if (retry_count==0) {
-            //     await _Regist_fromYGODB(html_parse_dic, serialized_data, retry_count+1);
-            // }
         }
     });
 }
-
-
-// const _Fetch_Regist_fromYGODB = async (html_parse_dic_in = null, serialized_data_in = null) => {
-//     const html_parse_dic = html_parse_dic_in || parse_YGODB_URL(location.href, true);
-//     if (["cgid", "dno"].filter(d => html_parse_dic[d] !== null).length !== 2) return;
-//     const lang = obtainLang()
-//     const request_locale = lang != null ? `&request_locale=` + lang : "";
-//     if (serialized_data_in === null && $("#form_regist").length === 0) return;
-//     const serialized_data = serialized_data_in || "ope=3&" + $("#form_regist").serialize();
-//     const sps = new URLSearchParams(serialized_data);
-//     console.log(lang, request_locale);
-//     sps.set("ope", "3");
-//     sps.set("wname", html_parse_dic.wname);
-//     sps.set("ytkn", obtainMyYtkn({
-//         ope:"2",
-//         wname:html_parse_dic.wname,
-//         cgid:obtainMyCgid(),
-//         dno:serialized_data.match(/dno=(\d+)/)[1],
-//         ytkn:html_parse_dic.ytkn
-//     }));
-//     const url_post = `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&${request_locale}`
-//     $('#btn_regist').removeAttr('href');
-//     $('#message').hide().text('');
-//     $('#loader').show();
-//     //console.log(sps);
-//     // console.log(sps.toString());
-//     return await fetch(url_post, {
-//         method: "POST",
-//         body: sps,
-//         headers: {
-//             "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-//             "Accept": "applacation/text"
-//         }
-//     }
-//     ).then(data => {
-//         if (data.result) {
-//             console.log("Registered");
-//         } else {
-//             if (data.error) {
-//                 console.log("Register falied: ", data.error);
-//                 /*var lst = [];
-//                 $.each(data.error, function(index, value){
-//                     lst.push($.escapeHTML(value));
-//                 });
-//                 console.log(lst);*/
-//                 //$('#message').append('<ul><li>' + lst.join('</li><li>') + '</li></ul>').show();
-//             } else console.log("Register falied: ", data);
-//             //$('#btn_regist').attr('href', 'javascript:Regist();');
-//         }
-//         return data
-//     }).then(_ => $('#loader').hide());
-// }
-
-/*const __FetchNotWork_Regist_fromYGODB = async () => {
-    const html_parse_dic = parse_YGODB_URL(location.href, true);
-    console.log(html_parse_dic);
-    if (["cgid", "dno"].filter(d => html_parse_dic[d] != null).length !== 2) return;
-    const request_locale = html_parse_dic.request_locale !== null ? `&request_locale=` + html_parse_dic.request_locale : "";
- 
-    $('#btn_regist').removeAttr('href');
-    $('#message').hide().text('');
-    $('#loader').show();
-    const res = await fetch(`/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}${request_locale}`, {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: 'ope=3&' + $('#form_regist').serialize()
-    });
-    console.log(res)
-    //.then(d => d.body)
-    //.then(d => d.getReader())
-    //.then(reader => reader.read())
-    //.then(res => new TextDecoder("utf-8").decode(res.value));
-    //console.log(data);
-    $('#loader').hide();
-    if (res.ok) {
-        console.log("Registered")
-        //location.href = `/yugiohdb/member_deck.action?cgid=${html_parse_dic.cgid}&dno=${html_parse_dic.dno}${request_locale}`;
-    } else {
-        if (res.error) {
-            var lst = [];
-            $.each(data.error, function (index, value) {
-                lst.push($.escapeHTML(value));
-            });
-            $('#message').append('<ul><li>' + lst.join('</li><li>') + '</li></ul>').show();
-        }
-        $('#btn_regist').attr('href', 'javascript:Regist();');
-    }
-}*/
 
 const load_deckOfficial = async (df, deck_dno, settings, my_cgid = null) => {
     if (my_cgid === null) my_cgid = obtainMyCgid();
@@ -1023,9 +883,10 @@ const load_deckOfficial = async (df, deck_dno, settings, my_cgid = null) => {
     input_dno.value = deck_dno;
     if (settings.valid_feature_deckManager === true) {
         document.getElementById("deck_dno_opened").innerText = deck_dno;
-        document.getElementById("dnm").setAttribute("placeholder", deck_name);
-        document.getElementById("dnm").setAttribute("value", deck_name);
-        document.getElementById("dnm").value = "";
+        const dnm = document.getElementById("dnm");
+        dnm.setAttribute("placeholder", deck_name);
+        dnm.setAttribute("value", deck_name);
+        dnm.value = "";
 
     }
     // document.getElementById("dnm").value = deck_name;
@@ -1096,11 +957,7 @@ const delete_deckOfficial = async (
     const df = df_in || await obtainDF(obtainLang());
     const settings = settings_in;
     const my_cgid = cgid_in || obtainMyCgid();
-    //const dno = $("#dno").val();
     const lang = obtainLang();
-    // const deck_name_tmp2 = deck_name_tmp.replace(/\s*#\d+$/, "");
-    // const deck_name = deck_name_tmp2.length > 0 ? deck_name_tmp2 : deck_name_opened || Date.now().toString();
-    // const deck_dno = (deck_dno_tmp != null && deck_dno_tmp.length >= 2) ? deck_dno_tmp[1] : deck_dno_opened;
     if (row_results_in !== null) {
         await operateDeckVersion("set", { name: "@@Auto", tag: "_delete_" + deck_name }, row_results_in);
     } else {
@@ -1236,18 +1093,15 @@ const sortCards = async (row_results) => {
 // # shuffle
 
 const shuffleCards = (mode = "shuffle", set_type = "main") => {
-    const cards_pre_tmp = Array.from($(`#deck_image>#${set_type}>div.image_set>a:has(span>img)`));
-    const cards_pre = cards_pre_tmp.length > 0 ? cards_pre_tmp : Array.from($(`#deck_image>#${set_type}>div.image_set>span:has(img)`));
-    const area = Array.from($(`#deck_image>#${set_type}>div.image_set`));
-    if (cards_pre.length === 0 || area.length === 0) return;
+    const cards_pre_tmp = Array.from(document.querySelectorAll(`#deck_image>#${set_type}>div.image_set>a:has(span>img)`));
+    const cards_pre = cards_pre_tmp.length > 0 ? cards_pre_tmp : Array.from(document.querySelectorAll(`#deck_image>#${set_type}>div.image_set>span:has(img)`));
+    const area = document.querySelector(`#deck_image>#${set_type}>div.image_set`);
+    if (cards_pre.length === 0 || area === null) return;
     const new_cards = mode === "shuffle" ? shuffleArray(cards_pre) : resetSortDeckImgs(cards_pre);
-    new_cards.map(d => $(area).append(d));
-    //$(area).html(shuffled_cards.map(d => d.outerHTML).join("\n"));
+    new_cards.forEach(d => area.append(d));
 }
 
 const resetSortDeckImgs = (cards_pre) => {
-    //const card_class_arr=Array.from(main_cards)
-    //    .map(d=>$("img", d).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/)).map(d=>Object({type:d[1], ind1:d[2], ind2:d[3]}));
     const type_ind_dic = { "monster": 0, "spell": 1, "trap": 2, "extra": 3, "side": 4 };
     return cards_pre.sort((a, b) => {
         const class_arr = [a, b].map(d => parseCardClass(d));
@@ -1264,20 +1118,15 @@ const resetSortDeckImgs = (cards_pre) => {
 }
 
 const addShuffleButton = (setSpace = true) => {
-    $("#deck_image").addClass("shuffle");
-    $("#deck_image div.card_set div.image_set a").css({ "max-width": "min(6.5%, 55px)" });
-    $("#deck_image div.card_set").css({ "margin": "0px 0px 0px" });
-    // const img_shuffle=document.createElement("img");
-    // img_shuffle.setAttribute("src", chrome.runtime.getURL("images/svg/sort_FILL0_wght400_GRAD0_opsz24.svg"));
-    // img_shuffle.setAttribute("height", "80%");
-    // const img_sort=document.createElement("img");
-    // img_sort.setAttribute("src","images/sort_FILL0_wght400_GRAD0_opsz24.svg");
-    // const imgs_shuffle_sort=img_shuffle.outerHTML+"/"+img_sort.outerHTML
-    // const shuffle_span = $("<span>", { style: "border:none; height: 24px; min-width: 0px;" })
-    //     .append(svg_shuffle);//.append("L:Shuffle/R:Sort");
-    // const sort_span = $("<span>", { style: "border:none; height: 24px; min-width: 0px;" })
-    //     .append(svg_sort);
-    const flex_dic = { "main": 4, "extra": 4, "side": 4 } // setSpace ? 2.7 : 
+    const deck_image = document.querySelector("#deck_image");
+    deck_image.classList.add("shuffle");
+    for (const elm of deck_image.querySelectorAll("div.card_set div.image_set a")) {
+        addStyle(elm, { "max-width": "min(6.5%, 55px)" });
+    }
+    for (const elm of deck_image.querySelectorAll("div.card_set")) {
+        addAttr(elm, { "margin": "0px 0px 0px" });
+    }
+    const flex_dic = { "main": 4, "extra": 4, "side": 4 };
     for (const set_type of ["main", "extra", "side"]) {
         const span_tmp = document.createElement("span")
         for (const [key, val] of Object.entries({
@@ -1288,7 +1137,7 @@ const addShuffleButton = (setSpace = true) => {
         }
         const div_top = document.querySelector(`#${set_type}>div.subcatergory>div.top`);
         const h3_tmp = div_top.children[0];
-        const span_num_tmp = div_top.children[1];//(`#${set_type}>div.subcatergory>div.top>h3`);
+        const span_num_tmp = div_top.children[1];
         h3_tmp.innerHTML = set_type.toUpperCase();
         h3_tmp.style["min-width"] = 0;
 
@@ -1309,10 +1158,7 @@ const addShuffleButton = (setSpace = true) => {
             }
             button.appendChild(span);
             h3_tmp.after(button);
-            // span_num_tmp.before(button);
-            // $(button).after(span_tmp);
         }
-        // span_num_tmp.before(span_tmp);
 
     }
 }
@@ -1323,9 +1169,6 @@ const addShuffleButton = (setSpace = true) => {
 async function exportAs(form = "id") {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     let exceptions = [];
-
-    //const rows_num = $("#deck_text [id$='_list']").length;
-    //const row_names = [...Array(rows_num).keys()].map(row_ind => $(`#deck_text [id$='_list']:eq(${row_ind})`).attr("id").match(/^\S*(?=_list)/)[0]);
 
     // const obtainRowResults
     const df = await obtainDF(obtainLang());
@@ -1349,17 +1192,13 @@ async function exportAs(form = "id") {
             else if (form == "id") {
                 // convert id -> name /  convert cid -> name
                 output_comp = df_filter(df, "id", ["cid", cid_tmp])[0];
-                /*if (output_comp === null) {
-                    const cid_db = $(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${ind})`).parent("td").children("input.link_value").val().match(/(?<=cid=)\d+/)
-                    output_comp = !!(cid_db) ? df_filter(df, "id", ["cid", cid_db[0]])[0] : "";
-                }*/
             }
             if (output_comp === undefined || /^\s*$/.test(output_comp)) {
                 // can't convert case
-                const name_Jap = name_tmp //$(`#deck_text [id$='_list']:eq(${row_ind}) .card_name:eq(${ind})`).text();
+                const name_Jap = name_tmp;
                 exceptions.push(name_Jap);
                 // form=id and db has error => Japanese name and type wil be outputed with tab-separation
-                output_comp = `${name_Jap}`; //\t${row_name}
+                output_comp = name_Jap;
                 result_exception_counts[row_name]++;
             }
             result_outputs[out_ind].push(...Array(row_result.nums[ind] - 0).fill(output_comp))
@@ -1402,7 +1241,7 @@ async function exportAs(form = "id") {
 
 async function importFromYdk() {
     const df = await obtainDF();
-    const import_file = $("#button_importFromYdk_input").prop("files")[0];
+    const import_file = document.getElementById("button_importFromYdk_input").getAttribute("files")[0];
     // console.log(import_file)
     const file_name = import_file.name;
     const keys = ["name", "id", "cid"];
@@ -1484,7 +1323,8 @@ async function importFromYdk() {
     const deck_name = import_file.name.replace(/(?<=^[^(@@)]+)@@.*\.ydk$|\.ydk$/, "") +
         (settings_tmp.addDate ? "@@" + new Date().toLocaleDateString() : "");
     // input deck name
-    $("#dnm").val(deck_name);
+    const dnm = document.getElementById("dnm");
+    dnm.val(deck_name);
     console.log(row_results);
 
     const main_total_num = importDeck(row_results);
@@ -1556,7 +1396,7 @@ async function sortSaveClicked() {
 
 const reloadSort = async () => {
     const df = await obtainDF(obtainLang());
-    if ($("#deck_text").css("display") !== "none") return;
+    if (document.getElementById("deck_text").style.display !== "none") return;
     const row_results = obtainRowResults(df);//obtainRowResults_Edit(df);
     const row_results_new = await sortCards(row_results);
     importDeck(row_results_new);
@@ -1567,7 +1407,7 @@ const reloadSort = async () => {
 const backToView = async () => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
     const my_cgid = obtainMyCgid();
-    const dno = $("#dno").val();
+    const dno = document.getElementById("dno").value;
     const lang = obtainLang();
     const sps = { ope: "1", wname: html_parse_dic.wname, cgid: my_cgid, dno: dno, request_locale: lang };
     const url = joinUrl(`https://www.db.yugioh-card.com/yugiohdb/member_deck.action`, sps);
@@ -1584,20 +1424,12 @@ const toggleVisible_deckHeader = (e = null, toShow_in = null) => {
     button.classList.remove(showHide[toShow]);
     button.classList.add(showHide[!toShow]);
     button.classList.toggle("red");
-    // const button_fit=document.querySelector("#button_fixScroll");
-    // if (button_fit!==null && button_fit.classList.contains("red")){
-    //     const button_area=document.querySelectorAll("div.div_officialButton.div_otherButtons");
-    //     if (toShow === true){
-
-    //     }
-    // }
-    // $("span", button).text("Header " + showHide[!toShow].toUpperCase());
     const dls = Array.from($("#deck_header>div>div>dl:not(.alwaysShow)"));
     for (const dl_tmp of dls) {
         if (dls.indexOf(dl_tmp) !== 0 && toShow === false) {
-            $(dl_tmp).css({ display: "none" });
+            addStyle(dl_tmp, { display: "none" });
         } else {
-            $(dl_tmp).css({ display: "" }) // relativeにするとnoneで固定された
+            addStyle(dl_tmp, { display: "" }) // relativeにするとnoneで固定された
         }
     }
     move_deckHeader(e, toShow);
@@ -1675,44 +1507,48 @@ const changeSize_deckHeader = (ctc_name, ctc_ind_size_old_in = null) => {
     if (["2", "8"].indexOf(html_parse_dic.ope) === -1) return;
 
     const header_ids_dic = { category: "dckCategoryMst", tag: "dckTagMst", comment: "biko" };
-    const ctc_now = $(`#${header_ids_dic[ctc_name]}`);
-    const ctc_ind_size_old = ctc_ind_size_old_in || ctc_now.attr("class").match(/ctc_size_(\d*)/)[1];
+    const ctc_now = document.querySelector(`#${header_ids_dic[ctc_name]}`);
+    const ctc_ind_size_old = ctc_ind_size_old_in || ctc_now.className.match(/ctc_size_(\d*)/)[1];
     const ctc_ind_size = (1 + parseInt(ctc_ind_size_old)) % arr_size_ct.length;
-    ctc_now.removeClass(`ctc_size_${ctc_ind_size_old}`);
-    ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
+    ctc_now.classList.remove(`ctc_size_${ctc_ind_size_old}`);
+    ctc_now.classList.add(`ctc_size_${ctc_ind_size}`);
     const isCT = ["category", "tag"].indexOf(ctc_name) !== -1
     if (isCT) {
         const size_now = arr_size_ct[ctc_ind_size];
-        ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
-        ctc_now.css({ height: size_now });
+        ctc_now.classList.add(`ctc_size_${ctc_ind_size}`);
+        addStyle(ctc_now, { height: size_now });
     } else {
         const row_now = 6 * (1 + ctc_ind_size % arr_size_ct.length);
-        ctc_now.addClass(`ctc_size_${ctc_ind_size}`);
-        ctc_now.prop("rows", row_now);
+        ctc_now.classList.add(`ctc_size_${ctc_ind_size}`);
+        ctc_now.setAttribute("rows", row_now);
     }
 }
 
 const showSelectedOption = () => {
     for (const table of Array.from($("dl.category_tag>dd>div.table_l"))) {
-        const old_div = $("div.selected_options", table);
-        if (old_div.length > 0) $(old_div).empty();
-        const div = old_div.length > 0 ? old_div : $("<div>", { class: "selected_options" });
-        Array.from($("select option[selected]", table))
-            .map(d => {
-                const css_dic = {
-                    border: "1px solid #579c57", background: "#d8f2d9", "font-weight": "bold",
-                    "vertical-align": "middle"
-                }
-                const span = $("<span>", { chex_text: d.textContent, chex_value: d.value }).append(d.textContent).css(css_dic);
-                div.append(span);
-            })
-        $(table).append(div);
+        const old_div = table.querySelector("div.selected_options");
+        if (old_div !== null) emptyChildren(old_div);
+        const div = old_div !== null ? old_div : createElement("div", { class: "selected_options" });
+        for (const option_selected of table.querySelectorAll("select option[selected]")) {
+            const css_dic = {
+                border: "1px solid #579c57", background: "#d8f2d9", "font-weight": "bold",
+                "vertical-align": "middle"
+            }
+            const span = createElement("span", {
+                chex_text: option_selected.textContent, chex_value: option_selected.value
+            },
+                option_selected.textContent);
+            addStyle(span, css_dic);
+            div.append(span);
+        }
+
+        table.append(div);
     };
 }
 
 // # insert deck image
 const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: null }, card_class_ind = "0_1", card_limit = "not_limited") => {
-    const span = $("<span>", {
+    const span = createElement("span", {
         style: "" //"max-width: min(6.5%, 65px); padding:1px; box-sizing:border-box; display: block;position: relative;"
     });
 
@@ -1722,7 +1558,7 @@ const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: 
     const cid_now = (card_input.cid == null) ? df_filter(df, "cid", ["name", card_input.name])[0] : card_input.cid;
     const encImg_now = df_filter(df, "encImg", ["cid", cid_now])[0];
     //const id_now=df_filter(df, "id", ["cid", cid_now])[0];
-    const img_tmp = $("<img>", {
+    const img_tmp = createElement("img", {
         class: `card_image_${card_type}_${card_class_ind} ui-draggable ui-draggable-handle img_chex`,
         alt: name_now,
         title: name_now,//card_id:id_now,
@@ -1735,44 +1571,42 @@ const _generateDeckImgSpan = (df, card_type, card_name_cid = { name: null, cid: 
         style: "position: relative; width: 100%; cursor:pointer;",
         oncontextmenu: "return false;"
     });
-    span.attr("title", name_now);
+    span.setAttribute("title", name_now);
     span.append(img_tmp);
-    $(span).addClass(card_limit);
-    span.append($("<div>").append($("<span>")));
-    //a_img.append(span);
-    return span; // a_img;
+    span.classList.add(card_limit);
+    span.append(createElement("div", {}, createElement("span")));
+    return span;
 }
 
 const obtainNewCardSet = (row_name) => {
-    const card_set = $("<div>", { id: row_name, class: "card_set", style: "margin: 0px 0px 0px;" })
-    const sub_cat = $("<div>", {
+    const card_set = createElement("div", { id: row_name, class: "card_set", style: "margin: 0px 0px 0px;" })
+    const sub_cat = createElement("div", {
         class: "subcatergory",
         style: "padding: 10px 0 5px;"
-    }).append(
+    },
         `<div class="icon hex"><span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 43 54"><defs><style>.a{fill:#fff;fill-rule:evenodd;}</style></defs><path class="a" d="M34.5,57V13.5L51.5,9V48.5Zm-2-20-24-9.5V7.5L28.5,3,51,7,32.5,12.5Zm0,20-21-8.8v-17l21,8.3Z" transform="translate(-8.5 -3)"></path></svg></span></div>`
     )
-    const div_top = $("<div>", { class: "top" }).append(`<h3 style="min-width: 0px;">${row_name.toUpperCase()}</h3>`)
-        .append($(`<span>`, {
-            style: "border: 1px solid; padding: 0px 5px; min-width: 30px; box-sizing: border-box; line-height: 1.5; text-align: center;"
-        }).append("0"));
-    const image_set = $("<div>", { //(div_imageSet_old.length>0) ? div_imageSet_old : 
+    const div_top = createElement("div", { class: "top" }, createElement("h3", { style: "min-width: 0px;" }, row_name.toUpperCase()))
+    div_top.append(createElement("span", {
+        style: "border: 1px solid; padding: 0px 5px; min-width: 30px; box-sizing: border-box; line-height: 1.5; text-align: center;"
+    }, "0"));
+    const image_set = createElement("div", { //(div_imageSet_old.length>0) ? div_imageSet_old : 
         class: `image_set image_set_${row_name} image_set_MouseUI image_set_deck MouseUI`,
         set_type: row_name,
         style: `display: flex; flex-wrap: wrap; border: 2px solid #000; padding: 1px;min-height: min(8.7vw, 87px);`,
         oncontextmenu: "return false;",
         wheelClick: "return false;"
     })
-    $(sub_cat).append(div_top);
-    $(card_set).append(sub_cat);
-    $(card_set).append(image_set);
+    sub_cat.append(div_top);
+    card_set.append(sub_cat);
+    card_set.append(image_set);
     return card_set;
 }
 
 const insertDeckImg = (df, row_results, displayIsValid = true, div_deck_imageSetIn = null) => {
-    const div_deck_imageSet_old = div_deck_imageSetIn !== null ? div_deck_imageSetIn : $("div#deck_image");
-    //if (div_deck_imageSet_old.length>0) $(div_deck_imageSet_old).empty();
+    const div_deck_imageSet_old = div_deck_imageSetIn !== null ? div_deck_imageSetIn : document.querySelector("div#deck_image");
     const dislapy_style = displayIsValid ? "block" : "none";
-    const deck_image = (div_deck_imageSet_old.length > 0) ? div_deck_imageSet_old : $("<div>", {
+    const deck_image = (div_deck_imageSet_old !== null) ? div_deck_imageSet_old : createElement("div", {
         id: "deck_image",
         class: "deck_image",
         style: `display:${dislapy_style}; min-height: fit-content;`,
@@ -1785,50 +1619,52 @@ const insertDeckImg = (df, row_results, displayIsValid = true, div_deck_imageSet
         //let count=0;
         const card_imgs = row_result.names.map((name_now, ind_card) => {
             const cid_now = row_result.cids[ind_card];
-            const num_ind = row_result.nums[ind_card];
+            const num_ind_cand = row_result.nums[ind_card];
             const limit_now = row_result.limits[ind_card];
+            const num_ind = Number.isInteger(num_ind_cand) ? num_ind_cand : 1;
             const span_imgs = [...Array(num_ind).keys()].map(ind_local => {
-                //const a_img=$("<a>", {href:"#"});
                 return _generateDeckImgSpan(df, row_name, { cid: cid_now, name: name_now }, `${ind_card}_1`, limit_now);
             });
+            // const span_imgs = [];
             //count+=num_ind;
             return span_imgs;
         }).filter(d => d !== null).flat();
         return { [row_name]: card_imgs };
     });
+
     const row_imgs_dic = Object.assign(...row_imgs_dic_tmp);
     const deck_key_dic = { main: ["monster", "spell", "trap"], extra: ["extra"], side: ["side"] };
     const deck_imgs_dic_tmp = Object.entries(deck_key_dic).map(([deck_key, card_type_arr]) => {
         const deck_imgs_tmp = card_type_arr.map(card_type => row_imgs_dic[card_type]);
         return { [deck_key]: deck_imgs_tmp.flat() };
     });
+
     const deck_imgs_dic = Object.assign(...deck_imgs_dic_tmp);
 
+
     for (const [set_name, set_imgs] of Object.entries(deck_imgs_dic)) {
-        /*const div_imageSet=$("<div>", { //(div_imageSet_old.length>0) ? div_imageSet_old : 
-            id:`${row_name}`,
-            class:`image_set image_set_${row_name} image_set_MouseUI image_set_deck MouseUI`,
-            set_type:row_name,
-            style:`display: flex; flex-wrap: wrap; border: 2px solid #000; padding: 1px;min-height: 95px;`,
-            oncontextmenu:"return false;",
-            wheelClick:"return false;"
-        });*/
-        const image_set_old = $(`#${set_name}.card_set .image_set`);
-        const imageSetExists = image_set_old.length > 0;
-        if (imageSetExists) image_set_old.empty();
+        const image_set_old = document.querySelector(`#${set_name}.card_set .image_set`);
+
+        const imageSetExists = image_set_old !== null;
+        emptyChildren(image_set_old);
+        // if (imageSetExists) {            
+        //     for (const elm of image_set_old.children) elm.remove();
+        // }
         const card_set = obtainNewCardSet(set_name);
-        const image_set = (imageSetExists) ? image_set_old : $(".image_set", card_set);
+        const image_set = (imageSetExists) ? image_set_old : card_set.querySelector(".image_set");
         for (const img_card of set_imgs) {
             image_set.append(img_card);
         };
         if (!imageSetExists) deck_image.append(card_set);
     }
-    if ($("#temp").length === 0) {
-        $(deck_image).append(obtainNewCardSet("temp"));
+    if (document.querySelectorAll("#temp").length === 0) {
+        deck_image.append(obtainNewCardSet("temp"));
     }
-    const deck_text = $("#deck_text");
+    const deck_text = document.querySelector("#deck_text");
     deck_text.after(deck_image);
+
     updateDeckCount();
+
 }
 
 // ## modify
@@ -1836,39 +1672,38 @@ const modifyDeckImg = async (img_target, change = +1, to_set_type = null) => {
     //const num_new=Math.max(0, Math.min(3, num_old+change));
     //if ( (num_old===0 && change<=0) || (num_old===3 && change>=0)) return;
     if (change === -1) {
-        const span_tmp = $(img_target).parents("span")[0];
-        $(span_tmp).addClass("del_card");
+        const span_tmp = img_target.closest("span");
+        span_tmp.classList.add("del_card");
         // $(span_tmp).css({ display: "none" });
         if (to_set_type !== null) {
-            const span_clone = $(span_tmp).clone()[0];
-            const image_set_now = $(`.image_set[set_type='${to_set_type}']`);
+            const span_clone = span_tmp.cloneNode();
+            const image_set_now = document.querySelectorAll(`.image_set[set_type='${to_set_type}']`);
             if (image_set_now.length === 0) return;
-            $(span_clone).addClass("add_card").removeClass("del_card").css({
+            span_clone.classList.add("add_card");
+            span_clone.remove("del_card");
+            addStyle(span_clone, {
                 display: "block", position: "relative"
             });
-            $(image_set_now).append(span_clone);
+            image_set_now.append(span_clone);
         }
         span_tmp.remove();
         // removeElms([span_tmp]);
     } else if (change === +1) {
-        const span_tmp = $(img_target).parents("span")[0];
-        const span_clone = $(span_tmp).clone()[0];
-        $(span_clone).addClass("add_card").removeClass("del_card").css({
+        const span_tmp = img_target.closest("span");
+        const span_clone = span_tmp.cloneNode();
+        span_clone.classList.add("add_card");
+        span_clone.remove("del_card");
+        addStyle(span_clone, {
             display: "block", position: "relative"
         });
-        if (to_set_type === null) $(span_tmp).after(span_clone);
+        image_set_now.append(span_clone);
+        if (to_set_type === null) span_tmp.after(span_clone);
         else {
-            const image_set_now = $(`.image_set[set_type='${to_set_type}']`);
-            if (image_set_now.length === 0) return;
-            $(image_set_now).append(span_clone);
+            const image_set_now = document.querySelector(`.image_set[set_type='${to_set_type}']`);
+            if (image_set_now === null) return;
+            image_set_now.append(span_clone);
         }
     }
-    // importDeck(await obtainEditImg_RowResults());
-    // resizeDeckArea();
-    //else if (num_old === 0 && card_type!==null){
-    // new kind
-    //    console.log("comnig soon")
-    //}
 }
 
 const judgeCardType = (df, info_input, output = "row") => {
@@ -1889,8 +1724,8 @@ const judgeCardType = (df, info_input, output = "row") => {
 }
 
 const parseCardClass = (target) => {
-    const img = $(target).is("img") ? target : $("img", target);
-    const classInfo_tmp = $(img).length === 0 ? [null, null, null] : $(img).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/);
+    const img = target.matches("img") ? target : target.querySelector("img");
+    const classInfo_tmp = img === null ? [null, null, null] : img.className.match(/card_image_([^_]+)_(\d+)_(\d+).*/);
     return {
         type: classInfo_tmp[1],
         ind1: classInfo_tmp[2],
@@ -1901,8 +1736,8 @@ const parseCardClass = (target) => {
 const sideChange_deck = (df, img_target, onEdit = true, row_results_old = null) => {
     const dno = document.querySelector("#dno").value;
     const row_results = obtainRowResults(df); // onEdit===true ? obtainRowResults_Edit(df): obtainRowResults();
-    const cid_now = $(img_target).attr("card_cid");
-    const from_set_type = $(img_target).parents("div.image_set").attr("set_type");
+    const cid_now = img_target.setAttribute("card_cid");
+    const from_set_type = img_target.closest("div.image_set").getAttribute("set_type");
     if (from_set_type == null) return row_results;
     const raw_type = judgeCardType(df, ["cid", cid_now], "row");
     if (raw_type === null) return row_results;
@@ -1919,14 +1754,12 @@ const sideChange_deck = (df, img_target, onEdit = true, row_results_old = null) 
 }
 
 const operate_deckEditVisible = (key_show = "image") => {
-    const div_deck_dic = { text: $("#deck_text"), image: $("#deck_image") };
+    const div_deck_dic = { text: document.querySelector("#deck_text"), image: document.querySelector("#deck_image") };
     if (Object.keys(div_deck_dic).indexOf(key_show) === -1) return;
-    Object.entries(div_deck_dic).map(([key_div, div_deck]) => {
+    Object.entries(div_deck_dic).forEach(([key_div, div_deck]) => {
         const display_style = (key_show === key_div) ? "block" : "none";
-        div_deck.css({ display: display_style });
+        addStyle(div_deck, { display: display_style });
     });
-    //if (key_show==="text") $("#num_totoal").css({display:"block"});
-    //else $("#num_totoal").css({display:"none"});
 }
 
 const updateCardLimitClass = (row_results) => {
@@ -1935,57 +1768,59 @@ const updateCardLimitClass = (row_results) => {
         for (const ind_card of [...Array(row_result.names.length).keys()]) {
             const limit = row_result.limits[ind_card];
             const card_class = `card_image_${row_name}_${ind_card}_1`;
-            const span = $(`#deck_image .image_set span:has(img.${card_class})`);
-            if ($(span).hasClass(limit)) return;
-            all_limit_class.map(d => $(span).removeClass(d));
-            $(span).addClass(limit);
+            const span = document.querySelector(`#deck_image .image_set span:has(img.${card_class})`);
+            if (span.classList.contains(limit)) return;
+            all_limit_class.forEach(d => span.classList.remove(d));
+            span.classList.add(limit);
         }
     }
     ;
 }
 
 const addButtonAfterMainShuffle = (button) => {
-    const h3_tmp = $("#deck_image #main div.subcatergory div.top>h3");
-    const a_tmp = $("#deck_image #main div.subcatergory div.top>a");
-    $(h3_tmp).css({ "min-width": "0" });
-    if (a_tmp.length > 0) {
-        $(a_tmp).after(button);
+    const h3_tmp = document.querySelector("#deck_image #main div.subcatergory div.top>h3");
+    const a_tmp = document.querySelector("#deck_image #main div.subcatergory div.top>a");
+    addStyle(h3_tmp, { "min-width": "0" });
+    if (a_tmp !== null) {
+        a_tmp.after(button);
     } else {
-        const span_tmp = $("<span>", {
+        const span_tmp = createElement("span", {
             style: `flex:4;border:none;`,
             oncontextmenu: "return false;"
         });
-        $(h3_tmp).after(button);
-        $(button).after(span_tmp);
+        h3_tmp.after(button);
+        button.after(span_tmp);
     }
 }
 
 const insertDeckText = (row_results, div_deckTextIn = null, display_text = "") => {
-    const div_deckText = div_deckTextIn !== null ? div_deckTextIn : $("<div>", { class: `deck_version_text` });
-    const div_deck = $("<div>", { style: "margin:10px;" });
-    const div_deck_table = $("<div>", { class: "deck_text_table hide", style: "display:table;display:none;" });
-    const div_deck_text_display = $("<span>", {
+    const div_deckText = div_deckTextIn !== null ? div_deckTextIn : createElement("div", { class: `deck_version_text` });
+    const div_deck = createElement("div", { style: "margin:10px;" });
+    const div_deck_table = createElement("div", { class: "deck_text_table hide", style: "display:table;display:none;" });
+    const div_deck_text_display = createElement("span", {
         style: "font-weight:bold;margin:5px;flex:1;"
-    }).append(display_text);
-    const input_for_rename = $("<div>").append($("<input>", { class: "input_deck_version_tag_rename", style: "margin:0 50px 0", placeholder: "new version tag" }))
-    const div_top = $("<div>", { class: "top", display: "flex" }).append(div_deck_text_display).append(input_for_rename);
+    }, display_text);
+    const input_for_rename = createElement("div", {},
+        createElement("input", { class: "input_deck_version_tag_rename", style: "margin:0 50px 0", placeholder: "new version tag" }));
+    const div_top = createElement("div", { class: "top", display: "flex" }, div_deck_text_display);
+    div_top.append(input_for_rename);
     div_deck.append(div_top);
     div_deck.append(div_deck_table);
     Object.entries(row_results).map(([row_name, row_result]) => {
-        const div_row = $("<div>", { style: "display:table-cell; width:20vw;padding: 4px;" });
-        const div_row_name = $("<div>").append($("<span>", {
+        const div_row = createElement("div", { style: "display:table-cell; width:20vw;padding: 4px;" });
+        const div_row_name = createElement("div", {}, createElement("span", {
             style: "font-weight:bold;margin:5px;"
         }).append(row_name));
         div_row.append(div_row_name);
-        const tbody = $("<tbody>", { style: "item-align:top;" });
+        const tbody = createElement("tbody", { style: "item-align:top;" });
         const names = row_result.names;
         const nums = row_result.nums;
         names.map((name_now, ind_card) => {
             const num_now = nums[ind_card];
-            const tr = $("<tr>", { style: "display:flex;" });
+            const tr = createElement("tr", { style: "display:flex;" });
             const spans = {
-                name: $("<span>", { style: "flex:1;" }).append(name_now),
-                num: $("<span>", { style: "padding:2px;font-weight:bold;" }).append(num_now)
+                name: createElement("span", { style: "flex:1;" }, name_now),
+                num: createElement("span", { style: "padding:2px;font-weight:bold;" }, num_now)
             };
             Object.entries(spans).map(([key, span_card]) => {
                 tr.append(span_card);
@@ -2003,77 +1838,68 @@ const insertDeckText = (row_results, div_deckTextIn = null, display_text = "") =
 // # sideChange on deck view
 
 const operateSideChangeMode = (mode = "toggle", df = null) => {
-    const button_sideChange = $("#button_sideChange");
-    const status_pre = $(button_sideChange).hasClass("on");
+    const button_sideChange = document.querySelector("#button_sideChange");
+    const status_pre = button_sideChange.classList.contains("on");
     if (mode === "toggle") {
-        $(button_sideChange).toggleClass("on");
-        $(button_sideChange).toggleClass("red");
+        button_sideChange.classList.toggle("on");
+        button_sideChange.classList.toggle("red");
         const status_new = !status_pre;
         const on_off_text = status_new ? "OFF" : "ON";
         const span_text = `SideChange|L:Reset/R:${on_off_text}`;
-        $("span", button_sideChange).html(span_text);
+        button_sideChange.querySelector("span").innerHTML = span_text;
         _operateSideChange(status_new);
     } else if (mode === "reset") {
-        //const row_results=obtainRowResults();
-        // removeElms(document.querySelectorAll("#deck_image div.image_set span.add_card:has(img)"));
         for (const elm of document.querySelectorAll("#deck_image div.image_set span.add_card:has(img)")) {
             elm.remove();
         }
-        const cards_all_exist = Array.from($("#deck_image div.image_set span:has(img):not(.add_card)"));
-        $("#deck_image div.image_set span.del_card:has(img)").removeClass("del_card").css({ display: "block" });
-        /*Object.entries(row_results).map(([row_name, row_result])=>{
-            row_result.names.map(([card_name, card_ind])=>{
-                const card_num=row_result.nums[card_ind];
-                const card_cid=row_result.cids[card_ind];
-                const class_name=`card_image_${row_name}_${card_ind}_1`;
-                const card_exist=cards_all_exist.filter(d=>$(d).is(`.${class_name}`));
-                const num_exist=card_exist.length;
-                if (num_exist < card_num && num_exist>0) {
-                    return Array(card_num-num_exist).map(_=>$(card_exist[0]).clone());
-                } else if (num_exist < card_num && num_exist===0) {
-                    const span_new=_generateDeckImgSpan(df, row_name, {name:card_name, cid:card_cid}, `${card_ind}_1`);
- 
-                }
-            })
-        })*/
-        resetSortDeckImgs(cards_all_exist).map(span => {
-            const img = $("img", span);
+        const cards_all_exist = Array.from(document.querySelectorAll("#deck_image div.image_set span:has(img):not(.add_card)"));
+        const spans_tmp = document.querySelectorAll("#deck_image div.image_set span.del_card:has(img)");
+        for (const span_tmp of spans_tmp) {
+            span_tmp.classList.remove("del_card");
+            span_tmp.style.display = "block";
+        }
+        resetSortDeckImgs(cards_all_exist).forEach(span => {
+            const img = span.querySelector("img");
             const classInfo = parseCardClass(img);
-            //const classInfo_tmp=$(img).attr("class").match(/card_image_([^_]+)_(\d+)_(\d+).*/);
-            /*const classInfo={
-                type:classInfo_tmp[1],
-                ind1:classInfo_tmp[2],
-                ind2:classInfo_tmp[3]
-            };*/
             const set_type = ["monster", "spell", "trap"].indexOf(classInfo.type) !== -1 ? "main" : classInfo.type;
-            //if (classInfo.type==="side") console.log(img, classInfo, set_type)
-            const image_set = $(`#deck_image div.image_set[set_type='${set_type}']`);
-            $(image_set).append(span);
+            const image_set = document.querySelector(`#deck_image div.image_set[set_type='${set_type}']`);
+            image_set.append(span);
         });
     }
 }
 
 const _operateSideChange = (sideChangeIsValid = true) => {
-    const deck_image = $("#deck_image");
+    const deck_image = document.querySelector("#deck_image");
     const par_dic = {
         true: { attr: { oncontextmenu: "return false;", wheelClick: "return false;" } }, //,css:{"min-height":"780px"}
         false: { attr: { oncontextmenu: "return true;", wheelClick: "return true;" } } //,css:{"min-height":"0"} /-> not work
     }
-    if (sideChangeIsValid === true) $(deck_image).addClass("MouseUI");
-    else $(deck_image).removeClass("MouseUI");
-    $(deck_image).attr(par_dic[sideChangeIsValid].attr);
-    //$(deck_image).css(par_dic[sideChangeIsValid].css);
-    $("#deck_image div.card_set div.image_set span:has(img)").attr(par_dic[sideChangeIsValid].attr);//:not(.add_card)
-    if (sideChangeIsValid === true) $("#deck_image").removeClass("click_open_url");
-    else $("#deck_image").addClass("click_open_url");
+    if (sideChangeIsValid === true) deck_image.classList.add("MouseUI");
+    else deck_image.classList.remove("MouseUI");
+    const spans = document.querySelectorAll("#deck_image div.card_set div.image_set span:has(img)");
+    for (const [key, val] of par_dic[sideChangeIsValid].attr) {
+        deck_image.setAttribute(key, val);
+        for (const span of spans) {
+            span.setAttribute(key, val);
+        }
+    }
+    // $(deck_image).attr(par_dic[sideChangeIsValid].attr);
+    // $("#deck_image div.card_set div.image_set span:has(img)").attr(par_dic[sideChangeIsValid].attr);//:not(.add_card)
+    if (sideChangeIsValid === true) deck_image.classList.remove("click_open_url");
+    else deck_image.classList.add("click_open_url");
 }
 
 const updateDeckCount = () => {
-    Array.from($("#deck_image .card_set")).map(card_set => {
-        const div_top = $("div.subcatergory>div.top", card_set);
-        const span_count = $("span:last", div_top);
-        span_count.html($("div.image_set span:has(img):not(.del_card)", card_set).length);
-    })
+    for (const card_set of document.querySelectorAll("#deck_image .card_set")) {
+        const div_top = card_set.querySelector("div.subcatergory>div.top");
+        const span_count = div_top.querySelector("&>span:last-of-type");
+        span_count.innerHTML = card_set.querySelectorAll("div.image_set span:has(img):not(.del_card)").length;
+    }
+    // Array.from($("#deck_image .card_set")).map(card_set => {
+    //     const div_top = $("div.subcatergory>div.top", card_set);
+    //     const span_count = $("span:last", div_top);
+    //     span_count.html($("div.image_set span:has(img):not(.del_card)", card_set).length);
+    // })
 }
 
 const saveDeckScreenshot = async (e) => {
@@ -2385,20 +2211,20 @@ const setDeckVersionTagList = async (updateDeckNameIsValid = true) => {
         .then(d => JSON.parse(d.data_deckVersion));
 
     if (updateDeckNameIsValid === true) {
-        const datalist_name = $("#deckVersion_nameList");
-        $(datalist_name).empty();
-        Object.keys(data_deckVersion).sort().map(d => {
-            const option = $("<option>", { value: d }).append(d);
+        const datalist_name = document.querySelector("#deckVersion_nameList");
+        emptyChildren(datalist_name);
+        Object.keys(data_deckVersion).sort().forEach(d => {
+            const option = createElement("option", { value: d }, d);
             datalist_name.append(option);
         })
     }
-    const deck_name = $("#deck_version_name").val().replace(/^\s*|\s*$/g, "");
+    const deck_name = document.querySelector("#deck_version_name").value.replace(/^\s*|\s*$/g, "");
     if (Object.keys(data_deckVersion).indexOf(deck_name) === -1) return;
-    const datalist_tag = $("#deckVersion_tagList");
-    if (datalist_tag.length === 0) return;
-    $(datalist_tag).empty();
-    Object.entries(data_deckVersion[deck_name]).map(([key, deckVersion]) => {
-        const option = $("<option>", { value: `${deckVersion.tag} #${key}` }).append(deckVersion.date);
+    const datalist_tag = document.querySelector("#deckVersion_tagList");
+    if (datalist_tag === null) return;
+    emptyChildren(datalist_tag);
+    Object.entries(data_deckVersion[deck_name]).forEach(([key, deckVersion]) => {
+        const option = createElement("option", { value: `${deckVersion.tag} #${key}` }, deckVersion.date);
         datalist_tag.append(option);
     })
 }
@@ -2491,9 +2317,12 @@ const obtainDeckListOfficial = async (html_parse_dic_in = null) => {
 const setDeckNames = async (datalist) => {
     const deck_infos = await obtainDeckListOfficial()
     //const datalist=$("#deck_nameList");
-    datalist.empty();
-    deck_infos.map((deckInfo) => {
-        const option = $("<option>", { value: `${deckInfo.name} #${deckInfo.dno}` });
+    // datalist.empty();
+    for (const elm of datalist.children) {
+        elm.remove();
+    }
+    deck_infos.forEach((deckInfo) => {
+        const option = createElement("option", { value: `${deckInfo.name} #${deckInfo.dno}` });
         datalist.append(option);
     })
 }
