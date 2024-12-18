@@ -301,6 +301,7 @@ window.onload = async function () {
 
             for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
                 if (settings.valid_feature_deckManager === false && !IsCopyMode && ["back"].indexOf(button_type) !== -1) continue;
+                if (settings.valid_feature_saveDeckImage === false && ["deckScreenshot"].indexOf(button_type) !== -1) continue;
                 if (IsLocalTest === false && ["test", "hoverName"].indexOf(button_type) !== -1) continue;
                 addStyle(button_tmp, { margin: "2px 2px" })
                 if (main_span_num !== null) $(main_span_num).before(button_tmp);
@@ -411,6 +412,7 @@ window.onload = async function () {
             if (button_type === "sortSave" &&
                 (my_cgid == null || html_parse_dic.cgid !== my_cgid || settings.valid_feature_sortShuffle === false)) continue;
             if (settings.valid_feature_importExport === false && ["import", "export"].indexOf(button_type) !== -1) continue;
+            if (settings.valid_feature_saveDeckImage === false && ["deckScreenshot"].indexOf(button_type) !== -1) continue;
             //if (settings.valid_feature_sideChange === false && ["sideChange"].indexOf(button_type) !== -1) continue;
             if (IsLocalTest === false && ["test"].indexOf(button_type) !== -1) continue;
             $(area).append(button_tmp);

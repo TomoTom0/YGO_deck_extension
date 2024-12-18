@@ -11,6 +11,7 @@ const defaultSettings = {
     valid_feature_deckEditImage: true,
     // valid_feature_sideChange: true, // always true
     valid_feature_deckManager: true,
+    valid_feature_saveDeckImage: true,
     default_visible_header: true,
     default_deck_edit_image: true,
     default_deck_edit_search: true,
