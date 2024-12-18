@@ -78,16 +78,17 @@ const addAttr = (element, attr_dic) => {
 }
 
 const emptyChildren = (element) => {
-    try {
-        if (element === null) return;
-        for (const child of element.querySelectorAll("&>*")) {
-            child.remove();
-        }
+    // try {
+    if (element === null) return;
+    element.innerHTML = "";
+    // for (const child of element.querySelectorAll("&>*")) {
+    //     child.remove();
+    // }
 
-    } catch (e) {
-        // console.log(e)
-        console.log(element.children)
-    }
+    // } catch (e) {
+    //     // console.log(e)
+    //     console.log(element.children)
+    // }
 }
 
 
