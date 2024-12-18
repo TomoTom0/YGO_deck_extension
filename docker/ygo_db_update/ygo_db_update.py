@@ -446,7 +446,7 @@ class YGO_DB_Updater:
             cardName = re.sub(r"<div.*/div>", "", cardNameTmp)
             for k, v in cardName_translations.items():
                 cardName = cardName.replace(k, v)
-            if not tds[0].has_attr("class") or not "card-number" in tds[0]["class"]:
+            if not tds[0].has_attr("class") or "card-number" not in tds[0]["class"]:
                 continue
             elif len(tds) < 6:
                 title = "Bad structure of td at ocg-card.com"
@@ -472,7 +472,7 @@ class YGO_DB_Updater:
         return cardInfos
 
     def obtainJapInfos(self, formIn: str = "id", valsIn: dict = {}) -> dict:
-        valsIn2 = valsIn if (type(valsIn) == "dict") else {s: s for s in valsIn}
+        valsIn2 = valsIn if isinstance(valsIn, dict)  else {s: s for s in valsIn}
         length_vals = len(valsIn2.keys())
         cardInfos = {}
         kvs = list(valsIn2.items())
@@ -656,7 +656,7 @@ class YGO_DB_Updater:
             try:
                 cardInfo_complex = self._obtainCardInfoComplex(elm_card, term_dic)
             except Exception as e:
-                title = f"Error when obtaining complex card info"
+                title = "Error when obtaining complex card info"
                 content = "cardName: {}\n{}".format(name_now, str(e))
                 self.postLog(title, content)
                 cardInfo_keys = CARD_INFO_KEYS
@@ -697,7 +697,7 @@ class YGO_DB_Updater:
                 cardInfo["type"] = ",".join(card_type_list)
             else:
                 cardInfo["atk"] = re.findall(
-                    r"[\d\?]+", elm_card_spec.select(f"span.atk_power>span")[0].text
+                    r"[\d\?]+", elm_card_spec.select("span.atk_power>span")[0].text
                 )[0]
                 cardInfo["attribute"] = card_attr.capitalize()
 
@@ -1017,7 +1017,7 @@ class YGO_DB_Updater:
                 "content": content,
                 "app": "python_ygo_db_updater",
             }
-            res = requests.post(url, headers=headers, json=obj, verify=False)
+            requests.post(url, headers=headers, json=obj, verify=False)
         elif log_path.is_file():
             with open(log_path, "a") as f:
                 f.write(message)

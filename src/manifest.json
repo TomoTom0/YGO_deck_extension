@@ -1,7 +1,7 @@
 {
   "name": "遊戯王DBデッキサポート",
   "author": "TomoTomo",
-  "version": "2.14.0.0",
+  "version": "2.16.0.0",
   "manifest_version": 3,
   "icons": {
     "16": "images/icon-16.png",
@@ -15,8 +15,8 @@
       ],
       "js": [
         "js/html2canvas.min.js",
-        "js/jquery-3.6.0.min.js",
         "js/async.min.js",
+        "js/jquery-3.7.1.min.js",
         "script/main_functions.js",
         "script/content_script.js",
         "script/db_functions.js",
@@ -44,11 +44,20 @@
   ],
   "permissions": [
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "tabs",
+    "activeTab",
+    "scripting"
   ],
+  "host_permissions": [
+        "https://www.db.yugioh-card.com/yugiohdb/*"
+    ],
   "options_ui": {
     "page": "script/options.html",
     "open_in_tab": true
+  },
+  "action":{
+    "default_popup": "script/popup.html"
   },
   "description": "公式カードデータベースのデッキ画面にMouseUIモードやExport / Import / Sort / Shuffleボタンを追加します。"
 }

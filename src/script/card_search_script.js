@@ -32,13 +32,13 @@ const obtainDeckRecipie = async () => {
     const deck_text = deck_body.text;
     console.log(deck_text);
     // const rowResults = await obtainRowResults(null, null, deck_text);
-    const card_list = $("<div>", { id: "card_list" });
+    const card_list = createElement("div", { id: "card_list" });
     Array.from(deck_text.querySelectorAll("table.deck_list>tbody>tr")).map(tr => {
-        const t_row = $("<span>", { class: "t_row" }).append($("<div>", { class: "box_card_img" }));
+        const t_row = createElement("span", { class: "t_row" }, createElement("div", { class: "box_card_img" }));
         const input_link = tr.querySelector("td.card_name>input");
         const span_card_name = tr.querySelector("td.card_name>div>span");
         if (span_card_name == null) return;
-        const img = $("<img>", { title: span_card_name.textContent, style: "padding: 1px;width:100%;" });
+        const img = createElement("img", { title: span_card_name.textContent, style: "padding: 1px;width:100%;" });
         $("div.box_card_img", t_row).append(img);
         $(t_row).css({ "max-width": " 10%" });
         $(t_row).append(input_link);
@@ -605,7 +605,6 @@ const remakeSearchResult = async (search_result) => {
             src: `/yugiohdb/get_image.action?type=1&lang=ja&cid=${card_cid}&ciid=1&enc=${card_encImg}&osplang=1`,
             oncontextmenu: "return false;"
         };
-        //const a_link=$("<a>", {href: card_link});
         for (const [k, v] of Object.entries(attr_dic)) {
             img.setAttribute(k, v);
         }
@@ -680,8 +679,8 @@ const obtainSearchScript = async () => {
     $(document).ready(async function () {
         $(search_result).addClass("search_result");
         const select_stype = $("select#stype");
-        select_stype.append($("<option>", { value: "deck" }).append("「デッキ内容」表示"));
-        const datalist = $("<datalist>", { id: "search_stypeList" });
+        select_stype.append(createElement("option", { value: "deck" }, "「デッキ内容」表示"));
+        const datalist = createElement("datalist", { id: "search_stypeList" });
         $("#first_search").append(datalist);
         $("#first_search>#keyword").attr({ list: "search_stypeList" })
         $("select#stype").on("change", async function () {

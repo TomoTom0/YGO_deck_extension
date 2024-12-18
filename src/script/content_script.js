@@ -1,6 +1,7 @@
 ﻿"use strict";
 
-const news_message = " / New Updates@v2.4 about History and Screenshot are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension/blob/develop/intro/NEWS_v2p4.md\" target=\"_blank\">Read Here</a>"
+const news_message = " / New Updates@v2.4.1 disable long press / about History and Screenshot are Coming, <a href=\"https://github.com/TomoTom0/YGO_deck_extension/blob/develop/intro/NEWS_v2p4.md\" target=\"_blank\">Read Here</a>"
+
 
 //------------------------------------
 //         #  on loading
@@ -13,8 +14,11 @@ window.onload = async function () {
     if (url_body !== "member_deck.action") return;
     const my_cgid = obtainMyCgid();
 
+    let check_count = 0;
+
     const settings = await operateStorage({ settings: JSON.stringify({}) }, "sync")
         .then(items => Object.assign(defaultSettings, JSON.parse(items.settings), { valid_feature_sideChange: true }));
+
 
     // # -------- prepare ----------
 
@@ -36,126 +40,145 @@ window.onload = async function () {
         const IsCopyMode = html_parse_dic.ope === "8";
         // ## deck edit
         //const area = $("#header_box .save"); // before// 2022/4/18
-        const area_bottom = $("#bottom_btn_set"); // after 2022/4/18
+        const area_bottom = document.getElementById("bottom_btn_set"); // after 2022/4/18
 
         // other buttons for bottom
         const button_bottom_dic = {
-            back: $("<a>", { class: "btn hex orn square button_backtoView", id: "button_backToView" })
-                .append($("<span>", { title: "Back to Deck View Page" }).append(svgs.arrowBack)),
-            headerShowHide: $("<a>", {
+            back: createElement(
+                "a",
+                { class: "btn hex orn square button_backtoView", id: "button_backToView" },
+                createElement("span", {title: "Back to Deck View Page"}, 
+                svgs.arrowBack, false),
+            ),
+            headerShowHide: createElement("a", {
                 class: "btn hex red square button_visible_header hide", type: "button", id: "button_visible_header",
                 style: "position: relative;user-select: none;"
-            }).append($("<span>", { title: "Toggle Show/Hide Header" }).append(svgs.toc)),
-            test: $("<a>", { class: "btn hex square red button_sort", id: "button_test" }).append("<span>Test</span>"),
-            export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
-                .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name"))// "<span>Export (L:id/M:cid/R:Name)</span>"),
+            },
+            createElement("span", { title: "Toggle Show/Hide Header" }, svgs.toc, false)),
+            test: createElement("a",
+                { class: "btn hex square red button_sort", id: "button_test" },
+                "<span>Test</span>", false),
+            export: createElement("a",
+                 { class: "btn hex red square button_export", oncontextmenu: "return false;" },
+                createElement("span",
+                     { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" },
+                     svgs.download + "id/cid/Name", false))// "<span>Export (L:id/M:cid/R:Name)</span>"),
         };
 
         for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
-            if (settings.valid_feature_deckHeader === false && ["headerShowHide"].indexOf(button_type) !== -1) continue;
-            if (settings.valid_feature_deckEditImage === false && ["reloadSort", "searchShowHide", "infoShowHide"].indexOf(button_type) !== -1) continue;
-            if (settings.valid_feature_deckManager === false && !IsCopyMode && ["back"].indexOf(button_type) !== -1) continue;
-            if (IsLocalTest === false && ["test", "hoverName"].indexOf(button_type) !== -1) continue;
-            button_tmp.css({ margin: "2px 2px" })
-            $(area_bottom).append(button_tmp);
+            if (settings.valid_feature_deckHeader === false &&
+                ["headerShowHide"].indexOf(button_type) !== -1) continue;
+            if (settings.valid_feature_deckEditImage === false &&
+                ["reloadSort", "searchShowHide", "infoShowHide"].indexOf(button_type) !== -1) continue;
+            if (settings.valid_feature_deckManager === false && !IsCopyMode &&
+                ["back"].indexOf(button_type) !== -1) continue;
+            if (settings.valid_feature_importExport === false &&
+                    ["export"].indexOf(button_type) !== -1) continue;
+    
+            if (IsLocalTest === false &&
+                ["test", "hoverName"].indexOf(button_type) !== -1) continue;
+            addStyle(button_tmp, { margin: "2px 2px" });
+            area_bottom.append(button_tmp);
         }
         // import button
         if (settings.valid_feature_importExport === true) {
-            const label = $("<label>", { for: "button_importFromYdk_input" });
-            const button_import = $("<a>", {
-                class: "btn hex red square button_import", type: "button", id: "button_importFromYdk",
-                style: "position: relative;user-select: none;"
-            })
-                .append($("<span>", { title: "import from .ydk file" }).append(svgs.upload));
-            const input_button = $("<input>", { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
+            const label = createElement("label", { for: "button_importFromYdk_input" });
+            const button_import = createElement("a", {
+                    class: "btn hex red square button_import", type: "button", id: "button_importFromYdk",
+                    style: "position: relative;user-select: none;"
+                },
+                createElement("span",
+                     { title: "import from .ydk file" },
+                      svgs.upload,
+                       false));
+            const input_button = createElement("input",
+                 { type: "file", accpet: "text/*.ydk", style: "display: none;", id: "button_importFromYdk_input" });
             button_import.append(input_button);
             label.append(button_import);
             area_bottom.append(label);
 
         }
+
         if (html_parse_dic.ope !== "8" && settings.valid_feature_deckManager === true) {
-            const header_box = $("div#deck_header>div#header_box");
-            const dl_deck_name = $("dl:has(dd>input#dnm)", header_box);
-            const img_delete = $("<a>", {
+            const header_box = document.querySelector("div#deck_header>div#header_box");
+            const dl_deck_name = header_box.querySelector("dl:has(dd>input#dnm)");
+            const img_delete = createElement("a", {
                 class: "ui-draggable ui-draggable-handle button_delete_keyword",
                 style: "flex:none;width:20px;height:20px;cursor:pointer;"
-            }).append(svgs.backspace);
+            }, svgs.backspace, false);
             const class_deck_version = "tab_mh100" + (settings.flag_showCacheDeck === true ? " alwaysShow" : "")
-            const dl_deck_version = $("<dl>", { class: class_deck_version, id: "deck_version_box" });
-            const dt = $("<dt>").append($("<span>", { style: "min-width:0px;" }).append("Deck in Cache"));
-            const dd = $("<dd>");
-            //input_version_name=$("<select>", {id:"deck_version_name"});
-            //input_version_tag=$("<select>", {id:"deck_version_tag"});
+            const dl_deck_version = createElement("dl", { class: class_deck_version, id: "deck_version_box" });
+            const dt = createElement("dt", createElement("span", { style: "min-width:0px;" }, "Deck in Cache", false));
+            const dd = createElement("dd");
             const btns_version = {
-                save: $("<a>", { class: "btn hex red square button_deckVersion button_save", id: "button_deckVersionSave" })
-                    .append($("<span>", { title: "Save Deck in Cache" }).append(svgs.save)),
-                load: $("<a>", { class: "btn hex red square button_deckVersion button_load", id: "button_deckVersionLoad" })
-                    .append($("<span>", { title: "Load Deck in Cache" }).append(svgs.style)),
-                delete: $("<a>", { class: "btn hex red square button_deckVersion button_delete", id: "button_deckVersionDelete" })
-                    .append($("<span>", { title: "Delete Deck in Cache" }).append(svgs.delete)),
+                save: createElement("a",
+                     { class: "btn hex red square button_deckVersion button_save", id: "button_deckVersionSave" },
+                      createElement("span", { title: "Save Deck in Cache" }, svgs.save)),
+                load: createElement("a",
+                     { class: "btn hex red square button_deckVersion button_load", id: "button_deckVersionLoad" },
+                    createElement("span", { title: "Load Deck in Cache" }, svgs.style, false)),
+                delete: createElement("a",
+                     { class: "btn hex red square button_deckVersion button_delete", id: "button_deckVersionDelete" },
+                    createElement("span", { title: "Delete Deck in Cache" }, svgs.delete, false)),
             };
             ["name", "tag"].map(key => {
-                //const select=$("<select>", {type:"text", class:`select_deck_version ${key}`, style:"flex:1;"});
                 const placeholder_dic = { name: "deck name", tag: "version tag" };
                 const flex_dic = { name: 4, tag: 3 };
-                const input = $("<input>", {
+                const input = createElement("input", {
                     type: "text",
                     placeholder: `${placeholder_dic[key]}`,
                     list: `deckVersion_${key}List`,
                     id: `deck_version_${key}`,
                     style: `flex: ${flex_dic[key]}`
                 });
-                //const input_dummy=$("<input>", {style:"display:none;"});
-                const datalist = $("<datalist>", { id: `deckVersion_${key}List` });
-                dd.append(input).append($(img_delete).clone()).append(datalist);//.append(input_dummy)
+                const datalist = createElement("datalist", { id: `deckVersion_${key}List` });
+                dd.append(input);
+                dd.append(img_delete.cloneNode());
+                dd.append(datalist);
                 //dd.append(select)
             })
             //dd.append(input_version_name).append(input_version_tag)
-            Object.values(btns_version).map(d => dd.append(d.css({ flexBasis: "20px", padding: "2px" })));
-            dl_deck_version.append(dt).append(dd);
+            Object.values(btns_version).forEach(d => {                
+                dd.append(addStyle(d, { flexBasis: "20px", padding: "2px" }));
+            });
+            dl_deck_version.append(dt);
+            dl_deck_version.append(dd);
             dl_deck_name.after(dl_deck_version);
             //const deck_name=$("#dnm").val().replace(/^\s*|\s*$/g, "");
             //if (deck_name.length>0) $("#deck_version_name").val(deck_name);
             setDeckVersionTagList(true);
 
-            const dnm = $("#dnm");
+            const dnm = document.getElementById("dnm");
             const span_opened_dic = {
-                dno: $("<span>", {
+                dno: addStyle(createElement("span", {
                     id: `deck_dno_opened`,
                     style: "flex:none;margin:0 2px 0;height:100%;background-color:#ddd;border: solid 1px #aaa"
-                }).append(`${html_parse_dic.dno}`)
-                    .css({
+                }, `${html_parse_dic.dno}`, false)
+                    ,{
                         "font-weight": "bold",
                         "vertical-align": "middle",
                         "max-height": "30px"
                     }),
-                // name: $("<span>", {
-                //     id: `deck_name_opened`,
-                //     style: "flex:none;mrgin:0 2px 0;height:100%;background-color:#ddd;border: solid 1px #aaa"
-                // }).append(`${$(dnm).val()}`)
-                //     .css({
-                //         "font-weight": "bold",
-                //         "vertical-align": "middle"
-                //     })
             }
-            Object.values(span_opened_dic).map(d => $(dnm).before(d));
-            $(dnm).attr({ list: `deck_nameList` }).css({ flex: "4" });
-            document.getElementById("dnm").setAttribute("placeholder", $(dnm).val());
-            const datalist_deckName = $("<datalist>", { id: "deck_nameList" });
+            Object.values(span_opened_dic).forEach(d => dnm.before(d));
+            addStyle(addAttr(dnm,{ list: `deck_nameList` }), { flex: "4" });
+            document.getElementById("dnm").setAttribute("placeholder", dnm.value);
+            const datalist_deckName = createElement("datalist", { id: "deck_nameList" });
             const btns_official = {
-                copy: $("<a>", { class: "btn hex orn square button_deckOfficial button_copy", id: "button_deckOfficialCopy" })
-                    .append($("<span>", { title: "Copy Deck in Official DB" }).append(svgs.copy)),
-                delete: $("<a>", { class: "btn hex orn square button_deckOfficial button_delete", id: "button_deckOfficialDelete" })
-                    .append($("<span>", { title: "Delete Deck in Official DB" }).append(svgs.delete)),
-                new: $("<a>", { class: "btn hex orn square button_deckOfficial button_new", id: "button_deckOfficialNew" })
-                    .append($("<span>", { title: "Generate Empty Deck in Official DB" }).append(svgs.add)),
-                save: $("<a>", { class: "btn hex orn square button_deckOfficial button_save", id: "button_deckOfficialSave" })
-                    .append($("<span>", { title: "Save Deck in Official DB" }).append(svgs.save)),
-                load: $("<a>", { class: "btn hex orn square button_deckOfficial button_load", id: "button_deckOfficialLoad" })
-                    .append($("<span>", { title: "Load Deck in Official DB" }).append(svgs.style)),
-
+                copy: createElement("a", { class: "btn hex orn square button_deckOfficial button_copy", id: "button_deckOfficialCopy" },
+                    createElement("span", { title: "Copy Deck in Official DB" }, svgs.copy, false)),
+                delete: createElement("a",
+                     { class: "btn hex orn square button_deckOfficial button_delete", id: "button_deckOfficialDelete" },
+                    createElement("span", { title: "Delete Deck in Official DB" }, svgs.delete, false)),
+                new: createElement("a",
+                     { class: "btn hex orn square button_deckOfficial button_new", id: "button_deckOfficialNew" },
+                     createElement("span", { title: "Generate Empty Deck in Official DB" }, svgs.add, false)),
+                save: createElement("a", { class: "btn hex orn square button_deckOfficial button_save", id: "button_deckOfficialSave" },
+                    createElement("span", { title: "Save Deck in Official DB" }, svgs.save, false)),
+                load: createElement("a", { class: "btn hex orn square button_deckOfficial button_load", id: "button_deckOfficialLoad" },
+                    createElement("span", { title: "Load Deck in Official DB" }, svgs.style, false)),
             };
-            $(dnm).css({ width: "auto" });
+            addStyle(dnm, {width: "auto"})
 
             // save, load button
             const div_saveload = document.createElement("div");
@@ -168,16 +191,16 @@ window.onload = async function () {
             div_others.style.display = "flex";
             div_others.style.maxHeight = "30px";
             div_others.setAttribute("class", "div_officialButton div_otherButtons")
-            $(dnm).after(div_others);
-            $(dnm).after(div_saveload);
+            dnm.after(div_others);
+            dnm.after(div_saveload);
             // document.getElementById("dnm").closest("dl").querySelector("dl>dt>span").appendChild(div_saveload);
-            $(dnm).css({ maxHeight: "30px" })
+            addStyle(dnm, { maxHeight: "30px" });
             for (const [key, btn] of Object.entries(btns_official)) {
                 if (["delete", "copy", "new"].indexOf(key) !== -1) {
-                    $(div_others).append(btn);
-                } else $(div_saveload).append(btn);
+                    div_others.append(btn);
+                } else div_saveload.append(btn);
             };
-            $("#btn_regist").css({ display: "none" });
+            addStyle(document.getElementById("btn_regist"), { display: "none" });
             $(dnm).after(datalist_deckName);
             $(dnm).after($(img_delete).clone());
             //$(dnm).after(input);
@@ -186,6 +209,7 @@ window.onload = async function () {
             await setDeckNames(datalist_deckName);
             showMessage(`Loaded ${news_message}`);
         }
+
         if (settings.valid_feature_deckHeader === true) {
             toggleVisible_deckHeader(null, settings.default_visible_header || IsCopyMode);
 
@@ -195,18 +219,20 @@ window.onload = async function () {
                 const ctc_now = $(`#${header_ids_dic[ctc_name]}`);
                 const isCT = ["category", "tag"].indexOf(ctc_name) != -1;
                 const ctc_span = $("dt>span", (isCT) ? ctc_now.parent().parent().parent() : ctc_now.parent().parent());
-                const button = $("<a>", {
+                const button = createElement("a", {
                     class: `btn hex button_size_header ${ctc_name} ` + (isCT ? " isCT" : " isComment"),
                     type: "button", id: `button_size_header_${ctc_name}`,
                     style: "position: relative;user-select: none;min-width: 0;"
-                }).append("<span>Size</span>");
-                $(ctc_span).append(button);
+                }, "<span>Size</span>");
+                ctc_span.append(button);
                 const ctc_ind_size = 0;
                 changeSize_deckHeader(ctc_name, ctc_ind_size - 1);
             })
-            const button_guess = $("<a>", { class: "btn hex red button_guess", id: "button_guess" }).append("<span>Guess</span>");
-            $(`#button_size_header_category`).after(button_guess);
-            $(".box_default .box_default_table dt span").css({ "min-width": "0" });
+            const button_guess = createElement("a", { class: "btn hex red button_guess", id: "button_guess" }, "<span>Guess</span>");
+            document.getElementById(`button_size_header_category`).after(button_guess);
+            for (const elm of document.querySelectorAll(".box_default .box_default_table dt span")){
+                addStyle(elm, { "min-width": "0" });
+            }
             showSelectedOption();
             const header = document.getElementById("deck_header");
             // header.style.overflowY = "scroll"
@@ -216,36 +242,41 @@ window.onload = async function () {
 
         }
         if (settings.valid_feature_deckEditImage === true) {
-            $("#article_body").attr({ oncontextmenu: "return false;" })
+            $("#article_body").attr({ oncontextmenu: "return false;" });
             // tablink for image/text
-            const div_tablink = $("<div>", { class: "tablink tablink_deckSupport tablink_deckEdit", id: "mode_deckEdit" });
+            const div_tablink = createElement("div", { class: "tablink tablink_deckSupport tablink_deckEdit", id: "mode_deckEdit" });
             const liInfo_dic = { text: { class: "deck_edit_text", text: "Text" }, image: { class: "deck_edit_image", text: "Image" } };
-            const ul_now = $("<ul>")
-            const select_now = $("<select>", { class: "deck_display MouseUI", id: "deck_dispaly" })
-            Object.entries(liInfo_dic).map(([key_text, liInfo]) => {
+            const ul_now = createElement("ul")
+            const select_now = createElement("select", { class: "deck_display MouseUI", id: "deck_dispaly" });
+            Object.entries(liInfo_dic).forEach(([key_text, liInfo]) => {
                 const liIsSelected = (settings.default_deck_edit_image === true && key_text === "image") ||
                     (settings.default_deck_edit_image === true && key_text === "image");
-                const li_tmp = $("<li>", { class: liInfo.class + (liIsSelected ? " now" : ""), value: key_text });
-                const span_tmp = $("<span>").append(liInfo.text)
+                const li_tmp = createElement("li", { class: liInfo.class + (liIsSelected ? " now" : ""), value: key_text });
+                const span_tmp = createElement("span", {}, liInfo.text)
                 li_tmp.append(span_tmp);
                 ul_now.append(li_tmp);
-                const option_tmp = $("<option>", { value: liInfo.text }).append(liInfo.text);
+                const option_tmp = createElement("option", { value: liInfo.text }, liInfo.text);
                 select_now.append(option_tmp);
             })
             div_tablink.append(ul_now);
             div_tablink.append(select_now);
 
-            const div_num_total = $("#num_total");
-            //$(div_num_total).css({margin: "0 0 0"})
-            div_num_total.css({ display: "none" });
+            const div_num_total = document.getElementById("num_total");
+            addStyle(div_num_total, { display: "none" });
             area_bottom.append(div_tablink);
+
 
             // deck image
             const df = await obtainDF(obtainLang());
+
             const row_results = obtainRowResults(df);//obtainRowResults_Edit(df);
             // console.log(row_results)
+
+            console.log(row_results)
             insertDeckImg(df, row_results, false);
+
             updateCardLimitClass(row_results);
+
             const key_show = settings.default_deck_edit_image ? "image" : "text";
             operate_deckEditVisible(key_show);
 
@@ -253,39 +284,38 @@ window.onload = async function () {
             if (settings.valid_feature_sortShuffle === true) addShuffleButton(true);
 
             const button_bottom_dic = {
-                searchShowHide: $("<a>", { class: "btn hex square button_searchShowHide", id: "button_searchShowHide" }
-                ).append($("<span>", { title: "Toggle to Show/Hide Search Area" }).append(svgs.search)),
-                infoShowHide: $("<a>", { class: "btn hex red square button_infoShowHide", id: "button_infoShowHide" }
-                ).append($("<span>", { title: "Toggle to Show/Hide Info Area" }).append(svgs.contancts)),
-                fixScroll: $("<a>", { class: "btn hex square show button_fixScroll", id: "button_fixScroll" })
-                    .append($("<span>", { title: "Toggle to Fit Editor Columns" }).append(svgs.fullscreen)),
-                // hoverName: $("<a>", { class: "btn hex square red show button_toggleHoverName", id: "button_toggleHoverName" })
-                //     .append($("<span>", { title: "show card names on mouse hovering" }).append(svgs.liveHelp)),
-                deckScreenshot: $("<a>", { class: "btn hex square red button_deckScreenshot", id: "button_deckScreenshot" })
-                    .append($("<span>", { title: "Take a Screenshot of Deck Recipie" }).append(svgs.screenshot)),
-                reloadSort: $("<a>", { class: "btn hex square red button_reloadSort", id: "button_reloadSort" })
-                    .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
+                searchShowHide: createElement("a", { class: "btn hex square button_searchShowHide", id: "button_searchShowHide" }
+                , createElement("span", { title: "Toggle to Show/Hide Search Area" }, svgs.search)),
+                infoShowHide: createElement("a", { class: "btn hex red square button_infoShowHide", id: "button_infoShowHide" }
+                ,createElement("span", { title: "Toggle to Show/Hide Info Area" }, svgs.contancts)),
+                fixScroll: createElement("a", { class: "btn hex square show button_fixScroll", id: "button_fixScroll" }, 
+                    createElement("span", { title: "Toggle to Fit Editor Columns" }, svgs.fullscreen)),
+                deckScreenshot: createElement("a", { class: "btn hex square red button_deckScreenshot", id: "button_deckScreenshot" },
+                    createElement("span", { title: "Take a Screenshot of Deck Recipie" }, svgs.screenshot)),
+                reloadSort: createElement("a", { class: "btn hex square red button_reloadSort", id: "button_reloadSort" },
+                    createElement("span", { title: "sort all cards" }, svgs.sort)),
             };
             const main_span_num = document.querySelector("#main > div.subcatergory > div.top > span:last-child");
             // console.log(main_span_num)
 
+
             for (const [button_type, button_tmp] of Object.entries(button_bottom_dic)) {
                 if (settings.valid_feature_deckManager === false && !IsCopyMode && ["back"].indexOf(button_type) !== -1) continue;
                 if (IsLocalTest === false && ["test", "hoverName"].indexOf(button_type) !== -1) continue;
-                button_tmp.css({ margin: "2px 2px" })
+                addStyle(button_tmp, { margin: "2px 2px" })
                 if (main_span_num !== null) $(main_span_num).before(button_tmp);
-                else $(area_bottom).append(button_tmp);
+                else area_bottom.append(button_tmp);
             }
 
-            $("#bg>div:eq(0)").css({ background: "none" });
-            $("div#wrapper").css({ width: "100%", "min-width": "fit-content", "height": "fit-content" });
-            $("#bg").css({ overflow: "scroll" });
-            $("#num_total").css({ display: "none" });
+            addStyle(document.querySelector("#bg>div:first-of-type"), { background: "none" });
+            addStyle(document.querySelector("div#wrapper"), { width: "100%", "min-width": "fit-content", "height": "fit-content" });
+            addStyle(document.querySelector("#bg"), { overflow: "scroll" });
+            addStyle(document.querySelector("#num_total"), { display: "none" });
 
-            const article = $("article");
-            article.css({ "max-width": "initial", "scroll-snap-type": "y" });
-            const div_article_body = $("div#article_body");
-            $(div_article_body).css({ "flex": "5 1 35vw", minWidth: "10vw" });//, "max-width": "35vw"
+            const article = document.querySelector("article");
+            addStyle(article, { "max-width": "initial", "scroll-snap-type": "y" });
+            const div_article_body = document.querySelector("div#article_body");
+            addStyle(div_article_body, { "flex": "5 1 35vw", minWidth: "10vw" });//, "max-width": "35vw"
 
             const div_search = parseHTML(obtainSearchForm());
             div_search.querySelector("#submit_area").style.flex = "2 0 10%";
@@ -295,21 +325,22 @@ window.onload = async function () {
             search_key_area.querySelector("#first_search").style["max-width"] = "50%";
             search_key_area.querySelector("#first_search input").style["max-width"] = "80%";
             search_key_area.querySelector("#stype").style["max-width"] = "40%";
-            const table = $("<div>", { style: "display:flex;" });
-            $(article).append(table);
-            $(table).append(div_article_body);
+            const table = createElement("div", { style: "display:flex;" });
+            article.append(table);
+            table.append(div_article_body);
 
-            const div_body = $("<div>", {
+            const div_body = createElement("div", {
                 style: "padding:5px;flex: 1 5 30vw;min-width: 10vw;",//max-width:30vw;
                 class: "",
                 id: "search_area"
             });
-            const div_search_result = $("<div>", {
+            const div_search_result = createElement("div", {
                 id: "search_result",
                 style: "max-height:calc(95vh - 160px);overflow-y:scroll;",
                 oncontextmenu: "return false;"
             });
             $(div_body).append(div_search.outerHTML);
+
 
             // const splitter = document.createElement("div");
             // splitter.setAttribute("style", "flex-basis:50px;cursor:col-resize;background: #000;");
@@ -327,8 +358,8 @@ window.onload = async function () {
 
 
             // console.log(doc_get);
-            const div_info = $("<div>", { style: "width:100%;max-height:80vh;overflow-y:scroll;" });
-            const div_info_body = $("<div>", {
+            const div_info = createElement("div", { style: "width:100%;max-height:80vh;overflow-y:scroll;" });
+            const div_info_body = createElement("div", {
                 style: "padding:5px;flex: 3 2 30vw;min-width: 10vw;", //min-width:30vw;max-width:30vw;
                 class: "",
                 id: "info_area"
@@ -341,14 +372,15 @@ window.onload = async function () {
             $(table).prepend(div_info_body);
             operate_infoArea(null, settings.default_infoArea_visible && !IsCopyMode);
 
+
             operate_fixScroll(null, settings.default_fit_edit && !IsCopyMode);
 
             const dno = document.getElementById("dno").value;
             unsetDeckHistoryUid(dno);
-            longPress.init({
-                el: "body",
-                ms: 300
-            })
+            // longPress.init({
+            //     el: "body",
+            //     ms: 300
+            // })
 
             //openCardInfoArea();
 
@@ -360,16 +392,20 @@ window.onload = async function () {
         //const settings=await getSyncStorage({settings: defaultString}).then(items=>JSON.parse(items.settings));
         //const edit_area = $("#header_box #button_place_edit"); // before 2022/4/18
         const edit_area = $("#bottom_btn_set"); // after 2022/4/18
-        const area = (edit_area.length > 0) ? edit_area : $("<span>", { id: "bottom_btn_set" }).appendTo($("#deck_header"));
+        let area = null;
+        if (edit_area.length > 0) area = edit_area;
+        else {
+            area = createElement("span", { id: "bottom_btn_set" });
+            $("#deck_image").append(area);
+        }
         //console.log(area)
         const button_dic = {
-            export: $("<a>", { class: "btn hex red square button_export", oncontextmenu: "return false;" })
-                .append($("<span>", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" }).append(svgs.download + "id/cid/Name")),
-            deckScreenshot: $("<a>", { class: "btn hex square red button_deckScreenshot", id: "button_deckScreenshot" })
-                .append($("<span>", { title: "Take a Screenshot of Deck Recipie" }).append(svgs.screenshot)),
-            // sortSave: $("<a>", { class: "btn hex red square button_sort", id: "button_sortSave" })
-            //     .append($("<span>", { title: "sort all cards" }).append(svgs.sort)),
-            test: $("<a>", { class: "btn hex red button_sort", id: "button_test" }).append("<span>Test</span>")
+            export: createElement("a", { class: "btn hex red square button_export", oncontextmenu: "return false;" },
+                createElement("span", { title: "Export deck recipie with id/cid/Name", style: "font-size:10px;" },
+                    svgs.download + "id/cid/Name")),
+            deckScreenshot: createElement("a", { class: "btn hex square red button_deckScreenshot", id: "button_deckScreenshot" },
+                createElement("span", { title: "Take a Screenshot of Deck Recipie" },svgs.screenshot)),
+            test: createElement("a", { class: "btn hex red button_sort", id: "button_test" }, "<span>Test</span>")
         };
         for (const [button_type, button_tmp] of Object.entries(button_dic)) {
             if (button_type === "sortSave" &&
@@ -385,16 +421,6 @@ window.onload = async function () {
             $(deck_image).addClass("deck_image").css({ "min-height": "890px" });
             $("#deck_image div.card_set div.image_set a").css({ "max-width": "min(6.5%, 55px)" });
             $("#deck_image div.card_set").css({ "margin": "0px 0px 0px" });
-
-            // const span_tmp = $("<span>", { style: "border:none; line-height: 30px; min-width: 180px;" })
-            //     .append(`SideChange|L:Reset/R:ON`);
-            // const button_sideChange = $("<a>", {
-            //     class: `btn hex button_sideChange sideChange`,
-            //     id: "button_sideChange",
-            //     oncontextmenu: "return false;"
-            // }).append(span_tmp.clone());
-            // addButtonAfterMainShuffle(button_sideChange);
-
 
             const card_set_temp = obtainNewCardSet("temp");
             //$(card_set_temp).css({display:"none"});
@@ -460,31 +486,11 @@ window.onload = async function () {
 
     // # --------- button clicked -----------
     listen_clickAndDbclick(); // await
-    // document.addEventListener("click", listen_click);
-    // ## mousedown
-    // const df = await obtainDF(obtainLang());
-    // document.addEventListener("mousedown", listen_mousedown);
-
 
     // ## button id
     $("#button_importFromYdk").on("change", async function () {
         await importFromYdk();
     });
-
-
-
-    $("#button_test").on("click", async function () {
-        // await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "set");
-        // const deckHistory = await operateStorage({ deckHistory: JSON.stringify({}) }, "local", "get"
-        // ).then(items => Object.assign({}, JSON.parse(items.deckHistory)))
-        // console.log(deckHistory);
-
-
-
-    });
-
-
-
 
     // ## change
     $("#deck_version_name").on("change", async function () {

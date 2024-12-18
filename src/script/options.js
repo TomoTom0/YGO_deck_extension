@@ -8,20 +8,20 @@ const langs = ["ja", "en", "de", "fr", "it", "es", "pt", "ko"];
 const clickModes = [1, 2]
 
 function makeTable(tableContent = {}, captionText = "") {
-    const table = $("<table>", { class: "part" });
-    const caption = $("<caption>").append(captionText);
-    const thead = $("<thead>");
-    const tbody = $("<tbody>");
+    const table = createElement("table", { class: "part" });
+    const caption = createElement("caption", {}, captionText);
+    const thead = createElement("thead");
+    const tbody = createElement("tbody");
     const labelArray = Object.keys(tableContent);
     const dataArray = Object.values(tableContent);
-    const tr = $("<tr>");
-    labelArray.forEach(d => tr.append($("<th>").append(d)));
+    const tr = createElement("tr");
+    labelArray.forEach(d => tr.append(createElement("th", {}, d)));
     thead.append(tr);
     [...Array(dataArray[0].length).keys()].forEach(ind => {
-        const tr = $("<tr>");
+        const tr = createElement("tr");
         dataArray.forEach(data => {
             const data_formated = (typeof (data[ind]) == "string") ? data[ind].replace(/,/g, " ") : data[ind];
-            tr.append($("<td>").append(data_formated));
+            tr.append(createElement("td", {}, data_formated));
         })
         tbody.append(tr);
     })
@@ -55,19 +55,18 @@ const searchFunc = async (df) => {
 
 const load_deckVersionText = (df, deckVersions, deck_name, deck_version_area) => {
     deck_version_area.empty();
-    //deck_version_area.append($("<div>").css({"font-weight":"bold"}).append(deck_name));
     $("#deck_version_name_loaded").text(deck_name);
     $("#area_for_buttonDeckVersionTagAll").css({ display: "block" });
     Object.entries(deckVersions).map(([tag_key, deck_version]) => {
         const row_results = convertRowResults(df, deck_version.row_results_min, false);
-        //insertDeckImg(df, row_results, true, div_deck_image);
         const display_text = `${deck_version.date}:  ${deck_version.tag}  #${tag_key}`;
         const div_deck_text = insertDeckText(row_results, null, display_text);
         $(".deck_text_table", div_deck_text).attr("tag_key", tag_key);
-        const checkbox = $("<span>", { type: "", class: "custom-control custom-checkbox" }).css({ margin: "10px" })
-            .append($("<input>", { type: "checkbox", class: "deck_version_checkbox custom-control-input", tag_key: tag_key }));
-        const showHide_version = $("<span>", { class: "button_toggleShowHide_deckVersion button_DeckVersion", tag_key: tag_key })
-            .css({ "background-color": "#7777ee", color: "#eeeeee", padding: "0 6px 0" }).append("v");
+        const checkbox = createElement("span", { type: "", class: "custom-control custom-checkbox" },
+            createElement("input", { type: "checkbox", class: "deck_version_checkbox custom-control-input", tag_key: tag_key }));
+            addStyle(checkbox, { margin: "10px" })
+        const showHide_version = createElement("span", { class: "button_toggleShowHide_deckVersion button_DeckVersion", tag_key: tag_key }, "v")
+        addStyle(showHide_version, { "background-color": "#7777ee", color: "#eeeeee", padding: "0 6px 0" });
         $("div.top", div_deck_text).prepend(checkbox).prepend(showHide_version);
         $(div_deck_text).attr("tag_key", tag_key);
         deck_version_area.append(div_deck_text);
@@ -83,7 +82,7 @@ const showHide_deckVersion = (tag_key, toShowIn = null) => {
 }
 
 // # on load
-$(async function () {
+window.onload = async function () {
     const items = await getSyncStorage({ settings: JSON.stringify({}), repoInfos: defaultRepoStrings });
     const settings = Object.assign(defaultSettings, JSON.parse(items.settings));
     for (const [key, val] of Object.entries(settings)) {
@@ -98,14 +97,14 @@ $(async function () {
 
     const select_lang = $("select#value_defaultLang");
     langs.map(lang => {
-        const option = $("<option>", { value: lang }).append(lang);
+        const option = createElement("option", { value: lang }, lang);
         select_lang.append(option);
     })
 
 
     Array.from($(".selectSearchKey")).map(obj => {
         Object.keys(df_init).forEach(key => {
-            const option = $("<option>").val(key).text(key);
+            const option = createElement("option", {value: key}, key);
             $(obj).append(option);
         })
     })
@@ -135,12 +134,11 @@ $(async function () {
     // # button
     const area_deckVersionName = $("#area_for_buttonDeckVersionName");
     const buttons_deckVersionName = {
-        clear: $("<button>", { type: "button", class: "button_DeckVersion button_clear btn btn-primary" }).append("X"),
-        load: $("<button>", { type: "button", class: "button_DeckVersion button_load btn btn-primary" }).append("Load"),
-        copyRename: $("<button>", { type: "button", class: "button_DeckVersion button_copyRename btn btn-primary" }).append("Copy & Rename"),
-        //copy:$("<button>", {type:"button",class:"button_DeckVersion button_copy btn btn-primary"}).append("Copy"),
-        delete: $("<button>", { type: "button", class: "button_DeckVersion button_delete btn btn-primary" }).append("Delete"),
-        test: $("<button>", { type: "button", class: "button_DeckVersion button_test btn btn-primary" }).append("Test"),
+        clear: createElement("button", { type: "button", class: "button_DeckVersion button_clear btn btn-primary" }, "X"),
+        load: createElement("button", { type: "button", class: "button_DeckVersion button_load btn btn-primary" }, "Load"),
+        copyRename: createElement("button", { type: "button", class: "button_DeckVersion button_copyRename btn btn-primary" }, "Copy & Rename"),
+        delete: createElement("button", { type: "button", class: "button_DeckVersion button_delete btn btn-primary" }, "Delete"),
+        test: createElement("button", { type: "button", class: "button_DeckVersion button_test btn btn-primary" }, "Test"),
     }
     for (const [key, button] of Object.entries(buttons_deckVersionName)) {
         if (!IsLocalTest && key === "test") continue;
@@ -149,10 +147,10 @@ $(async function () {
 
     const area_deckVersionAll = $("#area_for_buttonDeckVersionTagAll");
     const buttons_deckVersionAll = {
-        showHideAll: $("<button>", { type: "button", class: "button_DeckVersion button_toggleShowHide_deckVersion btn btn-secondary toShow" }).append("All SHOW/hide"),
-        rename: $("<button>", { type: "button", class: "button_DeckVersion button_rename btn btn-secondary" }).append("Rename"),
-        copy: $("<button>", { type: "button", class: "button_DeckVersion button_copy btn btn-secondary" }).append("Copy"),
-        delete: $("<button>", { type: "button", class: "button_DeckVersion button_delete btn btn-secondary" }).append("Delete"),
+        showHideAll: createElement("button", { type: "button", class: "button_DeckVersion button_toggleShowHide_deckVersion btn btn-secondary toShow" }, "All SHOW/hide"),
+        rename: createElement("button", { type: "button", class: "button_DeckVersion button_rename btn btn-secondary" }, "Rename"),
+        copy: createElement("button", { type: "button", class: "button_DeckVersion button_copy btn btn-secondary" }, "Copy"),
+        delete: createElement("button", { type: "button", class: "button_DeckVersion button_delete btn btn-secondary" }, "Delete"),
     }
     for (const [key, button] of Object.entries(buttons_deckVersionAll)) {
         $(area_deckVersionAll).append(button);
@@ -196,19 +194,19 @@ $(async function () {
 
         } else if ($(e.target).is(".btnSearchAdd")) {
             const DateNow = `${Date.now()}`;
-            const span = $("<span>", { class: "spanSearchKV" });
-            const searchKey = $("<select>", { type: "text", style: "width:80px;", class: "selectSearchKey" });
-            const searchVal = $("<input>", { type: "text", placeholder: "a word or value", style: "width:200px;", class: "inputSearchVal", list: `selectSearchList_${DateNow}` });
-            const datalist = $("<datalist>", { id: `selectSearchList_${DateNow}` });
-            const clearButton = $("<button>", { type: "button", class: "btnSearchClear btn btn-primary" }).append("X");
-            const deleteButton = $("<button>", { type: "button", class: "btnSearchDelete btn btn-primary" }).append("Delete");
+            const span = createElement("span", { class: "spanSearchKV" });
+            const searchKey = createElement("select", { type: "text", style: "width:80px;", class: "selectSearchKey" });
+            const searchVal = createElement("input", { type: "text", placeholder: "a word or value", style: "width:200px;", class: "inputSearchVal", list: `selectSearchList_${DateNow}` });
+            const datalist = createElement("datalist", { id: `selectSearchList_${DateNow}` });
+            const clearButton = createElement("button", { type: "button", class: "btnSearchClear btn btn-primary" }, "X");
+            const deleteButton = createElement("button", { type: "button", class: "btnSearchDelete btn btn-primary" }, "Delete");
             Object.keys(df).forEach(key => {
-                const option = $("<option>").val(key).text(key);
+                const option = createElement("option", {value: key}, key);
                 searchKey.append(option);
             })
             span.append(searchKey).append(searchVal).append(datalist);
             const divDB = $(".divSearchDB");
-            const divCol = $("<div>", { class: "col-lg-10 col-lg-offset-2" })
+            const divCol = createElement("div", { class: "col-lg-10 col-lg-offset-2" })
             $(divDB).append(divCol.append("<br>").append(span).append(clearButton).append(deleteButton));
 
         } else if ($(e.target).is(".btnClearStorage")) {
@@ -364,7 +362,7 @@ $(async function () {
                     [].concat(...df[selectedKey].map(d => d.split(/,/g))) : df[selectedKey];
 
                 Array.from(new Set(optionVals)).sort().forEach(optionVal => {
-                    const option = $("<option>").val(optionVal).text(optionVal);
+                    const option = createElement("option", {value: optionVal}, optionVal);
                     valList.append(option);
                 })
             } else if (numberKey.indexOf(selectedKey) != -1) {
@@ -386,4 +384,4 @@ $(async function () {
             await setSyncStorage({ settings: JSON.stringify(settings) });
         }
     })
-});
+};
