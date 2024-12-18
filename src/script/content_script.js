@@ -72,6 +72,9 @@ window.onload = async function () {
                 ["reloadSort", "searchShowHide", "infoShowHide"].indexOf(button_type) !== -1) continue;
             if (settings.valid_feature_deckManager === false && !IsCopyMode &&
                 ["back"].indexOf(button_type) !== -1) continue;
+            if (settings.valid_feature_importExport === false &&
+                    ["export"].indexOf(button_type) !== -1) continue;
+    
             if (IsLocalTest === false &&
                 ["test", "hoverName"].indexOf(button_type) !== -1) continue;
             addStyle(button_tmp, { margin: "2px 2px" });

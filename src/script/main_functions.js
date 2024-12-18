@@ -78,17 +78,8 @@ const addAttr = (element, attr_dic) => {
 }
 
 const emptyChildren = (element) => {
-    // try {
     if (element === null) return;
     element.innerHTML = "";
-    // for (const child of element.querySelectorAll("&>*")) {
-    //     child.remove();
-    // }
-
-    // } catch (e) {
-    //     // console.log(e)
-    //     console.log(element.children)
-    // }
 }
 
 
@@ -162,6 +153,37 @@ const toggleUndisplayElms = (elms) => {
         elm.classList.toggle("will-appear");
     }
 }
+
+// # ----- parse url --------
+
+const parse_YGODB_URL_body = (url_now = location.href) => {
+    const match = url_now.match(/([^\/\?]+)\??[^\/]*$/);
+    return match !== null ? match[1] : "";
+}
+const parse_YGODB_URL = (url_now = null, nullIsValid = false) => {
+    url_now = url_now !== null ? url_now : location.href;
+    const html_parse_keys = ["ope", "wname", "ytkn", "cgid", "dno", "request_locale"];
+    const html_parse_dic_arr = html_parse_keys.map(key => {
+        const match_tmp = url_now.match(new RegExp(`(?<=${key}=)([^&=]+)`, "g"));
+        if (Array.isArray(match_tmp) && match_tmp.length > 0) {
+            return { [key]: match_tmp[0] };
+        } else return { [key]: obtain_YGODB_fromHidden(key) || null };
+    });
+    if (nullIsValid === false) {
+        return Object.assign(...html_parse_dic_arr.filter(d => Object.values(d)[0] != null));
+    } else return Object.assign(...html_parse_dic_arr);
+}
+
+const obtain_YGODB_fromHidden = (key, body_in = null) => {
+    const body = body_in !== null ? body_in : document.querySelector("body");
+    try {
+        return body.querySelector(`#${key}`).value;
+    } catch (e) {
+        return "";
+    }
+}
+
+
 // # ----- obtain Row Results --------
 const obtainRowResults = (df = null, onViewIn = null, deck_textIn = null) => {
     const html_parse_dic = parse_YGODB_URL(location.href, true);
@@ -1661,11 +1683,11 @@ const insertDeckImg = (df, row_results, displayIsValid = true, div_deck_imageSet
     if (document.querySelectorAll("#temp").length === 0) {
         deck_image.append(obtainNewCardSet("temp"));
     }
-    const deck_text = document.querySelector("#deck_text");
-    deck_text.after(deck_image);
-
+    if (div_deck_imageSetIn === null) {
+        const deck_text = document.querySelector("#deck_text");
+        deck_text.after(deck_image);
+    }
     updateDeckCount();
-
 }
 
 // ## modify
@@ -1896,15 +1918,12 @@ const updateDeckCount = () => {
         const span_count = div_top.querySelector("&>span:last-of-type");
         span_count.innerHTML = card_set.querySelectorAll("div.image_set span:has(img):not(.del_card)").length;
     }
-    // Array.from($("#deck_image .card_set")).map(card_set => {
-    //     const div_top = $("div.subcatergory>div.top", card_set);
-    //     const span_count = $("span:last", div_top);
-    //     span_count.html($("div.image_set span:has(img):not(.del_card)", card_set).length);
-    // })
 }
 
-const saveDeckScreenshot = async (e) => {
-    async function _saveDeckScreenshot(ratio = 2, img_back = null, img_qr = null) {
+// # screenshot
+
+const saveDeckScreenshot = async (e, url = null) => {
+    const _saveDeckScreenshot = async (ratio = 2, img_back = null, img_qr = null) => {
         const colorInfos = {
             "default": {
                 gradient_all_ne: "#003d76",
@@ -1928,24 +1947,41 @@ const saveDeckScreenshot = async (e) => {
         }
         const cinfo = colorInfos[e.button === 0 ? "red" : "default"];
         const dnm = document.getElementById("dnm");
-        // const deck_name = dnm === null ?
-        //     document.querySelector("meta[name='description']").getAttribute("content").replace(/ \| 遊戯王 オフィシャルカードゲーム デュエルモンスターズ カードデータベース　デッキ詳細$/, "") :
-        //     (dnm.value || dnm.getAttribute("placeholder")); // after 2022/4/18
         const deck_name = dnm === null ? document.querySelector("#broad_title h1").innerHTML.split("<br>")[0].split("】")[1].trim() :
             (dnm.value || dnm.getAttribute("placeholder")); // after 2024/9/11
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        const set_imgs = ["main", "extra", "side"
+        let set_imgs = ["main", "extra", "side"
         ].map(set_name =>
             [set_name,
                 document.querySelectorAll(`#deck_image #${set_name}.card_set div.image_set span>img`)]
         ).filter(([_set_name, imgs]) => imgs.length !== 0
         );
+        if (set_imgs.length === 0) {
+            const div_tmp = createElement("div", { id: "deck_image_tmp" });
+            addStyle(div_tmp, { scale: "0.1", position: "absolute", top: "0px" });
+            document.querySelector("body").append(div_tmp);
+            // div_tmp.style.display = "none";
+            const df = await obtainDF(obtainLang());
+            const row_results = obtainRowResults(df);
+            const row_results_new = await sortCards(row_results);
+            insertDeckImg(df, row_results_new, true, div_tmp);
+            set_imgs = ["main", "extra", "side"
+            ].map(set_name =>
+                [set_name,
+                    document.querySelectorAll(`#deck_image_tmp #${set_name}.card_set div.image_set span>img`)]
+            ).filter(([_set_name, imgs]) => imgs.length !== 0
+            );
+            const imgs_all = Array.from(set_imgs.map(([_set_name, imgs]) => Array.from(imgs)).flat());
+            await Promise.all(imgs_all.map(img => new Promise(resolve => {
+                if (img === null) resolve();
+                img.addEventListener("load", () => resolve());
+            })))
+        }
         const font_name = "Yu Gothic, ヒラギノ角ゴ";
 
         const can_width = 750 * ratio;
         canvas.width = can_width;
-        //1178;
         const can_height = ratio * (((img_qr !== null) ? 80 : 0) + 65 + 49 + set_imgs.map(
             ([_set_name, imgs]) => 34 + Math.ceil(imgs.length / 10) * 107)
             .reduce((acc, cur) => acc + cur, 0));
@@ -1974,8 +2010,6 @@ const saveDeckScreenshot = async (e) => {
         let height_now = 49 * ratio;
         for (const [set_name, imgs] of set_imgs) {
             ctx.font = `${21 * ratio}px ${font_name}`;
-            // const imgs = document.querySelectorAll(`#deck_image #${set_name}.card_set div.image_set span>img`);
-            // console.log(imgs.length)
             if (imgs.length === 0) continue;
 
             const lg_set_name = ctx.createLinearGradient(747, height_now + 17 * ratio, 3 * ratio, height_now + 17 * ratio);
@@ -2004,7 +2038,6 @@ const saveDeckScreenshot = async (e) => {
 
             height_now += 34 * ratio
             Array.from(imgs).forEach((img, ind) => {
-                // console.log(75 * (ind % 10), height_now + 107 * Math.floor(ind / 10))
                 ctx.drawImage(img,
                     75 * ratio * (ind % 10), height_now + 107 * ratio * Math.floor(ind / 10),
                     73 * ratio, 107 * ratio);
@@ -2028,8 +2061,6 @@ const saveDeckScreenshot = async (e) => {
             `exported on ${date.toLocaleDateString()}`,
             can_width - 10 * ratio, can_height - 12 * ratio
         );
-        // canvas.height = height_now;//1178;
-        // const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
         canvas.toBlob(blob => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
@@ -2041,34 +2072,43 @@ const saveDeckScreenshot = async (e) => {
             a.remove();
             URL.revokeObjectURL(url);
         }, "image/jpeg", 0.8);
+
+        const div_tmp = document.querySelector("#deck_image_tmp");
+        if (div_tmp !== null) div_tmp.remove();
     }
     const ratio = 2;
-    const qrdiv = document.createElement("div");
-    const html_parse_dic = parse_YGODB_URL();
-    const flag_private = document.getElementById("pflg") !== null ?
-        document.getElementById("pflg").value == "0" :
-        ["Private", "非公開"].indexOf(document.querySelector("#broad_title h1").textContent.match(/【([^】]+)】/)[1].trim()) !== -1;
-    const qrcode = new QRCode(
-        qrdiv,
-        {
-            text: `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=1&cgid=${html_parse_dic.cgid}&dno=${html_parse_dic.dno}`,
-            width: 128 * ratio, width: 128 * ratio, correctLevel: QRCode.CorrectLevel.M
-        })
-    const img_qr = qrdiv.querySelector("img");
-    // console.log(2234)
+    let img_qr = null;
+    let flag_private = true;
+    try {
+        const qrdiv = document.createElement("div");
+        const html_parse_dic = parse_YGODB_URL(url);
+        flag_private = document.getElementById("pflg") !== null ?
+            document.getElementById("pflg").value == "0" :
+            ["Private", "非公開"].indexOf(document.querySelector("#broad_title h1").textContent.match(/【([^】]+)】/)[1].trim()) !== -1;
+        const qrcode = new QRCode(
+            qrdiv,
+            {
+                text: `https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=1&cgid=${html_parse_dic.cgid}&dno=${html_parse_dic.dno}`,
+                width: 128 * ratio, width: 128 * ratio, correctLevel: QRCode.CorrectLevel.M
+            })
+        img_qr = qrdiv.querySelector("img");
+    } catch (e) {
+        console.log(e);
+        img_qr = null;
+    }
 
     const img_back = new Image();
     img_back.src = await chrome.runtime.getURL("images/ja/card_back.png");
-    Promise.all([img_back, img_qr].map(img => new Promise(resolve => {
+
+    let imgs_all = [];
+    imgs_all.push(img_back);
+    imgs_all.push(img_qr);
+
+    await Promise.all(imgs_all.map(img => new Promise(resolve => {
+        if (img === null) resolve();
         img.addEventListener("load", () => resolve());
-    }))).then(() => _saveDeckScreenshot(ratio, img_back, flag_private ? null : img_qr))
-    // img_back.addEventListener("load", () => {
-    //     img_qr.addEventListener("load", () => {
-    //         console.log(2240)
-    //         func(img_back, img_qr);
-    //     })
-    // })
-    // open ot hide, settings for qr
+    }))).then(() => {});
+    await _saveDeckScreenshot(ratio, img_back, flag_private ? null : img_qr);
 }
 
 

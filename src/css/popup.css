@@ -1,0 +1,104 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+input {
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 250px;
+}
+input.short {
+    width: 80px;
+}
+
+button:not(:has(img)) {
+    padding: 5px 10px;
+    background-color: #2c92ff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button.btn-red:not(:has(img)) {
+    padding: 5px 10px;
+    background-color: red;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    filter: brightness(0.8) saturate(1.1);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.bordered {
+    border: 1px solid #ccc;
+    padding: 20px;
+    width: 300px;
+}
+
+.load {
+    height: 32px;
+}
+
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.flex-load {
+    flex: 1;
+    padding: 5px;
+}
+
+.flex-button {
+    flex: 1;
+}
+.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+button:has(img){
+    padding: 5px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+button>img.mdi-pencil {
+    width: 20px;
+    height: 20px;
+    border: none !important;
+    background-image: url('../img/pencil.svg');
+}
+
+/* @keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+} */
+
+button {
+    transition: 0.2s ease-in-out;
+}
+
+/* .loading {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 0.25rem solid rgba(255, 255, 255, 0.2);
+    border-top-color: rgb(82, 23, 23);
+    animation: spin 1s infinite linear;
+    transition: 0.5s ease-in-out;
+} */

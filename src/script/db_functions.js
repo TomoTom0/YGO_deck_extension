@@ -143,32 +143,7 @@ async function gitFetch(url, opts = {}) {
 // -----------------------------
 //           # YGODB
 
-const parse_YGODB_URL_body = (url_now = location.href) => {
-    const match = url_now.match(/([^\/\?]+)\??[^\/]*$/);
-    return match !== null ? match[1] : "";
-}
-const parse_YGODB_URL = (url_now = null, nullIsValid = false) => {
-    url_now = url_now !== null ? url_now : location.href;
-    const html_parse_keys = ["ope", "wname", "ytkn", "cgid", "dno", "request_locale"];
-    const html_parse_dic_arr = html_parse_keys.map(key => {
-        const match_tmp = url_now.match(new RegExp(`(?<=${key}=)([^&=]+)`, "g"));
-        if (Array.isArray(match_tmp) && match_tmp.length > 0) {
-            return { [key]: match_tmp[0] };
-        } else return { [key]: obtain_YGODB_fromHidden(key) || null };
-    });
-    if (nullIsValid === false) {
-        return Object.assign(...html_parse_dic_arr.filter(d => Object.values(d)[0] != null));
-    } else return Object.assign(...html_parse_dic_arr);
-}
 
-const obtain_YGODB_fromHidden = (key, body_in = null) => {
-    const body = body_in !== null ? body_in : document.querySelector("body");
-    try {
-        return body.querySelector(`#${key}`).value;
-    } catch (e) {
-        return "";
-    }
-}
 
 const _makeTermTables = async (lang = "ja") => {
     const request_locale = (lang === null) ? "" : `?request_locale=${lang}`;

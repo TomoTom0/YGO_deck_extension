@@ -44,11 +44,20 @@
   ],
   "permissions": [
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "tabs",
+    "activeTab",
+    "scripting"
   ],
+  "host_permissions": [
+        "https://www.db.yugioh-card.com/yugiohdb/*"
+    ],
   "options_ui": {
     "page": "script/options.html",
     "open_in_tab": true
+  },
+  "action":{
+    "default_popup": "script/popup.html"
   },
   "description": "公式カードデータベースのデッキ画面にMouseUIモードやExport / Import / Sort / Shuffleボタンを追加します。"
 }
