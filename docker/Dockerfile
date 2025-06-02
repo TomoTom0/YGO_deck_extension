@@ -19,17 +19,17 @@ USER ${name}
 ENV RYE_HOME="/home/${name}/.rye"
 ENV PATH="/home/${name}/.rye/shims:${PATH}"
 WORKDIR /home/${name}
-RUN curl -sSf https://rye-up.com/get | RYE_INSTALL_OPTION="--yes" bash \
-    && echo ". ${RYE_HOME}/env" >> /home/${name}/.bashrc # オプション: bashログイン時にRye環
+RUN curl -sSf https://rye.astral.sh/get | RYE_INSTALL_OPTION="--yes" bash \
+    && echo ". ${RYE_HOME}/env" >> /home/${name}/.bashrc 
+# オプション: bashログイン時にRye環
 
 WORKDIR /opt/workdir
-COPY --chown=${name}:${name} pyproject.toml rye.lock* ./
+COPY --chown=${name}:${name} pyproject.toml rye.lock* .env src /opt/workdir/
+ENV PATH="/home/${name}/.rye/shims:${PATH}"
 
-RUN rye sync --no-dev
-
-COPY --chown=${name}:${name} . /opt/workdir/
-
-RUN echo "#!/bin/bash" > /opt/workdir/script_start.sh \
+RUN . /home/${name}/.bashrc \
+ && rye sync --no-dev \
+ && echo "#!/bin/bash" > /opt/workdir/script_start.sh \
  && echo "set -e" >> /opt/workdir/script_start.sh \
  && echo "cd /opt/workdir" >> /opt/workdir/script_start.sh \
  && echo "rye run python src/ygo_db_update/ygo_db_update.py" >> /opt/workdir/script_start.sh \
