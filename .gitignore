@@ -2,6 +2,7 @@
 
 .memo*
 escape/*
+ignored*
 
 #################### ExtJs.gitignore ####################
 

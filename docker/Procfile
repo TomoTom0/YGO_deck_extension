@@ -1,1 +1,0 @@
-ygo-db-update: python3 ygo_heroku.py
