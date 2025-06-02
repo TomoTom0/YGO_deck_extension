@@ -454,8 +454,8 @@ class YGO_DB_Updater:
                 self.postLog(title, content)
             cardIdTmp = tds[3].decode_contents(formatter="html")
             cardId = (re.search(r"\d+", cardIdTmp) or [""])[0]
-            cid_dbTmp = tds[5].decode_contents(formatter="html")
-            cid_db = (re.search(r'(?<=cid=)\d+(?=">公式)', cid_dbTmp) or [""])[0]
+            cid_dbTmp = tds[4].decode_contents(formatter="html")
+            cid_db = (re.search(r'(?<=cid=)\d+(?=" data-nodal>公式)', cid_dbTmp) or [""])[0]
             keyId = str(int(cardId)) if form == "pass" else cid_db
             if cardId != "" and (form == "pass" or cid_db in vals.keys()):
                 try:
@@ -729,7 +729,7 @@ class YGO_DB_Updater:
                 type_other_list = [
                     s.strip()
                     for s in re.findall(
-                        r"[【】／/\[\]]\s*([^【】／/\[\]]*)\s*[^【】／/\[\]]", type_other_text
+                        r"[【】／/\[\]]\s*([^【】／/\[\]]*?)\s*(?=[【】／/\[\]])", type_other_text
                     )
                     if len(s) > 0
                 ]

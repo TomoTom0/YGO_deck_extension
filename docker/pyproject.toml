@@ -1,25 +1,33 @@
-[tool.poetry]
-name = "ygo-db-update"
-version = "1.0.0"
-description = "update database for YGO DB Chrome Extension"
-authors = ["TomoTom0 <arukuki4@gmail.com>"]
-license = "MIT"
+[project]
+name = "docker"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "TomoTom0", email = "tomoIris427+GitHub@gmail.com" }
+]
+dependencies = [
+    "requests>=2.32.3",
+    "python-dotenv>=1.1.0",
+    "bs4>=0.0.2",
+    "pandas>=2.2.3",
+]
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = ">=3.10"
-requests = ">=2.31.0"
-bs4 = ">=0.0.1"
-python-dotenv = ">=1.0.0"
-pandas = ">=2.0.3"
-DateTime = ">=5.2"
-pathlib = ">=1.0.1"
-argparse = ">=1.4.0"
-urllib3 = "^2.2.2"
-
-[tool.poetry.group.dev.dependencies]
-black = "^24.3.0"
+requires-python = ">= 3.8"
 
 [build-system]
-requires = ["poetry-core", "setuptools"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.rye.scripts]
+main = "rye run python src/ygo_db_update/ygo_db_update.py"
+
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/docker"]
