@@ -504,7 +504,7 @@ class YGO_DB_Updater:
 
         # ## spell, trap
         selectors = {
-            mt: f"div#filter_effect_set>ul.filter_effect_{mt}.fliter_btns>li>span>span"
+            mt: f"div#filter_effect_set>ul.filter_effect_{mt}.fliter_btns>li>span"
             for mt in ["magic", "trap"]
         }
         mt_dic = {"magic": "spell", "trap": "trap"}
@@ -515,7 +515,7 @@ class YGO_DB_Updater:
 
         # ## monster
         selectors = {
-            "attribute": "div#filter_attribute>ul.fliter_btns>li>span>span",
+            "attribute": "div#filter_attribute>ul.fliter_btns>li>span",
             "race": "div#filter_specis>ul.fliter_btns>li>span",
             "type": "div#filter_other:has(div.title>div.bottom)>ul.fliter_btns>li>span",
         }
@@ -878,12 +878,12 @@ class YGO_DB_Updater:
 
         if githubReuse_lang is True and isinstance(data_cardInfos_Langs, dict):
             cardInfos_Langs_old = data_cardInfos_Langs.get("cardInfos_Langs", {})
-            term_dics_Langs = data_cardInfos_Langs.get("term_dics_Langs", {})
+            # term_dics_Langs = data_cardInfos_Langs.get("term_dics_Langs", {})
         else:
             cardInfos_Langs_old = {}
-            term_dics_Langs = {}
-        if term_dics_Langs == {}:
-            term_dics_Langs = self.obtainTermDic_Langs()
+            # term_dics_Langs = {}
+        # if term_dics_Langs == {}:
+        term_dics_Langs = self.obtainTermDic_Langs()
 
         # ## obtain cardInfos Langs
         updateIsInvalid = (

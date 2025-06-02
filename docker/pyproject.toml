@@ -24,7 +24,7 @@ dev-dependencies = []
 
 [tool.rye.scripts]
 main = "rye run python src/ygo_db_update/ygo_db_update.py"
-
+not-reuse = "rye run python src/ygo_db_update/ygo_db_update.py --not-reuse"
 
 [tool.hatch.metadata]
 allow-direct-references = true
