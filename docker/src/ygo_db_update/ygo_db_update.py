@@ -734,6 +734,12 @@ class YGO_DB_Updater:
                     if len(s) > 0
                 ]
 
+                # type_other_listに"Spirito"が含まれてかつterm_dic["monster"]["type"]のkeyに"Spirito"がない場合は"Spirit"に変換
+                if "Spirito" in type_other_list and "Spirito" not in term_dic["monster"]["type"]:
+                    type_other_list = [
+                        "Spirit" if s == "Spirito" else s for s in type_other_list
+                    ]
+
                 card_race_lang = [
                     s for s in type_other_list if s in term_dic["monster"]["race"]
                 ][0]
