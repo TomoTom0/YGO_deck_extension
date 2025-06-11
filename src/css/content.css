@@ -1,0 +1,87 @@
+/**
+ * 遊戯王DBデッキサポート - Content Styles
+ */
+
+/* サポート機能パネル */
+#ygo-deck-support-ui {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    background: white;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    min-width: 250px;
+    max-width: 400px;
+}
+
+.ygo-support-panel {
+    padding: 15px;
+}
+
+.ygo-support-panel h3 {
+    margin: 0 0 10px 0;
+    color: #007bff;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.ygo-support-status {
+    margin-bottom: 10px;
+}
+
+.ygo-support-status p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+#ygo-analyze-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#ygo-analyze-btn:hover {
+    background: #0056b3;
+}
+
+/* 開発用 - デバッグ情報表示 */
+.ygo-debug-info {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+    font-family: monospace;
+    font-size: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* 既存のページスタイルを尊重しつつ、必要な調整 */
+.ygo-enhanced-element {
+    position: relative;
+}
+
+.ygo-enhanced-element::after {
+    content: "✓";
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #28a745;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+}

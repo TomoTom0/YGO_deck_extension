@@ -1,0 +1,63 @@
+{
+  "name": "遊戯王DBデッキサポート",
+  "author": "TomoTomo",
+  "version": "2.16.0.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "images/icon-16.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.db.yugioh-card.com/yugiohdb/*"
+      ],
+      "js": [
+        "js/html2canvas.min.js",
+        "js/async.min.js",
+        "js/jquery-3.7.1.min.js",
+        "script/main_functions.js",
+        "script/content_script.js",
+        "script/db_functions.js",
+        "script/card_search_script.js",
+        "script/listen.js",
+        "js/qrcode.min.js"
+      ],
+      "css": [
+        "css/content_script.css",
+        "css/card_search.css",
+        "css/card_details.css",
+        "css/Faq_details.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://www.db.yugioh-card.com/*"
+      ],
+      "resources": [
+        "images/*"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "tabs",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+        "https://www.db.yugioh-card.com/yugiohdb/*"
+    ],
+  "options_ui": {
+    "page": "script/options.html",
+    "open_in_tab": true
+  },
+  "action":{
+    "default_popup": "script/popup.html"
+  },
+  "description": "公式カードデータベースのデッキ画面にMouseUIモードやExport / Import / Sort / Shuffleボタンを追加します。"
+}

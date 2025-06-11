@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戯王DBデッキサポート</title>
+    <style>
+        body {
+            width: 300px;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #007bff;
+            font-size: 18px;
+            margin: 0;
+        }
+        
+        .version {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .status {
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status-label {
+            font-weight: bold;
+        }
+        
+        .status-active {
+            color: #28a745;
+        }
+        
+        .status-inactive {
+            color: #dc3545;
+        }
+        
+        .actions {
+            margin-top: 15px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .links {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .links a {
+            display: block;
+            color: #007bff;
+            text-decoration: none;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>遊戯王DBデッキサポート</h1>
+        <div class="version">v3.0.0</div>
+    </div>
+    
+    <div class="status">
+        <div class="status-item">
+            <span class="status-label">現在のページ:</span>
+            <span id="current-page">確認中...</span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">機能状態:</span>
+            <span id="extension-status" class="status-inactive">無効</span>
+        </div>
+    </div>
+    
+    <div class="actions">
+        <button id="refresh-btn" class="btn btn-primary">ページを再読み込み</button>
+        <button id="options-btn" class="btn btn-secondary">設定を開く</button>
+    </div>
+    
+    <div class="links">
+        <a href="https://www.db.yugioh-card.com/" target="_blank">遊戯王公式DB</a>
+        <a href="#" id="help-link">ヘルプ・使い方</a>
+    </div>
+    
+    <script src="js/popup.js"></script>
+</body>
+</html>

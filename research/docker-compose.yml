@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  ygo-research:
+    build: .
+    container_name: ygo-site-research
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config:/app/config
+    environment:
+      - PYTHONPATH=/app
+      - DISPLAY=:99
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    # デバッグ用にbashで起動し、手動でスクリプトを実行可能にする
