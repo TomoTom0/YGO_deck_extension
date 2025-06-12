@@ -171,7 +171,7 @@ async function analyzeDeckPages() {
         });
         
         // スクリーンショット保存
-        await page.screenshot({ path: 'deck-analysis-screenshot.png', fullPage: true });
+        await page.screenshot({ path: '../assets/deck-analysis-screenshot.png', fullPage: true });
         console.log('📸 分析結果スクリーンショット保存: deck-analysis-screenshot.png');
         
     } catch (error) {

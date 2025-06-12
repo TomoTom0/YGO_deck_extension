@@ -333,7 +333,7 @@ class DOMStructureInvestigation {
      * 調査結果の保存
      */
     async saveResults() {
-        const reportPath = 'dom-structure-investigation-report.json';
+        const reportPath = '../reports/dom-structure-investigation-report.json';
         fs.writeFileSync(reportPath, JSON.stringify(this.investigationResults, null, 2));
 
         console.log('\n📊 DOM構造調査完了サマリー:');

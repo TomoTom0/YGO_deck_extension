@@ -415,7 +415,7 @@ class CardSearchInvestigation {
             }
         });
 
-        const reportPath = 'card-search-investigation-report.json';
+        const reportPath = '../reports/card-search-investigation-report.json';
         fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
         console.log('\n📊 調査完了サマリー:');

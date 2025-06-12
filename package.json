@@ -10,7 +10,7 @@
     "tools": "tools"
   },
   "scripts": {
-    "test": "node tests/ygo-db-extension-test.js",
+    "test": "node tools/ygo-db-extension-test.js",
     "test:comprehensive": "node tests/comprehensive-test.js",
     "test:playwright": "cd playwright && npx playwright test",
     "test:screenshots": "node playwright/take-ss/screenshot-automation.js",

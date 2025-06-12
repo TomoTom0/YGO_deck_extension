@@ -131,7 +131,7 @@ async function investigateSite() {
         }
         
         // スクリーンショット保存
-        await page.screenshot({ path: 'site-investigation-screenshot.png', fullPage: true });
+        await page.screenshot({ path: '../assets/site-investigation-screenshot.png', fullPage: true });
         console.log('📸 調査結果スクリーンショット保存: site-investigation-screenshot.png');
         
     } catch (error) {

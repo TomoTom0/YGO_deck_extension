@@ -110,7 +110,7 @@ class YugiohDBLoginTest {
             // エラー時のスクリーンショット撮影
             try {
                 await this.page.screenshot({ 
-                    path: 'error-screenshot.png',
+                    path: '../assets/error-screenshot.png',
                     fullPage: true 
                 });
                 console.log('📸 エラースクリーンショットを保存: error-screenshot.png');
