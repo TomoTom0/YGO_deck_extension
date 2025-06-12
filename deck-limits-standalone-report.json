@@ -1,0 +1,269 @@
+{
+  "timestamp": "2025-06-12T03:47:43.096Z",
+  "summary": {
+    "totalTests": 14,
+    "passedTests": 14,
+    "failedTests": 0,
+    "successRate": "100.0"
+  },
+  "categories": {
+    "基本制限": [
+      {
+        "name": "メインデッキ40枚に1枚追加（正常）",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "errors": [],
+        "warnings": []
+      },
+      {
+        "name": "メインデッキ60枚に1枚追加（上限超過）",
+        "passed": true,
+        "expected": false,
+        "actual": false,
+        "errors": [
+          "mainデッキの上限（60枚）に達しています"
+        ],
+        "warnings": []
+      },
+      {
+        "name": "メインデッキ30枚の状態（最小枚数警告）",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "errors": [],
+        "warnings": [
+          "メインデッキが最小枚数（40枚）を下回っています"
+        ]
+      }
+    ],
+    "エリア制限": [
+      {
+        "name": "エクストラデッキ15枚に1枚追加（上限超過）",
+        "passed": true,
+        "expected": false,
+        "actual": false,
+        "errors": [
+          "extraデッキの上限（15枚）に達しています",
+          "このカードはエクストラデッキに入れることができません"
+        ],
+        "warnings": []
+      },
+      {
+        "name": "サイドデッキ15枚に1枚追加（上限超過）",
+        "passed": true,
+        "expected": false,
+        "actual": false,
+        "errors": [
+          "sideデッキの上限（15枚）に達しています"
+        ],
+        "warnings": []
+      }
+    ],
+    "同名カード制限": [
+      {
+        "name": "同名カード3枚に1枚追加（制限違反）",
+        "passed": true,
+        "expected": false,
+        "actual": false,
+        "errors": [
+          "「同じカード」は既に3枚デッキに入っています"
+        ],
+        "warnings": []
+      },
+      {
+        "name": "同名カード2枚に1枚追加（正常）",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "errors": [],
+        "warnings": []
+      }
+    ],
+    "禁止・制限カード": [
+      {
+        "name": "禁止カード追加テスト",
+        "passed": true,
+        "expected": false,
+        "actual": false,
+        "errors": [
+          "「禁止カード」は禁止カードです"
+        ],
+        "warnings": []
+      },
+      {
+        "name": "制限カード（1枚制限）に1枚追加（制限違反）",
+        "passed": true,
+        "expected": false,
+        "actual": false,
+        "errors": [
+          "「制限カード」は制限カード（1枚まで）です"
+        ],
+        "warnings": []
+      },
+      {
+        "name": "準制限カード（2枚制限）に1枚追加（制限違反）",
+        "passed": true,
+        "expected": false,
+        "actual": false,
+        "errors": [
+          "「準制限カード」は準制限カード（2枚まで）です"
+        ],
+        "warnings": []
+      },
+      {
+        "name": "準制限カード（1枚）に1枚追加（正常）",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "errors": [],
+        "warnings": []
+      }
+    ],
+    "タイプ整合性": [
+      {
+        "name": "モンスターカードをエクストラデッキに追加（制限違反）",
+        "passed": true,
+        "expected": false,
+        "actual": false,
+        "errors": [
+          "このカードはエクストラデッキに入れることができません"
+        ],
+        "warnings": []
+      },
+      {
+        "name": "融合モンスターをエクストラデッキに追加（正常）",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "errors": [],
+        "warnings": []
+      }
+    ]
+  },
+  "detailedResults": [
+    {
+      "name": "メインデッキ40枚に1枚追加（正常）",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "メインデッキ60枚に1枚追加（上限超過）",
+      "passed": true,
+      "expected": false,
+      "actual": false,
+      "errors": [
+        "mainデッキの上限（60枚）に達しています"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "メインデッキ30枚の状態（最小枚数警告）",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "errors": [],
+      "warnings": [
+        "メインデッキが最小枚数（40枚）を下回っています"
+      ]
+    },
+    {
+      "name": "エクストラデッキ15枚に1枚追加（上限超過）",
+      "passed": true,
+      "expected": false,
+      "actual": false,
+      "errors": [
+        "extraデッキの上限（15枚）に達しています",
+        "このカードはエクストラデッキに入れることができません"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "サイドデッキ15枚に1枚追加（上限超過）",
+      "passed": true,
+      "expected": false,
+      "actual": false,
+      "errors": [
+        "sideデッキの上限（15枚）に達しています"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "同名カード3枚に1枚追加（制限違反）",
+      "passed": true,
+      "expected": false,
+      "actual": false,
+      "errors": [
+        "「同じカード」は既に3枚デッキに入っています"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "同名カード2枚に1枚追加（正常）",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "禁止カード追加テスト",
+      "passed": true,
+      "expected": false,
+      "actual": false,
+      "errors": [
+        "「禁止カード」は禁止カードです"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "制限カード（1枚制限）に1枚追加（制限違反）",
+      "passed": true,
+      "expected": false,
+      "actual": false,
+      "errors": [
+        "「制限カード」は制限カード（1枚まで）です"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "準制限カード（2枚制限）に1枚追加（制限違反）",
+      "passed": true,
+      "expected": false,
+      "actual": false,
+      "errors": [
+        "「準制限カード」は準制限カード（2枚まで）です"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "準制限カード（1枚）に1枚追加（正常）",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "name": "モンスターカードをエクストラデッキに追加（制限違反）",
+      "passed": true,
+      "expected": false,
+      "actual": false,
+      "errors": [
+        "このカードはエクストラデッキに入れることができません"
+      ],
+      "warnings": []
+    },
+    {
+      "name": "融合モンスターをエクストラデッキに追加（正常）",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "errors": [],
+      "warnings": []
+    }
+  ]
+}
