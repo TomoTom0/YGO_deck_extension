@@ -56,7 +56,7 @@ async function testExtension() {
         }
         
         // スクリーンショット撮影
-        await page.screenshot({ path: 'extension-test-screenshot.png' });
+        await page.screenshot({ path: '../assets/extension-test-screenshot.png' });
         console.log('📸 スクリーンショットを保存: extension-test-screenshot.png');
         
     } catch (error) {

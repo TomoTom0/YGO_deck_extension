@@ -8,7 +8,7 @@ const path = require('path');
 
 // UIDisplayManagerクラスを読み込み
 const uiDisplayManagerSource = fs.readFileSync(
-    path.join(__dirname, 'src/js/ui-display-manager.js'), 
+    path.join(__dirname, '../src/js/ui-display-manager.js'), 
     'utf8'
 );
 
@@ -453,7 +453,7 @@ async function runUIDisplayManagerTest() {
         }
     };
 
-    fs.writeFileSync('ui-display-manager-test-report.json', JSON.stringify(report, null, 2));
+    fs.writeFileSync('../reports/ui-display-manager-test-report.json', JSON.stringify(report, null, 2));
     console.log('\n📁 詳細レポートを ui-display-manager-test-report.json に保存しました');
 
     console.log('\n🎯 PDCA3-Check結果:');

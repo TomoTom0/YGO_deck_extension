@@ -268,7 +268,7 @@ class WindowsProfileTest {
         };
 
         const fs = require('fs');
-        fs.writeFileSync('windows-profile-test-report.json', JSON.stringify(report, null, 2));
+        fs.writeFileSync('../reports/windows-profile-test-report.json', JSON.stringify(report, null, 2));
         console.log('\n📁 詳細レポートを windows-profile-test-report.json に保存しました');
     }
 

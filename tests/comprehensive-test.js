@@ -300,7 +300,7 @@ class ComprehensiveTest {
         };
         
         const fs = require('fs');
-        fs.writeFileSync('test-report.json', JSON.stringify(reportData, null, 2));
+        fs.writeFileSync('../reports/test-report.json', JSON.stringify(reportData, null, 2));
         console.log('\n📁 テストレポートを test-report.json に保存しました');
     }
     

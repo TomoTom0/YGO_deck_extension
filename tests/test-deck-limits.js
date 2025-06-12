@@ -347,7 +347,7 @@ async function testDeckLimits() {
         console.log(`  成功率: ${successRate}%`);
 
         // 詳細レポート保存
-        fs.writeFileSync('deck-limits-test-report.json', JSON.stringify(testResults, null, 2));
+        fs.writeFileSync('../reports/deck-limits-test-report.json', JSON.stringify(testResults, null, 2));
         console.log('\n📁 詳細レポートを deck-limits-test-report.json に保存しました');
 
         console.log('\n🏁 デッキ制限チェック機能テスト完了');

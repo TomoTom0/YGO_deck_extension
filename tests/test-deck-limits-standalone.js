@@ -9,7 +9,7 @@ const path = require('path');
 
 // DeckIntegrationクラスのソースコードを読み込み
 const deckIntegrationSource = fs.readFileSync(
-    path.join(__dirname, 'src/js/deck-integration.js'), 
+    path.join(__dirname, '../src/js/deck-integration.js'), 
     'utf8'
 );
 
@@ -304,7 +304,7 @@ async function runDeckLimitsTest() {
         detailedResults: testResults
     };
 
-    fs.writeFileSync('deck-limits-standalone-report.json', JSON.stringify(report, null, 2));
+    fs.writeFileSync('../reports/deck-limits-standalone-report.json', JSON.stringify(report, null, 2));
     console.log('\n📁 詳細レポートを deck-limits-standalone-report.json に保存しました');
 
     console.log('\n🎯 PDCA2-Check結果:');
