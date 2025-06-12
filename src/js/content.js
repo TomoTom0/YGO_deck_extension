@@ -1347,7 +1347,81 @@ const ygoDeckSupport = new YGODeckSupport();
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         ygoDeckSupport.init();
+        // デッキ読み取りテスト関数を追加
+        addDeckReadingTestFunctions();
     });
 } else {
     ygoDeckSupport.init();
+    // デッキ読み取りテスト関数を追加
+    addDeckReadingTestFunctions();
+}
+
+// デッキ読み取りテスト関数をグローバルに追加
+function addDeckReadingTestFunctions() {
+    // テスト関数をグローバルに追加
+    window.testDeckReading = function() {
+        console.log('🧪 デッキ読み取りテスト開始...');
+        
+        try {
+            // DeckIntegrationインスタンスを取得
+            const deckIntegration = window.YGO?.DeckIntegration;
+            if (!deckIntegration) {
+                console.error('❌ DeckIntegrationが利用できません');
+                return;
+            }
+
+            const results = {
+                timestamp: new Date().toISOString(),
+                tests: [],
+                totalCards: 0
+            };
+
+            // メインデッキテスト
+            console.log('📋 Test 1: メインデッキ読み取り');
+            const mainCards = deckIntegration.readMainDeckCards();
+            console.log(`✅ メインデッキ: ${mainCards.length}枚読み取り成功`);
+            mainCards.forEach((card, i) => {
+                console.log(`  ${i+1}. ${card.name} x${card.count} (${card.type}, ID:${card.id})`);
+            });
+            results.tests.push({ area: 'main', count: mainCards.length, cards: mainCards });
+            results.totalCards += mainCards.length;
+
+            // エクストラデッキテスト
+            console.log('📋 Test 2: エクストラデッキ読み取り');
+            const extraCards = deckIntegration.readExtraDeckCards();
+            console.log(`✅ エクストラデッキ: ${extraCards.length}枚読み取り成功`);
+            extraCards.forEach((card, i) => {
+                console.log(`  ${i+1}. ${card.name} x${card.count} (ID:${card.id})`);
+            });
+            results.tests.push({ area: 'extra', count: extraCards.length, cards: extraCards });
+            results.totalCards += extraCards.length;
+
+            // サイドデッキテスト
+            console.log('📋 Test 3: サイドデッキ読み取り');
+            const sideCards = deckIntegration.readSideDeckCards();
+            console.log(`✅ サイドデッキ: ${sideCards.length}枚読み取り成功`);
+            sideCards.forEach((card, i) => {
+                console.log(`  ${i+1}. ${card.name} x${card.count} (ID:${card.id})`);
+            });
+            results.tests.push({ area: 'side', count: sideCards.length, cards: sideCards });
+            results.totalCards += sideCards.length;
+
+            // 結果サマリー
+            console.log('\n📊 テスト結果サマリー');
+            console.log('============================================');
+            console.log(`総カード数: ${results.totalCards}枚`);
+            console.log(`メインデッキ: ${mainCards.length}枚`);
+            console.log(`エクストラデッキ: ${extraCards.length}枚`);
+            console.log(`サイドデッキ: ${sideCards.length}枚`);
+
+            return results;
+
+        } catch (error) {
+            console.error('❌ デッキ読み取りテストエラー:', error);
+            return { error: error.message };
+        }
+    };
+
+    console.log('🧪 デッキ読み取りテスト関数が利用可能になりました');
+    console.log('   コンソールで testDeckReading() を実行してください');
 }

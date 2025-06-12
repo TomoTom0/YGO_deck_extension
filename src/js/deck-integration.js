@@ -59,49 +59,103 @@ class DeckIntegration {
     async extractDeckArea(areaType) {
         const cards = [];
         
-        // エリア特定用セレクタ
-        const areaSelectors = {
-            main: [
-                '.deck_set:nth-of-type(1) img',
-                '[class*="main"] img[src*="card"]',
-                '#main_deck img',
-                '.main-deck img'
-            ],
-            extra: [
-                '.deck_set:nth-of-type(2) img',
-                '[class*="extra"] img[src*="card"]', 
-                '#extra_deck img',
-                '.extra-deck img'
-            ],
-            side: [
-                '.deck_set:nth-of-type(3) img',
-                '[class*="side"] img[src*="card"]',
-                '#side_deck img', 
-                '.side-deck img'
-            ]
-        };
-
-        const selectors = areaSelectors[areaType] || [];
-        
-        for (const selector of selectors) {
-            try {
-                const cardElements = document.querySelectorAll(selector);
-                
-                if (cardElements.length > 0) {
-                    console.log(`DeckIntegration - Found ${cardElements.length} cards in ${areaType} with selector: ${selector}`);
-                    
-                    cardElements.forEach(element => {
-                        const cardData = this.extractCardDataFromElement(element);
-                        if (cardData && cardData.id !== 'unknown') {
-                            cards.push(cardData);
-                        }
-                    });
-                    
-                    break; // 最初に見つかったセレクタで十分
-                }
-            } catch (error) {
-                console.warn(`DeckIntegration - Error with selector ${selector}:`, error);
+        try {
+            if (areaType === 'main') {
+                // メインデッキのカード読み取り
+                cards.push(...this.readMainDeckCards());
+            } else if (areaType === 'extra') {
+                // エクストラデッキのカード読み取り
+                cards.push(...this.readExtraDeckCards());
+            } else if (areaType === 'side') {
+                // サイドデッキのカード読み取り
+                cards.push(...this.readSideDeckCards());
             }
+            
+            console.log(`DeckIntegration - Found ${cards.length} cards in ${areaType}`);
+            
+        } catch (error) {
+            console.error(`DeckIntegration - Error reading ${areaType} deck:`, error);
+        }
+        
+        return cards;
+    }
+
+    /**
+     * メインデッキのカード読み取り（モンスター・魔法・罠）
+     */
+    readMainDeckCards() {
+        const cards = [];
+        
+        // モンスターカード
+        cards.push(...this.readCardsByType('monster', 'monm', 'monum', 'monsterCardId'));
+        
+        // 魔法カード
+        cards.push(...this.readCardsByType('spell', 'magm', 'magnum', 'spellCardId'));
+        
+        // 罠カード
+        cards.push(...this.readCardsByType('trap', 'trapm', 'trapnum', 'trapCardId'));
+        
+        return cards;
+    }
+
+    /**
+     * エクストラデッキのカード読み取り
+     */
+    readExtraDeckCards() {
+        return this.readCardsByType('extra', 'exnm', 'exnum', 'extraCardId');
+    }
+
+    /**
+     * サイドデッキのカード読み取り
+     */
+    readSideDeckCards() {
+        return this.readCardsByType('side', 'sidnm', 'sidnum', 'sideCardId');
+    }
+
+    /**
+     * 指定タイプのカードを読み取り
+     */
+    readCardsByType(cardType, nameSelector, countSelector, idSelector) {
+        const cards = [];
+        
+        try {
+            // カード名の入力欄を取得
+            const nameInputs = document.querySelectorAll(`input[name="${nameSelector}"]`);
+            
+            nameInputs.forEach((nameInput, index) => {
+                const cardName = nameInput.value.trim();
+                
+                if (cardName) {
+                    // 対応する枚数入力欄を取得
+                    const countInput = document.querySelector(`input[name="${countSelector}"][id*="${index + 1}"]`);
+                    const count = countInput ? parseInt(countInput.value) || 1 : 1;
+                    
+                    // 対応するカードID入力欄を取得
+                    const idInput = nameInput.closest('tr')?.querySelector(`input[name="${idSelector}"]`);
+                    const cardId = idInput ? idInput.value : 'unknown';
+                    
+                    // 画像ID取得
+                    const imgInput = nameInput.closest('tr')?.querySelector('input.imgs');
+                    const imgId = imgInput ? imgInput.value : null;
+                    
+                    // カードデータを作成
+                    for (let i = 0; i < count; i++) {
+                        cards.push({
+                            id: cardId,
+                            name: cardName,
+                            type: cardType,
+                            imgId: imgId,
+                            count: count,
+                            originalIndex: index + 1
+                        });
+                    }
+                    
+                    console.log(`DeckIntegration - Read ${cardType} card: ${cardName} x${count} (ID: ${cardId})`);
+                }
+            });
+            
+        } catch (error) {
+            console.error(`DeckIntegration - Error reading ${cardType} cards:`, error);
         }
         
         return cards;
