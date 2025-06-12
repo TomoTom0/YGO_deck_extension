@@ -528,6 +528,12 @@ class YGODeckSupport {
             
             console.log('YGO Deck Support - MouseUI Display System initialized successfully');
             
+            // 5秒後に自動的にMouseUIをテスト表示
+            setTimeout(() => {
+                console.log('YGO Deck Support - Auto-testing MouseUI display...');
+                this.mouseUIDisplay.showMouseUI();
+            }, 5000);
+            
         } catch (error) {
             console.error('YGO Deck Support - MouseUI Display initialization error:', error);
         }
