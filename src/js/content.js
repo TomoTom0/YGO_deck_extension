@@ -516,14 +516,15 @@ class YGODeckSupport {
         console.log('YGO Deck Support - Initializing MouseUI Display System...');
         
         try {
-            // DeckIntegrationが利用可能か確認
-            if (!this.deckIntegration) {
-                console.error('YGO Deck Support - DeckIntegration not available for MouseUI Display');
+            // MouseUICoreからDeckIntegrationを取得
+            const deckIntegration = this.mouseUICore?.deckIntegration;
+            if (!deckIntegration) {
+                console.error('YGO Deck Support - DeckIntegration not available from MouseUICore');
                 return;
             }
 
             // MouseUIDisplayのインスタンス作成
-            this.mouseUIDisplay = new window.MouseUIDisplay(this.deckIntegration);
+            this.mouseUIDisplay = new window.MouseUIDisplay(deckIntegration);
             
             console.log('YGO Deck Support - MouseUI Display System initialized successfully');
             
@@ -1079,6 +1080,9 @@ class YGODeckSupport {
             showFullScreen: () => this.mouseUIDisplay?.showMouseUI(),
             hideFullScreen: () => this.mouseUIDisplay?.hideMouseUI()
         };
+
+        // DeckIntegration関連のオブジェクト
+        window.YGO.DeckIntegration = this.mouseUICore?.deckIntegration;
         
         // デッキ管理関連のオブジェクト
         window.YGO.DeckManager = {
