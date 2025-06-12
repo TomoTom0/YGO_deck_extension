@@ -1,0 +1,87 @@
+{
+  "timestamp": "2025-06-12T02:05:51.050Z",
+  "totalScreenshots": 10,
+  "successfulCaptures": 10,
+  "screenshots": [
+    {
+      "description": "ホームページ - ログイン済み状態",
+      "filename": "2025-06-12_login_01_home_logged_in.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/",
+      "timestamp": "2025-06-12T02:05:24.337Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_01_home_logged_in.png"
+    },
+    {
+      "description": "マイデッキページ - デッキ一覧",
+      "filename": "2025-06-12_login_02_my_deck_list.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=4",
+      "timestamp": "2025-06-12T02:05:29.225Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_02_my_deck_list.png"
+    },
+    {
+      "description": "デッキ編集ページ - ログイン済み初期状態",
+      "filename": "2025-06-12_login_03_deck_edit_initial.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+      "timestamp": "2025-06-12T02:05:31.180Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_03_deck_edit_initial.png"
+    },
+    {
+      "description": "デッキサポートパネル - ログイン状態",
+      "filename": "2025-06-12_login_04_deck_support_panel.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+      "timestamp": "2025-06-12T02:05:31.323Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_04_deck_support_panel.png"
+    },
+    {
+      "description": "MouseUIパネル - ログイン状態",
+      "filename": "2025-06-12_login_05_mouse_ui_panel.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+      "timestamp": "2025-06-12T02:05:31.406Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_05_mouse_ui_panel.png"
+    },
+    {
+      "description": "デッキエリア - ログイン状態",
+      "filename": "2025-06-12_login_06_deck_areas.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+      "timestamp": "2025-06-12T02:05:31.491Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_06_deck_areas.png"
+    },
+    {
+      "description": "カードエリア - ログイン状態",
+      "filename": "2025-06-12_login_07_card_area.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+      "timestamp": "2025-06-12T02:05:31.570Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_07_card_area.png"
+    },
+    {
+      "description": "MouseUI有効化後のコントロール",
+      "filename": "2025-06-12_login_08_mouse_ui_active.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+      "timestamp": "2025-06-12T02:05:32.731Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_08_mouse_ui_active.png"
+    },
+    {
+      "description": "カード検索ページ - ログイン済み状態",
+      "filename": "2025-06-12_login_09_card_search_logged_in.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/card_search.action",
+      "timestamp": "2025-06-12T02:05:38.131Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_09_card_search_logged_in.png"
+    },
+    {
+      "description": "デッキ編集ページ - MouseUI有効化後全体",
+      "filename": "2025-06-12_login_10_deck_edit_full_active.png",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+      "timestamp": "2025-06-12T02:05:42.737Z",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_login_10_deck_edit_full_active.png"
+    }
+  ]
+}

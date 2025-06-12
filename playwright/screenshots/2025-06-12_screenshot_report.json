@@ -1,0 +1,28 @@
+{
+  "timestamp": "2025-06-12T00:47:45.772Z",
+  "totalScreenshots": 3,
+  "successfulCaptures": 3,
+  "screenshots": [
+    {
+      "description": "ホームページ - クイックアクセスパネル表示",
+      "filename": "01_home_page",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_01_home_page.png"
+    },
+    {
+      "description": "カード検索ページ - ステータス表示",
+      "filename": "02_card_search",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/card_search.action",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_02_card_search.png"
+    },
+    {
+      "description": "デッキ編集ページ - 初期状態",
+      "filename": "03_deck_edit_initial",
+      "url": "https://www.db.yugioh-card.com/yugiohdb/deck_edit.action",
+      "success": true,
+      "path": "/home/tomo/work/app/YGO_deck_extension/playwright/screenshots/2025-06-12_03_deck_edit_initial.png"
+    }
+  ]
+}

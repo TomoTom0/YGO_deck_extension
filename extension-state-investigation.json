@@ -1,0 +1,92 @@
+{
+  "timestamp": "2025-06-12T02:05:51.050Z",
+  "environment": "Windows Chrome Profile - Logged In",
+  "state": {
+    "ygoLoaded": "undefined",
+    "ygoObject": false,
+    "ygoKeys": [],
+    "allYgoElements": 12,
+    "mouseUIElements": 10,
+    "deckElements": 26,
+    "quickAccessPanel": false,
+    "deckSupportPanel": false,
+    "mouseUIPanel": false,
+    "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+    "title": "Yu-Gi-Oh! Neuron(TRADING CARD GAME CARD DATABASE)",
+    "mouseUIEnabled": "undefined",
+    "bodyStructure": [
+      {
+        "tag": "DIV",
+        "id": "ygo-deck-support-ui",
+        "className": "",
+        "visible": false
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "ygo-support-panel",
+        "visible": true
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "ygo-support-status",
+        "visible": true
+      },
+      {
+        "tag": "BUTTON",
+        "id": "ygo-analyze-btn",
+        "className": "",
+        "visible": true
+      },
+      {
+        "tag": "BUTTON",
+        "id": "ygo-debug-btn",
+        "className": "",
+        "visible": true
+      },
+      {
+        "tag": "DIV",
+        "id": "ygo-debug-area",
+        "className": "",
+        "visible": false
+      },
+      {
+        "tag": "PRE",
+        "id": "ygo-debug-content",
+        "className": "",
+        "visible": false
+      },
+      {
+        "tag": "DIV",
+        "id": "ygo-mouse-ui",
+        "className": "ygo-mouse-ui-panel",
+        "visible": true
+      },
+      {
+        "tag": "DIV",
+        "id": "ygo-deck-area-main",
+        "className": "ygo-deck-area",
+        "visible": true
+      },
+      {
+        "tag": "DIV",
+        "id": "ygo-deck-area-extra",
+        "className": "ygo-deck-area",
+        "visible": true
+      },
+      {
+        "tag": "DIV",
+        "id": "ygo-deck-area-side",
+        "className": "ygo-deck-area",
+        "visible": true
+      },
+      {
+        "tag": "DIV",
+        "id": "ygo-card-area",
+        "className": "ygo-card-area",
+        "visible": true
+      }
+    ]
+  }
+}

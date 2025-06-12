@@ -1,0 +1,60 @@
+{
+  "timestamp": "2025-06-12T01:58:57.452Z",
+  "environment": "Windows Chrome Profile",
+  "summary": {
+    "total": 8,
+    "passed": 6,
+    "failed": 0,
+    "successRate": "75.0"
+  },
+  "details": [
+    {
+      "name": "Windows Profile初期化",
+      "passed": true,
+      "details": "セッション永続化コンテキスト作成成功",
+      "timestamp": "2025-06-12T01:58:50.815Z"
+    },
+    {
+      "name": "遊戯王DBログイン状態",
+      "passed": true,
+      "details": "ログイン済み状態確認",
+      "timestamp": "2025-06-12T01:58:52.366Z"
+    },
+    {
+      "name": "デッキ編集ページアクセス",
+      "passed": true,
+      "details": "デッキ編集ページに正常アクセス",
+      "timestamp": "2025-06-12T01:58:54.089Z"
+    },
+    {
+      "name": "YGO_DECK_SUPPORT_LOADEDフラグ",
+      "passed": false,
+      "details": "フラグ未設定",
+      "timestamp": "2025-06-12T01:58:57.094Z"
+    },
+    {
+      "name": "グローバルYGOオブジェクト",
+      "passed": false,
+      "details": "オブジェクト未設定",
+      "timestamp": "2025-06-12T01:58:57.094Z"
+    },
+    {
+      "name": "MouseUI要素",
+      "passed": true,
+      "details": "19個の要素検出",
+      "timestamp": "2025-06-12T01:58:57.094Z"
+    },
+    {
+      "name": "デッキエリア要素",
+      "passed": true,
+      "details": "26個の要素検出",
+      "timestamp": "2025-06-12T01:58:57.094Z"
+    },
+    {
+      "name": "拡張機能UI要素",
+      "passed": true,
+      "details": "10個の要素検出",
+      "timestamp": "2025-06-12T01:58:57.094Z"
+    }
+  ]
+}

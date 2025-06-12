@@ -7,6 +7,9 @@ class YGODeckSupport {
     constructor() {
         this.isInitialized = false;
         this.currentPage = this.detectCurrentPage();
+        this.mouseUIEnabled = false;
+        this.userPreferences = {};
+        this.notificationTimeout = null;
         console.log('YGO Deck Support - Initializing on page:', this.currentPage);
     }
 
@@ -52,12 +55,17 @@ class YGODeckSupport {
     }
 
     /**
-     * 初期化処理
+     * 初期化処理（改善版）
      */
     async init() {
         if (this.isInitialized) return;
         
         try {
+            console.log('YGO Deck Support - Starting initialization...');
+            
+            // UI状態を読み込み
+            await this.loadUIState();
+            
             // ページの読み込み完了を待つ
             await this.waitForPageLoad();
             
@@ -65,28 +73,28 @@ class YGODeckSupport {
             switch (this.currentPage) {
                 case 'deck_edit':
                 case 'deck_new':
-                    this.initDeckEditPage();
+                    await this.initDeckEditPage();
                     break;
                 case 'deck_detail':
-                    this.initDeckDetailPage();
+                    await this.initDeckDetailPage();
                     break;
                 case 'deck_list':
-                    this.initDeckListPage();
+                    await this.initDeckListPage();
                     break;
                 case 'card_search':
-                    this.initCardSearchPage();
+                    await this.initCardSearchPage();
                     break;
                 case 'deck_search':
-                    this.initDeckSearchPage();
+                    await this.initDeckSearchPage();
                     break;
                 case 'login_for_deck':
-                    this.initLoginPage();
+                    await this.initLoginPage();
                     break;
                 case 'konami_login':
-                    this.initKonamiLoginPage();
+                    await this.initKonamiLoginPage();
                     break;
                 case 'home':
-                    this.initHomePage();
+                    await this.initHomePage();
                     break;
                 default:
                     console.log('YGO Deck Support - No specific features for this page:', this.currentPage);
@@ -555,22 +563,60 @@ class YGODeckSupport {
     }
     
     /**
-     * MouseUIモードの切り替え
+     * MouseUIモードの切り替え（改善版）
      */
-    toggleMouseUI() {
-        const toggleBtn = document.getElementById('mouse-ui-toggle');
-        const controls = document.getElementById('mouse-ui-controls');
-        
-        if (controls.style.display === 'none') {
-            controls.style.display = 'block';
-            toggleBtn.textContent = '無効化';
-            toggleBtn.classList.add('active');
-            console.log('YGO Deck Support - MouseUI mode enabled');
-        } else {
-            controls.style.display = 'none';
-            toggleBtn.textContent = '有効化';
-            toggleBtn.classList.remove('active');
-            console.log('YGO Deck Support - MouseUI mode disabled');
+    async toggleMouseUI() {
+        try {
+            const toggleBtn = await this.safeGetElement('mouse-ui-toggle');
+            const controls = await this.safeGetElement('mouse-ui-controls');
+            
+            // ローディング状態表示
+            this.showLoadingState(toggleBtn, true);
+            
+            const isCurrentlyEnabled = controls.style.display !== 'none';
+            
+            if (!isCurrentlyEnabled) {
+                // MouseUI有効化
+                controls.style.display = 'block';
+                toggleBtn.textContent = '✅ 有効';
+                toggleBtn.classList.add('active');
+                this.mouseUIEnabled = true;
+                
+                // アニメーション効果
+                controls.style.opacity = '0';
+                controls.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => { controls.style.opacity = '1'; }, 50);
+                
+                console.log('YGO Deck Support - MouseUI mode enabled');
+                this.showSuccessMessage('MouseUIモードが有効になりました');
+            } else {
+                // MouseUI無効化
+                controls.style.opacity = '0';
+                setTimeout(() => {
+                    controls.style.display = 'none';
+                    controls.style.opacity = '1';
+                }, 300);
+                
+                toggleBtn.textContent = '⚪ 無効';
+                toggleBtn.classList.remove('active');
+                this.mouseUIEnabled = false;
+                
+                console.log('YGO Deck Support - MouseUI mode disabled');
+                this.showSuccessMessage('MouseUIモードが無効になりました');
+            }
+            
+            // 状態を保存
+            await this.saveUIState();
+            
+        } catch (error) {
+            console.error('YGO Deck Support - Error toggling MouseUI:', error);
+            this.showErrorMessage('MouseUI切り替えに失敗しました');
+        } finally {
+            // ローディング状態解除
+            const toggleBtn = document.getElementById('mouse-ui-toggle');
+            if (toggleBtn) {
+                this.showLoadingState(toggleBtn, false);
+            }
         }
     }
     
@@ -947,6 +993,170 @@ class YGODeckSupport {
         window.YGO.Events.emit('cardAdded', { card, area });
     }
     
+    /**
+     * DOM要素の安全な取得（改善版）
+     */
+    async safeGetElement(id, timeout = 5000) {
+        return new Promise((resolve, reject) => {
+            const startTime = Date.now();
+            const checkElement = () => {
+                const element = document.getElementById(id);
+                if (element) {
+                    resolve(element);
+                } else if (Date.now() - startTime < timeout) {
+                    setTimeout(checkElement, 100);
+                } else {
+                    reject(new Error(`Element ${id} not found within ${timeout}ms`));
+                }
+            };
+            checkElement();
+        });
+    }
+
+    /**
+     * ローディング状態の表示制御
+     */
+    showLoadingState(element, show) {
+        if (!element) return;
+        
+        if (show) {
+            element.disabled = true;
+            element.style.opacity = '0.6';
+            element.style.cursor = 'wait';
+            const originalText = element.textContent;
+            element.setAttribute('data-original-text', originalText);
+            element.textContent = '⏳ 処理中...';
+        } else {
+            element.disabled = false;
+            element.style.opacity = '1';
+            element.style.cursor = 'pointer';
+            const originalText = element.getAttribute('data-original-text');
+            if (originalText) {
+                element.textContent = originalText;
+                element.removeAttribute('data-original-text');
+            }
+        }
+    }
+
+    /**
+     * 成功メッセージの表示
+     */
+    showSuccessMessage(message) {
+        this.showNotification(message, 'success');
+    }
+
+    /**
+     * エラーメッセージの表示
+     */
+    showErrorMessage(message) {
+        this.showNotification(message, 'error');
+    }
+
+    /**
+     * 通知メッセージの表示
+     */
+    showNotification(message, type = 'info') {
+        // 既存の通知を削除
+        const existing = document.getElementById('ygo-notification');
+        if (existing) {
+            existing.remove();
+        }
+
+        // 通知要素を作成
+        const notification = document.createElement('div');
+        notification.id = 'ygo-notification';
+        notification.className = `ygo-notification ygo-notification-${type}`;
+        notification.innerHTML = `
+            <div class="ygo-notification-content">
+                <span class="ygo-notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span class="ygo-notification-message">${message}</span>
+                <button class="ygo-notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+
+        // スタイルを設定
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            background: ${type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1'};
+            border: 1px solid ${type === 'success' ? '#c3e6cb' : type === 'error' ? '#f5c6cb' : '#bee5eb'};
+            color: ${type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#0c5460'};
+            border-radius: 5px;
+            padding: 12px;
+            max-width: 300px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(100%);
+        `;
+
+        // 画面に追加
+        document.body.appendChild(notification);
+
+        // アニメーション表示
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateX(0)';
+        }, 50);
+
+        // 自動削除タイマー
+        if (this.notificationTimeout) {
+            clearTimeout(this.notificationTimeout);
+        }
+        
+        this.notificationTimeout = setTimeout(() => {
+            if (notification && notification.parentElement) {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification && notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 3000);
+    }
+
+    /**
+     * UI状態の保存
+     */
+    async saveUIState() {
+        try {
+            const state = {
+                mouseUIEnabled: this.mouseUIEnabled,
+                userPreferences: this.userPreferences,
+                lastUsed: Date.now(),
+                version: '3.1.1'
+            };
+
+            await chrome.storage.local.set({ 'ygo_ui_state': state });
+            console.log('YGO Deck Support - UI state saved:', state);
+        } catch (error) {
+            console.error('YGO Deck Support - Error saving UI state:', error);
+        }
+    }
+
+    /**
+     * UI状態の読み込み
+     */
+    async loadUIState() {
+        try {
+            const result = await chrome.storage.local.get('ygo_ui_state');
+            const state = result.ygo_ui_state || {};
+            
+            this.mouseUIEnabled = state.mouseUIEnabled || false;
+            this.userPreferences = state.userPreferences || {};
+            
+            console.log('YGO Deck Support - UI state loaded:', state);
+            return state;
+        } catch (error) {
+            console.error('YGO Deck Support - Error loading UI state:', error);
+            return {};
+        }
+    }
+
     /**
      * カードをデッキから削除
      */

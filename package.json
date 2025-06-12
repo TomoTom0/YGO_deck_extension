@@ -1,13 +1,24 @@
 {
   "name": "ygo_deck_extension",
-  "version": "1.0.0",
-  "description": "公式カードデータベースのデッキ画面にMouseUIモードやExport / Import / Sort / Shuffleボタンを追加します。",
+  "version": "3.2.0",
+  "description": "遊戯王公式カードデータベースのデッキ編集機能を改善するChrome拡張機能",
   "main": "debug-manifest.js",
   "directories": {
     "doc": "doc"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ygo-db-extension-test.js",
+    "test:comprehensive": "node comprehensive-test.js",
+    "test:playwright": "cd playwright && npx playwright test",
+    "test:screenshots": "node playwright/take-ss/screenshot-automation.js",
+    "test:all": "npm run test && npm run test:playwright && npm run test:screenshots",
+    "dev:debug": "node debug-manifest.js",
+    "dev:install": "./install-extension.sh",
+    "dev:chrome": "./start-chrome-for-login.sh",
+    "build": "echo 'Chrome extension built from src/ directory'",
+    "package": "zip -r ygo-deck-extension-v3.1.1.zip src/ -x '*.DS_Store'",
+    "docs:serve": "echo 'Serving documentation from doc/ directory'",
+    "clean": "rm -rf playwright/screenshots/* playwright/test-results/* extension-test-report.json test-report.json"
   },
   "repository": {
     "type": "git",
@@ -23,5 +34,8 @@
   "homepage": "https://github.com/TomoTom0/YGO_deck_extension#readme",
   "devDependencies": {
     "playwright": "^1.53.0"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.53.0"
   }
 }
