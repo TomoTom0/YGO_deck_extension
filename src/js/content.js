@@ -10,6 +10,7 @@ class YGODeckSupport {
         this.mouseUIEnabled = false;
         this.userPreferences = {};
         this.notificationTimeout = null;
+        this.mouseUICore = null; // MouseUIコアシステム
         console.log('YGO Deck Support - Initializing on page:', this.currentPage);
     }
 
@@ -394,10 +395,44 @@ class YGODeckSupport {
         
         // 初回分析を実行
         this.analyzeDeckEditStructure();
+        
+        // MouseUIコアシステムを初期化
+        this.initMouseUICore();
     }
     
     /**
-     * MouseUI機能の初期化
+     * MouseUIコアシステムの初期化
+     */
+    async initMouseUICore() {
+        console.log('YGO Deck Support - Initializing MouseUI Core System...');
+        
+        try {
+            // MouseUIコアシステムのインスタンス作成
+            this.mouseUICore = new window.MouseUICore();
+            
+            // 初期化実行
+            const success = await this.mouseUICore.initialize();
+            
+            if (success) {
+                console.log('YGO Deck Support - MouseUI Core System initialized successfully');
+                
+                // 既存の状態を読み込み
+                await this.mouseUICore.loadState();
+                
+                // 有効状態を同期
+                this.mouseUIEnabled = this.mouseUICore.isEnabled;
+                
+            } else {
+                console.error('YGO Deck Support - MouseUI Core System initialization failed');
+            }
+            
+        } catch (error) {
+            console.error('YGO Deck Support - MouseUI Core System error:', error);
+        }
+    }
+
+    /**
+     * MouseUI機能の初期化（レガシー）
      */
     initMouseUI() {
         console.log('YGO Deck Support - Initializing MouseUI features');
@@ -573,40 +608,64 @@ class YGODeckSupport {
             // ローディング状態表示
             this.showLoadingState(toggleBtn, true);
             
-            const isCurrentlyEnabled = controls.style.display !== 'none';
-            
-            if (!isCurrentlyEnabled) {
-                // MouseUI有効化
-                controls.style.display = 'block';
-                toggleBtn.textContent = '✅ 有効';
-                toggleBtn.classList.add('active');
-                this.mouseUIEnabled = true;
+            // MouseUIコアシステムで切り替え
+            if (this.mouseUICore) {
+                const newState = this.mouseUICore.toggle();
+                this.mouseUIEnabled = newState;
                 
-                // アニメーション効果
-                controls.style.opacity = '0';
-                controls.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => { controls.style.opacity = '1'; }, 50);
+                // UI更新
+                if (newState) {
+                    controls.style.display = 'block';
+                    toggleBtn.textContent = '✅ 有効';
+                    toggleBtn.classList.add('active');
+                    
+                    // アニメーション効果
+                    controls.style.opacity = '0';
+                    controls.style.transition = 'opacity 0.3s ease';
+                    setTimeout(() => { controls.style.opacity = '1'; }, 50);
+                    
+                    console.log('YGO Deck Support - MouseUI mode enabled');
+                    this.showSuccessMessage('MouseUIモードが有効になりました');
+                } else {
+                    // MouseUI無効化
+                    controls.style.opacity = '0';
+                    setTimeout(() => {
+                        controls.style.display = 'none';
+                        controls.style.opacity = '1';
+                    }, 300);
+                    
+                    toggleBtn.textContent = '⚪ 無効';
+                    toggleBtn.classList.remove('active');
+                    
+                    console.log('YGO Deck Support - MouseUI mode disabled');
+                    this.showSuccessMessage('MouseUIモードが無効になりました');
+                }
                 
-                console.log('YGO Deck Support - MouseUI mode enabled');
-                this.showSuccessMessage('MouseUIモードが有効になりました');
+                // 状態を保存
+                await this.mouseUICore.saveState();
+                await this.saveUIState();
+                
             } else {
-                // MouseUI無効化
-                controls.style.opacity = '0';
-                setTimeout(() => {
+                // フォールバック: 従来の処理
+                console.warn('MouseUI Core not available, using fallback');
+                const isCurrentlyEnabled = controls.style.display !== 'none';
+                
+                if (!isCurrentlyEnabled) {
+                    controls.style.display = 'block';
+                    toggleBtn.textContent = '✅ 有効';
+                    toggleBtn.classList.add('active');
+                    this.mouseUIEnabled = true;
+                    this.showSuccessMessage('MouseUIモードが有効になりました（基本機能）');
+                } else {
                     controls.style.display = 'none';
-                    controls.style.opacity = '1';
-                }, 300);
+                    toggleBtn.textContent = '⚪ 無効';
+                    toggleBtn.classList.remove('active');
+                    this.mouseUIEnabled = false;
+                    this.showSuccessMessage('MouseUIモードが無効になりました');
+                }
                 
-                toggleBtn.textContent = '⚪ 無効';
-                toggleBtn.classList.remove('active');
-                this.mouseUIEnabled = false;
-                
-                console.log('YGO Deck Support - MouseUI mode disabled');
-                this.showSuccessMessage('MouseUIモードが無効になりました');
+                await this.saveUIState();
             }
-            
-            // 状態を保存
-            await this.saveUIState();
             
         } catch (error) {
             console.error('YGO Deck Support - Error toggling MouseUI:', error);
