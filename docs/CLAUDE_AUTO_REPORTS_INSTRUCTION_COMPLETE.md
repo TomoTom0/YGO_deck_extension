@@ -507,6 +507,13 @@ echo "GIN_ARCV_TOKEN=actual_token_value" > .env
 - `test-type:standalone` - スタンドアロンテスト
 - `test-scope:extension` - 拡張機能テスト
 
+### レポート詳細度ラベル
+- `report-type:summary` - プロジェクト全体サマリー
+- `report-type:details` - 個別詳細レポート
+- `category:project-summary` - 自動生成サマリー
+- `priority:high` - 高優先度レポート
+- `scope:project-wide` - プロジェクト横断
+
 ## 🤖 Claude Code向け運用指示
 
 ### 自動レポート作成タイミング
@@ -582,6 +589,43 @@ Claude Codeは以下の場面で**自動的に**reports/フォルダにレポー
 3. `npm run send-reports` でテスト実行
 4. git commit時の自動送信確認
 
+## 📊 プロジェクトサマリー機能
+
+### 自動サマリー生成
+Claude Codeは**3件以上のレポート**がある場合、自動的にプロジェクトサマリーレポートを生成します：
+
+```json
+{
+  "path": "reports/project-summary/2025-06-12",
+  "title": "Project Summary - ProjectName (2025-06-12)",
+  "labels": [
+    "report-type:summary",
+    "category:project-summary", 
+    "priority:high",
+    "scope:project-wide"
+  ]
+}
+```
+
+### サマリーレポート内容
+1. **プロジェクト概要**: 総レポート数、アクティブカテゴリ、最新更新
+2. **カテゴリ別分布**: pdca, testing, investigation等の分布
+3. **品質統計**: excellent, good, fair等の品質分布
+4. **最新レポート**: 直近5件の詳細レポート一覧
+5. **推奨アクション**: AI分析による改善提案
+
+### ユーザー活用方法
+```bash
+# サマリーレポートのみ確認
+report-type:summary AND project:project-name
+
+# 最新のプロジェクトサマリー
+category:project-summary AND generated-date:2025-06-12
+
+# 詳細が必要な場合
+report-type:details AND category:testing
+```
+
 ## 📈 期待される効果
 
 - **プロジェクト可視性**: 全プロジェクトの進捗を一元管理
@@ -590,6 +634,7 @@ Claude Codeは以下の場面で**自動的に**reports/フォルダにレポー
 - **作業効率**: レポート作成の自動化による開発時間増加
 - **検索性向上**: ラベルによる高精度な情報検索
 - **分析可能性**: 構造化データによる傾向分析
+- **管理効率**: サマリーレポートによる迅速な状況把握
 
 ## 🔍 ラベル活用例
 
