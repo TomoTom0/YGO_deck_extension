@@ -31,6 +31,8 @@ class YGODeckSupport {
                 case '8': return 'deck_copy';    // デッキコピー
                 default: return 'deck_unknown';
             }
+        } else if (url.includes('deck_edit.action')) {
+            return 'deck_edit';  // テスト用の直接デッキ編集URL
         } else if (url.includes('card_search.action')) {
             return 'card_search';
         } else if (url.includes('deck_search.action')) {
@@ -95,7 +97,12 @@ class YGODeckSupport {
             // テスト用のグローバルフラグを設定
             window.YGO_DECK_SUPPORT_LOADED = true;
             
+            // グローバルYGOオブジェクトを設定
+            this.setupGlobalYGOObjects();
+            
             console.log('YGO Deck Support - Initialization complete');
+            console.log('YGO Deck Support - YGO_DECK_SUPPORT_LOADED:', window.YGO_DECK_SUPPORT_LOADED);
+            console.log('YGO Deck Support - Global YGO object:', window.YGO);
             
         } catch (error) {
             console.error('YGO Deck Support - Initialization failed:', error);
@@ -120,12 +127,16 @@ class YGODeckSupport {
      */
     initDeckEditPage() {
         console.log('YGO Deck Support - Initializing deck edit features');
+        console.log('YGO Deck Support - Current page type:', this.currentPage);
+        console.log('YGO Deck Support - Current URL:', window.location.href);
         
         // 現在のページ構造を調査
         this.analyzeDeckEditStructure();
         
         // UIの改善を適用
         this.enhanceDeckEditUI();
+        
+        console.log('YGO Deck Support - Deck edit features initialized');
     }
 
     /**
@@ -364,11 +375,259 @@ class YGODeckSupport {
         const insertTarget = article || document.body;
         insertTarget.appendChild(container);
 
+        // MouseUI機能を初期化
+        this.initMouseUI();
+        
+        // デッキエリアとカードエリアを初期化
+        this.initDeckAreas();
+
         // イベントリスナーを設定
         this.setupEventListeners();
         
         // 初回分析を実行
         this.analyzeDeckEditStructure();
+    }
+    
+    /**
+     * MouseUI機能の初期化
+     */
+    initMouseUI() {
+        console.log('YGO Deck Support - Initializing MouseUI features');
+        
+        // MouseUIコントロールパネルを作成
+        const mouseUIPanel = document.createElement('div');
+        mouseUIPanel.id = 'ygo-mouse-ui';
+        mouseUIPanel.className = 'ygo-mouse-ui-panel';
+        mouseUIPanel.innerHTML = `
+            <div class="mouse-ui-header">
+                <h4>🖱️ MouseUI Mode</h4>
+                <button id="mouse-ui-toggle" class="mouse-ui-btn">有効化</button>
+            </div>
+            <div class="mouse-ui-controls" id="mouse-ui-controls" style="display: none;">
+                <div class="control-group">
+                    <button id="mouse-ui-sort" class="mouse-ui-btn">ソート</button>
+                    <button id="mouse-ui-shuffle" class="mouse-ui-btn">シャッフル</button>
+                    <button id="mouse-ui-clear" class="mouse-ui-btn">クリア</button>
+                </div>
+                <div class="control-group">
+                    <button id="mouse-ui-export" class="mouse-ui-btn">エクスポート</button>
+                    <button id="mouse-ui-import" class="mouse-ui-btn">インポート</button>
+                    <button id="mouse-ui-save" class="mouse-ui-btn">保存</button>
+                </div>
+            </div>
+        `;
+
+        // MouseUIパネルを挿入
+        const targetContainer = document.getElementById('ygo-deck-support-ui');
+        if (targetContainer) {
+            targetContainer.appendChild(mouseUIPanel);
+        } else {
+            document.body.appendChild(mouseUIPanel);
+        }
+
+        // MouseUIイベントリスナーを設定
+        this.setupMouseUIListeners();
+    }
+    
+    /**
+     * デッキエリアとカードエリアの初期化
+     */
+    initDeckAreas() {
+        console.log('YGO Deck Support - Initializing deck areas');
+        
+        // デッキエリアを検出・作成
+        this.createDeckArea('main', 'メインデッキ');
+        this.createDeckArea('extra', 'エクストラデッキ');
+        this.createDeckArea('side', 'サイドデッキ');
+        
+        // カードエリアを作成
+        this.createCardArea();
+    }
+    
+    /**
+     * デッキエリアを作成
+     */
+    createDeckArea(type, name) {
+        const deckAreaId = `ygo-deck-area-${type}`;
+        
+        // 既存のエリアがあれば削除
+        const existingArea = document.getElementById(deckAreaId);
+        if (existingArea) {
+            existingArea.remove();
+        }
+        
+        // 新しいデッキエリアを作成
+        const deckArea = document.createElement('div');
+        deckArea.id = deckAreaId;
+        deckArea.className = 'ygo-deck-area';
+        deckArea.setAttribute('data-deck-type', type);
+        deckArea.innerHTML = `
+            <div class="deck-area-header">
+                <h4>${name} <span class="card-count">(0)</span></h4>
+            </div>
+            <div class="deck-area-content" id="deck-content-${type}">
+                <!-- カードがここに表示されます -->
+            </div>
+        `;
+
+        // デッキエリアを挿入
+        const targetContainer = document.getElementById('ygo-deck-support-ui') || document.body;
+        targetContainer.appendChild(deckArea);
+        
+        console.log(`YGO Deck Support - Created deck area: ${name}`);
+    }
+    
+    /**
+     * カードエリアを作成
+     */
+    createCardArea() {
+        const cardAreaId = 'ygo-card-area';
+        
+        // 既存のエリアがあれば削除
+        const existingArea = document.getElementById(cardAreaId);
+        if (existingArea) {
+            existingArea.remove();
+        }
+        
+        // 新しいカードエリアを作成
+        const cardArea = document.createElement('div');
+        cardArea.id = cardAreaId;
+        cardArea.className = 'ygo-card-area';
+        cardArea.innerHTML = `
+            <div class="card-area-header">
+                <h4>カード一覧 <span class="card-count">(0)</span></h4>
+                <div class="card-area-controls">
+                    <input type="text" id="card-search" placeholder="カード名で検索...">
+                    <button id="card-filter" class="card-btn">フィルター</button>
+                </div>
+            </div>
+            <div class="card-area-content" id="card-content">
+                <!-- カードがここに表示されます -->
+            </div>
+        `;
+
+        // カードエリアを挿入
+        const targetContainer = document.getElementById('ygo-deck-support-ui') || document.body;
+        targetContainer.appendChild(cardArea);
+        
+        console.log('YGO Deck Support - Created card area');
+    }
+    
+    /**
+     * MouseUIイベントリスナーの設定
+     */
+    setupMouseUIListeners() {
+        const toggleBtn = document.getElementById('mouse-ui-toggle');
+        const sortBtn = document.getElementById('mouse-ui-sort');
+        const shuffleBtn = document.getElementById('mouse-ui-shuffle');
+        const clearBtn = document.getElementById('mouse-ui-clear');
+        const exportBtn = document.getElementById('mouse-ui-export');
+        const importBtn = document.getElementById('mouse-ui-import');
+        const saveBtn = document.getElementById('mouse-ui-save');
+        
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => this.toggleMouseUI());
+        }
+        
+        if (sortBtn) {
+            sortBtn.addEventListener('click', () => this.sortDeck());
+        }
+        
+        if (shuffleBtn) {
+            shuffleBtn.addEventListener('click', () => this.shuffleDeck());
+        }
+        
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => this.clearDeck());
+        }
+        
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => this.exportDeck());
+        }
+        
+        if (importBtn) {
+            importBtn.addEventListener('click', () => this.importDeck());
+        }
+        
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => this.saveDeck());
+        }
+    }
+    
+    /**
+     * MouseUIモードの切り替え
+     */
+    toggleMouseUI() {
+        const toggleBtn = document.getElementById('mouse-ui-toggle');
+        const controls = document.getElementById('mouse-ui-controls');
+        
+        if (controls.style.display === 'none') {
+            controls.style.display = 'block';
+            toggleBtn.textContent = '無効化';
+            toggleBtn.classList.add('active');
+            console.log('YGO Deck Support - MouseUI mode enabled');
+        } else {
+            controls.style.display = 'none';
+            toggleBtn.textContent = '有効化';
+            toggleBtn.classList.remove('active');
+            console.log('YGO Deck Support - MouseUI mode disabled');
+        }
+    }
+    
+    /**
+     * デッキをソート
+     */
+    sortDeck() {
+        console.log('YGO Deck Support - Sorting deck');
+        // 実装予定: デッキ内カードのソート機能
+        alert('ソート機能は実装中です');
+    }
+    
+    /**
+     * デッキをシャッフル
+     */
+    shuffleDeck() {
+        console.log('YGO Deck Support - Shuffling deck');
+        // 実装予定: デッキ内カードのシャッフル機能
+        alert('シャッフル機能は実装中です');
+    }
+    
+    /**
+     * デッキをクリア
+     */
+    clearDeck() {
+        console.log('YGO Deck Support - Clearing deck');
+        // 実装予定: デッキクリア機能
+        if (confirm('デッキをクリアしますか？')) {
+            alert('クリア機能は実装中です');
+        }
+    }
+    
+    /**
+     * デッキをエクスポート
+     */
+    exportDeck() {
+        console.log('YGO Deck Support - Exporting deck');
+        // 実装予定: デッキエクスポート機能
+        alert('エクスポート機能は実装中です');
+    }
+    
+    /**
+     * デッキをインポート
+     */
+    importDeck() {
+        console.log('YGO Deck Support - Importing deck');
+        // 実装予定: デッキインポート機能
+        alert('インポート機能は実装中です');
+    }
+    
+    /**
+     * デッキを保存
+     */
+    saveDeck() {
+        console.log('YGO Deck Support - Saving deck');
+        // 実装予定: デッキ保存機能
+        alert('保存機能は実装中です');
     }
     
     /**
@@ -573,6 +832,167 @@ class YGODeckSupport {
 
         console.log('YGO Deck Support - Debug Info:', debugInfo);
         alert('デバッグ情報をコンソールに出力しました。F12を開いてご確認ください。');
+    }
+    
+    /**
+     * グローバルYGOオブジェクトの設定
+     */
+    setupGlobalYGOObjects() {
+        console.log('YGO Deck Support - Setting up global YGO objects');
+        
+        // メインのYGOオブジェクト
+        window.YGO = window.YGO || {};
+        
+        // デッキサポート関連のオブジェクト
+        window.YGO.DeckSupport = {
+            version: '3.1.0',
+            instance: this,
+            initialized: true,
+            currentPage: this.currentPage,
+            features: {
+                mouseUI: true,
+                deckAreas: true,
+                cardSearch: true,
+                import: true,
+                export: true
+            }
+        };
+        
+        // MouseUI関連のオブジェクト
+        window.YGO.MouseUI = {
+            enabled: false,
+            toggle: () => this.toggleMouseUI(),
+            sort: () => this.sortDeck(),
+            shuffle: () => this.shuffleDeck(),
+            clear: () => this.clearDeck(),
+            export: () => this.exportDeck(),
+            import: () => this.importDeck(),
+            save: () => this.saveDeck()
+        };
+        
+        // デッキ管理関連のオブジェクト
+        window.YGO.DeckManager = {
+            mainDeck: [],
+            extraDeck: [],
+            sideDeck: [],
+            getDeckInfo: () => this.getDeckInfo(),
+            addCard: (card, area) => this.addCardToDeck(card, area),
+            removeCard: (cardId, area) => this.removeCardFromDeck(cardId, area),
+            clearDeck: (area) => this.clearDeckArea(area)
+        };
+        
+        // カード検索関連のオブジェクト
+        window.YGO.CardSearch = {
+            searchTerm: '',
+            results: [],
+            search: (term) => this.searchCards(term),
+            filter: (criteria) => this.filterCards(criteria),
+            getCardInfo: (cardId) => this.getCardInfo(cardId)
+        };
+        
+        // ユーティリティ関数
+        window.YGO.Utils = {
+            getPageType: () => this.currentPage,
+            isExtensionLoaded: () => window.YGO_DECK_SUPPORT_LOADED,
+            getVersion: () => '3.1.0',
+            reload: () => this.init(),
+            debug: () => this.showDebugInfo()
+        };
+        
+        // イベント システム
+        window.YGO.Events = {
+            listeners: {},
+            on: (event, callback) => {
+                if (!window.YGO.Events.listeners[event]) {
+                    window.YGO.Events.listeners[event] = [];
+                }
+                window.YGO.Events.listeners[event].push(callback);
+            },
+            emit: (event, data) => {
+                if (window.YGO.Events.listeners[event]) {
+                    window.YGO.Events.listeners[event].forEach(callback => {
+                        try {
+                            callback(data);
+                        } catch (error) {
+                            console.error('YGO Event callback error:', error);
+                        }
+                    });
+                }
+            }
+        };
+        
+        console.log('YGO Deck Support - Global objects setup complete:', window.YGO);
+    }
+    
+    /**
+     * デッキ情報を取得
+     */
+    getDeckInfo() {
+        return {
+            main: window.YGO.DeckManager.mainDeck.length,
+            extra: window.YGO.DeckManager.extraDeck.length,
+            side: window.YGO.DeckManager.sideDeck.length,
+            total: window.YGO.DeckManager.mainDeck.length + 
+                   window.YGO.DeckManager.extraDeck.length + 
+                   window.YGO.DeckManager.sideDeck.length
+        };
+    }
+    
+    /**
+     * カードをデッキに追加
+     */
+    addCardToDeck(card, area) {
+        console.log(`YGO Deck Support - Adding card to ${area}:`, card);
+        // 実装予定: カード追加ロジック
+        window.YGO.Events.emit('cardAdded', { card, area });
+    }
+    
+    /**
+     * カードをデッキから削除
+     */
+    removeCardFromDeck(cardId, area) {
+        console.log(`YGO Deck Support - Removing card from ${area}:`, cardId);
+        // 実装予定: カード削除ロジック
+        window.YGO.Events.emit('cardRemoved', { cardId, area });
+    }
+    
+    /**
+     * デッキエリアをクリア
+     */
+    clearDeckArea(area) {
+        console.log(`YGO Deck Support - Clearing deck area: ${area}`);
+        // 実装予定: エリアクリアロジック
+        window.YGO.Events.emit('deckAreaCleared', { area });
+    }
+    
+    /**
+     * カード検索
+     */
+    searchCards(term) {
+        console.log(`YGO Deck Support - Searching cards: ${term}`);
+        window.YGO.CardSearch.searchTerm = term;
+        // 実装予定: カード検索ロジック
+        window.YGO.Events.emit('cardSearched', { term });
+        return [];
+    }
+    
+    /**
+     * カードフィルター
+     */
+    filterCards(criteria) {
+        console.log(`YGO Deck Support - Filtering cards:`, criteria);
+        // 実装予定: カードフィルターロジック
+        window.YGO.Events.emit('cardFiltered', { criteria });
+        return [];
+    }
+    
+    /**
+     * カード情報を取得
+     */
+    getCardInfo(cardId) {
+        console.log(`YGO Deck Support - Getting card info: ${cardId}`);
+        // 実装予定: カード情報取得ロジック
+        return null;
     }
 }
 

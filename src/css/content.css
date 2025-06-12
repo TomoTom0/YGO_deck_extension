@@ -258,6 +258,244 @@
     opacity: 0.9;
 }
 
+/* MouseUI機能のスタイル */
+.ygo-mouse-ui-panel {
+    margin-top: 15px;
+    border-top: 1px solid #dee2e6;
+    padding-top: 15px;
+}
+
+.mouse-ui-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.mouse-ui-header h4 {
+    margin: 0;
+    color: #495057;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.mouse-ui-btn {
+    background: #17a2b8;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin: 2px;
+    transition: all 0.2s ease;
+}
+
+.mouse-ui-btn:hover {
+    background: #138496;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mouse-ui-btn.active {
+    background: #28a745;
+}
+
+.mouse-ui-btn.active:hover {
+    background: #218838;
+}
+
+.mouse-ui-controls {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 8px;
+}
+
+.control-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.control-group:last-child {
+    margin-bottom: 0;
+}
+
+/* デッキエリアのスタイル */
+.ygo-deck-area {
+    margin-top: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+.deck-area-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 10px 15px;
+    border-radius: 6px 6px 0 0;
+}
+
+.deck-area-header h4 {
+    margin: 0;
+    color: #495057;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-count {
+    background: #6c757d;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.deck-area-content {
+    padding: 15px;
+    min-height: 100px;
+    background: #fafafa;
+    border-radius: 0 0 6px 6px;
+}
+
+/* カードエリアのスタイル */
+.ygo-card-area {
+    margin-top: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+.card-area-header {
+    background: #e9ecef;
+    border-bottom: 1px solid #dee2e6;
+    padding: 10px 15px;
+    border-radius: 6px 6px 0 0;
+}
+
+.card-area-header h4 {
+    margin: 0 0 8px 0;
+    color: #495057;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-area-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+#card-search {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+#card-search:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.card-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.card-btn:hover {
+    background: #545b62;
+}
+
+.card-area-content {
+    padding: 15px;
+    min-height: 150px;
+    background: #fafafa;
+    border-radius: 0 0 6px 6px;
+}
+
+/* ドラッグ&ドロップのスタイル */
+.deck-area-content.drag-over {
+    background: rgba(40, 167, 69, 0.1);
+    border: 2px dashed #28a745;
+}
+
+.card-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px;
+    margin: 4px 0;
+    cursor: move;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-item:hover {
+    background: #f8f9fa;
+    border-color: #007bff;
+    transform: translateX(4px);
+}
+
+.card-item.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+
+.card-name {
+    font-weight: 500;
+    color: #495057;
+    font-size: 13px;
+}
+
+.card-type {
+    color: #6c757d;
+    font-size: 11px;
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+/* ステータス表示 */
+#ygo-status {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #28a745;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 10001;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 700px) {
     #ygo-deck-support-ui {
@@ -287,5 +525,23 @@
     .ygo-btn {
         font-size: 13px;
         padding: 8px 12px;
+    }
+    
+    .control-group {
+        flex-direction: column;
+    }
+    
+    .mouse-ui-btn {
+        width: 100%;
+        margin: 2px 0;
+    }
+    
+    .card-area-controls {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    #card-search {
+        width: 100%;
     }
 }

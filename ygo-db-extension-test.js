@@ -197,15 +197,26 @@ class YugiohDBExtensionTest {
                 url.includes('deck_edit') || url.includes('deck'), 
                 `URL: ${url}`);
             
-            // MouseUI関連要素の確認
+            // MouseUI関連要素の確認（更新されたセレクター）
             const mouseUIElements = await this.page.evaluate(() => {
                 const elements = {
                     mouseUI: document.querySelector('#ygo-mouse-ui') !== null,
-                    deckArea: document.querySelector('.deck-area') !== null || document.querySelector('#deck-area') !== null,
-                    cardArea: document.querySelector('.card-area') !== null || document.querySelector('#card-area') !== null,
+                    deckArea: document.querySelector('.ygo-deck-area') !== null || 
+                             document.querySelector('#ygo-deck-area-main') !== null ||
+                             document.querySelector('#ygo-deck-area-extra') !== null ||
+                             document.querySelector('#ygo-deck-area-side') !== null,
+                    cardArea: document.querySelector('.ygo-card-area') !== null || 
+                             document.querySelector('#ygo-card-area') !== null,
                     mouseUIPanel: document.querySelector('.ygo-mouse-ui-panel') !== null,
                     deckSupportUI: document.querySelector('#ygo-deck-support-ui') !== null,
-                    allYgoElements: document.querySelectorAll('[id*="ygo"], [class*="ygo"]').length
+                    allYgoElements: document.querySelectorAll('[id*="ygo"], [class*="ygo"]').length,
+                    // 個別デッキエリアの確認
+                    mainDeckArea: document.querySelector('#ygo-deck-area-main') !== null,
+                    extraDeckArea: document.querySelector('#ygo-deck-area-extra') !== null,
+                    sideDeckArea: document.querySelector('#ygo-deck-area-side') !== null,
+                    // MouseUIコントロールの確認
+                    mouseUIToggle: document.querySelector('#mouse-ui-toggle') !== null,
+                    mouseUIControls: document.querySelector('#mouse-ui-controls') !== null
                 };
                 
                 return elements;
@@ -320,11 +331,26 @@ class YugiohDBExtensionTest {
         
         try {
             const consoleInfo = await this.page.evaluate(() => {
+                // YGOオブジェクトの詳細確認
+                const ygoObjectDetails = {};
+                if (typeof window.YGO === 'object') {
+                    ygoObjectDetails.main = true;
+                    ygoObjectDetails.deckSupport = typeof window.YGO.DeckSupport === 'object';
+                    ygoObjectDetails.mouseUI = typeof window.YGO.MouseUI === 'object';
+                    ygoObjectDetails.deckManager = typeof window.YGO.DeckManager === 'object';
+                    ygoObjectDetails.cardSearch = typeof window.YGO.CardSearch === 'object';
+                    ygoObjectDetails.utils = typeof window.YGO.Utils === 'object';
+                    ygoObjectDetails.events = typeof window.YGO.Events === 'object';
+                }
+                
                 return {
-                    ygoLoaded: typeof window.YGO_DECK_SUPPORT_LOADED !== 'undefined',
-                    ygoVersion: window.YGO_DECK_SUPPORT_VERSION || 'unknown',
+                    ygoLoaded: typeof window.YGO_DECK_SUPPORT_LOADED !== 'undefined' && window.YGO_DECK_SUPPORT_LOADED === true,
+                    ygoVersion: (window.YGO && window.YGO.DeckSupport && window.YGO.DeckSupport.version) || window.YGO_DECK_SUPPORT_VERSION || 'unknown',
                     extensionErrors: window.YGO_EXTENSION_ERRORS || [],
-                    globalYgoObjects: Object.keys(window).filter(key => key.includes('YGO') || key.includes('ygo'))
+                    globalYgoObjects: Object.keys(window).filter(key => key.includes('YGO') || key.includes('ygo')),
+                    ygoObjectDetails: ygoObjectDetails,
+                    ygoMainObject: typeof window.YGO === 'object',
+                    ygoObjectKeys: window.YGO ? Object.keys(window.YGO) : []
                 };
             });
             
@@ -337,11 +363,20 @@ class YugiohDBExtensionTest {
                 consoleInfo.extensionErrors.length > 0 ? `${consoleInfo.extensionErrors.length}個のエラー` : 'エラーなし');
             
             this.addTestResult('グローバルYGOオブジェクト', 
-                consoleInfo.globalYgoObjects.length > 0, 
-                `${consoleInfo.globalYgoObjects.length}個のYGO関連オブジェクト`);
+                consoleInfo.ygoMainObject && consoleInfo.ygoObjectKeys.length > 0, 
+                consoleInfo.ygoMainObject ? `YGOオブジェクト: ${consoleInfo.ygoObjectKeys.join(', ')}` : '0個のYGO関連オブジェクト');
+            
+            // 詳細なYGOオブジェクト情報をログ出力
+            if (consoleInfo.ygoMainObject) {
+                console.log(`    YGOメインオブジェクト: 存在`);
+                console.log(`    YGOサブオブジェクト: ${consoleInfo.ygoObjectKeys.join(', ')}`);
+                Object.entries(consoleInfo.ygoObjectDetails).forEach(([key, value]) => {
+                    console.log(`      ${key}: ${value ? '✓' : '✗'}`);
+                });
+            }
             
             if (consoleInfo.globalYgoObjects.length > 0) {
-                console.log(`    YGOオブジェクト: ${consoleInfo.globalYgoObjects.join(', ')}`);
+                console.log(`    グローバルYGO変数: ${consoleInfo.globalYgoObjects.join(', ')}`);
             }
             
             return true;
