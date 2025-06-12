@@ -16,6 +16,7 @@ class MouseUICore {
         };
         this.operationHistory = [];
         this.draggedCard = null;
+        this.deckIntegration = null; // DeckIntegration system
         console.log('MouseUICore - Initialized');
     }
 
@@ -26,6 +27,10 @@ class MouseUICore {
         try {
             console.log('MouseUICore - Starting initialization...');
             
+            // DeckIntegrationシステムを初期化
+            this.deckIntegration = new window.DeckIntegration();
+            await this.deckIntegration.loadOfficialDeckData();
+            
             // エリアの検出と初期化
             await this.detectAreas();
             
@@ -35,7 +40,7 @@ class MouseUICore {
             // カード要素の初期化
             this.initializeCards();
             
-            console.log('MouseUICore - Initialization complete');
+            console.log('MouseUICore - Initialization complete with DeckIntegration');
             return true;
             
         } catch (error) {
@@ -463,9 +468,9 @@ class MouseUICore {
     }
 
     /**
-     * カードを指定エリアに移動
+     * カードを指定エリアに移動（制限チェック付き）
      */
-    moveCardToArea(cardElement, targetAreaName, operation) {
+    async moveCardToArea(cardElement, targetAreaName, operation) {
         const sourceArea = this.getCardArea(cardElement);
         const cardData = this.extractCardData(cardElement);
         const targetArea = this.areas[targetAreaName];
@@ -475,19 +480,56 @@ class MouseUICore {
             return false;
         }
 
-        // 移動処理
         try {
-            // 元の位置から削除
+            // デッキ制限チェック
+            if (this.deckIntegration) {
+                const validation = this.deckIntegration.validateDeckLimits(
+                    this.deckIntegration.officialDeckData, 
+                    targetAreaName, 
+                    cardData
+                );
+                
+                if (!validation.valid) {
+                    console.warn('MouseUICore - Move blocked by deck limits:', validation.errors);
+                    this.showOperationNotification(`移動失敗: ${validation.errors[0]}`, 'error');
+                    return false;
+                }
+                
+                // 警告がある場合は表示
+                if (validation.warnings.length > 0) {
+                    console.warn('MouseUICore - Move warnings:', validation.warnings);
+                    this.showOperationNotification(`警告: ${validation.warnings[0]}`, 'warning');
+                }
+            }
+
+            // 移動処理
             cardElement.style.transition = 'all 0.3s ease';
             cardElement.style.opacity = '0.5';
             
-            setTimeout(() => {
+            setTimeout(async () => {
                 // ターゲットエリアに追加
                 this.addCardToAreaElement(cardData, targetArea.element);
                 
                 // 元要素を削除または非表示
                 if (sourceArea !== 'search' && sourceArea !== 'info') {
                     cardElement.remove();
+                }
+                
+                // 公式サイトと同期（実際の移動処理）
+                if (this.deckIntegration && sourceArea !== 'search' && sourceArea !== 'info') {
+                    try {
+                        await this.deckIntegration.moveCardInOfficialDeck(cardData, sourceArea, targetAreaName);
+                    } catch (error) {
+                        console.error('MouseUICore - Official deck sync error:', error);
+                        this.showOperationNotification(`同期エラー: ${error.message}`, 'error');
+                    }
+                } else if (this.deckIntegration && (sourceArea === 'search' || sourceArea === 'info')) {
+                    try {
+                        await this.deckIntegration.addCardToOfficialDeck(cardData, targetAreaName);
+                    } catch (error) {
+                        console.error('MouseUICore - Official deck add error:', error);
+                        this.showOperationNotification(`追加エラー: ${error.message}`, 'error');
+                    }
                 }
                 
                 // 履歴に記録
@@ -500,7 +542,7 @@ class MouseUICore {
                     timestamp: Date.now()
                 });
                 
-                this.showOperationNotification(`${operation}: ${cardData.name}`);
+                this.showOperationNotification(`${operation}: ${cardData.name}`, 'success');
                 
             }, 150);
             
@@ -508,14 +550,15 @@ class MouseUICore {
             
         } catch (error) {
             console.error('MouseUICore - Move error:', error);
+            this.showOperationNotification(`移動エラー: ${error.message}`, 'error');
             return false;
         }
     }
 
     /**
-     * カードをエリアに追加
+     * カードをエリアに追加（制限チェック付き）
      */
-    addCardToArea(cardData, targetAreaName, operation) {
+    async addCardToArea(cardData, targetAreaName, operation) {
         const targetArea = this.areas[targetAreaName];
         
         if (!targetArea.element) {
@@ -524,7 +567,38 @@ class MouseUICore {
         }
 
         try {
+            // デッキ制限チェック
+            if (this.deckIntegration) {
+                const validation = this.deckIntegration.validateDeckLimits(
+                    this.deckIntegration.officialDeckData, 
+                    targetAreaName, 
+                    cardData
+                );
+                
+                if (!validation.valid) {
+                    console.warn('MouseUICore - Add blocked by deck limits:', validation.errors);
+                    this.showOperationNotification(`追加失敗: ${validation.errors[0]}`, 'error');
+                    return false;
+                }
+                
+                // 警告がある場合は表示
+                if (validation.warnings.length > 0) {
+                    console.warn('MouseUICore - Add warnings:', validation.warnings);
+                    this.showOperationNotification(`警告: ${validation.warnings[0]}`, 'warning');
+                }
+            }
+
             this.addCardToAreaElement(cardData, targetArea.element);
+            
+            // 公式サイトと同期（実際の追加処理）
+            if (this.deckIntegration) {
+                try {
+                    await this.deckIntegration.addCardToOfficialDeck(cardData, targetAreaName);
+                } catch (error) {
+                    console.error('MouseUICore - Official deck add error:', error);
+                    this.showOperationNotification(`同期エラー: ${error.message}`, 'error');
+                }
+            }
             
             // 履歴に記録
             this.recordOperation({
@@ -535,11 +609,12 @@ class MouseUICore {
                 timestamp: Date.now()
             });
             
-            this.showOperationNotification(`${operation}: ${cardData.name}`);
+            this.showOperationNotification(`${operation}: ${cardData.name}`, 'success');
             return true;
             
         } catch (error) {
             console.error('MouseUICore - Add error:', error);
+            this.showOperationNotification(`追加エラー: ${error.message}`, 'error');
             return false;
         }
     }
@@ -624,7 +699,7 @@ class MouseUICore {
     /**
      * 操作通知の表示
      */
-    showOperationNotification(message) {
+    showOperationNotification(message, type = 'success') {
         // 既存の通知を削除
         const existing = document.getElementById('mouseui-notification');
         if (existing) existing.remove();
@@ -633,27 +708,53 @@ class MouseUICore {
         const notification = document.createElement('div');
         notification.id = 'mouseui-notification';
         notification.textContent = message;
+        
+        // 通知タイプに応じた色設定
+        let backgroundColor, borderColor;
+        switch (type) {
+            case 'error':
+                backgroundColor = '#dc3545';
+                borderColor = '#c82333';
+                break;
+            case 'warning':
+                backgroundColor = '#ffc107';
+                borderColor = '#e0a800';
+                break;
+            case 'success':
+            default:
+                backgroundColor = '#28a745';
+                borderColor = '#1e7e34';
+                break;
+        }
+        
         notification.style.cssText = `
             position: fixed;
             top: 60px;
             right: 20px;
-            background: #28a745;
+            background: ${backgroundColor};
+            border: 2px solid ${borderColor};
             color: white;
             padding: 8px 12px;
             border-radius: 4px;
             font-size: 14px;
+            font-weight: bold;
             z-index: 10001;
             opacity: 0;
             transition: opacity 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
         `;
 
         document.body.appendChild(notification);
         
         setTimeout(() => notification.style.opacity = '1', 50);
+        
+        // エラーや警告は長めに表示
+        const displayTime = type === 'error' || type === 'warning' ? 4000 : 2000;
         setTimeout(() => {
             notification.style.opacity = '0';
             setTimeout(() => notification.remove(), 300);
-        }, 2000);
+        }, displayTime);
     }
 
     /**
@@ -683,7 +784,7 @@ class MouseUICore {
         }
         
         console.log('MouseUICore - Enabled');
-        this.showOperationNotification('MouseUI モード有効');
+        this.showOperationNotification('MouseUI モード有効', 'success');
     }
 
     /**
@@ -698,7 +799,7 @@ class MouseUICore {
         }
         
         console.log('MouseUICore - Disabled');
-        this.showOperationNotification('MouseUI モード無効');
+        this.showOperationNotification('MouseUI モード無効', 'success');
     }
 
     /**

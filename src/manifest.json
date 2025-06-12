@@ -23,6 +23,7 @@
         "https://www.db.yugioh-card.com/yugiohdb/*"
       ],
       "js": [
+        "js/deck-integration.js",
         "js/mouseui-core.js",
         "js/content.js"
       ],
