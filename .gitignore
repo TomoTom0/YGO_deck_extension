@@ -533,3 +533,29 @@ Temporary Items
 # add your custom gitignore here:
 !.gitignore
 !.gitsubmodules
+
+# Chrome Profile for extension development
+chrome-profile/
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Playwright test results and sessions
+extension-test-screenshot.png
+site-investigation-screenshot.png
+deck-analysis-screenshot.png
+error-screenshot.png
+test-results/
+playwright-report/
+test-report.json
+extension-test-report.json
+playwright-session/
+
+# Development tools and temp files
+.claude/
+.todo
+.wip
+
+# Windows Chrome Profile paths (if accidentally added)
+"C:\\*"

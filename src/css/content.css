@@ -11,9 +11,10 @@
     background: white;
     border: 2px solid #007bff;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    min-width: 250px;
-    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    min-width: 280px;
+    max-width: 450px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .ygo-support-panel {
@@ -37,18 +38,51 @@
     color: #333;
 }
 
-#ygo-analyze-btn {
+/* ボタンスタイル */
+#ygo-analyze-btn, #ygo-debug-btn {
     background: #007bff;
     color: white;
     border: none;
-    padding: 8px 16px;
+    padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
+    margin: 4px 2px;
+    transition: all 0.2s ease;
 }
 
-#ygo-analyze-btn:hover {
+#ygo-analyze-btn:hover, #ygo-debug-btn:hover {
     background: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#ygo-debug-btn {
+    background: #6c757d;
+}
+
+#ygo-debug-btn:hover {
+    background: #545b62;
+}
+
+/* デバッグエリア */
+#ygo-debug-area {
+    margin-top: 10px;
+    border-top: 1px solid #dee2e6;
+    padding-top: 10px;
+}
+
+#ygo-debug-content {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 /* 開発用 - デバッグ情報表示 */
@@ -62,6 +96,84 @@
     font-size: 12px;
     max-height: 200px;
     overflow-y: auto;
+}
+
+/* デッキ編集画面の改善 */
+.ygo-deck-enhanced {
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    background: rgba(0, 123, 255, 0.05);
+}
+
+.ygo-deck-enhanced .deck_set {
+    /* 公式の.deck_setクラスの改善 */
+    transition: all 0.3s ease;
+}
+
+.ygo-deck-enhanced .deck_set:hover {
+    background: rgba(0, 123, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* カード表示の改善 */
+.ygo-card-enhanced {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.ygo-card-enhanced:hover {
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding-left: 8px;
+}
+
+/* デッキ統計情報 */
+.ygo-deck-stats {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 15px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ygo-deck-stats h4 {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ygo-deck-stats .stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    font-size: 13px;
+}
+
+.ygo-deck-stats .stat-label {
+    color: #6c757d;
+}
+
+.ygo-deck-stats .stat-value {
+    color: #495057;
+    font-weight: 500;
+}
+
+/* ドラッグ&ドロップの視覚的フィードバック */
+.ygo-drag-over {
+    background: rgba(40, 167, 69, 0.1);
+    border: 2px dashed #28a745;
+    border-radius: 8px;
+}
+
+.ygo-dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+    z-index: 1000;
 }
 
 /* 既存のページスタイルを尊重しつつ、必要な調整 */
@@ -84,4 +196,96 @@
     justify-content: center;
     font-size: 10px;
     font-weight: bold;
+}
+
+/* ホーム画面クイックアクセスパネル */
+#ygo-quick-access {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    margin: 20px 0;
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.ygo-quick-panel {
+    padding: 20px;
+}
+
+.ygo-quick-panel h3 {
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ygo-quick-buttons {
+    margin: 15px 0;
+}
+
+.ygo-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 4px 8px 4px 0;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.ygo-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ygo-status {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.ygo-status p {
+    margin: 5px 0;
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 700px) {
+    #ygo-deck-support-ui {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+    
+    .ygo-deck-stats {
+        font-size: 12px;
+    }
+    
+    #ygo-quick-access {
+        margin: 10px;
+    }
+    
+    .ygo-quick-panel {
+        padding: 15px;
+    }
+    
+    .ygo-quick-panel h3 {
+        font-size: 18px;
+    }
+    
+    .ygo-btn {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
 }

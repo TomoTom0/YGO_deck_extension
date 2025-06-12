@@ -1,0 +1,27 @@
+{
+  "name": "ygo_deck_extension",
+  "version": "1.0.0",
+  "description": "公式カードデータベースのデッキ画面にMouseUIモードやExport / Import / Sort / Shuffleボタンを追加します。",
+  "main": "debug-manifest.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TomoTom0/YGO_deck_extension.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TomoTom0/YGO_deck_extension/issues"
+  },
+  "homepage": "https://github.com/TomoTom0/YGO_deck_extension#readme",
+  "devDependencies": {
+    "playwright": "^1.53.0"
+  }
+}
