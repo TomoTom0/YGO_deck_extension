@@ -457,4 +457,9 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = MouseUIDisplay;
 }
 
+// Register as global for Chrome extension usage
+if (typeof window !== 'undefined') {
+    window.MouseUIDisplay = MouseUIDisplay;
+}
+
 console.log('MouseUIDisplay - Module loaded');
