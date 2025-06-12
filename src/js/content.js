@@ -455,6 +455,9 @@ class YGODeckSupport {
                 if (this.mouseUICore) {
                     this.setupUIDisplayIntegration();
                 }
+
+                // MouseUI表示システムの初期化
+                await this.initMouseUIDisplay();
                 
             } else {
                 console.error('YGO Deck Support - UI Display Manager initialization failed');
@@ -504,6 +507,29 @@ class YGODeckSupport {
                 });
             }
         });
+    }
+
+    /**
+     * MouseUI表示システムの初期化
+     */
+    async initMouseUIDisplay() {
+        console.log('YGO Deck Support - Initializing MouseUI Display System...');
+        
+        try {
+            // DeckIntegrationが利用可能か確認
+            if (!this.deckIntegration) {
+                console.error('YGO Deck Support - DeckIntegration not available for MouseUI Display');
+                return;
+            }
+
+            // MouseUIDisplayのインスタンス作成
+            this.mouseUIDisplay = new window.MouseUIDisplay(this.deckIntegration);
+            
+            console.log('YGO Deck Support - MouseUI Display System initialized successfully');
+            
+        } catch (error) {
+            console.error('YGO Deck Support - MouseUI Display initialization error:', error);
+        }
     }
 
     /**
@@ -1040,14 +1066,18 @@ class YGODeckSupport {
         
         // MouseUI関連のオブジェクト
         window.YGO.MouseUI = {
-            enabled: false,
+            enabled: this.mouseUIEnabled || false,
+            core: this.mouseUICore,
+            display: this.mouseUIDisplay,
             toggle: () => this.toggleMouseUI(),
             sort: () => this.sortDeck(),
             shuffle: () => this.shuffleDeck(),
             clear: () => this.clearDeck(),
             export: () => this.exportDeck(),
             import: () => this.importDeck(),
-            save: () => this.saveDeck()
+            save: () => this.saveDeck(),
+            showFullScreen: () => this.mouseUIDisplay?.showMouseUI(),
+            hideFullScreen: () => this.mouseUIDisplay?.hideMouseUI()
         };
         
         // デッキ管理関連のオブジェクト
@@ -1422,6 +1452,35 @@ function addDeckReadingTestFunctions() {
         }
     };
 
-    console.log('🧪 デッキ読み取りテスト関数が利用可能になりました');
-    console.log('   コンソールで testDeckReading() を実行してください');
+    // MouseUI表示テスト関数も追加
+    window.testMouseUIDisplay = function() {
+        console.log('🎮 MouseUI表示テスト開始...');
+        
+        try {
+            const mouseUIDisplay = window.YGO?.MouseUI?.display;
+            if (!mouseUIDisplay) {
+                console.error('❌ MouseUIDisplayが利用できません');
+                return;
+            }
+
+            console.log('✅ MouseUIDisplayが利用可能です');
+            console.log('   フルスクリーンMouseUIを表示するには: YGO.MouseUI.showFullScreen()');
+            console.log('   MouseUIを非表示にするには: YGO.MouseUI.hideFullScreen()');
+            
+            return {
+                available: true,
+                showFullScreen: () => window.YGO.MouseUI.showFullScreen(),
+                hideFullScreen: () => window.YGO.MouseUI.hideFullScreen()
+            };
+
+        } catch (error) {
+            console.error('❌ MouseUI表示テストエラー:', error);
+            return { error: error.message };
+        }
+    };
+
+    console.log('🧪 テスト関数が利用可能になりました');
+    console.log('   デッキ読み取りテスト: testDeckReading()');
+    console.log('   MouseUI表示テスト: testMouseUIDisplay()');
+    console.log('   フルスクリーンMouseUI表示: YGO.MouseUI.showFullScreen()');
 }

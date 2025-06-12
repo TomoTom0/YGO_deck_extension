@@ -138,6 +138,9 @@ class DeckIntegration {
                     const imgInput = nameInput.closest('tr')?.querySelector('input.imgs');
                     const imgId = imgInput ? imgInput.value : null;
                     
+                    // カード画像URL生成
+                    const imageUrl = this.generateCardImageUrl(cardId, imgId);
+                    
                     // カードデータを作成
                     for (let i = 0; i < count; i++) {
                         cards.push({
@@ -145,8 +148,10 @@ class DeckIntegration {
                             name: cardName,
                             type: cardType,
                             imgId: imgId,
+                            imageUrl: imageUrl,
                             count: count,
-                            originalIndex: index + 1
+                            originalIndex: index + 1,
+                            uniqueId: `${cardId}_${index}_${i}` // 重複カード用のユニークID
                         });
                     }
                     
@@ -159,6 +164,54 @@ class DeckIntegration {
         }
         
         return cards;
+    }
+
+    /**
+     * カード画像URLを生成
+     */
+    generateCardImageUrl(cardId, imgId) {
+        try {
+            // 遊戯王DBの画像URL形式
+            // 基本パターン: https://www.db.yugioh-card.com/yugiohdb/card_image/cardId/cardId.jpg
+            
+            if (cardId && cardId !== 'unknown') {
+                // メイン画像URL
+                const mainImageUrl = `https://www.db.yugioh-card.com/yugiohdb/card_image/${cardId}/${cardId}.jpg`;
+                
+                // imgIdがある場合は詳細な画像ID使用
+                if (imgId && imgId.includes('_')) {
+                    const imgParts = imgId.split('_');
+                    if (imgParts.length >= 4) {
+                        const [id, version, art, size] = imgParts;
+                        return `https://www.db.yugioh-card.com/yugiohdb/card_image/${id}/${id}_${version}_${art}_${size}.jpg`;
+                    }
+                }
+                
+                return mainImageUrl;
+            }
+            
+            // デフォルト画像（カードが見つからない場合）
+            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE0NSIgdmlld0JveD0iMCAwIDEwMCAxNDUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTQ1IiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwIiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Ob0ltYWdlPC90ZXh0Pgo8L3N2Zz4K';
+            
+        } catch (error) {
+            console.error('DeckIntegration - Error generating card image URL:', error);
+            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjE0NSIgdmlld0JveD0iMCAwIDEwMCAxNDUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTQ1IiBmaWxsPSIjZGRkIi8+Cjx0ZXh0IHg9IjUwIiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5FcnJvcjwvdGV4dD4KPHN2Zz4K';
+        }
+    }
+
+    /**
+     * カード画像の存在確認
+     */
+    async validateCardImage(imageUrl) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = imageUrl;
+            
+            // タイムアウト設定（3秒）
+            setTimeout(() => resolve(false), 3000);
+        });
     }
 
     /**
