@@ -3,6 +3,7 @@
 .memo*
 escape/*
 ignored*
+doc/research
 
 #################### ExtJs.gitignore ####################
 

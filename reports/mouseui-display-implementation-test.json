@@ -1,0 +1,92 @@
+{
+  "timestamp": "2025-06-12T18:35:54.389Z",
+  "tests": [
+    {
+      "name": "ファイル存在確認",
+      "passed": true,
+      "timestamp": "2025-06-12T18:35:54.392Z",
+      "details": {
+        "missingFiles": [],
+        "details": "全ファイル存在"
+      }
+    },
+    {
+      "name": "JavaScript構文チェック",
+      "passed": true,
+      "timestamp": "2025-06-12T18:35:54.393Z",
+      "details": {
+        "syntaxErrors": [],
+        "details": "構文エラーなし"
+      }
+    },
+    {
+      "name": "Manifest設定チェック",
+      "passed": true,
+      "timestamp": "2025-06-12T18:35:54.393Z",
+      "details": {
+        "checks": {
+          "hasMouseUIDisplay": true,
+          "hasCorrectOrder": true,
+          "hasRequiredPermissions": true
+        },
+        "details": "Manifest設定正常"
+      }
+    },
+    {
+      "name": "コード構造チェック",
+      "passed": true,
+      "timestamp": "2025-06-12T18:35:54.394Z",
+      "details": {
+        "structureChecks": {
+          "hasMouseUIDisplayClass": true,
+          "hasShowMouseUIMethod": true,
+          "hasHideMouseUIMethod": true,
+          "hasCreateCardElementMethod": true,
+          "hasDisplayCardsInAreaMethod": true
+        },
+        "integrationChecks": {
+          "hasGenerateCardImageUrl": true,
+          "hasValidateCardImage": true,
+          "hasImageUrlProperty": true
+        },
+        "details": "コード構造正常"
+      }
+    },
+    {
+      "name": "画像URL生成ロジックテスト",
+      "passed": true,
+      "timestamp": "2025-06-12T18:35:54.394Z",
+      "details": {
+        "testCases": [
+          {
+            "cardId": "21379",
+            "imgId": "21379_1_1_1",
+            "expected": "https://www.db.yugioh-card.com/yugiohdb/card_image/21379/21379_1_1_1.jpg"
+          },
+          {
+            "cardId": "21379",
+            "imgId": null,
+            "expected": "https://www.db.yugioh-card.com/yugiohdb/card_image/21379/21379.jpg"
+          },
+          {
+            "cardId": "unknown",
+            "imgId": null,
+            "expected": "data:image/svg+xml"
+          }
+        ],
+        "checks": {
+          "hasBasicPattern": true,
+          "hasImgIdPattern": true,
+          "hasDefaultPattern": true
+        },
+        "details": "画像URL生成ロジック実装済み"
+      }
+    }
+  ],
+  "summary": {
+    "totalTests": 5,
+    "passedTests": 5,
+    "failedTests": 0,
+    "errors": []
+  }
+}
