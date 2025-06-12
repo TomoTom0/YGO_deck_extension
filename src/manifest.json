@@ -24,6 +24,7 @@
       ],
       "js": [
         "js/deck-integration.js",
+        "js/ui-display-manager.js",
         "js/mouseui-core.js",
         "js/content.js"
       ],

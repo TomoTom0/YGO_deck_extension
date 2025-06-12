@@ -4,7 +4,7 @@
 const path = require('path');
 
 const EXTENSION_PATH = path.resolve(__dirname, '../src');
-const CHROME_PROFILE_PATH = '/home/tomo/work/app/YGO_deck_extension/chrome-profile';
+const CHROME_PROFILE_PATH = '/mnt/c/Users/tomo/AppData/Local/Google/Chrome/User Data/Profile 2';
 
 module.exports = {
   channel: 'chrome',

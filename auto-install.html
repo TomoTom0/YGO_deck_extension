@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戯王DBデッキサポート - 自動インストール</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .version {
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #495057;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .step h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        
+        .step p {
+            margin: 5px 0;
+            color: #6c757d;
+        }
+        
+        .path-box {
+            background: #212529;
+            color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 遊戯王DBデッキサポート</h1>
+            <span class="version">v3.0.0</span>
+            <p>Chrome拡張機能の自動インストール</p>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ 重要:</strong> Chrome拡張機能は、セキュリティ上の理由により、完全な自動インストールができません。
+            以下の手順に従って手動でインストールしてください。
+        </div>
+        
+        <div class="step">
+            <h3>🌐 ステップ1: Chrome拡張機能ページを開く</h3>
+            <p>以下のボタンをクリックするか、Chromeのアドレスバーに以下のURLを入力してください：</p>
+            <div class="path-box">chrome://extensions/</div>
+            <a href="#" class="btn" onclick="openExtensionsPage()">拡張機能ページを開く</a>
+        </div>
+        
+        <div class="step">
+            <h3>🔧 ステップ2: 開発者モードを有効化</h3>
+            <p>拡張機能ページの右上にある「開発者モード」のトグルスイッチをONにしてください。</p>
+        </div>
+        
+        <div class="step">
+            <h3>📁 ステップ3: 拡張機能を読み込み</h3>
+            <p>「パッケージ化されていない拡張機能を読み込む」ボタンをクリックし、以下のフォルダを選択してください：</p>
+            <div class="path-box" id="extension-path">取得中...</div>
+            <button class="btn btn-secondary" onclick="copyPath()">パスをコピー</button>
+        </div>
+        
+        <div class="step">
+            <h3>🎯 ステップ4: 遊戯王DBサイトでテスト</h3>
+            <p>拡張機能の読み込みが完了したら、遊戯王公式DBサイトにアクセスしてテストしてください：</p>
+            <a href="https://www.db.yugioh-card.com/yugiohdb/" target="_blank" class="btn">遊戯王DBサイトを開く</a>
+        </div>
+        
+        <div class="success" id="success-message" style="display: none;">
+            <strong>✅ 成功!</strong> 拡張機能のインストールが完了しました。
+            遊戯王DBサイトで右上にサポートパネルが表示されることを確認してください。
+        </div>
+    </div>
+    
+    <script>
+        // 拡張機能のパスを設定
+        function setExtensionPath() {
+            const pathElement = document.getElementById('extension-path');
+            const currentPath = window.location.href;
+            const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+            const extensionPath = basePath + '/src';
+            pathElement.textContent = extensionPath;
+        }
+        
+        // Chrome拡張機能ページを開く
+        function openExtensionsPage() {
+            try {
+                // Chrome拡張機能ページは直接開けないため、新しいタブで開く
+                window.open('chrome://extensions/', '_blank');
+            } catch (error) {
+                alert('chrome://extensions/ を手動で開いてください。');
+            }
+        }
+        
+        // パスをクリップボードにコピー
+        function copyPath() {
+            const pathElement = document.getElementById('extension-path');
+            const path = pathElement.textContent;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(path).then(() => {
+                    alert('パスがクリップボードにコピーされました！');
+                });
+            } else {
+                // フォールバック
+                const tempInput = document.createElement('input');
+                tempInput.value = path;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                alert('パスがクリップボードにコピーされました！');
+            }
+        }
+        
+        // インストール完了を確認
+        function checkInstallation() {
+            // 拡張機能が有効化されているかチェック
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                document.getElementById('success-message').style.display = 'block';
+            }
+        }
+        
+        // ページ読み込み時の初期化
+        window.addEventListener('load', () => {
+            setExtensionPath();
+            // 5秒後にインストール状況をチェック
+            setTimeout(checkInstallation, 5000);
+        });
+    </script>
+</body>
+</html>

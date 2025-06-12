@@ -11,6 +11,7 @@ class YGODeckSupport {
         this.userPreferences = {};
         this.notificationTimeout = null;
         this.mouseUICore = null; // MouseUIコアシステム
+        this.uiDisplayManager = null; // UI表示管理システム
         console.log('YGO Deck Support - Initializing on page:', this.currentPage);
     }
 
@@ -398,6 +399,9 @@ class YGODeckSupport {
         
         // MouseUIコアシステムを初期化
         this.initMouseUICore();
+        
+        // UI表示管理システムを初期化
+        this.initUIDisplayManager();
     }
     
     /**
@@ -429,6 +433,77 @@ class YGODeckSupport {
         } catch (error) {
             console.error('YGO Deck Support - MouseUI Core System error:', error);
         }
+    }
+    
+    /**
+     * UI表示管理システムの初期化
+     */
+    async initUIDisplayManager() {
+        console.log('YGO Deck Support - Initializing UI Display Manager...');
+        
+        try {
+            // UIDisplayManagerのインスタンス作成
+            this.uiDisplayManager = new window.UIDisplayManager();
+            
+            // 初期化実行
+            const success = await this.uiDisplayManager.initialize();
+            
+            if (success) {
+                console.log('YGO Deck Support - UI Display Manager initialized successfully');
+                
+                // MouseUICoreとの連携設定
+                if (this.mouseUICore) {
+                    this.setupUIDisplayIntegration();
+                }
+                
+            } else {
+                console.error('YGO Deck Support - UI Display Manager initialization failed');
+            }
+            
+        } catch (error) {
+            console.error('YGO Deck Support - UI Display Manager error:', error);
+        }
+    }
+    
+    /**
+     * UI表示システムとMouseUIの統合設定
+     */
+    setupUIDisplayIntegration() {
+        console.log('YGO Deck Support - Setting up UI Display integration...');
+        
+        // 表示モード変更時のイベントリスナー
+        this.uiDisplayManager.on('displayModeChanged', (data) => {
+            console.log(`YGO Deck Support - Display mode changed: ${data.oldMode} → ${data.newMode}`);
+            
+            // MouseUIの表示を更新
+            if (this.mouseUICore) {
+                this.refreshMouseUIDisplay();
+            }
+        });
+        
+        // MouseUICore にUIDisplayManagerを設定
+        if (this.mouseUICore) {
+            this.mouseUICore.uiDisplayManager = this.uiDisplayManager;
+        }
+    }
+    
+    /**
+     * MouseUI表示の再描画
+     */
+    refreshMouseUIDisplay() {
+        // 全てのデッキエリアのカードを再描画
+        const deckAreas = ['main', 'extra', 'side'];
+        deckAreas.forEach(areaName => {
+            const areaElement = document.getElementById(`deck-content-${areaName}`);
+            if (areaElement) {
+                const cardElements = areaElement.querySelectorAll('.card-display, .mouseui-card');
+                cardElements.forEach(element => {
+                    if (this.uiDisplayManager) {
+                        this.uiDisplayManager.updateCardElementDisplay(element);
+                    }
+                });
+            }
+        });
     }
 
     /**

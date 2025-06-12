@@ -1,0 +1,1406 @@
+
+
+<!-- ///Top  -->
+
+<!DOCTYPE html>
+<html>
+<head>
+
+
+
+<!-- ///MetaTop  -->
+
+	
+
+<!-- ///MetaComon  -->
+
+	
+	<meta http-equiv="x-ua-compatible" content="IE=10" >
+	<meta http-equiv="x-ua-compatible" content="IE=EmulateIE10" >
+
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Content-Language" content="en">
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<meta http-equiv="imagetoolbar" content="no">
+	<meta name="format-detection" content="telephone=no">
+
+	<meta property="og:site_name" content="Yu-Gi-Oh! Neuron(TCG CARD DATABASE)">
+
+	<meta property="og:image" content="http://www.db.yugioh-card.com/sns/logo_ocg_f.png" />
+	<meta property="og:type" content="product" />
+	<meta property="og:locale" content="en_US" />
+
+	<meta name="twitter:card" content="summary"/>
+
+	<meta name="twitter:image" content="http://www.db.yugioh-card.com/sns/logo_ocg_t.png" />
+	<script type="text/javascript" src="/yugiohdb/ga.js"></script>
+	<meta name="copyright" content="KONAMI">
+	<link rel="shortcut icon" href="external/image/yugioh.ico">
+	<link rel="apple-touch-icon" href="external/image/apple-touch-icon.png">
+
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+	
+
+<!-- ///MetaRealURL  -->
+
+
+	
+
+
+	<meta name="keywords" content="Home | Yu-Gi-Oh! Neuron(TCG CARD DATABASE),KONAMI,yugioh,Yu-Gi-Oh,TCG,card,database,card,list,Forbidden,Limited,Semi-limited,Cards,Included in," lang="en" />
+	<meta name="description" content="Home | Yu-Gi-Oh! Neuron(TCG CARD DATABASE)|This is an official site for the Yu-Gi-Oh! Trading Card Game. <br>You can search through all Yu-Gi-Oh! TCG cards, check detailed rules, and view the Forbidden & Limited List. <br>You can also manage your own cards and Decks by registering them in My Deck, and search publicly available Deck Recipes to help you build your own Deck." />
+	<meta name="title" content="Home | Yu-Gi-Oh! Neuron(TCG CARD DATABASE)" />
+
+	<meta property="og:title" content="Home | Yu-Gi-Oh! Neuron(TCG CARD DATABASE)" />
+	<meta property="og:url" content="https://www.db.yugioh-card.com/yugiohdb/?request_locale=en"/>
+
+	<meta property="og:description" content="Home | Yu-Gi-Oh! Neuron(TCG CARD DATABASE)|This is an official site for the Yu-Gi-Oh! Trading Card Game. <br>You can search through all Yu-Gi-Oh! TCG cards, check detailed rules, and view the Forbidden & Limited List. <br>You can also manage your own cards and Decks by registering them in My Deck, and search publicly available Deck Recipes to help you build your own Deck." />
+
+	<meta name="twitter:title" content="Home | Yu-Gi-Oh! Neuron(TCG CARD DATABASE)" />
+	<meta name="twitter:description" content="Home | Yu-Gi-Oh! Neuron(TCG CARD DATABASE)|This is an official site for the Yu-Gi-Oh! Trading Card Game. <br>You can search through all Yu-Gi-Oh! TCG cards, check detailed rules, and view the Forbidden & Limited List. <br>You can also manage your own cards and Decks by registering them in My Deck, and search publicly available Deck Recipes to help you build your own Deck." />
+
+	<meta name="twitter:url" content="https://www.db.yugioh-card.com/yugiohdb/?request_locale=en"/>
+
+	<title>Yu-Gi-Oh! Neuron(TRADING CARD GAME CARD DATABASE)</title>
+
+
+
+<!-- ///Js  -->
+
+<!--[if lt IE 9]>
+	<script type="text/javascript" src="external/html5/js/html5shiv.js"></script>
+<![endif]-->
+	<script type="text/javascript" src="external/jquery/jquery-3.6.0.js"></script>
+
+	<script type="text/javascript" src="external/jquery/jquery-ui-1.13.1.custom/jquery-ui.js"></script>
+
+	<script type="text/javascript" src="external/js/common.js"></script>
+
+	<script type="text/javascript" src="external/jquery/scrolltopcontrol.js"></script>
+
+
+
+
+
+<!-- ///Css  -->
+
+	<!--link type="text/css" rel="stylesheet" href="external/jquery/jquery-ui-1.8.16.custom/css/ui-lightness/jquery-ui-1.8.16.custom.css"-->
+	<link type="text/css" rel="stylesheet" href="external/jquery/jquery-ui-1.13.1.custom/jquery-ui.css">
+
+	<link type="text/css" rel="stylesheet" href="external/css/common.css?20171030">
+	<link type="text/css" rel="stylesheet" href="external/css/css_headerfooter.css?20171030">
+	<link type="text/css" rel="stylesheet" href="external/css/css_yugiohdb.css?20171030">
+
+<link rel="stylesheet" type="text/css" href="external/css/CardTop.css">
+<script type="text/javascript" src="external/js/individual/Top.js"></script>
+	<script type="text/javascript">
+	<!--
+	$(function(){
+		$("#header_menu,#spnav").addClass("top_p");
+
+		
+		$(window).on("scroll", function() {
+			if (0< $(this).scrollTop()) {
+				$("#header_menu,#spnav").removeClass("scrolltop");
+				}else{
+				$("#header_menu,#spnav").addClass("scrolltop");
+			}
+		});
+
+		
+		$('input:text').val('');
+		$('#stype').val('1');
+		$('#ctype').val('');
+		$('input:checkbox').prop('checked', false);
+ 		$('#othercon_and').prop('checked', false).closest('a').addClass('radio_off_left').removeClass('radio_on_left').find('img').attr('src', 'external/image/parts/check_off.png');
+		$('#othercon_or').prop('checked', true).closest('a').addClass('radio_on_right').removeClass('radio_off_right').find('img').attr('src', 'external/image/parts/check_on.png');
+
+		
+
+		$('#stype').change({
+			theme: 'stype_en'
+		});
+		$('#ctype').change(function(value, label) {
+			var value = $(this).val();
+
+				ChangeCtype(value, label);
+
+		});
+
+		
+		$('.ut_link').click(function(){
+			$(this).children(".update_text").toggle();
+		});
+
+	// バナー関連ここから
+		var banner_list_size = $('#banner_list ul li').length;
+		var co2 = 0;
+		var val = 0;
+		var val2 = banner_list_size -1;
+		var src = $("#banner_list .main_banner li img").attr('src');
+		$("#banner_list ul li").not(':first').hide();
+
+
+
+		function ChangeBanner(){
+			//$("#title_msg").text(val);//確認用
+			$("#banner_list ul li").hide();
+			$("#main_banner_mini div").removeClass("now");
+			$("#banner_list ul li").eq(val).show().css({opacity: "0",marginLeft:"+0px"});
+			$("#banner_list ul li").eq(val).animate({marginLeft:"0",opacity: "100%"},{"duration": 500});
+			$("#main_banner_mini div").eq(val).addClass("now");
+			//alert(src);
+			co2 = 0;
+		}
+
+		// ＜＞押した時
+		$('#banner_list #left_btn').click(function() {
+			val = val -1;
+			if(0 > val){
+				val = val2;
+			}
+			ChangeBanner();
+		});
+		$('#banner_list #right_btn').click(function() {
+			val++;
+			if(val > val2){
+				val = 0;
+			}
+			ChangeBanner();
+		});
+
+		// バナーが二枚以上なら
+		if(banner_list_size >= 2){
+			//alert(banner_list_size);
+			setInterval(function(){
+			if(co2 ==5){
+				$('#banner_list #right_btn').click();
+			}
+			co2++;
+				//$("#test").text(val);//確認用
+			},1000);
+
+			$("#bg_set").prepend("<div id='main_banner_mini'></div>");
+			for (var i=0; i < banner_list_size ; i++) {
+				$("#main_banner_mini").append("<div>□</div>");
+			}
+			$("#main_banner_mini div:first-child").addClass("now");
+
+		}else{
+			$("#banner_list svg").hide();
+		}
+
+		//小さいボタン押した時
+		$('#main_banner_mini div').click(function() {
+			val = $('#main_banner_mini div').index(this);
+			ChangeBanner();
+		});
+
+	// バナー関連ここまで
+
+	});
+
+
+	//-->
+	</script>
+	<link rel="alternate" hreflang="x-default" title="遊戯王ニューロン ( オフィシャルカードゲーム デュエルモンスターズ カードデータベース ）" href="https://www.db.yugioh-card.com/?request_locale=ja">
+	<link rel="alternate" hreflang="ja" title="遊戯王ニューロン ( オフィシャルカードゲーム デュエルモンスターズ カードデータベース ）" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=ja">
+	<link rel="alternate" hreflang="en" title="Yu-Gi-Oh! TRADING CARD GAME - CARD DATABASE" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=en">
+	<link rel="alternate" hreflang="de" title="Yu-Gi-Oh! TRADING CARD GAME – KARTENDATENBANK" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=de">
+	<link rel="alternate" hreflang="fr" title="Yu-Gi-Oh! JEU DE CARTES À JOUER - BASE DE DONNÉES DE CARTES" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=fr">
+	<link rel="alternate" hreflang="it" title="Yu-Gi-Oh! GIOCO DI CARTE COLLEZIONABILI - DATABASE CARTE" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=it">
+	<link rel="alternate" hreflang="es" title="Yu-Gi-Oh! JUEGO DE CARTAS COLECCIONABLES - BASE DE DATOS DE CARTAS" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=es">
+	<link rel="alternate" hreflang="pt" title="Yu-Gi-Oh! ESTAMPAS ILUSTRADAS - BANCO DE DADOS DE CARDS" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=pt">
+	<link rel="alternate" hreflang="ko" title="유희왕 오피셜 카드게임 - 카드 데이터베이스" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=ko">
+	<link rel="alternate" hreflang="ae" title="Yu-Gi-Oh! OFFICIAL CARD GAME - CARD DATABASE" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=ae">
+
+</head>
+
+
+
+
+<!-- ///Header  -->
+
+<body class="en">
+	<script type="text/javascript">
+	<!--
+	$(function(){
+
+		
+		$('.rush').remove();
+
+
+	// バナー関連ここまで
+
+	});
+
+
+	//-->
+	</script>
+<div id="wrapper">
+	<header>
+		<div id="header_meta">
+			<a href="https://www.konami.com/games/?menu=1" target="_blank"><img src="https://www.yugioh-card.com/ci/logo/konami_logo_normal.png" alt="KONAMI" id="konami" class="ui-draggable"></a>
+			<div class="roginlanguage">
+
+				<div id="roginlogout">
+	
+	
+					
+					<a class="btn my" href="/yugiohdb/member_login.action"><span>Log in</span></a>
+	
+	
+	
+				</div>
+				
+				<nav id="language">
+					
+					<div id="nowlanguage" class="waku orn">
+						
+						English
+						
+						
+						
+						
+				 		
+				 		
+				 		
+					</div>
+					
+					<div id="lang_mane">
+						<div class="rush">
+							<ul>
+								<li><a href="javascript:ChangeLanguage('ja')" >日本語</a></li>
+								<li><a href="javascript:ChangeLanguage('ko')" >한글</a></li>
+							</ul>
+						</div>
+						<div class="ocg ocgtcg">
+							<p>OCG</p>
+							<ul>
+								<li><a href="javascript:ChangeLanguage('ja')" >日本語</a></li>
+								<li><a href="javascript:ChangeLanguage('ko')" >한글</a></li>
+								<li><a href="javascript:ChangeLanguage('ae')" >English(Asia)</a></li>
+							</ul>
+						</div>
+						<div class="ocg ocgtcg">
+							<p>TCG</p>
+							<ul>
+								<li><a href="javascript:ChangeLanguage('en')" class="current">English</a></li>
+								<li><a href="javascript:ChangeLanguage('de')" >Deutsch</a></li>
+								<li><a href="javascript:ChangeLanguage('fr')" >Fran&ccedil;ais</a></li>
+								<li><a href="javascript:ChangeLanguage('it')" >Italiano</a></li>
+								<li><a href="javascript:ChangeLanguage('es')" >Espa&ntilde;ol</a></li>
+								<li><a href="javascript:ChangeLanguage('pt')" >Portugues</a></li>
+							</ul>
+						</div>
+
+					</div>
+				</nav>
+
+			</div>
+		</div><!--#header_meta-->
+
+
+		<div id="header_menu">
+			<nav>
+				
+				<div class="logo">
+					<a href="/yugiohdb/"><h1>Yu-Gi-Oh! Neuron(TRADING CARD GAME CARD DATABASE)</h1></a>
+				</div>
+				
+				<div id="spnav_btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41.59 31"><defs></defs><path  d="M2.63,0H39a2.64,2.64,0,0,1,2.64,2.63h0A2.63,2.63,0,0,1,39,5.26H2.63A2.63,2.63,0,0,1,0,2.63H0A2.63,2.63,0,0,1,2.63,0Z"/><path  d="M2.63,12.87H39a2.64,2.64,0,0,1,2.64,2.63h0A2.64,2.64,0,0,1,39,18.13H2.63A2.63,2.63,0,0,1,0,15.5H0A2.63,2.63,0,0,1,2.63,12.87Z"/><path d="M2.63,25.74H39a2.63,2.63,0,0,1,2.64,2.63h0A2.64,2.64,0,0,1,39,31H2.63A2.63,2.63,0,0,1,0,28.37H0A2.63,2.63,0,0,1,2.63,25.74Z"/></svg></div>
+				
+
+<!-- ///nav_m  -->
+
+				<ul class="main_menu">
+					
+					<li class="menu_top"><a href="/yugiohdb/"><?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.6 33.7"><path d="M23.4,0h-3.9L0,18l3.5,3.7,4.5-4.2,3,16.2H31.6l3-16.2,4.5,4.2,3.5-3.8L23.4,0Zm-1.8,25.6c-3.9,.1-7-3-7.1-6.9s3-7.1,6.9-7.1,7.1,3.2,7.1,7-3.1,7-6.9,7Z"/></svg><h3>Home</h3></a></li>
+
+					
+					<li class="menu_card_search">
+						<a class="main" href="/yugiohdb/card_search.action?wname=CardSearch"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardssvg">
+      <path class="svg_stroke_bold" d="M386.99,88.65c59.21,53.03,64.22,144.02,11.17,203.24-53.03,59.21-144.03,64.22-203.24,11.17-59.21-53.03-64.22-144.03-11.17-203.24,53.03-59.21,144.03-64.22,203.24-11.17h0Z"/>
+      <path class="svg_stroke_bold" d="M65.11,448.08l130.1-145.25"/>
+    </g>
+  </g>
+</svg><h3>Card Search</h3></a>
+
+					</li>
+
+					
+					<li class="menu_cardlist sab_menu">
+						<a class="bg main" href="/yugiohdb/card_list.action?wname=CardSearch">
+							<span class="ocg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistocgtcgsvg">
+      <path id="pass" class="svg_stroke_normal" d="M289.72,331.77l-156.04,33.93-98.64-86.97c-.14-.12-.08-.35.1-.38l231.31-44.82"/>
+      <path id="pass-2" data-name="pass" class="svg_stroke_normal" d="M134.59,428.35l-.36-62.64"/>
+      <path id="pass-3" data-name="pass" class="svg_stroke_normal" d="M289.72,397.09l-155.31,30.9-100.43-95.6v-189.02l17.62-5.79s29.45-105.01,101.15-102.11c0,0,81.11-5.07,90.53,79.66l19.55.73,4.35,117.32,22.54,9.45"/>
+      <path id="pass-4" data-name="pass" class="svg_stroke_normal" d="M287.62,476.19V119.05h178.57v357.14h-178.57ZM379.42,166.08c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+							<span class="rush"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistrushsvg">
+      <path class="svg_stroke_normal" d="M157.48,49.38l-115.37,9.08c-.24.02-.28.36-.04.43l69.93,20.62h.04l142.44-11.96c.12,0,.13-.18,0-.2l-96.97-17.97h-.03,0Z"/>
+      <path class="svg_stroke_normal" d="M111.8,405.59l-70.48-46.17c-.24-.16-.39-.43-.39-.72V59.72c0-.58.56-.99,1.11-.83l69.82,20.58c.1.03.21.04.32.03l142.1-11.94c.51-.04.94.36.94.86v306.39c0,.41-.29.76-.69.85l-142.07,30.04c-.23.05-.46,0-.65-.12h0Z"/>
+      <path class="svg_stroke_normal" d="M112.01,79.52l.09,326.26"/>
+      <path class="svg_stroke_normal" d="M278.71,452.38V95.24h178.57v357.14h-178.57ZM370.51,142.27c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+							<h3>Included in</h3>
+						</a>
+						<ul>
+							<li><a href="/yugiohdb/card_list.action?clm=3&wname=CardSearch">Sort by Release Date (Desc.)</a></li>
+							<li><a href="/yugiohdb/card_list.action?clm=1&wname=CardSearch">Products</a></li>
+							<li><a href="/yugiohdb/card_list.action?clm=2&wname=CardSearch">Perks/Bundles</a></li>
+				
+						</ul>
+					</li>
+
+					
+					<li class="menu_decks">
+						<a href="/yugiohdb/deck_search.action?wname=MemberDeck"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="decksvg">
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+      <path class="svg_stroke_bold" d="M283.54,83.48c42.29,37.88,45.87,102.87,7.98,145.17-37.88,42.29-102.88,45.87-145.17,7.98-42.29-37.88-45.87-102.88-7.98-145.17,37.88-42.29,102.88-45.87,145.17-7.98h0Z"/>
+      <path class="svg_stroke_bold" d="M53.63,340.22l92.93-103.75"/>
+    </g>
+  </g>
+</svg><h3>Deck Search</h3></a>
+					</li>
+
+					
+			
+			
+			
+				
+					<li class="menu_trends ocgtcg">
+						<a class="main" href="/yugiohdb/trends_search.action?ope=2"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="trendssvg">
+      <path class="svg_stroke_bold" d="M319.81,95.49l77.67,2.33-2.49,77.81"/>
+      <path class="svg_stroke_bold" d="M39.07,321.57l150.98-142.19,56.56,60.05,148.07-139.45"/>
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+    </g>
+  </g>
+</svg><h3>Trends</h3></a>
+					</li>
+				
+			
+
+
+
+	
+	
+				
+
+					
+					<li class="my menu_my_decks">
+						<a href="/yugiohdb/member_login.action?wname=MemberDeck"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="MyDecksscg">
+      <path id="pass" class="svg_stroke_normal" d="M277.53,128.06l91.52-14.14v142.86l-91.52,14.14v-142.86h0Z"/>
+      <path id="pass-2" class="svg_stroke_normal" d="M240.04,453.74l.1-128.18"/>
+      <path id="pass-3" class="svg_stroke_normal" d="M408.1,288.91v123.93l-168.06,43.89-157.64-43.45V74.05l175.76-22.2,155.93,18.03-.29,216.51-36.72,7.28-.62,50.44-98.78,20.74.04-51.5-46.91,9.29-.58-218.81-147.82-24.5"/>
+    </g>
+  </g>
+</svg><h3>My Deck</h3></a>
+					</li>
+
+					
+					<li class="my menu_my_cardlist">
+						<a href="/yugiohdb/member_login.action?wname=MyCard"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistsvg">
+      <path class="svg_stroke_normal" d="M366.92,116.77l93.49,21.99-70.86,301.3-153.36-36.07M364.38,177.32l-6.1,145.32,21.04,4.95,32.7-139.06-47.64-11.2h0Z"/>
+      <path class="svg_stroke_normal" d="M252.76,86.1l115.25,4.84-12.99,309.25-94.07-3.95M152.91,105.73l1-23.78,66.06,2.78M317.05,291.36l6.78.29,6-142.73-58.16-2.44"/>
+      <path class="svg_stroke_normal" d="M44.95,139.55l204.49-64.06,92.52,295.37-204.49,64.06L44.95,139.55Z"/>
+      <path class="svg_stroke_normal" d="M96.82,185.68l136.33-42.7,42.7,136.33-136.33,42.7-42.7-136.33h0Z"/>
+    </g>
+  </g>
+</svg><h3>My Card List</h3></a>
+					</li>
+	
+	
+	
+
+				
+					
+					<li class="menu_forbidden">
+						<a href="/yugiohdb/forbidden_limited.action"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="svg_stroke_boldddensvg">
+      <path class="svg_stroke_bold" d="M101.53,126.77l299.51,251.32"/>
+      <path class="svg_stroke_bold" d="M251.55,56.58c108.01,0,195.56,87.56,195.56,195.56s-87.56,195.56-195.56,195.56S55.99,360.14,55.99,252.14,143.55,56.58,251.55,56.58Z"/>
+    </g>
+  </g>
+</svg><h3><span class="type1">Forbidden &amp; Limited List</span><span class="type2">Forbidden &amp;<br />Limited List</span></h3></a>
+					</li>
+
+				</ul><!--#main_menu-->
+
+
+			</nav>
+		</div><!-- #header_menu-->
+	</header>
+	<div id="spnav">
+		<ul class="main_menu">
+
+	
+	
+			<li class="rogout">
+				
+					
+				
+				<a class="btn hex my" href="/yugiohdb/member_login.action"><span>Log in</span></a>
+			</li>
+	
+	
+	
+		</ul>
+		
+
+<!-- ///nav_m  -->
+
+				<ul class="main_menu">
+					
+					<li class="menu_top"><a href="/yugiohdb/"><?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.6 33.7"><path d="M23.4,0h-3.9L0,18l3.5,3.7,4.5-4.2,3,16.2H31.6l3-16.2,4.5,4.2,3.5-3.8L23.4,0Zm-1.8,25.6c-3.9,.1-7-3-7.1-6.9s3-7.1,6.9-7.1,7.1,3.2,7.1,7-3.1,7-6.9,7Z"/></svg><h3>Home</h3></a></li>
+
+					
+					<li class="menu_card_search">
+						<a class="main" href="/yugiohdb/card_search.action?wname=CardSearch"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardssvg">
+      <path class="svg_stroke_bold" d="M386.99,88.65c59.21,53.03,64.22,144.02,11.17,203.24-53.03,59.21-144.03,64.22-203.24,11.17-59.21-53.03-64.22-144.03-11.17-203.24,53.03-59.21,144.03-64.22,203.24-11.17h0Z"/>
+      <path class="svg_stroke_bold" d="M65.11,448.08l130.1-145.25"/>
+    </g>
+  </g>
+</svg><h3>Card Search</h3></a>
+
+					</li>
+
+					
+					<li class="menu_cardlist sab_menu">
+						<a class="bg main" href="/yugiohdb/card_list.action?wname=CardSearch">
+							<span class="ocg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistocgtcgsvg">
+      <path id="pass" class="svg_stroke_normal" d="M289.72,331.77l-156.04,33.93-98.64-86.97c-.14-.12-.08-.35.1-.38l231.31-44.82"/>
+      <path id="pass-2" data-name="pass" class="svg_stroke_normal" d="M134.59,428.35l-.36-62.64"/>
+      <path id="pass-3" data-name="pass" class="svg_stroke_normal" d="M289.72,397.09l-155.31,30.9-100.43-95.6v-189.02l17.62-5.79s29.45-105.01,101.15-102.11c0,0,81.11-5.07,90.53,79.66l19.55.73,4.35,117.32,22.54,9.45"/>
+      <path id="pass-4" data-name="pass" class="svg_stroke_normal" d="M287.62,476.19V119.05h178.57v357.14h-178.57ZM379.42,166.08c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+							<span class="rush"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistrushsvg">
+      <path class="svg_stroke_normal" d="M157.48,49.38l-115.37,9.08c-.24.02-.28.36-.04.43l69.93,20.62h.04l142.44-11.96c.12,0,.13-.18,0-.2l-96.97-17.97h-.03,0Z"/>
+      <path class="svg_stroke_normal" d="M111.8,405.59l-70.48-46.17c-.24-.16-.39-.43-.39-.72V59.72c0-.58.56-.99,1.11-.83l69.82,20.58c.1.03.21.04.32.03l142.1-11.94c.51-.04.94.36.94.86v306.39c0,.41-.29.76-.69.85l-142.07,30.04c-.23.05-.46,0-.65-.12h0Z"/>
+      <path class="svg_stroke_normal" d="M112.01,79.52l.09,326.26"/>
+      <path class="svg_stroke_normal" d="M278.71,452.38V95.24h178.57v357.14h-178.57ZM370.51,142.27c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+							<h3>Included in</h3>
+						</a>
+						<ul>
+							<li><a href="/yugiohdb/card_list.action?clm=3&wname=CardSearch">Sort by Release Date (Desc.)</a></li>
+							<li><a href="/yugiohdb/card_list.action?clm=1&wname=CardSearch">Products</a></li>
+							<li><a href="/yugiohdb/card_list.action?clm=2&wname=CardSearch">Perks/Bundles</a></li>
+				
+						</ul>
+					</li>
+
+					
+					<li class="menu_decks">
+						<a href="/yugiohdb/deck_search.action?wname=MemberDeck"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="decksvg">
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+      <path class="svg_stroke_bold" d="M283.54,83.48c42.29,37.88,45.87,102.87,7.98,145.17-37.88,42.29-102.88,45.87-145.17,7.98-42.29-37.88-45.87-102.88-7.98-145.17,37.88-42.29,102.88-45.87,145.17-7.98h0Z"/>
+      <path class="svg_stroke_bold" d="M53.63,340.22l92.93-103.75"/>
+    </g>
+  </g>
+</svg><h3>Deck Search</h3></a>
+					</li>
+
+					
+			
+			
+			
+				
+					<li class="menu_trends ocgtcg">
+						<a class="main" href="/yugiohdb/trends_search.action?ope=2"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="trendssvg">
+      <path class="svg_stroke_bold" d="M319.81,95.49l77.67,2.33-2.49,77.81"/>
+      <path class="svg_stroke_bold" d="M39.07,321.57l150.98-142.19,56.56,60.05,148.07-139.45"/>
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+    </g>
+  </g>
+</svg><h3>Trends</h3></a>
+					</li>
+				
+			
+
+
+
+	
+	
+				
+
+					
+					<li class="my menu_my_decks">
+						<a href="/yugiohdb/member_login.action?wname=MemberDeck"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="MyDecksscg">
+      <path id="pass" class="svg_stroke_normal" d="M277.53,128.06l91.52-14.14v142.86l-91.52,14.14v-142.86h0Z"/>
+      <path id="pass-2" class="svg_stroke_normal" d="M240.04,453.74l.1-128.18"/>
+      <path id="pass-3" class="svg_stroke_normal" d="M408.1,288.91v123.93l-168.06,43.89-157.64-43.45V74.05l175.76-22.2,155.93,18.03-.29,216.51-36.72,7.28-.62,50.44-98.78,20.74.04-51.5-46.91,9.29-.58-218.81-147.82-24.5"/>
+    </g>
+  </g>
+</svg><h3>My Deck</h3></a>
+					</li>
+
+					
+					<li class="my menu_my_cardlist">
+						<a href="/yugiohdb/member_login.action?wname=MyCard"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistsvg">
+      <path class="svg_stroke_normal" d="M366.92,116.77l93.49,21.99-70.86,301.3-153.36-36.07M364.38,177.32l-6.1,145.32,21.04,4.95,32.7-139.06-47.64-11.2h0Z"/>
+      <path class="svg_stroke_normal" d="M252.76,86.1l115.25,4.84-12.99,309.25-94.07-3.95M152.91,105.73l1-23.78,66.06,2.78M317.05,291.36l6.78.29,6-142.73-58.16-2.44"/>
+      <path class="svg_stroke_normal" d="M44.95,139.55l204.49-64.06,92.52,295.37-204.49,64.06L44.95,139.55Z"/>
+      <path class="svg_stroke_normal" d="M96.82,185.68l136.33-42.7,42.7,136.33-136.33,42.7-42.7-136.33h0Z"/>
+    </g>
+  </g>
+</svg><h3>My Card List</h3></a>
+					</li>
+	
+	
+	
+
+				
+					
+					<li class="menu_forbidden">
+						<a href="/yugiohdb/forbidden_limited.action"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="svg_stroke_boldddensvg">
+      <path class="svg_stroke_bold" d="M101.53,126.77l299.51,251.32"/>
+      <path class="svg_stroke_bold" d="M251.55,56.58c108.01,0,195.56,87.56,195.56,195.56s-87.56,195.56-195.56,195.56S55.99,360.14,55.99,252.14,143.55,56.58,251.55,56.58Z"/>
+    </g>
+  </g>
+</svg><h3><span class="type1">Forbidden &amp; Limited List</span><span class="type2">Forbidden &amp;<br />Limited List</span></h3></a>
+					</li>
+
+				</ul><!--#main_menu-->
+
+		<div class="close"><span>&#10005;</span>Close</div>
+	</div>
+	<div id="bg">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="main980">
+	<article id="home">
+		<div id="article_body">
+
+
+			<div id="main_btn">
+				
+				<a class="btn top_main_btn card_search" href="card_search.action">
+					<span class="top_btn_bg"></span>
+					<div class="btn_top">
+						<h3><span>Card Search</span></h3>
+						<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardssvg">
+      <path class="svg_stroke_bold" d="M386.99,88.65c59.21,53.03,64.22,144.02,11.17,203.24-53.03,59.21-144.03,64.22-203.24,11.17-59.21-53.03-64.22-144.03-11.17-203.24,53.03-59.21,144.03-64.22,203.24-11.17h0Z"/>
+      <path class="svg_stroke_bold" d="M65.11,448.08l130.1-145.25"/>
+    </g>
+  </g>
+</svg></span>
+
+					</div>
+				</a>
+
+				
+				<a class="btn top_main_btn cardlist" href="card_list.action">
+					<span class="top_btn_bg"></span>
+					<div class="btn_top">
+						<span class="icon ocg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistocgtcgsvg">
+      <path id="pass" class="svg_stroke_normal" d="M289.72,331.77l-156.04,33.93-98.64-86.97c-.14-.12-.08-.35.1-.38l231.31-44.82"/>
+      <path id="pass-2" data-name="pass" class="svg_stroke_normal" d="M134.59,428.35l-.36-62.64"/>
+      <path id="pass-3" data-name="pass" class="svg_stroke_normal" d="M289.72,397.09l-155.31,30.9-100.43-95.6v-189.02l17.62-5.79s29.45-105.01,101.15-102.11c0,0,81.11-5.07,90.53,79.66l19.55.73,4.35,117.32,22.54,9.45"/>
+      <path id="pass-4" data-name="pass" class="svg_stroke_normal" d="M287.62,476.19V119.05h178.57v357.14h-178.57ZM379.42,166.08c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+						<span class="icon rush"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistrushsvg">
+      <path class="svg_stroke_normal" d="M157.48,49.38l-115.37,9.08c-.24.02-.28.36-.04.43l69.93,20.62h.04l142.44-11.96c.12,0,.13-.18,0-.2l-96.97-17.97h-.03,0Z"/>
+      <path class="svg_stroke_normal" d="M111.8,405.59l-70.48-46.17c-.24-.16-.39-.43-.39-.72V59.72c0-.58.56-.99,1.11-.83l69.82,20.58c.1.03.21.04.32.03l142.1-11.94c.51-.04.94.36.94.86v306.39c0,.41-.29.76-.69.85l-142.07,30.04c-.23.05-.46,0-.65-.12h0Z"/>
+      <path class="svg_stroke_normal" d="M112.01,79.52l.09,326.26"/>
+      <path class="svg_stroke_normal" d="M278.71,452.38V95.24h178.57v357.14h-178.57ZM370.51,142.27c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+						<h3><span>Included in</span></h3>
+					</div>
+
+				</a>
+
+				
+				<a class="btn top_main_btn decks" href="deck_search.action">
+					<span class="top_btn_bg"></span>
+					<div class="btn_top">
+						<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="decksvg">
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+      <path class="svg_stroke_bold" d="M283.54,83.48c42.29,37.88,45.87,102.87,7.98,145.17-37.88,42.29-102.88,45.87-145.17,7.98-42.29-37.88-45.87-102.88-7.98-145.17,37.88-42.29,102.88-45.87,145.17-7.98h0Z"/>
+      <path class="svg_stroke_bold" d="M53.63,340.22l92.93-103.75"/>
+    </g>
+  </g>
+</svg></span>
+						<h3><span>Deck Search</span></h3>
+					</div>
+
+				</a>
+
+
+				
+		
+			
+			
+				<a class="btn top_main_btn trends ocg" href="trends_search.action?ope=2">
+			
+					<span class="top_btn_bg"></span>
+					<div class="btn_top">
+						<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="trendssvg">
+      <path class="svg_stroke_bold" d="M319.81,95.49l77.67,2.33-2.49,77.81"/>
+      <path class="svg_stroke_bold" d="M39.07,321.57l150.98-142.19,56.56,60.05,148.07-139.45"/>
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+    </g>
+  </g>
+</svg></span>
+						<h3><span>Trends</span></h3>
+
+					</div>
+
+				</a>
+		
+
+
+
+
+				
+					
+					
+				<a class="btn top_main_btn menu_my_decks" href="member_login.action?wname=MemberDeck">
+					
+					
+					
+					<span class="top_btn_bg"></span>
+					<div class="btn_top">
+						<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="MyDecksscg">
+      <path id="pass" class="svg_stroke_normal" d="M277.53,128.06l91.52-14.14v142.86l-91.52,14.14v-142.86h0Z"/>
+      <path id="pass-2" class="svg_stroke_normal" d="M240.04,453.74l.1-128.18"/>
+      <path id="pass-3" class="svg_stroke_normal" d="M408.1,288.91v123.93l-168.06,43.89-157.64-43.45V74.05l175.76-22.2,155.93,18.03-.29,216.51-36.72,7.28-.62,50.44-98.78,20.74.04-51.5-46.91,9.29-.58-218.81-147.82-24.5"/>
+    </g>
+  </g>
+</svg></span>
+						<h3><span>My Deck</span></h3>
+
+					</div>
+
+				</a>
+
+				
+					
+					
+				<a class="btn top_main_btn my_cardlist" href="member_login.action?wname=MyCard">
+					
+					
+					
+					<span class="top_btn_bg"></span>
+					<div class="btn_top">
+						<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistsvg">
+      <path class="svg_stroke_normal" d="M366.92,116.77l93.49,21.99-70.86,301.3-153.36-36.07M364.38,177.32l-6.1,145.32,21.04,4.95,32.7-139.06-47.64-11.2h0Z"/>
+      <path class="svg_stroke_normal" d="M252.76,86.1l115.25,4.84-12.99,309.25-94.07-3.95M152.91,105.73l1-23.78,66.06,2.78M317.05,291.36l6.78.29,6-142.73-58.16-2.44"/>
+      <path class="svg_stroke_normal" d="M44.95,139.55l204.49-64.06,92.52,295.37-204.49,64.06L44.95,139.55Z"/>
+      <path class="svg_stroke_normal" d="M96.82,185.68l136.33-42.7,42.7,136.33-136.33,42.7-42.7-136.33h0Z"/>
+    </g>
+  </g>
+</svg></span>
+						<h3><span>My Card List</span></h3>
+					</div>
+
+				</a>
+
+
+
+			
+
+				
+				<a class="btn top_main_btn forbidden" href="forbidden_limited.action">
+					<span class="top_btn_bg"></span>
+					<div class="btn_top">
+						<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="svg_stroke_boldddensvg">
+      <path class="svg_stroke_bold" d="M101.53,126.77l299.51,251.32"/>
+      <path class="svg_stroke_bold" d="M251.55,56.58c108.01,0,195.56,87.56,195.56,195.56s-87.56,195.56-195.56,195.56S55.99,360.14,55.99,252.14,143.55,56.58,251.55,56.58Z"/>
+    </g>
+  </g>
+</svg></span>
+						<h3>
+							<span class="type1">Forbidden &amp; Limited List</span>
+							<span class="type2">Forbidden &amp;<br />Limited List</span>
+						</h3>
+
+					</div>
+
+				</a>
+
+
+			</div>
+
+
+
+
+
+
+
+
+<!--シェア追加-->
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
+<!--シェア追加-->
+	<div class="sns_btn">
+		<div class="dl">
+	
+	
+			<a id="deck_recipe" class="btn hex" target="_blank" href="external/image/pdf/deck_en.pdf" download="deck_en.pdf">
+	
+				<span>Download Deck Recipe Form</span>
+			</a>
+		</div>
+		<div class="sns">
+			
+			<iframe src="//platform.twitter.com/widgets/tweet_button.html?url=&amp;lang=en&amp;count=horizontal&amp;hashtags=YugiohDB_EN" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:20px;" allowTransparency="true"></iframe>
+
+			
+			<iframe src="//www.facebook.com/plugins/like.php?href=&amp;send=false&amp;layout=button_count&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;locale=en_US" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:120px; height:20px;" allowTransparency="true"></iframe>
+
+			
+			<div class="fb-share-button" data-href="https://www.db.yugioh-card.com" data-layout="button_count" data-size="small" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=&amp;src=sdkpreparse">シェア</a></div>
+
+			
+			<div class="line-it-button" style="display: none;" data-lang="en" data-type="share-a" data-url=""></div>
+			<script src="https://d.line-scdn.net/r/web/social-plugin/js/thirdparty/loader.min.js" async="async" defer="defer"></script>
+		</div>
+	</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		</div><!--#article_body-->
+	</article>
+
+
+
+
+
+<!-- ///Footer  -->
+
+	</div><!--#bg--></div><!--#main980-->
+
+	
+
+<!-- ///MsgHome  -->
+
+	
+		<nav id="title_top_msg" class="nav_home">
+				<div class="title_btn rush">
+					<div class="titleset">
+						<div class="sankaku"></div>
+						<div class="title"><span>&and;</span>Yu-Gi-Oh! Neuron(TRADING CARD GAME CARD DATABASE)<span>&and;</span></div>
+						<div class="sankaku"></div>
+					</div>
+					<div class="tokki"></div>
+					<div class="tokki2"></div>
+				</div>
+			<div class="in_bg">
+				<div class="title_btn ocg">
+					<span class="title">Yu-Gi-Oh! Neuron(TRADING CARD GAME CARD DATABASE)</span>
+					<div class="batu"><span>&and;</span></div>
+				</div>
+				<div class="in">
+					<div class="in_btn">
+						<p>This is an official site for the Yu-Gi-Oh! Trading Card Game. <br>You can search through all Yu-Gi-Oh! TCG cards, check detailed rules, and view the Forbidden & Limited List. <br>You can also manage your own cards and Decks by registering them in My Deck, and search publicly available Deck Recipes to help you build your own Deck.</p>
+						<a class="btn" href="https://www.yugioh-card.com/en/rulebook/index.html" target="_blank">
+							<img class="ocg" src="external/image/en/00_logo_ocgtcg.png" />
+							<img class="rush" src="external/image/en/00_logo_rush.png" />
+							<span>How to Play</span>
+						</a>
+					</div>
+
+
+					<div id="nav_bottom">
+						
+						<a class="top_main_card_search" href="/yugiohdb/card_search.action">
+							<div class="tex_top">
+								<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardssvg">
+      <path class="svg_stroke_bold" d="M386.99,88.65c59.21,53.03,64.22,144.02,11.17,203.24-53.03,59.21-144.03,64.22-203.24,11.17-59.21-53.03-64.22-144.03-11.17-203.24,53.03-59.21,144.03-64.22,203.24-11.17h0Z"/>
+      <path class="svg_stroke_bold" d="M65.11,448.08l130.1-145.25"/>
+    </g>
+  </g>
+</svg></span>
+								<h3>Card Search</h3>
+							</div>
+							<div class="tex_bottom">
+								You can search through all Yu-Gi-Oh! TCG cards. You can also search for Decks containing a card via its Card Details page. Card info will be available starting from its release date.
+							</div>
+						</a>
+
+						
+						<a class="top_main_cardlist" href="/yugiohdb/card_list.action">
+							<div class="tex_top">
+								<span class="icon ocg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistocgtcgsvg">
+      <path id="pass" class="svg_stroke_normal" d="M289.72,331.77l-156.04,33.93-98.64-86.97c-.14-.12-.08-.35.1-.38l231.31-44.82"/>
+      <path id="pass-2" data-name="pass" class="svg_stroke_normal" d="M134.59,428.35l-.36-62.64"/>
+      <path id="pass-3" data-name="pass" class="svg_stroke_normal" d="M289.72,397.09l-155.31,30.9-100.43-95.6v-189.02l17.62-5.79s29.45-105.01,101.15-102.11c0,0,81.11-5.07,90.53,79.66l19.55.73,4.35,117.32,22.54,9.45"/>
+      <path id="pass-4" data-name="pass" class="svg_stroke_normal" d="M287.62,476.19V119.05h178.57v357.14h-178.57ZM379.42,166.08c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+								<span class="icon rush"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistrushsvg">
+      <path class="svg_stroke_normal" d="M157.48,49.38l-115.37,9.08c-.24.02-.28.36-.04.43l69.93,20.62h.04l142.44-11.96c.12,0,.13-.18,0-.2l-96.97-17.97h-.03,0Z"/>
+      <path class="svg_stroke_normal" d="M111.8,405.59l-70.48-46.17c-.24-.16-.39-.43-.39-.72V59.72c0-.58.56-.99,1.11-.83l69.82,20.58c.1.03.21.04.32.03l142.1-11.94c.51-.04.94.36.94.86v306.39c0,.41-.29.76-.69.85l-142.07,30.04c-.23.05-.46,0-.65-.12h0Z"/>
+      <path class="svg_stroke_normal" d="M112.01,79.52l.09,326.26"/>
+      <path class="svg_stroke_normal" d="M278.71,452.38V95.24h178.57v357.14h-178.57ZM370.51,142.27c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+								<h3>Included in</h3>
+							</div>
+							<div class="tex_bottom">
+								You can view lists of Yu-Gi-Oh! TCG cards contained in different Packs or Boxes (Products, Perks, etc.). <br>The latest info will become available starting from their release date.
+							</div>
+						</a>
+
+						
+						<a class="top_main_decks" href="/yugiohdb/deck_search.action">
+							<div class="tex_top">
+								<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="decksvg">
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+      <path class="svg_stroke_bold" d="M283.54,83.48c42.29,37.88,45.87,102.87,7.98,145.17-37.88,42.29-102.88,45.87-145.17,7.98-42.29-37.88-45.87-102.88-7.98-145.17,37.88-42.29,102.88-45.87,145.17-7.98h0Z"/>
+      <path class="svg_stroke_bold" d="M53.63,340.22l92.93-103.75"/>
+    </g>
+  </g>
+</svg></span>
+								<h3>Deck Search</h3>
+							</div>
+							<div class="tex_bottom">
+								You can search through Decks that have been posted for public viewing. <br>You can search for a Tournament Championship Deck/Tournament Runner-Up Deck or Decks that contain a specific card.
+							</div>
+						</a>
+
+
+						
+			
+				
+				
+						<a class="top_trends ocg" href="/yugiohdb/trends_search.action?ope=2">
+				
+							<div class="tex_top">
+								<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="trendssvg">
+      <path class="svg_stroke_bold" d="M319.81,95.49l77.67,2.33-2.49,77.81"/>
+      <path class="svg_stroke_bold" d="M39.07,321.57l150.98-142.19,56.56,60.05,148.07-139.45"/>
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+    </g>
+  </g>
+</svg></span>
+								<h3>Trends</h3>
+							</div>
+							<div class="tex_bottom">
+								The ranking is calculated based on newly created Decks and Decks used in tournaments.<br>Here you can check the Decks that are currently trending.
+							</div>
+						</a>
+			
+						
+							
+							
+						<a class="top_main_my menu_my_decks" href="/yugiohdb/member_login.action">
+							
+							
+							
+							<div class="tex_top">
+								<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="MyDecksscg">
+      <path id="pass" class="svg_stroke_normal" d="M277.53,128.06l91.52-14.14v142.86l-91.52,14.14v-142.86h0Z"/>
+      <path id="pass-2" class="svg_stroke_normal" d="M240.04,453.74l.1-128.18"/>
+      <path id="pass-3" class="svg_stroke_normal" d="M408.1,288.91v123.93l-168.06,43.89-157.64-43.45V74.05l175.76-22.2,155.93,18.03-.29,216.51-36.72,7.28-.62,50.44-98.78,20.74.04-51.5-46.91,9.29-.58-218.81-147.82-24.5"/>
+    </g>
+  </g>
+</svg></span>
+								<h3>My Deck</h3>
+
+							</div>
+							<div class="tex_bottom">
+								You can register your Deck Recipes and post them to show to other users. (Speed Duel Decks and DUEL LINKS Decks can be registered as well.) You can use this feature to organize and manage your Decks and cards.
+							</div>
+						</a>
+
+						
+							
+							
+						<a class="top_main_my my_cardlist" href="/yugiohdb/member_login.action">
+							
+							
+							
+							<div class="tex_top">
+								<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistsvg">
+      <path class="svg_stroke_normal" d="M366.92,116.77l93.49,21.99-70.86,301.3-153.36-36.07M364.38,177.32l-6.1,145.32,21.04,4.95,32.7-139.06-47.64-11.2h0Z"/>
+      <path class="svg_stroke_normal" d="M252.76,86.1l115.25,4.84-12.99,309.25-94.07-3.95M152.91,105.73l1-23.78,66.06,2.78M317.05,291.36l6.78.29,6-142.73-58.16-2.44"/>
+      <path class="svg_stroke_normal" d="M44.95,139.55l204.49-64.06,92.52,295.37-204.49,64.06L44.95,139.55Z"/>
+      <path class="svg_stroke_normal" d="M96.82,185.68l136.33-42.7,42.7,136.33-136.33,42.7-42.7-136.33h0Z"/>
+    </g>
+  </g>
+</svg></span>
+								<h3>My Card List</h3>
+							</div>
+							<div class="tex_bottom">
+								You can manage lists of cards you own and cards you want as Owned Cards and Wish List, respectively. Go to the Card Details page after logging in to add more cards to your lists.
+							</div>
+						</a>
+
+
+
+					
+						
+						<a class="top_main_forbidden" href="/yugiohdb/forbidden_limited.action">
+							<div class="tex_top">
+								<span class="icon"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="svg_stroke_boldddensvg">
+      <path class="svg_stroke_bold" d="M101.53,126.77l299.51,251.32"/>
+      <path class="svg_stroke_bold" d="M251.55,56.58c108.01,0,195.56,87.56,195.56,195.56s-87.56,195.56-195.56,195.56S55.99,360.14,55.99,252.14,143.55,56.58,251.55,56.58Z"/>
+    </g>
+  </g>
+</svg></span>
+								<h3>
+									<span>Forbidden &amp; Limited List</span>
+								</h3>
+
+							</div>
+							<div class="tex_bottom">
+								This is a list of cards whose usage in official tournaments is either prohibited or limited in terms of the number of cards with the same name allowed in a Deck. Check out the latest version.
+								<span class="history"></span>
+							</div>
+						</a>
+
+					</div>
+				</div>
+			</div>
+		</nav>
+	
+	<footer id="footer" class="en">
+		<div id="content_copyright">&copy;2020 Studio Dice/SHUEISHA, TV TOKYO, KONAMI</div>
+		<div id="f_sns"></div>
+
+		
+
+		<div id="cdb_link_set">
+			<div class="game">
+				
+				<a class="link_ocg" title="www.yugioh-card.com" href="https://www.yugioh-card.com/" target="_blank">
+	
+	
+					<img class="" src="external/image/00_logo_cardcom.png" title=www.yugioh-card.com" >
+	
+				</a>
+
+	
+
+				
+				<a class="link_li" title="Yu-Gi-Oh! DUEL LINKS"
+					href="https://www.konami.com/yugioh/duel_links/" target="_blank">
+					<img class="" src="external/image/00_logo_DuelLinks.png" title="Yu-Gi-Oh! DUEL LINKS" >
+				</a>
+				
+				<a class="link_ms" title="Yu-Gi-Oh! MASTER DUEL"
+					href="https://www.konami.com/yugioh/masterduel/" target="_blank">
+					<img class="" src="external/image/00_logo_MasterDuel.png" title="Yu-Gi-Oh! MASTER DUEL" >
+				</a>
+			</div>
+			<a class="link_neuron" title="Yu-Gi-Oh! NEURON" href="https://www.konami.com/yugioh/neuron/en/" target="_blank">
+				<div class="icon"><img class="" src="external/image/00_logo_neuron.png" title="Yu-Gi-Oh! NEURON" ></div>
+				<div class="title">
+					<p>Yu-Gi-Oh! TCG Official Support App</p>
+					<p>This App has tons of features which are beneficial to any Duelist!</p>
+				</div>
+			</a>
+			<div class="connection">
+	
+				<a class="link_cgn" title="KONAMI CARD GAME NETWORK" href="//cardgame-network.konami.net/" target="_blank">
+					<img class="" src="external/image/footerimg/banner_top_cgn2.png" title="KONAMI CARD GAME NETWORK" ></a>
+	
+	
+				<a class="link_ocgdb rush" title="Yu-Gi-Oh! Neuron(TRADING CARD GAME CARD DATABASE)" href="https://www.db.yugioh-card.com/yugiohdb/?request_locale=en" target="_blank">
+	
+	
+				</a>
+
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+		<div id="footer_menu">
+			
+
+<!-- ///nav_m  -->
+
+				<ul class="main_menu">
+					
+					<li class="menu_top"><a href="/yugiohdb/"><?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42.6 33.7"><path d="M23.4,0h-3.9L0,18l3.5,3.7,4.5-4.2,3,16.2H31.6l3-16.2,4.5,4.2,3.5-3.8L23.4,0Zm-1.8,25.6c-3.9,.1-7-3-7.1-6.9s3-7.1,6.9-7.1,7.1,3.2,7.1,7-3.1,7-6.9,7Z"/></svg><h3>Home</h3></a></li>
+
+					
+					<li class="menu_card_search">
+						<a class="main" href="/yugiohdb/card_search.action?wname=CardSearch"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardssvg">
+      <path class="svg_stroke_bold" d="M386.99,88.65c59.21,53.03,64.22,144.02,11.17,203.24-53.03,59.21-144.03,64.22-203.24,11.17-59.21-53.03-64.22-144.03-11.17-203.24,53.03-59.21,144.03-64.22,203.24-11.17h0Z"/>
+      <path class="svg_stroke_bold" d="M65.11,448.08l130.1-145.25"/>
+    </g>
+  </g>
+</svg><h3>Card Search</h3></a>
+
+					</li>
+
+					
+					<li class="menu_cardlist sab_menu">
+						<a class="bg main" href="/yugiohdb/card_list.action?wname=CardSearch">
+							<span class="ocg"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistocgtcgsvg">
+      <path id="pass" class="svg_stroke_normal" d="M289.72,331.77l-156.04,33.93-98.64-86.97c-.14-.12-.08-.35.1-.38l231.31-44.82"/>
+      <path id="pass-2" data-name="pass" class="svg_stroke_normal" d="M134.59,428.35l-.36-62.64"/>
+      <path id="pass-3" data-name="pass" class="svg_stroke_normal" d="M289.72,397.09l-155.31,30.9-100.43-95.6v-189.02l17.62-5.79s29.45-105.01,101.15-102.11c0,0,81.11-5.07,90.53,79.66l19.55.73,4.35,117.32,22.54,9.45"/>
+      <path id="pass-4" data-name="pass" class="svg_stroke_normal" d="M287.62,476.19V119.05h178.57v357.14h-178.57ZM379.42,166.08c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+							<span class="rush"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistrushsvg">
+      <path class="svg_stroke_normal" d="M157.48,49.38l-115.37,9.08c-.24.02-.28.36-.04.43l69.93,20.62h.04l142.44-11.96c.12,0,.13-.18,0-.2l-96.97-17.97h-.03,0Z"/>
+      <path class="svg_stroke_normal" d="M111.8,405.59l-70.48-46.17c-.24-.16-.39-.43-.39-.72V59.72c0-.58.56-.99,1.11-.83l69.82,20.58c.1.03.21.04.32.03l142.1-11.94c.51-.04.94.36.94.86v306.39c0,.41-.29.76-.69.85l-142.07,30.04c-.23.05-.46,0-.65-.12h0Z"/>
+      <path class="svg_stroke_normal" d="M112.01,79.52l.09,326.26"/>
+      <path class="svg_stroke_normal" d="M278.71,452.38V95.24h178.57v357.14h-178.57ZM370.51,142.27c-7.6,0-13.77,6.16-13.77,13.76s6.16,13.76,13.77,13.76,13.76-6.16,13.76-13.76-6.16-13.76-13.76-13.76Z"/>
+    </g>
+  </g>
+</svg></span>
+							<h3>Included in</h3>
+						</a>
+						<ul>
+							<li><a href="/yugiohdb/card_list.action?clm=3&wname=CardSearch">Sort by Release Date (Desc.)</a></li>
+							<li><a href="/yugiohdb/card_list.action?clm=1&wname=CardSearch">Products</a></li>
+							<li><a href="/yugiohdb/card_list.action?clm=2&wname=CardSearch">Perks/Bundles</a></li>
+				
+						</ul>
+					</li>
+
+					
+					<li class="menu_decks">
+						<a href="/yugiohdb/deck_search.action?wname=MemberDeck"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="decksvg">
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+      <path class="svg_stroke_bold" d="M283.54,83.48c42.29,37.88,45.87,102.87,7.98,145.17-37.88,42.29-102.88,45.87-145.17,7.98-42.29-37.88-45.87-102.88-7.98-145.17,37.88-42.29,102.88-45.87,145.17-7.98h0Z"/>
+      <path class="svg_stroke_bold" d="M53.63,340.22l92.93-103.75"/>
+    </g>
+  </g>
+</svg><h3>Deck Search</h3></a>
+					</li>
+
+					
+			
+			
+			
+				
+					<li class="menu_trends ocgtcg">
+						<a class="main" href="/yugiohdb/trends_search.action?ope=2"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="trendssvg">
+      <path class="svg_stroke_bold" d="M319.81,95.49l77.67,2.33-2.49,77.81"/>
+      <path class="svg_stroke_bold" d="M39.07,321.57l150.98-142.19,56.56,60.05,148.07-139.45"/>
+      <path class="svg_stroke_lighter" d="M411.08,369.05h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M411.08,333.33h27.7l-64.63,83.33h-202.38l33.53-35.71"/>
+      <path class="svg_stroke_lighter" d="M250,297.62h188.78l-64.63,83.33h-202.38l78.23-83.33Z"/>
+    </g>
+  </g>
+</svg><h3>Trends</h3></a>
+					</li>
+				
+			
+
+
+
+	
+	
+				
+
+					
+					<li class="my menu_my_decks">
+						<a href="/yugiohdb/member_login.action?wname=MemberDeck"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="MyDecksscg">
+      <path id="pass" class="svg_stroke_normal" d="M277.53,128.06l91.52-14.14v142.86l-91.52,14.14v-142.86h0Z"/>
+      <path id="pass-2" class="svg_stroke_normal" d="M240.04,453.74l.1-128.18"/>
+      <path id="pass-3" class="svg_stroke_normal" d="M408.1,288.91v123.93l-168.06,43.89-157.64-43.45V74.05l175.76-22.2,155.93,18.03-.29,216.51-36.72,7.28-.62,50.44-98.78,20.74.04-51.5-46.91,9.29-.58-218.81-147.82-24.5"/>
+    </g>
+  </g>
+</svg><h3>My Deck</h3></a>
+					</li>
+
+					
+					<li class="my menu_my_cardlist">
+						<a href="/yugiohdb/member_login.action?wname=MyCard"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="cardlistsvg">
+      <path class="svg_stroke_normal" d="M366.92,116.77l93.49,21.99-70.86,301.3-153.36-36.07M364.38,177.32l-6.1,145.32,21.04,4.95,32.7-139.06-47.64-11.2h0Z"/>
+      <path class="svg_stroke_normal" d="M252.76,86.1l115.25,4.84-12.99,309.25-94.07-3.95M152.91,105.73l1-23.78,66.06,2.78M317.05,291.36l6.78.29,6-142.73-58.16-2.44"/>
+      <path class="svg_stroke_normal" d="M44.95,139.55l204.49-64.06,92.52,295.37-204.49,64.06L44.95,139.55Z"/>
+      <path class="svg_stroke_normal" d="M96.82,185.68l136.33-42.7,42.7,136.33-136.33,42.7-42.7-136.33h0Z"/>
+    </g>
+  </g>
+</svg><h3>My Card List</h3></a>
+					</li>
+	
+	
+	
+
+				
+					
+					<li class="menu_forbidden">
+						<a href="/yugiohdb/forbidden_limited.action"><?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500">
+  <!-- Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  -->
+  <g>
+    <g id="svg_stroke_boldddensvg">
+      <path class="svg_stroke_bold" d="M101.53,126.77l299.51,251.32"/>
+      <path class="svg_stroke_bold" d="M251.55,56.58c108.01,0,195.56,87.56,195.56,195.56s-87.56,195.56-195.56,195.56S55.99,360.14,55.99,252.14,143.55,56.58,251.55,56.58Z"/>
+    </g>
+  </g>
+</svg><h3><span class="type1">Forbidden &amp; Limited List</span><span class="type2">Forbidden &amp;<br />Limited List</span></h3></a>
+					</li>
+
+				</ul><!--#main_menu-->
+
+		</div>
+		<div id="footer_meta">
+			<nav>
+				<ul>
+
+					<li><a href="https://www.konami.com/games/inquiry/" target="_blank">Contact</a></li>
+					<li><a href="https://legal.konami.com/games/neuron/terms/tou/en/" target="_blank">Terms of Use</a></li>
+					<li><a href="https://www.konami.com/siteinfo/en/" target="_blank">Terms of Use</a></li>
+					<li><a href="https://legal.konami.com/kde/privacy/en/" target="_blank">Privacy Notice (Analytics)</a></li>
+				
+					<li><a href="https://legal.konami.com/games/id/en/" target="_blank">Privacy Notice (KONAMI ID)</a></li>
+				
+					<li>
+						<!-- OneTrust Cookie 設定ボタンの始点 -->
+						<button id="ot-sdk-btn" class="ot-sdk-show-settings">Cookie 設定</button>
+						<!-- OneTrust Cookie 設定ボタンの終点 -->
+					</li>
+				</ul>
+			</nav>
+			<small>&copy;2025 Konami Digital Entertainment</small>
+
+		</div>
+	</footer>
+	<a class="menu_btn_pagetop" href="#"><?xml version="1.0" encoding="UTF-8"?><svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 27.2"><defs></defs><path  d="M0,20.4v6.8H36v-6.8s-36,0-36,0ZM18,0L.1,17.7H35.8L18,0Z"/></svg></a>
+</div><!--wrapper-->
+<noscript>Please enable JavaScript in your browser.</noscript>
+
+</body>
+</html>
+

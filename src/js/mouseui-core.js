@@ -17,6 +17,7 @@ class MouseUICore {
         this.operationHistory = [];
         this.draggedCard = null;
         this.deckIntegration = null; // DeckIntegration system
+        this.uiDisplayManager = null; // UI Display Manager
         console.log('MouseUICore - Initialized');
     }
 
@@ -623,25 +624,38 @@ class MouseUICore {
      * カード要素をエリアに追加
      */
     addCardToAreaElement(cardData, areaElement) {
-        const cardElement = document.createElement('div');
-        cardElement.className = 'mouseui-card';
-        cardElement.dataset.cardId = cardData.id;
-        cardElement.innerHTML = `
-            <img src="${cardData.image || ''}" alt="${cardData.name}" class="card-image">
-            <div class="card-name">${cardData.name}</div>
-        `;
+        let cardElement;
         
-        // スタイル適用
-        cardElement.style.cssText = `
-            display: inline-block;
-            margin: 2px;
-            padding: 4px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        `;
+        // UIDisplayManagerが利用可能な場合はそれを使用
+        if (this.uiDisplayManager) {
+            cardElement = this.uiDisplayManager.createCardElement(cardData);
+            cardElement.classList.add('mouseui-card');
+        } else {
+            // フォールバック: 従来の方式
+            cardElement = document.createElement('div');
+            cardElement.className = 'mouseui-card card-display image-mode';
+            cardElement.dataset.cardId = cardData.id;
+            cardElement.dataset.cardCount = cardData.count || 1;
+            cardElement.dataset.cardType = cardData.type || 'unknown';
+            cardElement.innerHTML = `
+                <img src="${cardData.image || ''}" alt="${cardData.name}" class="card-image">
+                <div class="card-overlay">
+                    <span class="card-count">×${cardData.count || 1}</span>
+                </div>
+            `;
+            
+            // 基本スタイル適用
+            cardElement.style.cssText = `
+                display: inline-block;
+                margin: 2px;
+                padding: 4px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                background: white;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            `;
+        }
 
         // 新しいカードにもマウスイベントを設定
         this.attachMouseEvents(cardElement);

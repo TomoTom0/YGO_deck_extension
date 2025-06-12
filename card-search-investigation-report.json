@@ -1,0 +1,1888 @@
+{
+  "timestamp": "2025-06-12T02:15:22.063Z",
+  "investigation": "YGO Card Search Functionality",
+  "results": [
+    {
+      "type": "card_search_page_analysis",
+      "timestamp": "2025-06-12T02:15:15.780Z",
+      "data": {
+        "url": "https://www.db.yugioh-card.com/yugiohdb/card_search.action",
+        "title": "Card Search | Yu-Gi-Oh! Neuron(TRADING CARD GAME CARD DATABASE)",
+        "searchForms": [
+          {
+            "id": "form_search",
+            "className": "",
+            "action": "https://www.db.yugioh-card.com/yugiohdb/card_search.action",
+            "method": "get",
+            "elements": 146
+          }
+        ],
+        "possibleResultAreas": [
+          {
+            "tag": "LI",
+            "id": "",
+            "className": "menu_card_search",
+            "childrenCount": 1,
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \nCard Search\n\n\t\t\t\t\t",
+            "visible": true
+          },
+          {
+            "tag": "g",
+            "id": "cardssvg",
+            "className": {},
+            "childrenCount": 2,
+            "textContent": "\n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "LI",
+            "id": "",
+            "className": "menu_cardlist sab_menu",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tIncluded in\n\t\t\t\t\t\t\n",
+            "visible": true
+          },
+          {
+            "tag": "g",
+            "id": "cardlistocgtcgsvg",
+            "className": {},
+            "childrenCount": 4,
+            "textContent": "\n      \n      \n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "LI",
+            "id": "",
+            "className": "my menu_my_cardlist sab_menu",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \nMy Card List\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tOwned Cards List\n",
+            "visible": true
+          },
+          {
+            "tag": "g",
+            "id": "cardlistsvg",
+            "className": {},
+            "childrenCount": 4,
+            "textContent": "\n      \n      \n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "LI",
+            "id": "",
+            "className": "menu_card_search",
+            "childrenCount": 1,
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \nCard Search\n\n\t\t\t\t\t",
+            "visible": false
+          },
+          {
+            "tag": "g",
+            "id": "cardssvg",
+            "className": {},
+            "childrenCount": 2,
+            "textContent": "\n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "LI",
+            "id": "",
+            "className": "menu_cardlist sab_menu",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tIncluded in\n\t\t\t\t\t\t\n",
+            "visible": false
+          },
+          {
+            "tag": "g",
+            "id": "cardlistocgtcgsvg",
+            "className": {},
+            "childrenCount": 4,
+            "textContent": "\n      \n      \n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "LI",
+            "id": "",
+            "className": "my menu_my_cardlist sab_menu",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \nMy Card List\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tOwned Cards List\n",
+            "visible": false
+          },
+          {
+            "tag": "g",
+            "id": "cardlistsvg",
+            "className": {},
+            "childrenCount": 4,
+            "textContent": "\n      \n      \n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "ARTICLE",
+            "id": "",
+            "className": "",
+            "childrenCount": 1,
+            "textContent": "\n\t\t\n\n\n\n\n\n\n\t\n\t\t\t<!--\n\n\t\t\t$(document).ready(function(){\n\t\t\t\t\n\t\t\t\t$('#legend_type').val('').change();\n\t",
+            "visible": true
+          },
+          {
+            "tag": "DIV",
+            "id": "search",
+            "className": "card_s",
+            "childrenCount": 4,
+            "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\tSearch by Card Na",
+            "visible": true
+          },
+          {
+            "tag": "DIV",
+            "id": "choice_card_area",
+            "className": "",
+            "childrenCount": 3,
+            "textContent": "\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tSearch Filters\n\t\t\t\t\t\t\n\t\t\t\t\t\t∨\n\t\t\t\t\t",
+            "visible": true
+          },
+          {
+            "tag": "DIV",
+            "id": "card_set",
+            "className": "filter_set_area",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\tSearch All Cards\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\tMonster Cards\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\tSpell Ca",
+            "visible": true
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "top_main_card_search",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\tCard Search\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\tYou",
+            "visible": false
+          },
+          {
+            "tag": "g",
+            "id": "cardssvg",
+            "className": {},
+            "childrenCount": 2,
+            "textContent": "\n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "top_main_cardlist",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\tIncluded in\n\t\t\t",
+            "visible": false
+          },
+          {
+            "tag": "g",
+            "id": "cardlistocgtcgsvg",
+            "className": {},
+            "childrenCount": 4,
+            "textContent": "\n      \n      \n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "A",
+            "id": "",
+            "className": "top_main_my my_cardlist",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\tMy Card List\n\t\t\t\t",
+            "visible": false
+          },
+          {
+            "tag": "g",
+            "id": "cardlistsvg",
+            "className": {},
+            "childrenCount": 4,
+            "textContent": "\n      \n      \n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "LI",
+            "id": "",
+            "className": "menu_card_search",
+            "childrenCount": 1,
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \nCard Search\n\n\t\t\t\t\t",
+            "visible": true
+          },
+          {
+            "tag": "g",
+            "id": "cardssvg",
+            "className": {},
+            "childrenCount": 2,
+            "textContent": "\n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "LI",
+            "id": "",
+            "className": "menu_cardlist sab_menu",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tIncluded in\n\t\t\t\t\t\t\n",
+            "visible": true
+          },
+          {
+            "tag": "g",
+            "id": "cardlistocgtcgsvg",
+            "className": {},
+            "childrenCount": 4,
+            "textContent": "\n      \n      \n      \n      \n    ",
+            "visible": true
+          },
+          {
+            "tag": "LI",
+            "id": "",
+            "className": "my menu_my_cardlist sab_menu",
+            "childrenCount": 2,
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \nMy Card List\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tOwned Cards List\n",
+            "visible": true
+          },
+          {
+            "tag": "g",
+            "id": "cardlistsvg",
+            "className": {},
+            "childrenCount": 4,
+            "textContent": "\n      \n      \n      \n      \n    ",
+            "visible": true
+          }
+        ],
+        "inputFields": [
+          {
+            "type": "hidden",
+            "name": "ope",
+            "id": "",
+            "className": "",
+            "placeholder": "",
+            "value": "1"
+          },
+          {
+            "type": "hidden",
+            "name": "sess",
+            "id": "",
+            "className": "",
+            "placeholder": "",
+            "value": "1"
+          },
+          {
+            "type": "hidden",
+            "name": "rp",
+            "id": "",
+            "className": "",
+            "placeholder": "",
+            "value": "10"
+          },
+          {
+            "type": "hidden",
+            "name": "mode",
+            "id": "",
+            "className": "",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "hidden",
+            "name": "sort",
+            "id": "",
+            "className": "",
+            "placeholder": "",
+            "value": "1"
+          },
+          {
+            "type": "text",
+            "name": "keyword",
+            "id": "keyword",
+            "className": "keyword_en",
+            "placeholder": "Enter Keyword",
+            "value": ""
+          },
+          {
+            "type": "select-one",
+            "name": "stype",
+            "id": "stype",
+            "className": "",
+            "value": "1"
+          },
+          {
+            "type": "select-one",
+            "name": "ctype",
+            "id": "ctype",
+            "className": "",
+            "value": ""
+          },
+          {
+            "type": "checkbox",
+            "name": "attr",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "12"
+          },
+          {
+            "type": "checkbox",
+            "name": "attr",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "11"
+          },
+          {
+            "type": "checkbox",
+            "name": "attr",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "15"
+          },
+          {
+            "type": "checkbox",
+            "name": "attr",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "13"
+          },
+          {
+            "type": "checkbox",
+            "name": "attr",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "14"
+          },
+          {
+            "type": "checkbox",
+            "name": "attr",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "16"
+          },
+          {
+            "type": "checkbox",
+            "name": "attr",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "17"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_magic",
+            "placeholder": "",
+            "value": "23"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_magic",
+            "placeholder": "",
+            "value": "22"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_magic",
+            "placeholder": "",
+            "value": "25"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_magic",
+            "placeholder": "",
+            "value": "26"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_magic",
+            "placeholder": "",
+            "value": "24"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_magic",
+            "placeholder": "",
+            "value": "20"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "24"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "21"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "20"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "23"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "22"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "25"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "26"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "24"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "21"
+          },
+          {
+            "type": "checkbox",
+            "name": "effe",
+            "id": "",
+            "className": "none check_trap",
+            "placeholder": "",
+            "value": "20"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "18"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "1"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "2"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "15"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "12"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "11"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "16"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "3"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "17"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "10"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "9"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "20"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "8"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "5"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "14"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "4"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "19"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "6"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "13"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "7"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "21"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "22"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "26"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "27"
+          },
+          {
+            "type": "checkbox",
+            "name": "species",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "34"
+          },
+          {
+            "type": "radio",
+            "name": "othercon",
+            "id": "othercon_and",
+            "className": "",
+            "placeholder": "",
+            "value": "1"
+          },
+          {
+            "type": "radio",
+            "name": "othercon",
+            "id": "othercon_or",
+            "className": "",
+            "placeholder": "",
+            "value": "2"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "0"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "1"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "3"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "2"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "9"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "10"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "4"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "5"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "6"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "7"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "8"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "14"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "15"
+          },
+          {
+            "type": "checkbox",
+            "name": "other",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "17"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "0"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "1"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "3"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "2"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "9"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "10"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "4"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "5"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "6"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "7"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "8"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "14"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "15"
+          },
+          {
+            "type": "checkbox",
+            "name": "jogai",
+            "id": "",
+            "className": "none",
+            "placeholder": "",
+            "value": "17"
+          },
+          {
+            "type": "hidden",
+            "name": "starfr",
+            "id": "starfr",
+            "className": "",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "hidden",
+            "name": "starto",
+            "id": "starto",
+            "className": "",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "checkbox",
+            "name": "level0",
+            "id": "level_0",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level1",
+            "id": "level_1",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level2",
+            "id": "level_2",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level3",
+            "id": "level_3",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level4",
+            "id": "level_4",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level5",
+            "id": "level_5",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level6",
+            "id": "level_6",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level7",
+            "id": "level_7",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level8",
+            "id": "level_8",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level9",
+            "id": "level_9",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level10",
+            "id": "level_10",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level11",
+            "id": "level_11",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level12",
+            "id": "level_12",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "level13",
+            "id": "level_13",
+            "className": "ocg",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "hidden",
+            "name": "pscalefr",
+            "id": "pscalefr",
+            "className": "",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "hidden",
+            "name": "pscaleto",
+            "id": "pscaleto",
+            "className": "",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale0",
+            "id": "Pscale_0",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale1",
+            "id": "Pscale_1",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale2",
+            "id": "Pscale_2",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale3",
+            "id": "Pscale_3",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale4",
+            "id": "Pscale_4",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale5",
+            "id": "Pscale_5",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale6",
+            "id": "Pscale_6",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale7",
+            "id": "Pscale_7",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale8",
+            "id": "Pscale_8",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale9",
+            "id": "Pscale_9",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale10",
+            "id": "Pscale_10",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale11",
+            "id": "Pscale_11",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale12",
+            "id": "Pscale_12",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Pscale13",
+            "id": "Pscale_13",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "hidden",
+            "name": "linkmarkerfr",
+            "id": "linkmarkerfr",
+            "className": "",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "hidden",
+            "name": "linkmarkerto",
+            "id": "linkmarkerto",
+            "className": "",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "checkbox",
+            "name": "Link1",
+            "id": "Link_1",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Link2",
+            "id": "Link_2",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Link3",
+            "id": "Link_3",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Link4",
+            "id": "Link_4",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Link5",
+            "id": "Link_5",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "Link6",
+            "id": "Link_6",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "linkbtn7",
+            "id": "linkbtn7",
+            "className": "",
+            "placeholder": "",
+            "value": "7"
+          },
+          {
+            "type": "checkbox",
+            "name": "linkbtn8",
+            "id": "linkbtn8",
+            "className": "",
+            "placeholder": "",
+            "value": "8"
+          },
+          {
+            "type": "checkbox",
+            "name": "linkbtn9",
+            "id": "linkbtn9",
+            "className": "",
+            "placeholder": "",
+            "value": "9"
+          },
+          {
+            "type": "checkbox",
+            "name": "linkbtn4",
+            "id": "linkbtn4",
+            "className": "",
+            "placeholder": "",
+            "value": "4"
+          },
+          {
+            "type": "checkbox",
+            "name": "linkbtn6",
+            "id": "linkbtn6",
+            "className": "",
+            "placeholder": "",
+            "value": "6"
+          },
+          {
+            "type": "checkbox",
+            "name": "linkbtn1",
+            "id": "linkbtn1",
+            "className": "",
+            "placeholder": "",
+            "value": "1"
+          },
+          {
+            "type": "checkbox",
+            "name": "linkbtn2",
+            "id": "linkbtn2",
+            "className": "",
+            "placeholder": "",
+            "value": "2"
+          },
+          {
+            "type": "checkbox",
+            "name": "linkbtn3",
+            "id": "linkbtn3",
+            "className": "",
+            "placeholder": "",
+            "value": "3"
+          },
+          {
+            "type": "radio",
+            "name": "link_m",
+            "id": "link_and",
+            "className": "",
+            "placeholder": "",
+            "value": "1"
+          },
+          {
+            "type": "radio",
+            "name": "link_m",
+            "id": "link_or",
+            "className": "",
+            "placeholder": "",
+            "value": "2"
+          },
+          {
+            "type": "text",
+            "name": "atkfr",
+            "id": "atkfr",
+            "className": "",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "text",
+            "name": "atkto",
+            "id": "atkto",
+            "className": "to",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "text",
+            "name": "deffr",
+            "id": "deffr",
+            "className": "",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "text",
+            "name": "defto",
+            "id": "defto",
+            "className": "to",
+            "placeholder": "",
+            "value": ""
+          },
+          {
+            "type": "select-one",
+            "name": "releaseDStart",
+            "id": "releaseDStart",
+            "className": "",
+            "value": "1"
+          },
+          {
+            "type": "select-one",
+            "name": "releaseMStart",
+            "id": "releaseMStart",
+            "className": "",
+            "value": "1"
+          },
+          {
+            "type": "select-one",
+            "name": "releaseYStart",
+            "id": "releaseYStart",
+            "className": "",
+            "value": "1999"
+          },
+          {
+            "type": "select-one",
+            "name": "releaseDEnd",
+            "id": "releaseDEnd",
+            "className": "",
+            "value": ""
+          },
+          {
+            "type": "select-one",
+            "name": "releaseMEnd",
+            "id": "releaseMEnd",
+            "className": "",
+            "value": ""
+          },
+          {
+            "type": "select-one",
+            "name": "releaseYEnd",
+            "id": "releaseYEnd",
+            "className": "",
+            "value": ""
+          },
+          {
+            "type": "checkbox",
+            "name": "ot-group-id-C0003",
+            "id": "ot-group-id-C0003",
+            "className": "category-switch-handler",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "ot-group-id-C0002",
+            "id": "ot-group-id-C0002",
+            "className": "category-switch-handler",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "ot-group-id-C0004",
+            "id": "ot-group-id-C0004",
+            "className": "category-switch-handler",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "text",
+            "name": "vendor-search-handler",
+            "id": "vendor-search-handler",
+            "className": "",
+            "placeholder": "Search…",
+            "value": ""
+          },
+          {
+            "type": "checkbox",
+            "name": "",
+            "id": "chkbox-id",
+            "className": "category-filter-handler",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "",
+            "id": "select-all-hosts-groups-handler",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "",
+            "id": "select-all-vendor-groups-handler",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          },
+          {
+            "type": "checkbox",
+            "name": "",
+            "id": "select-all-vendor-leg-handler",
+            "className": "",
+            "placeholder": "",
+            "value": "on"
+          }
+        ],
+        "buttons": [
+          {
+            "type": "submit",
+            "id": "ot-sdk-btn",
+            "className": "ot-sdk-show-settings",
+            "textContent": "Cookies Settings",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "onetrust-pc-btn-handler",
+            "className": "",
+            "textContent": "Cookies Settings",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "onetrust-reject-all-handler",
+            "className": "",
+            "textContent": "Reject All Cookies",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "onetrust-accept-btn-handler",
+            "className": "",
+            "textContent": "Accept All Cookies",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "close-pc-btn-handler",
+            "className": "ot-close-icon",
+            "textContent": "",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "accept-recommended-btn-handler",
+            "className": "",
+            "textContent": "Allow All",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "",
+            "className": "",
+            "textContent": "",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "",
+            "className": "",
+            "textContent": "",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "",
+            "className": "",
+            "textContent": "",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "",
+            "className": "",
+            "textContent": "",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "",
+            "className": "ot-link-btn back-btn-handler",
+            "textContent": "Back Button",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "filter-btn-handler",
+            "className": "",
+            "textContent": "Filter Icon",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "clear-filters-handler",
+            "className": "",
+            "textContent": "Clear",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "filter-apply-handler",
+            "className": "",
+            "textContent": "Apply",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "filter-cancel-handler",
+            "className": "",
+            "textContent": "Cancel",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "",
+            "className": "ot-pc-refuse-all-handler",
+            "textContent": "Reject All Cookies",
+            "onclick": null
+          },
+          {
+            "type": "submit",
+            "id": "",
+            "className": "save-preference-btn-handler onetrust-close-btn-handler",
+            "textContent": "Confirm My Choices",
+            "onclick": null
+          }
+        ]
+      }
+    },
+    {
+      "type": "deck_edit_search_area_analysis",
+      "timestamp": "2025-06-12T02:15:21.712Z",
+      "data": {
+        "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+        "title": "Yu-Gi-Oh! Neuron(TRADING CARD GAME CARD DATABASE)",
+        "rightSideAreas": [
+          {
+            "tag": "INPUT",
+            "id": "card-search",
+            "className": "",
+            "style": "",
+            "boundingBox": {
+              "x": 16,
+              "y": 821,
+              "width": 189,
+              "height": 30
+            },
+            "childrenCount": 0,
+            "hasSearchElements": false,
+            "visible": true
+          },
+          {
+            "tag": "IFRAME",
+            "id": "",
+            "className": "",
+            "style": "border: none; overflow: hidden; width: 100px; height: 20px;",
+            "boundingBox": {
+              "x": 790,
+              "y": 1361,
+              "width": 100,
+              "height": 20
+            },
+            "childrenCount": 0,
+            "hasSearchElements": false,
+            "visible": true
+          },
+          {
+            "tag": "IFRAME",
+            "id": "",
+            "className": "",
+            "style": "border: none; overflow: hidden; width: 120px; height: 20px;",
+            "boundingBox": {
+              "x": 895,
+              "y": 1361,
+              "width": 120,
+              "height": 20
+            },
+            "childrenCount": 0,
+            "hasSearchElements": false,
+            "visible": true
+          },
+          {
+            "tag": "IFRAME",
+            "id": "",
+            "className": "",
+            "style": "border: none; visibility: visible; width: 89px; height: 20px;",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 89,
+              "height": 20
+            },
+            "childrenCount": 0,
+            "hasSearchElements": false,
+            "visible": true
+          },
+          {
+            "tag": "IFRAME",
+            "id": "",
+            "className": "line-it-button",
+            "style": "width: 63px; height: 20px; visibility: visible; position: static !important; opacity: 1 !important;",
+            "boundingBox": {
+              "x": 1119,
+              "y": 1361,
+              "width": 63,
+              "height": 20
+            },
+            "childrenCount": 0,
+            "hasSearchElements": false,
+            "visible": true
+          },
+          {
+            "tag": "INPUT",
+            "id": "vendor-search-handler",
+            "className": "",
+            "style": "",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "childrenCount": 0,
+            "hasSearchElements": false,
+            "visible": false
+          },
+          {
+            "tag": "IFRAME",
+            "id": "",
+            "className": "ot-text-resize",
+            "style": "position: absolute; top: -50000px; width: 100em;",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "childrenCount": 0,
+            "hasSearchElements": false,
+            "visible": false
+          }
+        ],
+        "layoutStructure": {
+          "bodyWidth": 1905,
+          "bodyHeight": 1080,
+          "mainContent": [
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 312,
+                "width": 92
+              }
+            },
+            {
+              "tag": "A",
+              "className": "bg main",
+              "boundingBox": {
+                "x": 414,
+                "width": 87
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 615,
+                "width": 66
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 690,
+                "width": 74
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 775,
+                "width": 93
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 0,
+                "width": 0
+              }
+            },
+            {
+              "tag": "A",
+              "className": "bg main",
+              "boundingBox": {
+                "x": 0,
+                "width": 0
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 0,
+                "width": 0
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 0,
+                "width": 0
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 0,
+                "width": 0
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 551,
+                "width": 99
+              }
+            },
+            {
+              "tag": "A",
+              "className": "bg main",
+              "boundingBox": {
+                "x": 665,
+                "width": 120
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 915,
+                "width": 65
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 995,
+                "width": 105
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "boundingBox": {
+                "x": 1115,
+                "width": 120
+              }
+            }
+          ]
+        },
+        "iframes": [
+          {
+            "src": "https://platform.twitter.com/widgets/tweet_button.html?url=&lang=en&count=horizontal&hashtags=YugiohDB_EN",
+            "width": "",
+            "height": "",
+            "id": "",
+            "className": ""
+          },
+          {
+            "src": "https://www.facebook.com/plugins/like.php?href=&send=false&layout=button_count&show_faces=false&action=like&colorscheme=light&locale=en_US",
+            "width": "",
+            "height": "",
+            "id": "",
+            "className": ""
+          },
+          {
+            "src": "https://www.facebook.com/v2.9/plugins/share_button.php?app_id=&channel=https%3A%2F%2Fstaticxx.facebook.com%2Fx%2Fconnect%2Fxd_arbiter%2F%3Fversion%3D46%23cb%3Df8249501590157b63%26domain%3Dwww.db.yugioh-card.com%26is_canvas%3Dfalse%26origin%3Dhttps%253A%252F%252Fwww.db.yugioh-card.com%252Ffb7e331574cbef334%26relation%3Dparent.parent&container_width=47&href=https%3A%2F%2Fwww.db.yugioh-card.com%2F&layout=button_count&locale=en_US&mobile_iframe=true&sdk=joey&size=small",
+            "width": "1000px",
+            "height": "1000px",
+            "id": "",
+            "className": ""
+          },
+          {
+            "src": "https://social-plugins.line.me/widget/share?buttonType=share-a&lang=en&type=share&id=0&origin=https%3A%2F%2Fwww.db.yugioh-card.com%2Fyugiohdb%2Fmember_deck.action%3Fope%3D2&title=Yu-Gi-Oh!%20Neuron(TRADING%20CARD%20GAME%20CARD%20DATABASE)&env=REAL",
+            "width": "",
+            "height": "",
+            "id": "",
+            "className": "line-it-button"
+          },
+          {
+            "src": "",
+            "width": "",
+            "height": "",
+            "id": "",
+            "className": "ot-text-resize"
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "totalInvestigations": 2,
+    "pagesCovered": [
+      "card_search",
+      "search_results",
+      "deck_edit"
+    ],
+    "keyFindings": [
+      "検索フォーム: 1個",
+      "入力フィールド: 154個",
+      "右側エリア候補: 7個",
+      "iframe要素: 5個"
+    ]
+  }
+}

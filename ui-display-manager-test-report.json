@@ -1,0 +1,364 @@
+{
+  "timestamp": "2025-06-12T12:56:06.616Z",
+  "phase": "Phase 1.3 - Text/Image UI Switch",
+  "summary": {
+    "totalTests": 24,
+    "passedTests": 23,
+    "failedTests": 1,
+    "successRate": "95.8"
+  },
+  "categories": {
+    "基本機能": [
+      {
+        "name": "UIDisplayManagerインスタンス作成",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "初期表示モードが\"image\"",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "preferences設定オブジェクトの存在",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "デフォルトカードサイズが\"medium\"",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      }
+    ],
+    "表示モード切り替え": [
+      {
+        "name": "デフォルト枚数表示がtrue",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "テキストモードへの切り替え",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "コンパクトモードへの切り替え",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "画像モードに戻す",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      }
+    ],
+    "レンダリング機能": [
+      {
+        "name": "不正なモード値の処理",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "画像モードレンダリング",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "テキストモードレンダリング",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      }
+    ],
+    "カード名短縮": [
+      {
+        "name": "コンパクトモードレンダリング",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "短いカード名（変更なし）",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "長い日本語カード名の短縮",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      }
+    ],
+    "設定機能": [
+      {
+        "name": "長い英語カード名の短縮",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "設定の更新（カードサイズ）",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "設定の更新（枚数表示OFF）",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      }
+    ],
+    "カード要素作成": [
+      {
+        "name": "アニメーション設定の確認",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "カード要素の作成",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      }
+    ],
+    "イベントシステム": [
+      {
+        "name": "カードデータ抽出（基本）",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "イベントリスナーの登録",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      }
+    ],
+    "エラーハンドリング": [
+      {
+        "name": "表示モード変更イベントの発火",
+        "passed": true,
+        "expected": true,
+        "actual": true,
+        "error": null
+      },
+      {
+        "name": "null要素の安全な処理",
+        "passed": false,
+        "expected": true,
+        "actual": false,
+        "error": null
+      }
+    ]
+  },
+  "detailedResults": [
+    {
+      "name": "UIDisplayManagerインスタンス作成",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "初期表示モードが\"image\"",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "preferences設定オブジェクトの存在",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "デフォルトカードサイズが\"medium\"",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "デフォルト枚数表示がtrue",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "テキストモードへの切り替え",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "コンパクトモードへの切り替え",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "画像モードに戻す",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "不正なモード値の処理",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "画像モードレンダリング",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "テキストモードレンダリング",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "コンパクトモードレンダリング",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "短いカード名（変更なし）",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "長い日本語カード名の短縮",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "長い英語カード名の短縮",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "設定の更新（カードサイズ）",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "設定の更新（枚数表示OFF）",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "アニメーション設定の確認",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "カード要素の作成",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "カードデータ抽出（基本）",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "イベントリスナーの登録",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "表示モード変更イベントの発火",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    },
+    {
+      "name": "null要素の安全な処理",
+      "passed": false,
+      "expected": true,
+      "actual": false,
+      "error": null
+    },
+    {
+      "name": "不正なカードデータの処理",
+      "passed": true,
+      "expected": true,
+      "actual": true,
+      "error": null
+    }
+  ],
+  "testEnvironment": {
+    "node": "v20.18.3",
+    "platform": "linux",
+    "testType": "standalone"
+  }
+}

@@ -1,0 +1,1455 @@
+{
+  "timestamp": "2025-06-12T03:29:13.197Z",
+  "purpose": "remake/ Phase 1.1 - MouseUI マウス操作マトリックス実装のための詳細DOM調査",
+  "results": [
+    {
+      "type": "deck_edit_areas_analysis",
+      "data": {
+        "analysis": {
+          "url": "https://www.db.yugioh-card.com/yugiohdb/member_deck.action?ope=2",
+          "title": "Yu-Gi-Oh! Neuron(TRADING CARD GAME CARD DATABASE)",
+          "timestamp": "2025-06-12T03:29:19.033Z"
+        },
+        "areas": {
+          "main": {
+            "name": "メインデッキ",
+            "elements": [
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "UL",
+                "id": "",
+                "className": "main_menu",
+                "textContent": "\n\t\t\t\t\t\n\t\t\t\t\tHome\n\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \nCard Search\n\n\t\t\t\t\t\n\n\t\t\t\t\t\n\t\t\t",
+                "boundingBox": {
+                  "x": 312,
+                  "y": 14,
+                  "width": 668,
+                  "height": 46
+                },
+                "childrenCount": 8,
+                "hasCards": 3
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n    \n  \nCard Search",
+                "boundingBox": {
+                  "x": 312,
+                  "y": 14,
+                  "width": 92,
+                  "height": 41
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "bg main",
+                "textContent": "\n\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tIncluded in\n\t\t\t\t\t\t",
+                "boundingBox": {
+                  "x": 414,
+                  "y": 14,
+                  "width": 87,
+                  "height": 39
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n      \n      \n      \n    \n  \nTrends",
+                "boundingBox": {
+                  "x": 615,
+                  "y": 14,
+                  "width": 66,
+                  "height": 41
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n      \n    \n  \nMy Deck",
+                "boundingBox": {
+                  "x": 690,
+                  "y": 14,
+                  "width": 74,
+                  "height": 39
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \nMy Card List",
+                "boundingBox": {
+                  "x": 775,
+                  "y": 14,
+                  "width": 93,
+                  "height": 39
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "UL",
+                "id": "",
+                "className": "main_menu",
+                "textContent": "\n\n\t\n\t\n\t\n\t\n\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\tLogged in\n\t\t\t\t\t[0043529140]\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\tLog out\n\t\t\t\t\n\t\t\t\n\t\n\t\t",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "childrenCount": 1,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "UL",
+                "id": "",
+                "className": "main_menu",
+                "textContent": "\n\t\t\t\t\t\n\t\t\t\t\tHome\n\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \nCard Search\n\n\t\t\t\t\t\n\n\t\t\t\t\t\n\t\t\t",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "childrenCount": 8,
+                "hasCards": 3
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n    \n  \nCard Search",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "bg main",
+                "textContent": "\n\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tIncluded in\n\t\t\t\t\t\t",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n      \n      \n      \n    \n  \nTrends",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n      \n    \n  \nMy Deck",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \nMy Card List",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "btn top_main_btn card_search",
+                "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\tCard Search\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \n\n\n\t\t\t\t\t\n\t\t\t\t",
+                "boundingBox": {
+                  "x": 483,
+                  "y": 75,
+                  "width": 225,
+                  "height": 112
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "btn top_main_btn cardlist",
+                "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\n\t\t\t\t\t\tIncluded in\n\t\t\t\t\t",
+                "boundingBox": {
+                  "x": 720,
+                  "y": 75,
+                  "width": 225,
+                  "height": 112
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "btn top_main_btn decks",
+                "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\tDeck Search\n\t\t\t\t\t\n",
+                "boundingBox": {
+                  "x": 957,
+                  "y": 75,
+                  "width": 225,
+                  "height": 112
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "btn top_main_btn trends ocg",
+                "textContent": "\n\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\tTrends\n\n\t\t\t\t\t\n",
+                "boundingBox": {
+                  "x": 1194,
+                  "y": 75,
+                  "width": 225,
+                  "height": 112
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "btn top_main_btn menu_my_decks",
+                "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\tMy Deck\n\n\t\t\t\t\t\n\n\t\t\t\t",
+                "boundingBox": {
+                  "x": 483,
+                  "y": 202,
+                  "width": 225,
+                  "height": 112
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "btn top_main_btn my_cardlist",
+                "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\tMy Card List\n\t\t\t\t\t\n",
+                "boundingBox": {
+                  "x": 720,
+                  "y": 202,
+                  "width": 225,
+                  "height": 112
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "btn top_main_btn forbidden",
+                "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \n\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tForbidden & Limited List\n\t\t\t\t\t\t",
+                "boundingBox": {
+                  "x": 957,
+                  "y": 202,
+                  "width": 225,
+                  "height": 112
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "top_main_card_search",
+                "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\tCard Search\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\tYou",
+                "boundingBox": {
+                  "x": 468,
+                  "y": 612,
+                  "width": 485,
+                  "height": 141
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "top_main_cardlist",
+                "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\tIncluded in\n\t\t\t",
+                "boundingBox": {
+                  "x": 953,
+                  "y": 612,
+                  "width": 485,
+                  "height": 141
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "top_main_decks",
+                "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\tDeck Search\n\t\t\t\t\t\t",
+                "boundingBox": {
+                  "x": 468,
+                  "y": 772,
+                  "width": 485,
+                  "height": 162
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "top_main_my menu_my_decks",
+                "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\tMy Deck\n\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t",
+                "boundingBox": {
+                  "x": 468,
+                  "y": 954,
+                  "width": 485,
+                  "height": 141
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "top_main_my my_cardlist",
+                "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\tMy Card List\n\t\t\t\t",
+                "boundingBox": {
+                  "x": 953,
+                  "y": 954,
+                  "width": 485,
+                  "height": 141
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "top_main_forbidden",
+                "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\tForbidden & Limited List\n\t\t\t\t",
+                "boundingBox": {
+                  "x": 468,
+                  "y": 1115,
+                  "width": 485,
+                  "height": 120
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "UL",
+                "id": "",
+                "className": "main_menu",
+                "textContent": "\n\t\t\t\t\t\n\t\t\t\t\tHome\n\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \nCard Search\n\n\t\t\t\t\t\n\n\t\t\t\t\t\n\t\t\t",
+                "boundingBox": {
+                  "x": 463,
+                  "y": 1747,
+                  "width": 980,
+                  "height": 164
+                },
+                "childrenCount": 8,
+                "hasCards": 3
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n    \n  \nCard Search",
+                "boundingBox": {
+                  "x": 551,
+                  "y": 1777,
+                  "width": 99,
+                  "height": 29
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "bg main",
+                "textContent": "\n\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \n\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\tIncluded in\n\t\t\t\t\t\t",
+                "boundingBox": {
+                  "x": 665,
+                  "y": 1777,
+                  "width": 120,
+                  "height": 29
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n      \n      \n      \n    \n  \nTrends",
+                "boundingBox": {
+                  "x": 915,
+                  "y": 1777,
+                  "width": 65,
+                  "height": 29
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n      \n    \n  \nMy Deck",
+                "boundingBox": {
+                  "x": 995,
+                  "y": 1777,
+                  "width": 105,
+                  "height": 29
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[class*=\"main\"]",
+                "tag": "A",
+                "id": "",
+                "className": "main",
+                "textContent": "\n\n  \n  \n    \n      \n      \n      \n      \n    \n  \nMy Card List",
+                "boundingBox": {
+                  "x": 1115,
+                  "y": 1777,
+                  "width": 120,
+                  "height": 29
+                },
+                "childrenCount": 2,
+                "hasCards": 0
+              },
+              {
+                "selector": "[id*=\"main\"]",
+                "tag": "DIV",
+                "id": "main980",
+                "className": "",
+                "textContent": "\n\t\n\t\t\n\n\n\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\tCard Search\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \n\n\n\t\t\t\t\t",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 60,
+                  "width": 1905,
+                  "height": 360
+                },
+                "childrenCount": 1,
+                "hasCards": 12
+              },
+              {
+                "selector": "[id*=\"main\"]",
+                "tag": "DIV",
+                "id": "main_btn",
+                "className": "",
+                "textContent": "\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\tCard Search\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \n\n\n\t\t\t\t\t\n\t\t\t\t\n\n\t\t\t\t",
+                "boundingBox": {
+                  "x": 473,
+                  "y": 70,
+                  "width": 960,
+                  "height": 249
+                },
+                "childrenCount": 7,
+                "hasCards": 3
+              },
+              {
+                "selector": "[id*=\"main\"]",
+                "tag": "DIV",
+                "id": "ygo-deck-area-main",
+                "className": "ygo-deck-area",
+                "textContent": "\n            \n                メインデッキ (0)\n            \n            \n                \n            \n   ",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 229,
+                  "width": 314,
+                  "height": 170
+                },
+                "childrenCount": 2,
+                "hasCards": 1
+              },
+              {
+                "selector": "[id*=\"main\"]",
+                "tag": "DIV",
+                "id": "deck-content-main",
+                "className": "deck-area-content",
+                "textContent": "\n                \n            ",
+                "boundingBox": {
+                  "x": 1,
+                  "y": 268,
+                  "width": 312,
+                  "height": 130
+                },
+                "childrenCount": 0,
+                "hasCards": 0
+              }
+            ]
+          },
+          "extra": {
+            "name": "エクストラデッキ",
+            "elements": [
+              {
+                "selector": "[id*=\"extra\"]",
+                "tag": "DIV",
+                "id": "ygo-deck-area-extra",
+                "className": "ygo-deck-area",
+                "textContent": "\n            \n                エクストラデッキ (0)\n            \n            \n                \n            \n ",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 414,
+                  "width": 314,
+                  "height": 170
+                },
+                "childrenCount": 2,
+                "hasCards": 1
+              },
+              {
+                "selector": "[id*=\"extra\"]",
+                "tag": "DIV",
+                "id": "deck-content-extra",
+                "className": "deck-area-content",
+                "textContent": "\n                \n            ",
+                "boundingBox": {
+                  "x": 1,
+                  "y": 453,
+                  "width": 312,
+                  "height": 130
+                },
+                "childrenCount": 0,
+                "hasCards": 0
+              }
+            ]
+          },
+          "side": {
+            "name": "サイドデッキ",
+            "elements": [
+              {
+                "selector": "[id*=\"side\"]",
+                "tag": "DIV",
+                "id": "ygo-deck-area-side",
+                "className": "ygo-deck-area",
+                "textContent": "\n            \n                サイドデッキ (0)\n            \n            \n                \n            \n   ",
+                "boundingBox": {
+                  "x": 0,
+                  "y": 599,
+                  "width": 314,
+                  "height": 170
+                },
+                "childrenCount": 2,
+                "hasCards": 1
+              },
+              {
+                "selector": "[id*=\"side\"]",
+                "tag": "DIV",
+                "id": "deck-content-side",
+                "className": "deck-area-content",
+                "textContent": "\n                \n            ",
+                "boundingBox": {
+                  "x": 1,
+                  "y": 638,
+                  "width": 312,
+                  "height": 130
+                },
+                "childrenCount": 0,
+                "hasCards": 0
+              }
+            ]
+          },
+          "temp": {
+            "name": "テンポラリエリア",
+            "elements": []
+          },
+          "search": {
+            "name": "検索エリア",
+            "elements": []
+          }
+        },
+        "cardElements": [
+          {
+            "tag": "IMG",
+            "src": "https://www.yugioh-card.com/ci/logo/konami_logo_normal.png",
+            "onclick": "",
+            "className": "ui-draggable ui-draggable-handle",
+            "id": "konami",
+            "textContent": "",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 130,
+              "height": 37
+            },
+            "parent": {
+              "tag": "A",
+              "className": "",
+              "id": ""
+            }
+          },
+          {
+            "tag": "LI",
+            "src": "",
+            "onclick": "",
+            "className": "menu_card_search",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \nCard Sea",
+            "boundingBox": {
+              "x": 312,
+              "y": 14,
+              "width": 102,
+              "height": 46
+            },
+            "parent": {
+              "tag": "UL",
+              "className": "main_menu",
+              "id": ""
+            }
+          },
+          {
+            "tag": "LI",
+            "src": "",
+            "onclick": "",
+            "className": "menu_cardlist sab_menu",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n",
+            "boundingBox": {
+              "x": 414,
+              "y": 14,
+              "width": 97,
+              "height": 46
+            },
+            "parent": {
+              "tag": "UL",
+              "className": "main_menu",
+              "id": ""
+            }
+          },
+          {
+            "tag": "LI",
+            "src": "",
+            "onclick": "",
+            "className": "my menu_my_cardlist sab_menu",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n  ",
+            "boundingBox": {
+              "x": 775,
+              "y": 14,
+              "width": 103,
+              "height": 46
+            },
+            "parent": {
+              "tag": "UL",
+              "className": "main_menu",
+              "id": ""
+            }
+          },
+          {
+            "tag": "LI",
+            "src": "",
+            "onclick": "",
+            "className": "menu_card_search",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \nCard Sea",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "parent": {
+              "tag": "UL",
+              "className": "main_menu",
+              "id": ""
+            }
+          },
+          {
+            "tag": "LI",
+            "src": "",
+            "onclick": "",
+            "className": "menu_cardlist sab_menu",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "parent": {
+              "tag": "UL",
+              "className": "main_menu",
+              "id": ""
+            }
+          },
+          {
+            "tag": "LI",
+            "src": "",
+            "onclick": "",
+            "className": "my menu_my_cardlist sab_menu",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n  ",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "parent": {
+              "tag": "UL",
+              "className": "main_menu",
+              "id": ""
+            }
+          },
+          {
+            "tag": "A",
+            "src": "",
+            "onclick": "",
+            "className": "btn top_main_btn card_search",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\tCard Search\n\t\t\t\t\t\t\n\n  \n  \n    \n",
+            "boundingBox": {
+              "x": 483,
+              "y": 75,
+              "width": 225,
+              "height": 112
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "",
+              "id": "main_btn"
+            }
+          },
+          {
+            "tag": "A",
+            "src": "",
+            "onclick": "",
+            "className": "btn top_main_btn cardlist",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n   ",
+            "boundingBox": {
+              "x": 720,
+              "y": 75,
+              "width": 225,
+              "height": 112
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "",
+              "id": "main_btn"
+            }
+          },
+          {
+            "tag": "A",
+            "src": "",
+            "onclick": "",
+            "className": "btn top_main_btn my_cardlist",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n     ",
+            "boundingBox": {
+              "x": 720,
+              "y": 202,
+              "width": 225,
+              "height": 112
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "",
+              "id": "main_btn"
+            }
+          },
+          {
+            "tag": "SPAN",
+            "src": "",
+            "onclick": "",
+            "className": "card-count",
+            "id": "",
+            "textContent": "(0)",
+            "boundingBox": {
+              "x": 274,
+              "y": 240,
+              "width": 25,
+              "height": 17
+            },
+            "parent": {
+              "tag": "H4",
+              "className": "",
+              "id": ""
+            }
+          },
+          {
+            "tag": "SPAN",
+            "src": "",
+            "onclick": "",
+            "className": "card-count",
+            "id": "",
+            "textContent": "(0)",
+            "boundingBox": {
+              "x": 274,
+              "y": 425,
+              "width": 25,
+              "height": 17
+            },
+            "parent": {
+              "tag": "H4",
+              "className": "",
+              "id": ""
+            }
+          },
+          {
+            "tag": "SPAN",
+            "src": "",
+            "onclick": "",
+            "className": "card-count",
+            "id": "",
+            "textContent": "(0)",
+            "boundingBox": {
+              "x": 274,
+              "y": 610,
+              "width": 25,
+              "height": 17
+            },
+            "parent": {
+              "tag": "H4",
+              "className": "",
+              "id": ""
+            }
+          },
+          {
+            "tag": "DIV",
+            "src": "",
+            "onclick": "",
+            "className": "ygo-card-area",
+            "id": "ygo-card-area",
+            "textContent": "\n            \n                カード一覧 (0)\n          ",
+            "boundingBox": {
+              "x": 0,
+              "y": 784,
+              "width": 314,
+              "height": 258
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "",
+              "id": "ygo-deck-support-ui"
+            }
+          },
+          {
+            "tag": "DIV",
+            "src": "",
+            "onclick": "",
+            "className": "card-area-header",
+            "id": "",
+            "textContent": "\n                カード一覧 (0)\n                \n      ",
+            "boundingBox": {
+              "x": 1,
+              "y": 785,
+              "width": 312,
+              "height": 76
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "ygo-card-area",
+              "id": "ygo-card-area"
+            }
+          },
+          {
+            "tag": "SPAN",
+            "src": "",
+            "onclick": "",
+            "className": "card-count",
+            "id": "",
+            "textContent": "(0)",
+            "boundingBox": {
+              "x": 274,
+              "y": 795,
+              "width": 25,
+              "height": 17
+            },
+            "parent": {
+              "tag": "H4",
+              "className": "",
+              "id": ""
+            }
+          },
+          {
+            "tag": "DIV",
+            "src": "",
+            "onclick": "",
+            "className": "card-area-controls",
+            "id": "",
+            "textContent": "\n                    \n                    フィルター\n  ",
+            "boundingBox": {
+              "x": 16,
+              "y": 821,
+              "width": 282,
+              "height": 30
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "card-area-header",
+              "id": ""
+            }
+          },
+          {
+            "tag": "BUTTON",
+            "src": "",
+            "onclick": "",
+            "className": "card-btn",
+            "id": "card-filter",
+            "textContent": "フィルター",
+            "boundingBox": {
+              "x": 213,
+              "y": 822,
+              "width": 85,
+              "height": 26
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "card-area-controls",
+              "id": ""
+            }
+          },
+          {
+            "tag": "DIV",
+            "src": "",
+            "onclick": "",
+            "className": "card-area-content",
+            "id": "card-content",
+            "textContent": "\n                \n            ",
+            "boundingBox": {
+              "x": 1,
+              "y": 861,
+              "width": 312,
+              "height": 180
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "ygo-card-area",
+              "id": "ygo-card-area"
+            }
+          },
+          {
+            "tag": "A",
+            "src": "",
+            "onclick": "",
+            "className": "top_main_card_search",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n ",
+            "boundingBox": {
+              "x": 468,
+              "y": 612,
+              "width": 485,
+              "height": 141
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "",
+              "id": "nav_bottom"
+            }
+          },
+          {
+            "tag": "A",
+            "src": "",
+            "onclick": "",
+            "className": "top_main_cardlist",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n     ",
+            "boundingBox": {
+              "x": 953,
+              "y": 612,
+              "width": 485,
+              "height": 141
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "",
+              "id": "nav_bottom"
+            }
+          },
+          {
+            "tag": "A",
+            "src": "",
+            "onclick": "",
+            "className": "top_main_my my_cardlist",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n  \n  \n    \n      \n     ",
+            "boundingBox": {
+              "x": 953,
+              "y": 954,
+              "width": 485,
+              "height": 141
+            },
+            "parent": {
+              "tag": "DIV",
+              "className": "",
+              "id": "nav_bottom"
+            }
+          },
+          {
+            "tag": "IMG",
+            "src": "https://www.db.yugioh-card.com/yugiohdb/external/image/00_logo_cardcom.png",
+            "onclick": "",
+            "className": "ui-draggable ui-draggable-handle",
+            "id": "",
+            "textContent": "",
+            "boundingBox": {
+              "x": 667,
+              "y": 1415,
+              "width": 179,
+              "height": 89
+            },
+            "parent": {
+              "tag": "A",
+              "className": "link_ocg",
+              "id": ""
+            }
+          },
+          {
+            "tag": "LI",
+            "src": "",
+            "onclick": "",
+            "className": "menu_card_search",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n    \n  \nCard Sea",
+            "boundingBox": {
+              "x": 551,
+              "y": 1777,
+              "width": 99,
+              "height": 104
+            },
+            "parent": {
+              "tag": "UL",
+              "className": "main_menu",
+              "id": ""
+            }
+          },
+          {
+            "tag": "LI",
+            "src": "",
+            "onclick": "",
+            "className": "menu_cardlist sab_menu",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\n\n  \n  \n    \n      \n      \n      \n",
+            "boundingBox": {
+              "x": 665,
+              "y": 1777,
+              "width": 120,
+              "height": 104
+            },
+            "parent": {
+              "tag": "UL",
+              "className": "main_menu",
+              "id": ""
+            }
+          },
+          {
+            "tag": "LI",
+            "src": "",
+            "onclick": "",
+            "className": "my menu_my_cardlist sab_menu",
+            "id": "",
+            "textContent": "\n\t\t\t\t\t\t\n\n  \n  \n    \n      \n      \n      \n      \n  ",
+            "boundingBox": {
+              "x": 1115,
+              "y": 1777,
+              "width": 120,
+              "height": 104
+            },
+            "parent": {
+              "tag": "UL",
+              "className": "main_menu",
+              "id": ""
+            }
+          }
+        ],
+        "layoutStructure": {
+          "body": {
+            "width": 1905,
+            "height": 1080
+          },
+          "mainContent": [
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 312,
+                "y": 14,
+                "width": 92,
+                "height": 41
+              }
+            },
+            {
+              "tag": "A",
+              "className": "bg main",
+              "id": "",
+              "boundingBox": {
+                "x": 414,
+                "y": 14,
+                "width": 87,
+                "height": 39
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 615,
+                "y": 14,
+                "width": 66,
+                "height": 41
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 690,
+                "y": 14,
+                "width": 74,
+                "height": 39
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 775,
+                "y": 14,
+                "width": 93,
+                "height": 39
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "tag": "A",
+              "className": "bg main",
+              "id": "",
+              "boundingBox": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0
+              }
+            },
+            {
+              "tag": "ARTICLE",
+              "className": "",
+              "id": "home",
+              "boundingBox": {
+                "x": 463,
+                "y": 60,
+                "width": 980,
+                "height": 360
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 551,
+                "y": 1777,
+                "width": 99,
+                "height": 29
+              }
+            },
+            {
+              "tag": "A",
+              "className": "bg main",
+              "id": "",
+              "boundingBox": {
+                "x": 665,
+                "y": 1777,
+                "width": 120,
+                "height": 29
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 915,
+                "y": 1777,
+                "width": 65,
+                "height": 29
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 995,
+                "y": 1777,
+                "width": 105,
+                "height": 29
+              }
+            },
+            {
+              "tag": "A",
+              "className": "main",
+              "id": "",
+              "boundingBox": {
+                "x": 1115,
+                "y": 1777,
+                "width": 120,
+                "height": 29
+              }
+            }
+          ],
+          "forms": []
+        },
+        "summary": {
+          "totalCardElements": 26,
+          "areaElementCounts": {
+            "main": 36,
+            "extra": 2,
+            "side": 2,
+            "temp": 0,
+            "search": 0
+          }
+        }
+      }
+    },
+    {
+      "type": "mouse_operations_test",
+      "data": {
+        "clickableElements": [
+          {
+            "selector": "img[src*=\"card\"]",
+            "tag": "IMG",
+            "onclick": "",
+            "href": "",
+            "src": "https://www.yugioh-card.com/ci/logo/konami_logo_normal.png",
+            "className": "ui-draggable ui-draggable-handle",
+            "id": "konami"
+          },
+          {
+            "selector": "img[src*=\"card\"]",
+            "tag": "IMG",
+            "onclick": "",
+            "href": "",
+            "src": "https://www.db.yugioh-card.com/yugiohdb/external/image/00_logo_cardcom.png",
+            "className": "ui-draggable ui-draggable-handle",
+            "id": ""
+          },
+          {
+            "selector": "a[href*=\"card\"]",
+            "tag": "A",
+            "onclick": "",
+            "href": "https://my.konami.net/logout/logout.html?redirect_uri=https%3a%2f%2fwww%2edb%2eyugioh%2dcard%2ecom%2fyugiohdb%2fmember_logout%2eaction",
+            "src": "",
+            "className": "logout",
+            "id": ""
+          },
+          {
+            "selector": "a[href*=\"card\"]",
+            "tag": "A",
+            "onclick": "",
+            "href": "https://www.db.yugioh-card.com/yugiohdb/card_search.action?wname=CardSearch",
+            "src": "",
+            "className": "main",
+            "id": ""
+          },
+          {
+            "selector": "a[href*=\"card\"]",
+            "tag": "A",
+            "onclick": "",
+            "href": "https://www.db.yugioh-card.com/yugiohdb/card_list.action?wname=CardSearch",
+            "src": "",
+            "className": "bg main",
+            "id": ""
+          },
+          {
+            "selector": "a[href*=\"card\"]",
+            "tag": "A",
+            "onclick": "",
+            "href": "https://www.db.yugioh-card.com/yugiohdb/card_list.action?clm=3&wname=CardSearch",
+            "src": "",
+            "className": "",
+            "id": ""
+          },
+          {
+            "selector": "a[href*=\"card\"]",
+            "tag": "A",
+            "onclick": "",
+            "href": "https://www.db.yugioh-card.com/yugiohdb/card_list.action?clm=1&wname=CardSearch",
+            "src": "",
+            "className": "",
+            "id": ""
+          },
+          {
+            "selector": "button",
+            "tag": "BUTTON",
+            "onclick": "",
+            "href": "",
+            "src": "",
+            "className": "",
+            "id": "ygo-analyze-btn"
+          },
+          {
+            "selector": "button",
+            "tag": "BUTTON",
+            "onclick": "",
+            "href": "",
+            "src": "",
+            "className": "",
+            "id": "ygo-debug-btn"
+          },
+          {
+            "selector": "button",
+            "tag": "BUTTON",
+            "onclick": "",
+            "href": "",
+            "src": "",
+            "className": "mouse-ui-btn",
+            "id": "mouse-ui-toggle"
+          },
+          {
+            "selector": "button",
+            "tag": "BUTTON",
+            "onclick": "",
+            "href": "",
+            "src": "",
+            "className": "mouse-ui-btn",
+            "id": "mouse-ui-sort"
+          },
+          {
+            "selector": "button",
+            "tag": "BUTTON",
+            "onclick": "",
+            "href": "",
+            "src": "",
+            "className": "mouse-ui-btn",
+            "id": "mouse-ui-shuffle"
+          }
+        ],
+        "eventSupport": {
+          "click": true,
+          "contextmenu": true,
+          "wheel": true,
+          "mousedown": true,
+          "mouseup": true,
+          "dblclick": true
+        }
+      }
+    }
+  ]
+}
