@@ -2,23 +2,28 @@
   "name": "ygo_deck_extension",
   "version": "3.2.0",
   "description": "遊戯王公式カードデータベースのデッキ編集機能を改善するChrome拡張機能",
-  "main": "debug-manifest.js",
+  "main": "tests/debug-manifest.js",
   "directories": {
-    "doc": "doc"
+    "doc": "doc",
+    "test": "tests",
+    "config": "config",
+    "tools": "tools"
   },
   "scripts": {
-    "test": "node ygo-db-extension-test.js",
-    "test:comprehensive": "node comprehensive-test.js",
+    "test": "node tests/ygo-db-extension-test.js",
+    "test:comprehensive": "node tests/comprehensive-test.js",
     "test:playwright": "cd playwright && npx playwright test",
     "test:screenshots": "node playwright/take-ss/screenshot-automation.js",
     "test:all": "npm run test && npm run test:playwright && npm run test:screenshots",
-    "dev:debug": "node debug-manifest.js",
-    "dev:install": "./install-extension.sh",
-    "dev:chrome": "./start-chrome-for-login.sh",
+    "dev:debug": "node tests/debug-manifest.js",
+    "dev:install": "bash config/install-extension.sh",
+    "dev:chrome": "bash config/start-chrome-for-login.sh",
     "build": "echo 'Chrome extension built from src/ directory'",
     "package": "zip -r ygo-deck-extension-v3.1.1.zip src/ -x '*.DS_Store'",
     "docs:serve": "echo 'Serving documentation from doc/ directory'",
-    "clean": "rm -rf playwright/screenshots/* playwright/test-results/* extension-test-report.json test-report.json"
+    "clean": "rm -rf playwright/screenshots/* playwright/test-results/* extension-test-report.json test-report.json",
+    "send-reports": "node scripts/send-reports.js",
+    "postcommit": "npm run send-reports"
   },
   "repository": {
     "type": "git",
@@ -36,6 +41,8 @@
     "playwright": "^1.53.0"
   },
   "dependencies": {
-    "@playwright/test": "^1.53.0"
+    "@playwright/test": "^1.53.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0"
   }
 }
